@@ -86,37 +86,510 @@ Reports will be generated in `target/security/` directory.
 - In-memory database or JSON file storage options
 - Multi-module project support
 
-## 🛠️ Available Maven Goals
+## 🛠️ Community Edition Usage Guide
 
-Bastion provides multiple Maven goals for comprehensive security management:
+### Available Maven Goals
+
+Bastion Community provides these Maven goals for vulnerability management:
+
+| Goal | Description | Community Edition |
+|------|-------------|------------------|
+| `scan` | Run complete vulnerability scan | ✅ Full support |
+| `trend-analysis` | Generate historical trend analysis report | ✅ Full support |
+
+### Basic Usage Examples
+
+#### 1. Simple Vulnerability Scan
 
 ```bash
-# 🔍 Primary scanning goal
+# Basic scan with default settings
+mvn mu.dodogeny:bastion-maven-plugin-community:1.0.0:scan
+
+# Or if plugin is configured in pom.xml
 mvn bastion:scan
+```
 
-# 📈 Trend analysis with historical tracking
-mvn bastion:trend-analysis
+#### 2. With NVD API Key (Recommended)
 
-# 💼 Commercial Edition with LemonSqueezy API key
-mvn bastion:scan -Dbastion.apiKey=YOUR_LEMONSQUEEZY_API_KEY
-
-# 🗑️ Database purge functionality (integrated into scan goal)
-mvn bastion:scan -Dbastion.purgeBeforeScan=true
-
-# 📄 Community Edition - JSON file storage mode
-mvn bastion:scan -Dbastion.community.storageMode=JSON_FILE
-
-# 📄 Community Edition - In-memory database mode (default)
-mvn bastion:scan -Dbastion.community.storageMode=IN_MEMORY
-
-# 🔑 NVD API key for enhanced scanning
+```bash
+# Using NVD API key for faster, more reliable scans
 mvn bastion:scan -Dbastion.nvd.apiKey=YOUR_NVD_API_KEY
 
-# 📊 Generate HTML trend analysis report
+# Using environment variable
+export NVD_API_KEY="your-nvd-api-key"
+mvn bastion:scan -Dbastion.nvd.apiKey=${NVD_API_KEY}
+```
+
+#### 3. Storage Mode Options
+
+```bash
+# In-memory database (default - fastest)
+mvn bastion:scan -Dbastion.community.storageMode=IN_MEMORY
+
+# JSON file storage (persistent, with trend analysis)
+mvn bastion:scan -Dbastion.community.storageMode=JSON_FILE
+
+# Custom JSON file location
+mvn bastion:scan \
+  -Dbastion.community.storageMode=JSON_FILE \
+  -Dbastion.storage.jsonFilePath=/path/to/custom-vulnerabilities.json
+```
+
+#### 4. Report Generation
+
+```bash
+# Generate all available reports (HTML, JSON, CSV)
+mvn bastion:scan
+
+# Specific report format focus
+mvn bastion:scan -Dbastion.reporting.formats.html=true
+mvn bastion:scan -Dbastion.reporting.formats.json=true
+mvn bastion:scan -Dbastion.reporting.formats.csv=true
+```
+
+#### 5. Trend Analysis
+
+```bash
+# Generate trend analysis report (requires historical data)
+mvn bastion:trend-analysis
+
+# HTML format (default)
 mvn bastion:trend-analysis -Dbastion.format=html
 
-# 📄 Generate JSON trend analysis report  
+# JSON format for automation
 mvn bastion:trend-analysis -Dbastion.format=json
+```
+
+#### 6. Multi-Module Projects
+
+```bash
+# Scan multi-module project from parent directory
+mvn bastion:scan -Dbastion.multiModule.enabled=true
+
+# With parallel scanning for faster results
+mvn bastion:scan \
+  -Dbastion.multiModule.enabled=true \
+  -Dbastion.multiModule.parallelScanning=true \
+  -Dbastion.multiModule.threadCount=4
+```
+
+#### 7. Performance Options
+
+```bash
+# Enable detailed performance metrics
+mvn bastion:scan -Dbastion.statistics.enabled=true
+
+# With resource usage tracking
+mvn bastion:scan \
+  -Dbastion.statistics.enabled=true \
+  -Dbastion.statistics.includePerformanceMetrics=true \
+  -Dbastion.statistics.trackResourceUsage=true
+```
+
+#### 8. Data Management
+
+```bash
+# Purge data before scan (JSON file mode)
+mvn bastion:scan \
+  -Dbastion.community.storageMode=JSON_FILE \
+  -Dbastion.purgeBeforeScan=true
+
+# Purge with confirmation
+mvn bastion:scan \
+  -Dbastion.community.storageMode=JSON_FILE \
+  -Dbastion.purgeBeforeScan=true \
+  -Dbastion.purge.force=true
+
+# Dry run - preview what would be purged
+mvn bastion:scan \
+  -Dbastion.community.storageMode=JSON_FILE \
+  -Dbastion.purgeBeforeScan=true \
+  -Dbastion.purge.dryRun=true
+```
+
+#### 9. Build Integration
+
+```bash
+# Fail build on critical vulnerabilities
+mvn bastion:scan -Dbastion.failOnCritical=true
+
+# Fail on high severity vulnerabilities
+mvn bastion:scan \
+  -Dbastion.failOnCritical=true \
+  -Dbastion.failOnHigh=true
+
+# Set maximum allowed vulnerabilities
+mvn bastion:scan -Dbastion.maxAllowedVulnerabilities=0
+```
+
+#### 10. Advanced Scanning Options
+
+```bash
+# Include test dependencies in scan
+mvn bastion:scan -Dbastion.includeTestScope=true
+
+# Exclude specific scopes
+mvn bastion:scan -Dbastion.excludeScopes=test,provided
+
+# Custom timeout settings
+mvn bastion:scan -Dbastion.scanTimeout=300000  # 5 minutes
+```
+
+### 📋 POM Configuration Examples
+
+#### Basic Configuration
+
+```xml
+<plugin>
+    <groupId>mu.dodogeny</groupId>
+    <artifactId>bastion-maven-plugin-community</artifactId>
+    <version>1.0.0</version>
+    <configuration>
+        <!-- Basic settings -->
+        <openSourceMode>true</openSourceMode>
+        <statistics>
+            <enabled>true</enabled>
+            <includePerformanceMetrics>true</includePerformanceMetrics>
+        </statistics>
+    </configuration>
+    <executions>
+        <execution>
+            <goals>
+                <goal>scan</goal>
+            </goals>
+        </execution>
+    </executions>
+</plugin>
+```
+
+#### JSON File Storage Configuration
+
+```xml
+<plugin>
+    <groupId>mu.dodogeny</groupId>
+    <artifactId>bastion-maven-plugin-community</artifactId>
+    <version>1.0.0</version>
+    <configuration>
+        <!-- Storage configuration -->
+        <communityStorageMode>JSON_FILE</communityStorageMode>
+        <jsonFilePath>${project.build.directory}/security/bastion-vulnerabilities.json</jsonFilePath>
+        
+        <!-- Enable trend analysis -->
+        <reporting>
+            <includeTrends>true</includeTrends>
+            <includeStatistics>true</includeStatistics>
+        </reporting>
+        
+        <!-- Performance settings -->
+        <performance>
+            <batchSize>100</batchSize>
+            <cacheEnabled>true</cacheEnabled>
+        </performance>
+    </configuration>
+</plugin>
+```
+
+#### Multi-Module Project Configuration
+
+```xml
+<plugin>
+    <groupId>mu.dodogeny</groupId>
+    <artifactId>bastion-maven-plugin-community</artifactId>
+    <version>1.0.0</version>
+    <configuration>
+        <!-- Multi-module settings -->
+        <multiModule>
+            <enabled>true</enabled>
+            <aggregateReports>true</aggregateReports>
+            <parallelScanning>true</parallelScanning>
+            <threadCount>4</threadCount>
+        </multiModule>
+        
+        <!-- Reporting -->
+        <reporting>
+            <formats>
+                <html>true</html>
+                <json>true</json>
+                <csv>true</csv>
+            </formats>
+        </reporting>
+        
+        <!-- Statistics -->
+        <statistics>
+            <enabled>true</enabled>
+            <includePerformanceMetrics>true</includePerformanceMetrics>
+            <trackResourceUsage>true</trackResourceUsage>
+        </statistics>
+    </configuration>
+</plugin>
+```
+
+#### Build Failure Configuration
+
+```xml
+<plugin>
+    <groupId>mu.dodogeny</groupId>
+    <artifactId>bastion-maven-plugin-community</artifactId>
+    <version>1.0.0</version>
+    <configuration>
+        <!-- Build failure policies -->
+        <failOnCritical>true</failOnCritical>
+        <failOnHigh>true</failOnHigh>
+        <maxAllowedVulnerabilities>0</maxAllowedVulnerabilities>
+        
+        <!-- Scope configuration -->
+        <includeTestScope>false</includeTestScope>
+        <excludeScopes>
+            <scope>test</scope>
+            <scope>provided</scope>
+        </excludeScopes>
+        
+        <!-- Timeout settings -->
+        <scanTimeout>300000</scanTimeout> <!-- 5 minutes -->
+    </configuration>
+    <executions>
+        <execution>
+            <phase>verify</phase>
+            <goals>
+                <goal>scan</goal>
+            </goals>
+        </execution>
+    </executions>
+</plugin>
+```
+
+#### Advanced Configuration with NVD API Key
+
+```xml
+<plugin>
+    <groupId>mu.dodogeny</groupId>
+    <artifactId>bastion-maven-plugin-community</artifactId>
+    <version>1.0.0</version>
+    <configuration>
+        <!-- NVD API configuration -->
+        <nvdApiKey>${env.NVD_API_KEY}</nvdApiKey>
+        
+        <!-- Storage -->
+        <communityStorageMode>JSON_FILE</communityStorageMode>
+        <jsonFilePath>${user.home}/.m2/bastion-cache/${project.artifactId}-vulnerabilities.json</jsonFilePath>
+        
+        <!-- Purge settings -->
+        <purgeBeforeScan>false</purgeBeforeScan>
+        <purge>
+            <projectOnly>true</projectOnly>
+            <olderThanDays>30</olderThanDays>
+            <dryRun>false</dryRun>
+        </purge>
+        
+        <!-- Multi-module -->
+        <multiModule>
+            <enabled>true</enabled>
+            <parallelScanning>true</parallelScanning>
+            <threadCount>${maven.compiler.processors}</threadCount>
+        </multiModule>
+        
+        <!-- Performance monitoring -->
+        <monitoring>
+            <performanceMetrics>true</performanceMetrics>
+            <memoryUsageTracking>true</memoryUsageTracking>
+        </monitoring>
+        
+        <!-- Reporting -->
+        <reporting>
+            <formats>
+                <html>true</html>
+                <json>true</json>
+                <csv>true</csv>
+            </formats>
+            <includeTrends>true</includeTrends>
+            <includeStatistics>true</includeStatistics>
+            <includePerformanceMetrics>true</includePerformanceMetrics>
+        </reporting>
+    </configuration>
+</plugin>
+```
+
+### 🔑 NVD API Key Setup (Recommended)
+
+The National Vulnerability Database (NVD) API key significantly improves scanning performance and reliability.
+
+#### Get Your Free NVD API Key
+
+1. **Visit NVD Developer Portal**
+   ```bash
+   https://nvd.nist.gov/developers/request-an-api-key
+   ```
+
+2. **Register for Free Account**
+   - Complete the registration form
+   - Verify your email address
+   - Request API key (instant approval)
+
+#### Configure NVD API Key
+
+**Option 1: Environment Variable (Recommended)**
+```bash
+# Add to ~/.bashrc or ~/.zshrc
+export NVD_API_KEY="your-nvd-api-key-here"
+
+# Or set for current session
+export NVD_API_KEY="your-nvd-api-key-here"
+mvn bastion:scan -Dbastion.nvd.apiKey=${NVD_API_KEY}
+```
+
+**Option 2: Maven Settings**
+```xml
+<!-- ~/.m2/settings.xml -->
+<settings>
+    <profiles>
+        <profile>
+            <id>bastion-community</id>
+            <properties>
+                <nvd.api.key>your-nvd-api-key-here</nvd.api.key>
+            </properties>
+        </profile>
+    </profiles>
+    <activeProfiles>
+        <activeProfile>bastion-community</activeProfile>
+    </activeProfiles>
+</settings>
+```
+
+**Option 3: Project POM**
+```xml
+<plugin>
+    <groupId>mu.dodogeny</groupId>
+    <artifactId>bastion-maven-plugin-community</artifactId>
+    <version>1.0.0</version>
+    <configuration>
+        <nvdApiKey>${env.NVD_API_KEY}</nvdApiKey>
+        <!-- or from Maven properties -->
+        <nvdApiKey>${nvd.api.key}</nvdApiKey>
+    </configuration>
+</plugin>
+```
+
+**Benefits of NVD API Key:**
+- 📈 **5x Faster Scans**: Higher rate limits (2000 requests/30s vs 50/30s)
+- 🔄 **More Reliable**: Reduced chance of rate limiting
+- 📊 **Latest Data**: Access to most current vulnerability information
+- 🚀 **Better Performance**: Priority processing from NVD servers
+
+### 💾 Storage Configuration Options
+
+#### In-Memory Database (Default)
+
+**Best for:** Quick scans, CI/CD pipelines, temporary analysis
+
+```xml
+<configuration>
+    <communityStorageMode>IN_MEMORY</communityStorageMode>
+</configuration>
+```
+
+**Command Line:**
+```bash
+mvn bastion:scan -Dbastion.community.storageMode=IN_MEMORY
+```
+
+**Features:**
+- ⚡ **Zero Setup**: No files created
+- 🚀 **Fastest Performance**: All data in memory
+- 🧹 **Auto Cleanup**: Data cleared when Maven session ends
+- ❌ **No Persistence**: No historical trend analysis
+
+#### JSON File Storage
+
+**Best for:** Historical tracking, trend analysis, audit trails
+
+```xml
+<configuration>
+    <communityStorageMode>JSON_FILE</communityStorageMode>
+    <jsonFilePath>${project.build.directory}/security/bastion-vulnerabilities.json</jsonFilePath>
+</configuration>
+```
+
+**Command Line:**
+```bash
+# Default JSON location
+mvn bastion:scan -Dbastion.community.storageMode=JSON_FILE
+
+# Custom location
+mvn bastion:scan \
+  -Dbastion.community.storageMode=JSON_FILE \
+  -Dbastion.storage.jsonFilePath=/path/to/custom.json
+```
+
+**Features:**
+- 📄 **Persistent Storage**: Data survives between scans
+- 📈 **Full Trend Analysis**: Historical vulnerability tracking
+- 🔍 **Version Control**: JSON files can be committed
+- 👁️ **Human Readable**: Easy to inspect and analyze manually
+
+**Recommended JSON File Locations:**
+
+```xml
+<!-- Per-project storage (recommended) -->
+<jsonFilePath>${project.build.directory}/security/${project.artifactId}-vulnerabilities.json</jsonFilePath>
+
+<!-- Global storage across projects -->
+<jsonFilePath>${user.home}/.m2/bastion-cache/global-vulnerabilities.json</jsonFilePath>
+
+<!-- Team shared storage -->
+<jsonFilePath>${project.basedir}/.bastion/vulnerabilities.json</jsonFilePath>
+
+<!-- CI/CD friendly -->
+<jsonFilePath>${env.WORKSPACE}/security-reports/${project.artifactId}-vulnerabilities.json</jsonFilePath>
+```
+
+### 🗑️ Data Purge Options
+
+#### Purge Commands
+
+```bash
+# Preview what would be purged (safe)
+mvn bastion:scan \
+  -Dbastion.community.storageMode=JSON_FILE \
+  -Dbastion.purgeBeforeScan=true \
+  -Dbastion.purge.dryRun=true
+
+# Purge with confirmation prompt
+mvn bastion:scan \
+  -Dbastion.community.storageMode=JSON_FILE \
+  -Dbastion.purgeBeforeScan=true
+
+# Force purge (no confirmation)
+mvn bastion:scan \
+  -Dbastion.community.storageMode=JSON_FILE \
+  -Dbastion.purgeBeforeScan=true \
+  -Dbastion.purge.force=true
+
+# Purge only current project data
+mvn bastion:scan \
+  -Dbastion.community.storageMode=JSON_FILE \
+  -Dbastion.purgeBeforeScan=true \
+  -Dbastion.purge.projectOnly=true
+
+# Purge data older than 30 days
+mvn bastion:scan \
+  -Dbastion.community.storageMode=JSON_FILE \
+  -Dbastion.purgeBeforeScan=true \
+  -Dbastion.purge.olderThanDays=30
+```
+
+#### POM Purge Configuration
+
+```xml
+<configuration>
+    <communityStorageMode>JSON_FILE</communityStorageMode>
+    <purgeBeforeScan>true</purgeBeforeScan>
+    <purge>
+        <force>false</force>              <!-- Ask for confirmation -->
+        <projectOnly>true</projectOnly>   <!-- Only current project -->
+        <olderThanDays>0</olderThanDays>  <!-- All records (0 = no age limit) -->
+        <dryRun>false</dryRun>           <!-- Execute the purge -->
+    </purge>
+</configuration>
 ```
 
 ### 📊 Scan Statistics Output
@@ -1206,63 +1679,182 @@ ORDER BY avg_critical_vulns DESC;
 - **SLA Tracking**: Monitor time-to-resolution for different vulnerability severities
 - **Integration APIs**: Connect with JIRA, ServiceNow, and other workflow tools
 
-## 🛠️ CI/CD Integration
+## 🔗 CI/CD Integration (Community Edition)
 
 ### GitHub Actions
 
+#### Basic Security Scan
+
 ```yaml
-name: Security Scan
+name: Bastion Security Scan
 on: [push, pull_request]
 
 jobs:
   security-scan:
     runs-on: ubuntu-latest
     steps:
-    - uses: actions/checkout@v3
-    - uses: actions/setup-java@v3
+    - uses: actions/checkout@v4
+    - uses: actions/setup-java@v4
       with:
         java-version: '11'
         distribution: 'temurin'
     
-    - name: Run Security Scan
+    - name: Cache Maven dependencies
+      uses: actions/cache@v3
+      with:
+        path: ~/.m2
+        key: ${{ runner.os }}-m2-${{ hashFiles('**/pom.xml') }}
+        
+    - name: Run Bastion Security Scan
       env:
-        SNYK_TOKEN: ${{ secrets.SNYK_TOKEN }}
-        SMTP_USER: ${{ secrets.SMTP_USER }}
-        SMTP_PASS: ${{ secrets.SMTP_PASS }}
+        NVD_API_KEY: ${{ secrets.NVD_API_KEY }}
       run: |
-        mvn mu.dodogeny:bastion-maven-plugin-enterprise:1.0.0:scan \
-          -Dbastion.notifications.enabled=true \
+        mvn mu.dodogeny:bastion-maven-plugin-community:1.0.0:scan \
+          -Dbastion.nvd.apiKey=${NVD_API_KEY} \
           -Dbastion.failOnCritical=true \
-          -Dbastion.apiKey=${BASTION_API_KEY}
+          -Dbastion.statistics.enabled=true
     
     - name: Upload Security Reports
-      uses: actions/upload-artifact@v3
+      uses: actions/upload-artifact@v4
       if: always()
       with:
-        name: security-reports
+        name: bastion-security-reports
         path: target/security/
+        retention-days: 30
+```
+
+#### Advanced GitHub Actions with JSON Storage
+
+```yaml
+name: Advanced Bastion Security Scan
+on: 
+  push:
+    branches: [ main, develop ]
+  pull_request:
+    branches: [ main ]
+  schedule:
+    - cron: '0 2 * * 1'  # Weekly Monday 2 AM
+
+jobs:
+  security-scan:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+      security-events: write
+      
+    steps:
+    - uses: actions/checkout@v4
+      with:
+        fetch-depth: 0  # Full history for trend analysis
+        
+    - uses: actions/setup-java@v4
+      with:
+        java-version: '11'
+        distribution: 'temurin'
+        
+    - name: Cache Maven and Bastion data
+      uses: actions/cache@v3
+      with:
+        path: |
+          ~/.m2
+          ${{ github.workspace }}/.bastion
+        key: ${{ runner.os }}-bastion-${{ hashFiles('**/pom.xml') }}
+        
+    - name: Create Bastion cache directory
+      run: mkdir -p .bastion
+        
+    - name: Run Bastion Security Scan with Trend Analysis
+      env:
+        NVD_API_KEY: ${{ secrets.NVD_API_KEY }}
+      run: |
+        mvn mu.dodogeny:bastion-maven-plugin-community:1.0.0:scan \
+          -Dbastion.nvd.apiKey=${NVD_API_KEY} \
+          -Dbastion.community.storageMode=JSON_FILE \
+          -Dbastion.storage.jsonFilePath=${GITHUB_WORKSPACE}/.bastion/vulnerabilities.json \
+          -Dbastion.failOnCritical=true \
+          -Dbastion.failOnHigh=false \
+          -Dbastion.multiModule.enabled=true \
+          -Dbastion.statistics.enabled=true \
+          -Dbastion.reporting.includeTrends=true
+          
+    - name: Generate Trend Analysis Report
+      if: always()
+      run: |
+        mvn mu.dodogeny:bastion-maven-plugin-community:1.0.0:trend-analysis \
+          -Dbastion.community.storageMode=JSON_FILE \
+          -Dbastion.storage.jsonFilePath=${GITHUB_WORKSPACE}/.bastion/vulnerabilities.json \
+          -Dbastion.format=html
+    
+    - name: Upload Security Reports
+      uses: actions/upload-artifact@v4
+      if: always()
+      with:
+        name: bastion-security-reports-${{ github.run_number }}
+        path: |
+          target/security/
+          target/security-reports/
+        retention-days: 90
+        
+    - name: Comment PR with Security Summary
+      if: github.event_name == 'pull_request'
+      uses: actions/github-script@v6
+      with:
+        script: |
+          const fs = require('fs');
+          const path = 'target/security/vulnerability-report.json';
+          
+          if (fs.existsSync(path)) {
+            const report = JSON.parse(fs.readFileSync(path, 'utf8'));
+            const summary = `
+          ## 🛡️ Bastion Security Scan Results
+          
+          - **Total Vulnerabilities**: ${report.totalVulnerabilities || 0}
+          - **Critical**: ${report.criticalVulnerabilities || 0}
+          - **High**: ${report.highVulnerabilities || 0}
+          - **Medium**: ${report.mediumVulnerabilities || 0}
+          - **Low**: ${report.lowVulnerabilities || 0}
+          - **Dependencies Scanned**: ${report.totalDependencies || 0}
+          
+          📊 [View Detailed Report](${process.env.GITHUB_SERVER_URL}/${process.env.GITHUB_REPOSITORY}/actions/runs/${process.env.GITHUB_RUN_ID})
+          `;
+          
+            github.rest.issues.createComment({
+              issue_number: context.issue.number,
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              body: summary
+            });
+          }
 ```
 
 ### Jenkins Pipeline
+
+#### Basic Jenkins Pipeline
 
 ```groovy
 pipeline {
     agent any
     
     environment {
-        SNYK_TOKEN = credentials('snyk-api-token')
-        SMTP_USER = credentials('smtp-username')
-        SMTP_PASS = credentials('smtp-password')
+        NVD_API_KEY = credentials('nvd-api-key')
     }
     
     stages {
+        stage('Checkout') {
+            steps {
+                checkout scm
+            }
+        }
+        
         stage('Security Scan') {
             steps {
                 sh '''
-                    mvn mu.dodogeny:bastion-maven-plugin-enterprise:1.0.0:scan \
-                      -Dbastion.notifications.enabled=true \
-                      -Dbastion.database.type=postgresql \
-                      -Dbastion.statistics.enabled=true
+                    mvn mu.dodogeny:bastion-maven-plugin-community:1.0.0:scan \
+                      -Dbastion.nvd.apiKey=${NVD_API_KEY} \
+                      -Dbastion.failOnCritical=true \
+                      -Dbastion.statistics.enabled=true \
+                      -Dbastion.community.storageMode=JSON_FILE \
+                      -Dbastion.storage.jsonFilePath=${WORKSPACE}/bastion-vulnerabilities.json
                 '''
             }
             
@@ -1274,13 +1866,211 @@ pipeline {
                         keepAll: true,
                         reportDir: 'target/security',
                         reportFiles: 'vulnerability-report.html',
-                        reportName: 'Security Scan Report'
+                        reportName: 'Bastion Security Report'
                     ])
+                    
+                    archiveArtifacts artifacts: 'target/security/**/*', allowEmptyArchive: true
+                    archiveArtifacts artifacts: 'bastion-vulnerabilities.json', allowEmptyArchive: true
                 }
+                
+                failure {
+                    emailext (
+                        subject: "Security Scan Failed: ${env.JOB_NAME} - ${env.BUILD_NUMBER}",
+                        body: """
+                        Security scan failed for ${env.JOB_NAME} build ${env.BUILD_NUMBER}.
+                        
+                        Check the build log: ${env.BUILD_URL}
+                        View security report: ${env.BUILD_URL}Bastion_Security_Report/
+                        """,
+                        to: "${env.CHANGE_AUTHOR_EMAIL},security-team@company.com"
+                    )
+                }
+            }
+        }
+        
+        stage('Trend Analysis') {
+            when {
+                anyOf {
+                    branch 'main'
+                    branch 'develop'
+                }
+            }
+            steps {
+                sh '''
+                    mvn mu.dodogeny:bastion-maven-plugin-community:1.0.0:trend-analysis \
+                      -Dbastion.community.storageMode=JSON_FILE \
+                      -Dbastion.storage.jsonFilePath=${WORKSPACE}/bastion-vulnerabilities.json \
+                      -Dbastion.format=html
+                '''
+                
+                publishHTML([
+                    allowMissing: false,
+                    alwaysLinkToLastBuild: true,
+                    keepAll: true,
+                    reportDir: 'target/security-reports',
+                    reportFiles: 'bastion-trend-report-*.html',
+                    reportName: 'Bastion Trend Analysis'
+                ])
             }
         }
     }
 }
+```
+
+### GitLab CI/CD
+
+```yaml
+# .gitlab-ci.yml
+stages:
+  - security-scan
+  - report
+
+variables:
+  MAVEN_OPTS: "-Dmaven.repo.local=${CI_PROJECT_DIR}/.m2/repository"
+
+cache:
+  paths:
+    - .m2/repository/
+    - .bastion/
+
+bastion-security-scan:
+  stage: security-scan
+  image: maven:3.8.6-openjdk-11
+  
+  variables:
+    NVD_API_KEY: $NVD_API_KEY
+    
+  before_script:
+    - mkdir -p .bastion
+    
+  script:
+    - |
+      mvn mu.dodogeny:bastion-maven-plugin-community:1.0.0:scan \
+        -Dbastion.nvd.apiKey=${NVD_API_KEY} \
+        -Dbastion.community.storageMode=JSON_FILE \
+        -Dbastion.storage.jsonFilePath=${CI_PROJECT_DIR}/.bastion/vulnerabilities.json \
+        -Dbastion.failOnCritical=false \
+        -Dbastion.statistics.enabled=true \
+        -Dbastion.reporting.includeTrends=true
+        
+  artifacts:
+    when: always
+    expire_in: 30 days
+    paths:
+      - target/security/
+      - .bastion/
+    reports:
+      junit: target/security/vulnerability-report.xml
+      
+  allow_failure: false
+
+trend-analysis:
+  stage: report
+  image: maven:3.8.6-openjdk-11
+  dependencies:
+    - bastion-security-scan
+    
+  script:
+    - |
+      mvn mu.dodogeny:bastion-maven-plugin-community:1.0.0:trend-analysis \
+        -Dbastion.community.storageMode=JSON_FILE \
+        -Dbastion.storage.jsonFilePath=${CI_PROJECT_DIR}/.bastion/vulnerabilities.json \
+        -Dbastion.format=html
+        
+  artifacts:
+    when: always
+    expire_in: 90 days
+    paths:
+      - target/security-reports/
+      
+  only:
+    - main
+    - develop
+```
+
+### Azure DevOps Pipeline
+
+```yaml
+# azure-pipelines.yml
+trigger:
+- main
+- develop
+
+pool:
+  vmImage: 'ubuntu-latest'
+
+variables:
+  MAVEN_CACHE_FOLDER: $(Pipeline.Workspace)/.m2/repository
+  MAVEN_OPTS: '-Dmaven.repo.local=$(MAVEN_CACHE_FOLDER)'
+
+steps:
+- task: Cache@2
+  inputs:
+    key: 'maven | "$(Agent.OS)" | **/pom.xml'
+    restoreKeys: |
+      maven | "$(Agent.OS)"
+      maven
+    path: $(MAVEN_CACHE_FOLDER)
+  displayName: Cache Maven local repo
+
+- task: JavaToolInstaller@0
+  inputs:
+    versionSpec: '11'
+    jdkArchitectureOption: 'x64'
+    jdkSourceOption: 'PreInstalled'
+
+- script: |
+    mvn mu.dodogeny:bastion-maven-plugin-community:1.0.0:scan \
+      -Dbastion.nvd.apiKey=$(NVD_API_KEY) \
+      -Dbastion.community.storageMode=JSON_FILE \
+      -Dbastion.storage.jsonFilePath=$(Agent.TempDirectory)/bastion-vulnerabilities.json \
+      -Dbastion.failOnCritical=true \
+      -Dbastion.statistics.enabled=true
+  displayName: 'Run Bastion Security Scan'
+  env:
+    NVD_API_KEY: $(nvd-api-key)
+
+- task: PublishHtmlReport@1
+  condition: always()
+  inputs:
+    reportDir: 'target/security'
+    tabName: 'Bastion Security Report'
+    
+- task: PublishTestResults@2
+  condition: always()
+  inputs:
+    testResultsFormat: 'JUnit'
+    testResultsFiles: 'target/security/vulnerability-report.xml'
+    testRunTitle: 'Security Vulnerabilities'
+    
+- task: PublishBuildArtifacts@1
+  condition: always()
+  inputs:
+    pathToPublish: 'target/security'
+    artifactName: 'bastion-security-reports'
+```
+
+### Docker Integration
+
+```dockerfile
+# Dockerfile for security scanning
+FROM maven:3.8.6-openjdk-11 AS security-scanner
+
+WORKDIR /app
+COPY pom.xml .
+COPY src ./src
+
+# Install and run Bastion security scan
+RUN mvn mu.dodogeny:bastion-maven-plugin-community:1.0.0:scan \
+    -Dbastion.community.storageMode=JSON_FILE \
+    -Dbastion.storage.jsonFilePath=/app/vulnerabilities.json \
+    -Dbastion.statistics.enabled=true
+
+# Export reports
+FROM nginx:alpine AS report-server
+COPY --from=security-scanner /app/target/security /usr/share/nginx/html/security
+COPY --from=security-scanner /app/vulnerabilities.json /usr/share/nginx/html/
+EXPOSE 80
 ```
 
 ## 📄 JSON File Storage
