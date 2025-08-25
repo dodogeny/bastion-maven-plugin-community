@@ -90,12 +90,13 @@ Reports will be generated in `target/security/` directory.
 
 ### Available Maven Goals
 
-Bastion Community provides these Maven goals for vulnerability management:
+Bastion Community provides this Maven goal for vulnerability management:
 
 | Goal | Description | Community Edition |
 |------|-------------|------------------|
-| `scan` | Run complete vulnerability scan | ✅ Full support |
-| `trend-analysis` | Generate historical trend analysis report | ✅ Full support |
+| `scan` | Run complete vulnerability scan with integrated trend analysis | ✅ Full support |
+
+> **📊 Trend Analysis:** Historical trend analysis is built into the `scan` goal when using JSON file storage. No separate `trend-analysis` goal needed!
 
 ### Basic Usage Examples
 
@@ -147,18 +148,22 @@ mvn bastion:scan -Dbastion.reporting.formats.json=true
 mvn bastion:scan -Dbastion.reporting.formats.csv=true
 ```
 
-#### 5. Trend Analysis
+#### 5. Historical Trend Analysis
 
 ```bash
-# Generate trend analysis report (requires historical data)
-mvn bastion:trend-analysis
+# Enable trend analysis with JSON storage (first scan)
+mvn bastion:scan -Dbastion.community.storageMode=JSON_FILE
 
-# HTML format (default)
-mvn bastion:trend-analysis -Dbastion.format=html
+# Subsequent scans automatically generate trend analysis
+mvn bastion:scan -Dbastion.community.storageMode=JSON_FILE
 
-# JSON format for automation
-mvn bastion:trend-analysis -Dbastion.format=json
+# Custom JSON file location for trend tracking
+mvn bastion:scan \
+  -Dbastion.community.storageMode=JSON_FILE \
+  -Dbastion.storage.jsonFilePath=/path/to/trend-data.json
 ```
+
+> **📈 How Trend Analysis Works:** Trend analysis is automatically generated when using JSON file storage and you have at least 2 historical scans. The scan goal creates both regular reports AND a dedicated trend report (`bastion-trend-report-{project}.html`).
 
 #### 6. Multi-Module Projects
 
@@ -176,14 +181,11 @@ mvn bastion:scan \
 #### 7. Performance Options
 
 ```bash
-# Enable detailed performance metrics
-mvn bastion:scan -Dbastion.statistics.enabled=true
+# Enhanced scanning with timeout configuration
+mvn bastion:scan -Dbastion.scanner.timeout=300000
 
-# With resource usage tracking
-mvn bastion:scan \
-  -Dbastion.statistics.enabled=true \
-  -Dbastion.statistics.includePerformanceMetrics=true \
-  -Dbastion.statistics.trackResourceUsage=true
+# Multi-module scanning enabled
+mvn bastion:scan -Dbastion.enableMultiModule=true
 ```
 
 #### 8. Data Management
@@ -210,29 +212,35 @@ mvn bastion:scan \
 #### 9. Build Integration
 
 ```bash
-# Fail build on critical vulnerabilities
-mvn bastion:scan -Dbastion.failOnCritical=true
+# Control build failure behavior
+mvn bastion:scan -Dbastion.failOnError=true
 
-# Fail on high severity vulnerabilities
-mvn bastion:scan \
-  -Dbastion.failOnCritical=true \
-  -Dbastion.failOnHigh=true
+# Set severity threshold for build failures
+mvn bastion:scan -Dbastion.severityThreshold=CRITICAL
+mvn bastion:scan -Dbastion.severityThreshold=HIGH
+mvn bastion:scan -Dbastion.severityThreshold=MEDIUM
 
-# Set maximum allowed vulnerabilities
-mvn bastion:scan -Dbastion.maxAllowedVulnerabilities=0
+# Skip scan entirely
+mvn bastion:scan -Dbastion.skip=true
 ```
 
-#### 10. Advanced Scanning Options
+#### 10. Advanced Configuration Options
 
 ```bash
-# Include test dependencies in scan
-mvn bastion:scan -Dbastion.includeTestScope=true
+# Custom output directory
+mvn bastion:scan -Dbastion.outputDirectory=${project.build.directory}/custom-reports
 
-# Exclude specific scopes
-mvn bastion:scan -Dbastion.excludeScopes=test,provided
+# Specify report formats
+mvn bastion:scan -Dbastion.reportFormats=HTML,JSON
 
-# Custom timeout settings
-mvn bastion:scan -Dbastion.scanTimeout=300000  # 5 minutes
+# Database connection (if available)
+mvn bastion:scan \
+  -Dbastion.database.url=jdbc:h2:~/bastion-db \
+  -Dbastion.database.username=bastion \
+  -Dbastion.database.password=secure
+
+# Scanner timeout (milliseconds)
+mvn bastion:scan -Dbastion.scanner.timeout=600000  # 10 minutes
 ```
 
 ### 📋 POM Configuration Examples
@@ -246,11 +254,10 @@ mvn bastion:scan -Dbastion.scanTimeout=300000  # 5 minutes
     <version>1.0.0</version>
     <configuration>
         <!-- Basic settings -->
-        <openSourceMode>true</openSourceMode>
-        <statistics>
-            <enabled>true</enabled>
-            <includePerformanceMetrics>true</includePerformanceMetrics>
-        </statistics>
+        <skip>false</skip>
+        <failOnError>true</failOnError>
+        <severityThreshold>MEDIUM</severityThreshold>
+        <reportFormats>HTML,JSON</reportFormats>
     </configuration>
     <executions>
         <execution>
@@ -270,21 +277,16 @@ mvn bastion:scan -Dbastion.scanTimeout=300000  # 5 minutes
     <artifactId>bastion-maven-plugin-community</artifactId>
     <version>1.0.0</version>
     <configuration>
-        <!-- Storage configuration -->
+        <!-- JSON storage configuration -->
         <communityStorageMode>JSON_FILE</communityStorageMode>
         <jsonFilePath>${project.build.directory}/security/bastion-vulnerabilities.json</jsonFilePath>
         
-        <!-- Enable trend analysis -->
-        <reporting>
-            <includeTrends>true</includeTrends>
-            <includeStatistics>true</includeStatistics>
-        </reporting>
+        <!-- Alternative: use explicit JSON file storage -->
+        <useJsonFileStorage>true</useJsonFileStorage>
         
-        <!-- Performance settings -->
-        <performance>
-            <batchSize>100</batchSize>
-            <cacheEnabled>true</cacheEnabled>
-        </performance>
+        <!-- Output settings -->
+        <outputDirectory>${project.build.directory}/bastion-reports</outputDirectory>
+        <reportFormats>HTML,JSON</reportFormats>
     </configuration>
 </plugin>
 ```
@@ -298,28 +300,19 @@ mvn bastion:scan -Dbastion.scanTimeout=300000  # 5 minutes
     <version>1.0.0</version>
     <configuration>
         <!-- Multi-module settings -->
-        <multiModule>
-            <enabled>true</enabled>
-            <aggregateReports>true</aggregateReports>
-            <parallelScanning>true</parallelScanning>
-            <threadCount>4</threadCount>
-        </multiModule>
+        <enableMultiModule>true</enableMultiModule>
         
-        <!-- Reporting -->
-        <reporting>
-            <formats>
-                <html>true</html>
-                <json>true</json>
-                <csv>true</csv>
-            </formats>
-        </reporting>
+        <!-- Storage for trend analysis -->
+        <communityStorageMode>JSON_FILE</communityStorageMode>
+        <jsonFilePath>${project.build.directory}/security/multi-module-vulnerabilities.json</jsonFilePath>
         
-        <!-- Statistics -->
-        <statistics>
-            <enabled>true</enabled>
-            <includePerformanceMetrics>true</includePerformanceMetrics>
-            <trackResourceUsage>true</trackResourceUsage>
-        </statistics>
+        <!-- Scanner configuration -->
+        <scannerTimeout>600000</scannerTimeout> <!-- 10 minutes -->
+        <severityThreshold>HIGH</severityThreshold>
+        
+        <!-- Output settings -->
+        <reportFormats>HTML,JSON</reportFormats>
+        <outputDirectory>${project.build.directory}/bastion-reports</outputDirectory>
     </configuration>
 </plugin>
 ```
@@ -333,19 +326,16 @@ mvn bastion:scan -Dbastion.scanTimeout=300000  # 5 minutes
     <version>1.0.0</version>
     <configuration>
         <!-- Build failure policies -->
-        <failOnCritical>true</failOnCritical>
-        <failOnHigh>true</failOnHigh>
-        <maxAllowedVulnerabilities>0</maxAllowedVulnerabilities>
+        <failOnError>true</failOnError>
+        <severityThreshold>CRITICAL</severityThreshold> <!-- CRITICAL, HIGH, MEDIUM -->
         
-        <!-- Scope configuration -->
-        <includeTestScope>false</includeTestScope>
-        <excludeScopes>
-            <scope>test</scope>
-            <scope>provided</scope>
-        </excludeScopes>
+        <!-- Scanner settings -->
+        <scannerTimeout>300000</scannerTimeout> <!-- 5 minutes -->
         
-        <!-- Timeout settings -->
-        <scanTimeout>300000</scanTimeout> <!-- 5 minutes -->
+        <!-- Database configuration -->
+        <databaseUrl>jdbc:h2:${project.build.directory}/bastion-db/vulnerabilities</databaseUrl>
+        <databaseUsername>bastion</databaseUsername>
+        <databasePassword>secure</databasePassword>
     </configuration>
     <executions>
         <execution>
@@ -358,7 +348,7 @@ mvn bastion:scan -Dbastion.scanTimeout=300000  # 5 minutes
 </plugin>
 ```
 
-#### Advanced Configuration with NVD API Key
+#### Advanced Configuration with All Options
 
 ```xml
 <plugin>
@@ -369,42 +359,40 @@ mvn bastion:scan -Dbastion.scanTimeout=300000  # 5 minutes
         <!-- NVD API configuration -->
         <nvdApiKey>${env.NVD_API_KEY}</nvdApiKey>
         
-        <!-- Storage -->
+        <!-- Storage configuration -->
         <communityStorageMode>JSON_FILE</communityStorageMode>
         <jsonFilePath>${user.home}/.m2/bastion-cache/${project.artifactId}-vulnerabilities.json</jsonFilePath>
         
+        <!-- Alternative storage method -->
+        <!-- <useJsonFileStorage>true</useJsonFileStorage> -->
+        
         <!-- Purge settings -->
         <purgeBeforeScan>false</purgeBeforeScan>
-        <purge>
-            <projectOnly>true</projectOnly>
-            <olderThanDays>30</olderThanDays>
-            <dryRun>false</dryRun>
-        </purge>
+        <force>false</force>
+        <confirmPurge>false</confirmPurge>
+        <projectOnly>true</projectOnly>
+        <olderThanDays>30</olderThanDays>
+        <dryRun>false</dryRun>
         
-        <!-- Multi-module -->
-        <multiModule>
-            <enabled>true</enabled>
-            <parallelScanning>true</parallelScanning>
-            <threadCount>${maven.compiler.processors}</threadCount>
-        </multiModule>
+        <!-- Multi-module support -->
+        <enableMultiModule>true</enableMultiModule>
         
-        <!-- Performance monitoring -->
-        <monitoring>
-            <performanceMetrics>true</performanceMetrics>
-            <memoryUsageTracking>true</memoryUsageTracking>
-        </monitoring>
+        <!-- Scanner configuration -->
+        <scannerTimeout>600000</scannerTimeout> <!-- 10 minutes -->
+        <severityThreshold>HIGH</severityThreshold>
         
-        <!-- Reporting -->
-        <reporting>
-            <formats>
-                <html>true</html>
-                <json>true</json>
-                <csv>true</csv>
-            </formats>
-            <includeTrends>true</includeTrends>
-            <includeStatistics>true</includeStatistics>
-            <includePerformanceMetrics>true</includePerformanceMetrics>
-        </reporting>
+        <!-- Build control -->
+        <skip>false</skip>
+        <failOnError>true</failOnError>
+        
+        <!-- Output configuration -->
+        <outputDirectory>${project.build.directory}/bastion-reports</outputDirectory>
+        <reportFormats>HTML,JSON</reportFormats>
+        
+        <!-- Database configuration (if not using JSON) -->
+        <databaseUrl>jdbc:h2:${project.build.directory}/bastion-db/vulnerabilities</databaseUrl>
+        <databaseUsername>bastion</databaseUsername>
+        <databasePassword>${env.DB_PASSWORD}</databasePassword>
     </configuration>
 </plugin>
 ```
@@ -1777,13 +1765,11 @@ jobs:
           -Dbastion.statistics.enabled=true \
           -Dbastion.reporting.includeTrends=true
           
-    - name: Generate Trend Analysis Report
+    - name: Verify Trend Analysis Report Generated
       if: always()
       run: |
-        mvn mu.dodogeny:bastion-maven-plugin-community:1.0.0:trend-analysis \
-          -Dbastion.community.storageMode=JSON_FILE \
-          -Dbastion.storage.jsonFilePath=${GITHUB_WORKSPACE}/.bastion/vulnerabilities.json \
-          -Dbastion.format=html
+        echo "✅ Trend analysis report automatically generated during scan"
+        ls -la target/bastion-reports/bastion-trend-report-*.html || echo "Trend report will be available after second scan"
     
     - name: Upload Security Reports
       uses: actions/upload-artifact@v4
@@ -1888,7 +1874,7 @@ pipeline {
             }
         }
         
-        stage('Trend Analysis') {
+        stage('Archive Reports') {
             when {
                 anyOf {
                     branch 'main'
@@ -1896,21 +1882,22 @@ pipeline {
                 }
             }
             steps {
-                sh '''
-                    mvn mu.dodogeny:bastion-maven-plugin-community:1.0.0:trend-analysis \
-                      -Dbastion.community.storageMode=JSON_FILE \
-                      -Dbastion.storage.jsonFilePath=${WORKSPACE}/bastion-vulnerabilities.json \
-                      -Dbastion.format=html
-                '''
-                
-                publishHTML([
-                    allowMissing: false,
-                    alwaysLinkToLastBuild: true,
-                    keepAll: true,
-                    reportDir: 'target/security-reports',
-                    reportFiles: 'bastion-trend-report-*.html',
-                    reportName: 'Bastion Trend Analysis'
-                ])
+                script {
+                    // Trend analysis is automatically generated during scan
+                    def trendReportExists = fileExists 'target/bastion-reports/bastion-trend-report-*.html'
+                    if (trendReportExists) {
+                        publishHTML([
+                            allowMissing: false,
+                            alwaysLinkToLastBuild: true,
+                            keepAll: true,
+                            reportDir: 'target/bastion-reports',
+                            reportFiles: 'bastion-trend-report-*.html',
+                            reportName: 'Bastion Trend Analysis'
+                        ])
+                    } else {
+                        echo "Trend analysis will be available after at least 2 scans with JSON storage"
+                    }
+                }
             }
         }
     }
@@ -1964,7 +1951,7 @@ bastion-security-scan:
       
   allow_failure: false
 
-trend-analysis:
+archive-reports:
   stage: report
   image: maven:3.8.6-openjdk-11
   dependencies:
@@ -1972,16 +1959,14 @@ trend-analysis:
     
   script:
     - |
-      mvn mu.dodogeny:bastion-maven-plugin-community:1.0.0:trend-analysis \
-        -Dbastion.community.storageMode=JSON_FILE \
-        -Dbastion.storage.jsonFilePath=${CI_PROJECT_DIR}/.bastion/vulnerabilities.json \
-        -Dbastion.format=html
+      echo "Trend analysis reports are automatically generated during scan"
+      find target/bastion-reports -name "bastion-trend-report-*.html" -ls || echo "No trend report found (needs 2+ scans)"
         
   artifacts:
     when: always
     expire_in: 90 days
     paths:
-      - target/security-reports/
+      - target/bastion-reports/
       
   only:
     - main
@@ -2350,48 +2335,94 @@ Are you sure you want to continue? Type 'DELETE' to confirm: DELETE
 
 ### Maven Goals
 
+Bastion Community Edition provides **one Maven goal**:
+
 | Goal | Description | Phase |
 |------|-------------|-------|
-| `scan` | Run complete vulnerability scan | verify |
-| `trend-analysis` | Generate historical trend analysis report | post-integration-test |
-| `report` | Generate reports from existing data | post-integration-test |
-| `update` | Update vulnerability databases | initialize |
-| `clean-cache` | Clear cached vulnerability data | clean |
+| `scan` | Run complete vulnerability scan with integrated trend analysis | verify |
 
-### Configuration Parameters
+**Note:** Trend analysis is automatically included in the scan goal when using JSON file storage mode.
 
-| Parameter | Type | Default | Description |
-|-----------|------|---------|-------------|
-| `openSourceMode` | boolean | true | Enable Community Edition (false for Commercial) |
-| `apiKey` | String | null | LemonSqueezy API key for commercial edition |
-| `nvdApiKey` | String | null | NVD API key for enhanced scanning |
-| `failOnCritical` | boolean | true | Fail build on critical vulnerabilities |
-| `failOnHigh` | boolean | false | Fail build on high severity vulnerabilities |
-| `maxAllowedVulnerabilities` | int | 0 | Maximum total vulnerabilities allowed |
-| `scanners` | List | ["owasp"] | Vulnerability scanners to use |
-| `multiModule.enabled` | boolean | false | Enable multi-module scanning |
-| `statistics.enabled` | boolean | true | Enable comprehensive scan statistics |
-| `statistics.includePerformanceMetrics` | boolean | true | Include performance breakdown |
-| **Community Edition** | | | |
-| `communityStorageMode` | String | IN_MEMORY | Storage mode (IN_MEMORY, JSON_FILE) |
-| `jsonFilePath` | String | target/bastion-vulnerabilities.json | JSON storage file path |
-| **Commercial Edition** | | | |
-| `database.type` | String | "h2" | Database type (h2, postgresql, mysql) |
-| `database.url` | String | null | Database connection URL |
-| `database.username` | String | null | Database username |
-| `database.password` | String | null | Database password |
-| `database.connectionPoolSize` | int | 10 | Connection pool size |
-| `notifications.enabled` | boolean | false | Enable email notifications |
-| `notifications.alertOn.critical` | boolean | true | Send alerts for critical CVEs |
-| `reporting.formats.pdf` | boolean | false | Generate PDF reports |
-| `reporting.formats.sarif` | boolean | false | Generate SARIF reports |
-| `storage.useJsonFile` | boolean | false | Use JSON file instead of database |
-| `storage.jsonFilePath` | String | target/bastion-vulnerabilities.json | JSON storage file path |
-| `purgeBeforeScan` | boolean | false | Purge existing data before scanning |
-| `purge.force` | boolean | false | Skip confirmation prompt for purge operations |
-| `purge.projectOnly` | boolean | false | Purge only current project data |
-| `purge.olderThanDays` | int | 0 | Purge only records older than specified days |
-| `purge.dryRun` | boolean | false | Preview purge operations without executing |
+### 📋 Complete Configuration Parameters Reference
+
+Based on the actual implementation in `BastionScanMojo.java`, here are ALL available configuration parameters:
+
+#### Core Configuration
+
+| Parameter | Property Key | Type | Default | Description |
+|-----------|--------------|------|---------|-------------|
+| `skip` | `bastion.skip` | boolean | false | Skip the vulnerability scan entirely |
+| `failOnError` | `bastion.failOnError` | boolean | true | Fail build when vulnerabilities exceed threshold |
+| `severityThreshold` | `bastion.severityThreshold` | String | MEDIUM | Severity level that triggers build failure (CRITICAL/HIGH/MEDIUM) |
+
+#### Output & Reporting
+
+| Parameter | Property Key | Type | Default | Description |
+|-----------|--------------|------|---------|-------------|
+| `outputDirectory` | `bastion.outputDirectory` | File | `${project.build.directory}/bastion-reports` | Directory for generated reports |
+| `reportFormats` | `bastion.reportFormats` | String | HTML,JSON | Comma-separated list of report formats |
+
+#### Scanner Configuration
+
+| Parameter | Property Key | Type | Default | Description |
+|-----------|--------------|------|---------|-------------|
+| `nvdApiKey` | `bastion.nvd.apiKey` | String | null | NVD API key for enhanced scanning performance |
+| `scannerTimeout` | `bastion.scanner.timeout` | int | 300000 | Scanner timeout in milliseconds (5 minutes) |
+| `enableMultiModule` | `bastion.enableMultiModule` | boolean | true | Enable multi-module project scanning |
+
+#### Storage Configuration
+
+| Parameter | Property Key | Type | Default | Description |
+|-----------|--------------|------|---------|-------------|
+| `communityStorageMode` | `bastion.community.storageMode` | String | IN_MEMORY | Storage mode: IN_MEMORY or JSON_FILE |
+| `useJsonFileStorage` | `bastion.storage.useJsonFile` | boolean | false | Alternative way to enable JSON file storage |
+| `jsonFilePath` | `bastion.storage.jsonFilePath` | String | `${project.build.directory}/bastion-vulnerabilities.json` | Path for JSON file storage |
+
+#### Database Configuration (Optional)
+
+| Parameter | Property Key | Type | Default | Description |
+|-----------|--------------|------|---------|-------------|
+| `databaseUrl` | `bastion.database.url` | String | null | Database connection URL (e.g., jdbc:h2:~/bastion-db) |
+| `databaseUsername` | `bastion.database.username` | String | null | Database username |
+| `databasePassword` | `bastion.database.password` | String | null | Database password |
+
+#### Data Management & Purge
+
+| Parameter | Property Key | Type | Default | Description |
+|-----------|--------------|------|---------|-------------|
+| `purgeBeforeScan` | `bastion.purgeBeforeScan` | boolean | false | Purge existing data before scanning |
+| `force` | `bastion.purge.force` | boolean | false | Skip confirmation prompts for purge |
+| `confirmPurge` | `bastion.purge.confirm` | boolean | false | Auto-confirm purge operations |
+| `projectOnly` | `bastion.purge.projectOnly` | boolean | false | Purge only current project data |
+| `olderThanDays` | `bastion.purge.olderThanDays` | int | 0 | Purge records older than N days (0 = all) |
+| `dryRun` | `bastion.purge.dryRun` | boolean | false | Preview purge operations without execution |
+
+#### Usage Examples
+
+**Command Line:**
+```bash
+# Basic scan
+mvn bastion:scan
+
+# With all common options
+mvn bastion:scan \
+  -Dbastion.nvd.apiKey=${NVD_API_KEY} \
+  -Dbastion.community.storageMode=JSON_FILE \
+  -Dbastion.storage.jsonFilePath=./vulnerabilities.json \
+  -Dbastion.severityThreshold=HIGH \
+  -Dbastion.enableMultiModule=true \
+  -Dbastion.scanner.timeout=600000
+
+# Skip scan
+mvn bastion:scan -Dbastion.skip=true
+
+# Purge before scan
+mvn bastion:scan \
+  -Dbastion.community.storageMode=JSON_FILE \
+  -Dbastion.purgeBeforeScan=true \
+  -Dbastion.purge.projectOnly=true \
+  -Dbastion.purge.dryRun=true
+```
 
 ## 🔐 Security & Privacy
 
