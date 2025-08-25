@@ -1,0 +1,111 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<assembly xmlns="http://maven.apache.org/ASSEMBLY/2.1.1"
+          xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+          xsi:schemaLocation="http://maven.apache.org/ASSEMBLY/2.1.1
+                              http://maven.apache.org/xsd/assembly-2.1.1.xsd">
+    <id>docs</id>
+    <formats>
+        <format>zip</format>
+    </formats>
+    
+    <includeBaseDirectory>true</includeBaseDirectory>
+    <baseDirectory>bastion-maven-plugin-${project.version}-docs</baseDirectory>
+
+    <fileSets>
+        <!-- Root documentation -->
+        <fileSet>
+            <directory>${project.basedir}/..</directory>
+            <outputDirectory>/</outputDirectory>
+            <includes>
+                <include>README.md</include>
+            </includes>
+        </fileSet>
+
+        <!-- Module documentation -->
+        <fileSet>
+            <directory>${project.basedir}/../vulnerability-db</directory>
+            <outputDirectory>modules/vulnerability-db/</outputDirectory>
+            <includes>
+                <include>README.md</include>
+                <include>src/main/resources/db/migration/**/*</include>
+            </includes>
+        </fileSet>
+
+        <fileSet>
+            <directory>${project.basedir}/../scanner-core</directory>
+            <outputDirectory>modules/scanner-core/</outputDirectory>
+            <includes>
+                <include>README.md</include>
+                <include>src/main/resources/**/*.properties</include>
+            </includes>
+        </fileSet>
+
+        <fileSet>
+            <directory>${project.basedir}/../reporting</directory>
+            <outputDirectory>modules/reporting/</outputDirectory>
+            <includes>
+                <include>README.md</include>
+                <include>src/main/resources/templates/**/*</include>
+            </includes>
+        </fileSet>
+
+        <fileSet>
+            <directory>${project.basedir}/../plugin</directory>
+            <outputDirectory>modules/plugin/</outputDirectory>
+            <includes>
+                <include>README.md</include>
+                <include>src/main/resources/**/*</include>
+            </includes>
+        </fileSet>
+
+        <fileSet>
+            <directory>${project.basedir}/../enterprise</directory>
+            <outputDirectory>modules/enterprise/</outputDirectory>
+            <includes>
+                <include>README.md</include>
+                <include>src/main/resources/**/*</include>
+            </includes>
+        </fileSet>
+
+        <!-- Generated JavaDoc -->
+        <fileSet>
+            <directory>${project.basedir}/../target/site/apidocs</directory>
+            <outputDirectory>api/</outputDirectory>
+            <includes>
+                <include>**/*</include>
+            </includes>
+        </fileSet>
+
+        <!-- Generated Site -->
+        <fileSet>
+            <directory>${project.basedir}/../target/site</directory>
+            <outputDirectory>site/</outputDirectory>
+            <includes>
+                <include>**/*</include>
+            </includes>
+        </fileSet>
+
+        <!-- Configuration examples -->
+        <fileSet>
+            <directory>${project.basedir}/src/main/examples</directory>
+            <outputDirectory>examples/</outputDirectory>
+            <includes>
+                <include>**/*</include>
+            </includes>
+        </fileSet>
+
+        <!-- Schema definitions -->
+        <fileSet>
+            <directory>${project.basedir}/src/main/resources/schemas</directory>
+            <outputDirectory>schemas/</outputDirectory>
+            <includes>
+                <include>**/*.xsd</include>
+                <include>**/*.json</include>
+            </includes>
+        </fileSet>
+    </fileSets>
+
+    <files>
+        <!-- Documentation will be included from fileSets above -->
+    </files>
+</assembly>

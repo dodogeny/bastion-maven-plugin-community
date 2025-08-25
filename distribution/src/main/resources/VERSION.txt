@@ -1,0 +1,28 @@
+Bastion Maven Plugin
+Version: ${project.version}
+Build Date: ${maven.build.timestamp}
+Build Number: ${buildNumber}
+
+Components:
+- Vulnerability Database: ${project.version}
+- Scanner Core: ${project.version}  
+- Reporting Engine: ${project.version}
+- Maven Plugin: ${project.version}
+- Enterprise Features: ${project.version}
+
+Minimum Requirements:
+- Java: JDK 8 or higher
+- Maven: 3.6.0 or higher
+- Memory: 1GB+ RAM recommended for large projects
+
+Licensing:
+- Open Source Edition: Apache License 2.0
+- Commercial Edition: Proprietary License (https://bastion.dodogeny.mu/license)
+
+Support:
+- Website: https://bastion.dodogeny.mu
+- Documentation: https://docs.dodogeny.mu/bastion
+- Community Support: https://github.com/dodogeny/bastion-maven-plugin/issues
+- Enterprise Support: enterprise@dodogeny.mu
+
+© 2024 Dodogeny. All rights reserved.

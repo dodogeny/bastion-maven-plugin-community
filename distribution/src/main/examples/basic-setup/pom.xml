@@ -1,0 +1,129 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!--
+  Example: Basic Bastion Maven Plugin Setup
+  
+  This example shows the minimal configuration needed to get started
+  with Bastion Maven Plugin in Open Source Edition.
+-->
+<project xmlns="http://maven.apache.org/POM/4.0.0"
+         xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 
+         http://maven.apache.org/xsd/maven-4.0.0.xsd">
+    <modelVersion>4.0.0</modelVersion>
+
+    <groupId>com.example</groupId>
+    <artifactId>my-secure-app</artifactId>
+    <version>1.0.0</version>
+    <packaging>jar</packaging>
+
+    <name>My Secure Application</name>
+    <description>Example application with Bastion security scanning</description>
+
+    <properties>
+        <maven.compiler.source>8</maven.compiler.source>
+        <maven.compiler.target>8</maven.compiler.target>
+        <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
+        
+        <!-- Bastion Plugin Version -->
+        <bastion.version>1.0.0</bastion.version>
+    </properties>
+
+    <dependencies>
+        <!-- Your application dependencies -->
+        <dependency>
+            <groupId>org.springframework</groupId>
+            <artifactId>spring-core</artifactId>
+            <version>5.3.21</version>
+        </dependency>
+        
+        <dependency>
+            <groupId>com.fasterxml.jackson.core</groupId>
+            <artifactId>jackson-core</artifactId>
+            <version>2.13.3</version>
+        </dependency>
+        
+        <!-- Test dependencies -->
+        <dependency>
+            <groupId>junit</groupId>
+            <artifactId>junit</artifactId>
+            <version>4.13.2</version>
+            <scope>test</scope>
+        </dependency>
+    </dependencies>
+
+    <build>
+        <plugins>
+            <!-- Maven Compiler Plugin -->
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-compiler-plugin</artifactId>
+                <version>3.11.0</version>
+                <configuration>
+                    <source>8</source>
+                    <target>8</target>
+                </configuration>
+            </plugin>
+
+            <!-- Bastion Maven Plugin - Basic Configuration -->
+            <plugin>
+                <groupId>mu.dodogeny</groupId>
+                <artifactId>bastion-maven-plugin-community</artifactId>
+                <version>${bastion.version}</version>
+                <executions>
+                    <execution>
+                        <id>security-scan</id>
+                        <goals>
+                            <goal>scan</goal>
+                        </goals>
+                        <!-- Run during verify phase -->
+                        <phase>verify</phase>
+                    </execution>
+                </executions>
+                <configuration>
+                    <!-- Basic Configuration -->
+                    <severityThreshold>MEDIUM</severityThreshold>
+                    <failOnError>true</failOnError>
+                    
+                    <!-- Report Configuration -->
+                    <reportFormats>HTML,JSON,CSV</reportFormats>
+                    <outputDirectory>${project.build.directory}/security-reports</outputDirectory>
+                    
+                    <!-- Performance Configuration -->
+                    <enableMultiModule>false</enableMultiModule>
+                    <scannerTimeout>180000</scannerTimeout> <!-- 3 minutes -->
+                    
+                    <!-- Open Source Edition (default) -->
+                    <openSourceMode>true</openSourceMode>
+                </configuration>
+            </plugin>
+        </plugins>
+    </build>
+
+    <!-- Optional: Run security scan in specific profiles -->
+    <profiles>
+        <profile>
+            <id>security</id>
+            <build>
+                <plugins>
+                    <plugin>
+                        <groupId>mu.dodogeny</groupId>
+                        <artifactId>bastion-maven-plugin-community</artifactId>
+                        <executions>
+                            <execution>
+                                <id>detailed-security-scan</id>
+                                <goals>
+                                    <goal>scan</goal>
+                                </goals>
+                                <configuration>
+                                    <!-- More detailed scanning for security profile -->
+                                    <severityThreshold>LOW</severityThreshold>
+                                    <reportFormats>HTML,JSON,CSV</reportFormats>
+                                </configuration>
+                            </execution>
+                        </executions>
+                    </plugin>
+                </plugins>
+            </build>
+        </profile>
+    </profiles>
+</project>

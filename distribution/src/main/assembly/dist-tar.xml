@@ -1,0 +1,169 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<assembly xmlns="http://maven.apache.org/ASSEMBLY/2.1.1"
+          xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+          xsi:schemaLocation="http://maven.apache.org/ASSEMBLY/2.1.1
+                              http://maven.apache.org/xsd/assembly-2.1.1.xsd">
+    <id>bin-unix</id>
+    <formats>
+        <format>tar.gz</format>
+    </formats>
+    
+    <includeBaseDirectory>true</includeBaseDirectory>
+    <baseDirectory>bastion-maven-plugin-${project.version}</baseDirectory>
+
+    <fileSets>
+        <!-- Root documentation files -->
+        <fileSet>
+            <directory>${project.basedir}/..</directory>
+            <outputDirectory>/</outputDirectory>
+            <includes>
+                <include>README.md</include>
+                <include>LICENSE</include>
+                <include>NOTICE</include>
+                <include>CHANGELOG.md</include>
+            </includes>
+            <fileMode>0644</fileMode>
+        </fileSet>
+
+        <!-- Distribution-specific files -->
+        <fileSet>
+            <directory>${project.basedir}/src/main/resources</directory>
+            <outputDirectory>/</outputDirectory>
+            <includes>
+                <include>DISTRIBUTION_GUIDE.md</include>
+                <include>INSTALLATION.md</include>
+                <include>QUICK_START.md</include>
+            </includes>
+            <fileMode>0644</fileMode>
+        </fileSet>
+
+        <!-- Documentation -->
+        <fileSet>
+            <directory>${project.basedir}/../</directory>
+            <outputDirectory>docs/</outputDirectory>
+            <includes>
+                <include>*.pdf</include>
+                <include>*.html</include>
+                <include>EXECUTIVE_SUMMARY.md</include>
+                <include>DISTRIBUTION_GUIDE.md</include>
+            </includes>
+            <fileMode>0644</fileMode>
+        </fileSet>
+
+        <!-- Examples with proper permissions -->
+        <fileSet>
+            <directory>${project.basedir}/src/main/examples</directory>
+            <outputDirectory>examples/</outputDirectory>
+            <includes>
+                <include>**/*.md</include>
+                <include>**/*.xml</include>
+                <include>**/*.properties</include>
+                <include>**/*.yaml</include>
+                <include>**/*.yml</include>
+            </includes>
+            <fileMode>0644</fileMode>
+        </fileSet>
+
+        <!-- Executable examples -->
+        <fileSet>
+            <directory>${project.basedir}/src/main/examples</directory>
+            <outputDirectory>examples/</outputDirectory>
+            <includes>
+                <include>**/*.sh</include>
+            </includes>
+            <fileMode>0755</fileMode>
+        </fileSet>
+
+        <!-- Configuration templates -->
+        <fileSet>
+            <directory>${project.basedir}/src/main/config</directory>
+            <outputDirectory>config/</outputDirectory>
+            <includes>
+                <include>**/*</include>
+            </includes>
+            <fileMode>0644</fileMode>
+        </fileSet>
+
+        <!-- Scripts -->
+        <fileSet>
+            <directory>${project.basedir}/src/main/scripts</directory>
+            <outputDirectory>bin/</outputDirectory>
+            <includes>
+                <include>**/*.sh</include>
+            </includes>
+            <fileMode>0755</fileMode>
+        </fileSet>
+
+        <!-- Site documentation -->
+        <fileSet>
+            <directory>${project.basedir}/../target/site</directory>
+            <outputDirectory>site/</outputDirectory>
+            <includes>
+                <include>**/*</include>
+            </includes>
+            <fileMode>0644</fileMode>
+        </fileSet>
+    </fileSets>
+
+    <moduleSets>
+        <!-- Include all JAR artifacts -->
+        <moduleSet>
+            <useAllReactorProjects>true</useAllReactorProjects>
+            <includes>
+                <include>mu.dodogeny:bastion-vulnerability-db</include>
+                <include>mu.dodogeny:bastion-scanner-core</include>
+                <include>mu.dodogeny:bastion-reporting</include>
+                <include>mu.dodogeny:bastion-maven-plugin</include>
+                <include>mu.dodogeny:bastion-enterprise</include>
+            </includes>
+            <binaries>
+                <outputDirectory>lib/</outputDirectory>
+                <includeDependencies>false</includeDependencies>
+                <unpack>false</unpack>
+                <outputFileNameMapping>${module.artifactId}-${module.version}.${module.extension}</outputFileNameMapping>
+                <fileMode>0644</fileMode>
+            </binaries>
+        </moduleSet>
+    </moduleSets>
+
+    <dependencySets>
+        <!-- Include all runtime dependencies -->
+        <dependencySet>
+            <outputDirectory>lib/dependencies</outputDirectory>
+            <useProjectArtifact>false</useProjectArtifact>
+            <useTransitiveDependencies>true</useTransitiveDependencies>
+            <excludes>
+                <!-- Exclude test dependencies -->
+                <exclude>*:*:*:*:test</exclude>
+                <exclude>*:*:*:*:provided</exclude>
+            </excludes>
+            <fileMode>0644</fileMode>
+        </dependencySet>
+    </dependencySets>
+
+    <files>
+        <!-- Version information -->
+        <file>
+            <source>${project.basedir}/src/main/resources/VERSION.txt</source>
+            <outputDirectory>/</outputDirectory>
+            <filtered>true</filtered>
+            <fileMode>0644</fileMode>
+        </file>
+
+        <!-- Installation script -->
+        <file>
+            <source>${project.basedir}/src/main/scripts/install.sh</source>
+            <outputDirectory>bin/</outputDirectory>
+            <fileMode>0755</fileMode>
+            <filtered>true</filtered>
+        </file>
+
+        <!-- Uninstallation script -->
+        <file>
+            <source>${project.basedir}/src/main/scripts/uninstall.sh</source>
+            <outputDirectory>bin/</outputDirectory>
+            <fileMode>0755</fileMode>
+            <filtered>true</filtered>
+        </file>
+    </files>
+</assembly>

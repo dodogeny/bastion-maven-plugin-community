@@ -1,0 +1,242 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!--
+  Example: Enterprise Bastion Maven Plugin Setup
+  
+  This example shows advanced configuration for Commercial Edition
+  with email notifications, database integration, and premium features.
+-->
+<project xmlns="http://maven.apache.org/POM/4.0.0"
+         xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 
+         http://maven.apache.org/xsd/maven-4.0.0.xsd">
+    <modelVersion>4.0.0</modelVersion>
+
+    <groupId>com.enterprise</groupId>
+    <artifactId>secure-enterprise-app</artifactId>
+    <version>2.0.0</version>
+    <packaging>jar</packaging>
+
+    <name>Secure Enterprise Application</name>
+    <description>Enterprise application with comprehensive security scanning</description>
+
+    <properties>
+        <maven.compiler.source>11</maven.compiler.source>
+        <maven.compiler.target>11</maven.compiler.target>
+        <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
+        
+        <!-- Bastion Plugin Version -->
+        <bastion.version>1.0.0</bastion.version>
+    </properties>
+
+    <dependencies>
+        <!-- Enterprise application dependencies -->
+        <dependency>
+            <groupId>org.springframework.boot</groupId>
+            <artifactId>spring-boot-starter-web</artifactId>
+            <version>2.7.2</version>
+        </dependency>
+        
+        <dependency>
+            <groupId>org.springframework.boot</groupId>
+            <artifactId>spring-boot-starter-security</artifactId>
+            <version>2.7.2</version>
+        </dependency>
+        
+        <dependency>
+            <groupId>org.springframework.boot</groupId>
+            <artifactId>spring-boot-starter-data-jpa</artifactId>
+            <version>2.7.2</version>
+        </dependency>
+        
+        <!-- Database -->
+        <dependency>
+            <groupId>org.postgresql</groupId>
+            <artifactId>postgresql</artifactId>
+            <version>42.4.0</version>
+        </dependency>
+        
+        <!-- Additional libraries that might have vulnerabilities -->
+        <dependency>
+            <groupId>com.fasterxml.jackson.core</groupId>
+            <artifactId>jackson-databind</artifactId>
+            <version>2.13.3</version>
+        </dependency>
+        
+        <dependency>
+            <groupId>org.apache.commons</groupId>
+            <artifactId>commons-lang3</artifactId>
+            <version>3.12.0</version>
+        </dependency>
+    </dependencies>
+
+    <build>
+        <plugins>
+            <!-- Maven Compiler Plugin -->
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-compiler-plugin</artifactId>
+                <version>3.11.0</version>
+                <configuration>
+                    <source>11</source>
+                    <target>11</target>
+                </configuration>
+            </plugin>
+
+            <!-- Bastion Maven Plugin - Enterprise Configuration -->
+            <plugin>
+                <groupId>mu.dodogeny</groupId>
+                <artifactId>bastion-maven-plugin-enterprise</artifactId>
+                <version>${bastion.version}</version>
+                <executions>
+                    <execution>
+                        <id>enterprise-security-scan</id>
+                        <goals>
+                            <goal>scan</goal>
+                        </goals>
+                        <phase>verify</phase>
+                    </execution>
+                </executions>
+                <configuration>
+                    <!-- Enterprise Edition Configuration -->
+                    <openSourceMode>false</openSourceMode>
+                    <licensePath>${env.BASTION_LICENSE_PATH}</licensePath>
+                    
+                    <!-- Advanced Scanning Configuration -->
+                    <severityThreshold>HIGH</severityThreshold>
+                    <failOnError>true</failOnError>
+                    <maxAllowedVulnerabilities>5</maxAllowedVulnerabilities>
+                    
+                    <!-- Premium Report Formats -->
+                    <reportFormats>HTML,JSON,CSV,PDF,SARIF</reportFormats>
+                    <outputDirectory>${project.build.directory}/enterprise-security-reports</outputDirectory>
+                    
+                    <!-- Database Configuration -->
+                    <databaseUrl>jdbc:postgresql://db-server:5432/bastion_enterprise</databaseUrl>
+                    <databaseUsername>${env.BASTION_DB_USER}</databaseUsername>
+                    <databasePassword>${env.BASTION_DB_PASS}</databasePassword>
+                    
+                    <!-- Email Notifications -->
+                    <emailEnabled>true</emailEnabled>
+                    <smtpHost>smtp.company.com</smtpHost>
+                    <smtpPort>587</smtpPort>
+                    <smtpUsername>${env.SMTP_USER}</smtpUsername>
+                    <smtpPassword>${env.SMTP_PASS}</smtpPassword>
+                    <smtpTls>true</smtpTls>
+                    <emailRecipients>security-team@company.com,ciso@company.com</emailRecipients>
+                    <emailSeverityThreshold>HIGH</emailSeverityThreshold>
+                    
+                    <!-- Performance Optimization -->
+                    <enableMultiModule>true</enableMultiModule>
+                    <scannerTimeout>600000</scannerTimeout> <!-- 10 minutes -->
+                    <threadCount>4</threadCount>
+                    <batchSize>100</batchSize>
+                    
+                    <!-- Advanced Features -->
+                    <enableCache>true</enableCache>
+                    <cacheDurationHours>24</cacheDurationHours>
+                    
+                    <!-- Security Policies -->
+                    <securityPolicies>
+                        <failOnCritical>true</failOnCritical>
+                        <failOnHigh>true</failOnHigh>
+                        <gracePeriods>
+                            <critical>0</critical>
+                            <high>7</high>
+                            <medium>30</medium>
+                        </gracePeriods>
+                    </securityPolicies>
+                    
+                    <!-- Compliance Configuration -->
+                    <compliance>
+                        <framework>PCI-DSS</framework>
+                        <generateComplianceReport>true</generateComplianceReport>
+                    </compliance>
+                    
+                    <!-- Exclusions -->
+                    <exclusions>
+                        <exclusion>
+                            <cveId>CVE-2021-44228</cveId>
+                            <reason>Mitigated by firewall configuration</reason>
+                            <expiryDate>2024-12-31</expiryDate>
+                            <approvedBy>security-team@company.com</approvedBy>
+                        </exclusion>
+                    </exclusions>
+                    
+                    <!-- SIEM Integration -->
+                    <siemIntegration>
+                        <splunk>
+                            <enabled>true</enabled>
+                            <endpoint>https://splunk.company.com:8088</endpoint>
+                            <token>${env.SPLUNK_TOKEN}</token>
+                        </splunk>
+                        <elastic>
+                            <enabled>true</enabled>
+                            <endpoint>https://elasticsearch.company.com:9200</endpoint>
+                            <index>security-vulnerabilities</index>
+                        </elastic>
+                    </siemIntegration>
+                </configuration>
+            </plugin>
+        </plugins>
+    </build>
+
+    <profiles>
+        <!-- Production Security Profile -->
+        <profile>
+            <id>production-security</id>
+            <build>
+                <plugins>
+                    <plugin>
+                        <groupId>mu.dodogeny</groupId>
+                        <artifactId>bastion-maven-plugin-enterprise</artifactId>
+                        <executions>
+                            <execution>
+                                <id>production-security-scan</id>
+                                <goals>
+                                    <goal>scan</goal>
+                                </goals>
+                                <configuration>
+                                    <!-- Strictest settings for production -->
+                                    <severityThreshold>CRITICAL</severityThreshold>
+                                    <maxAllowedVulnerabilities>0</maxAllowedVulnerabilities>
+                                    <reportFormats>HTML,JSON,PDF,SARIF</reportFormats>
+                                </configuration>
+                            </execution>
+                        </executions>
+                    </plugin>
+                </plugins>
+            </build>
+        </profile>
+
+        <!-- Compliance Audit Profile -->
+        <profile>
+            <id>compliance-audit</id>
+            <build>
+                <plugins>
+                    <plugin>
+                        <groupId>mu.dodogeny</groupId>
+                        <artifactId>bastion-maven-plugin-enterprise</artifactId>
+                        <executions>
+                            <execution>
+                                <id>compliance-scan</id>
+                                <goals>
+                                    <goal>scan</goal>
+                                </goals>
+                                <configuration>
+                                    <!-- Comprehensive audit scan -->
+                                    <severityThreshold>LOW</severityThreshold>
+                                    <reportFormats>PDF,SARIF,JSON</reportFormats>
+                                    <compliance>
+                                        <framework>SOX</framework>
+                                        <generateComplianceReport>true</generateComplianceReport>
+                                        <includeRemediation>true</includeRemediation>
+                                    </compliance>
+                                </configuration>
+                            </execution>
+                        </executions>
+                    </plugin>
+                </plugins>
+            </build>
+        </profile>
+    </profiles>
+</project>
