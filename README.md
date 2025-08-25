@@ -1,10 +1,12 @@
-# Bastion Maven Plugin Enterprise
+# Bastion Maven Plugin Community
 
-[![Maven Central](https://maven-badges.herokuapp.com/maven-central/mu.dodogeny/bastion-maven-plugin-enterprise/badge.svg)](https://maven-badges.herokuapp.com/maven-central/mu.dodogeny/bastion-maven-plugin-enterprise)
-[![Build Status](https://github.com/dodogeny/bastion-maven-plugin-enterprise/workflows/CI/badge.svg)](https://github.com/dodogeny/bastion-maven-plugin-enterprise/actions)
+[![Maven Central](https://maven-badges.herokuapp.com/maven-central/mu.dodogeny/bastion-maven-plugin-community/badge.svg)](https://maven-badges.herokuapp.com/maven-central/mu.dodogeny/bastion-maven-plugin-community)
+[![Build Status](https://github.com/dodogeny/bastion-maven-plugin-community/workflows/CI/badge.svg)](https://github.com/dodogeny/bastion-maven-plugin-community/actions)
 [![License](https://img.shields.io/badge/License-Apache%202.0-blue.svg)](https://opensource.org/licenses/Apache-2.0)
 
-**Bastion Maven Plugin Enterprise** is your Maven project's fortified defense against security vulnerabilities. This enterprise-grade scanner helps organizations maintain secure codebases through automated CVE detection, comprehensive reporting, intelligent alerting, and detailed performance analytics.
+**Bastion Maven Plugin Community** is your Maven project's fortified defense against security vulnerabilities. This free, open-source scanner helps developers and teams maintain secure codebases through automated CVE detection, comprehensive reporting, and historical trend analysis.
+
+> **💡 Looking for Enterprise Features?** This is the **Community Edition** with core vulnerability scanning capabilities. For advanced features like persistent databases, email notifications, PDF reports, and enterprise support, see the [Upgrade to Enterprise](#-upgrade-to-enterprise-edition) section below.
 
 ## 🏗️ Multi-Module Architecture
 
@@ -56,7 +58,7 @@ Add the plugin to your `pom.xml`:
 ```xml
 <plugin>
     <groupId>mu.dodogeny</groupId>
-    <artifactId>bastion-maven-plugin-enterprise</artifactId>
+    <artifactId>bastion-maven-plugin-community</artifactId>
     <version>1.0.0</version>
     <executions>
         <execution>
@@ -71,19 +73,18 @@ Add the plugin to your `pom.xml`:
 ### Run Your First Scan
 
 ```bash
-# Community Edition (default - no license required)
-mvn mu.dodogeny:bastion-maven-plugin-enterprise:1.0.0:scan
+# Community Edition - Free vulnerability scanning
+mvn mu.dodogeny:bastion-maven-plugin-community:1.0.0:scan
 ```
 
 Reports will be generated in `target/security/` directory.
 
-**Note**: Bastion runs in Open Source Edition by default. To enable Commercial Edition features:
-
-```bash
-# Commercial Edition (requires LemonSqueezy API key)
-mvn mu.dodogeny:bastion-maven-plugin-enterprise:1.0.0:scan \
-  -Dbastion.apiKey=YOUR_LEMONSQUEEZY_API_KEY
-```
+**Community Features Included:**
+- OWASP Dependency-Check vulnerability scanning
+- HTML, JSON, and CSV reports with graphical dependency trees
+- Historical trend analysis and performance metrics
+- In-memory database or JSON file storage options
+- Multi-module project support
 
 ## 🛠️ Available Maven Goals
 
@@ -143,6 +144,214 @@ Bastion provides comprehensive scan statistics and performance metrics:
 ├─ Cache Performance: 78% hit rate (234/300 queries)
 └─ Slowest Phase: Vulnerability Analysis
 ```
+
+## 🚀 Upgrade to Enterprise Edition
+
+Ready to unlock advanced security features? **Bastion Enterprise** provides everything in the Community Edition plus powerful enterprise-grade capabilities.
+
+### 🆚 Community vs Enterprise Comparison
+
+| Feature | Community Edition | Enterprise Edition |
+|---------|------------------|-------------------|
+| **Core Scanning** | ✅ OWASP Dependency-Check | ✅ Enhanced with additional sources |
+| **Report Formats** | ✅ HTML, JSON, CSV | ✅ + PDF, SARIF |
+| **Storage Options** | ✅ In-memory, JSON file | ✅ + PostgreSQL, MySQL, H2 |
+| **Trend Analysis** | ✅ Basic historical tracking | ✅ Advanced multi-project analytics |
+| **Performance** | ✅ Basic metrics | ✅ Detailed performance profiling |
+| **Email Alerts** | ❌ | ✅ Automated security notifications |
+| **Multi-Database** | ❌ | ✅ Enterprise database support |
+| **GitHub Integration** | ✅ Basic | ✅ Enhanced API access |
+| **Support** | ❌ Community support | ✅ Priority enterprise support |
+| **Licensing** | ✅ Free & Open Source | 💰 Commercial license required |
+
+### 🛒 How to Upgrade
+
+#### Step 1: Purchase Enterprise License
+
+Visit our LemonSqueezy store to purchase your enterprise license:
+
+```bash
+# Open in your browser
+https://bastionplugin.lemonsqueezy.com
+```
+
+**Available Plans:**
+- **Monthly Subscription**: $29/month per team
+- **Annual Subscription**: $290/year per team (17% savings)
+
+#### Step 2: Update Your Project Configuration
+
+Replace the Community Edition plugin with Enterprise Edition:
+
+```xml
+<!-- Remove Community Edition -->
+<!-- 
+<plugin>
+    <groupId>mu.dodogeny</groupId>
+    <artifactId>bastion-maven-plugin-community</artifactId>
+    <version>1.0.0</version>
+</plugin>
+-->
+
+<!-- Add Enterprise Edition -->
+<plugin>
+    <groupId>mu.dodogeny</groupId>
+    <artifactId>bastion-maven-plugin-enterprise</artifactId>
+    <version>1.0.0</version>
+    <configuration>
+        <!-- Enable Enterprise features -->
+        <openSourceMode>false</openSourceMode>
+        <apiKey>${env.BASTION_API_KEY}</apiKey>
+        <licenseProvider>lemonsqueezy</licenseProvider>
+        
+        <!-- Enterprise database configuration -->
+        <database>
+            <type>postgresql</type>
+            <url>jdbc:postgresql://localhost:5432/bastion_security</url>
+            <username>${env.DB_USER}</username>
+            <password>${env.DB_PASSWORD}</password>
+        </database>
+        
+        <!-- Email notifications -->
+        <notifications>
+            <enabled>true</enabled>
+            <smtp>
+                <host>smtp.company.com</host>
+                <port>587</port>
+                <username>${env.SMTP_USER}</username>
+                <password>${env.SMTP_PASS}</password>
+                <useStartTLS>true</useStartTLS>
+            </smtp>
+            <recipients>
+                <securityTeam>security@company.com</securityTeam>
+                <developmentTeam>dev-team@company.com</developmentTeam>
+            </recipients>
+        </notifications>
+    </configuration>
+</plugin>
+```
+
+#### Step 3: Configure Environment Variables
+
+Set up your enterprise license and database credentials:
+
+```bash
+# LemonSqueezy license key (from purchase email)
+export BASTION_API_KEY="bsk_live_abc123..."
+
+# Database credentials
+export DB_USER="bastion_user"
+export DB_PASSWORD="secure_password"
+
+# Email notification credentials
+export SMTP_USER="security-scanner@company.com"
+export SMTP_PASS="app_specific_password"
+```
+
+#### Step 4: Verify Enterprise Activation
+
+Run a scan to verify your enterprise license:
+
+```bash
+mvn mu.dodogeny:bastion-maven-plugin-enterprise:1.0.0:scan
+```
+
+Look for the success message:
+```
+✅ LemonSqueezy license validated successfully
+💼 Bastion Enterprise Edition activated
+🚀 All premium features unlocked
+```
+
+### 🗄️ Setting Up Enterprise Database
+
+#### PostgreSQL Setup (Recommended)
+
+```bash
+# Install PostgreSQL
+sudo apt-get install postgresql postgresql-contrib
+
+# Create database and user
+sudo -u postgres psql
+CREATE DATABASE bastion_security;
+CREATE USER bastion_user WITH ENCRYPTED PASSWORD 'secure_password';
+GRANT ALL PRIVILEGES ON DATABASE bastion_security TO bastion_user;
+\q
+
+# Configure environment
+export DB_USER="bastion_user"
+export DB_PASSWORD="secure_password"
+```
+
+#### Alternative: H2 File Database (Simpler Setup)
+
+```xml
+<database>
+    <type>h2</type>
+    <path>${user.home}/.m2/bastion-security-cache/vulnerability-db</path>
+    <username>bastion</username>
+    <password>${env.DB_PASSWORD}</password>
+</database>
+```
+
+### 📧 Configure Email Notifications
+
+Enterprise Edition includes intelligent email alerts:
+
+```xml
+<notifications>
+    <enabled>true</enabled>
+    <smtp>
+        <host>smtp.company.com</host>
+        <port>587</port>
+        <username>${env.SMTP_USER}</username>
+        <password>${env.SMTP_PASS}</password>
+        <useStartTLS>true</useStartTLS>
+    </smtp>
+    
+    <!-- Alert thresholds -->
+    <alertOn>
+        <critical>true</critical>       <!-- Always alert on critical -->
+        <high>true</high>              <!-- Alert on high severity -->
+        <vulnerabilityCount>5</vulnerabilityCount>  <!-- Alert if >5 total -->
+    </alertOn>
+    
+    <!-- Distribution lists -->
+    <recipients>
+        <securityTeam>security@company.com,ciso@company.com</securityTeam>
+        <developmentTeam>dev-leads@company.com</developmentTeam>
+        <management>vp-engineering@company.com</management>
+    </recipients>
+</notifications>
+```
+
+### 🆘 Enterprise Support
+
+Enterprise customers get priority support:
+
+- **Email Support**: enterprise-support@dodogeny.mu
+- **Response Time**: 24 hours for critical issues
+- **Dedicated Slack Channel**: Available for annual subscribers
+- **Migration Assistance**: Help migrating from Community to Enterprise
+
+### 📊 Enterprise Reporting Features
+
+Unlock advanced reporting capabilities:
+
+- **PDF Reports**: Executive-ready security summaries
+- **SARIF Output**: Integration with security tools and IDEs
+- **Multi-Project Analytics**: Cross-project vulnerability tracking  
+- **Compliance Reports**: SOX, PCI-DSS, HIPAA compliance templates
+- **Real-time Dashboards**: Live security metrics
+
+### 🔄 Migration Process
+
+Upgrading from Community to Enterprise is seamless:
+
+1. **Data Migration**: Existing JSON files automatically imported
+2. **Configuration**: Minimal changes to existing setup
+3. **Zero Downtime**: No disruption to existing workflows
+4. **Backward Compatible**: All Community features preserved
 
 ## 🔐 Enterprise Licensing
 
@@ -1407,10 +1616,14 @@ Bastion is designed with security-first principles:
 ## 🆘 Support & Community
 
 ### Community Support
-- **GitHub Issues**: [Report bugs and feature requests](https://github.com/jdneemuth/bastion-maven-plugin-enterprise/issues)
+- **GitHub Issues**: [Report bugs and feature requests](https://github.com/jdneemuth/bastion-maven-plugin-community/issues)
+- **Documentation**: Full documentation and examples in this README
+- **Community Forum**: Stack Overflow with tag `bastion-maven-plugin`
 
 ### Enterprise Support
-- **Email**: dil.neemuth@gmail.com
+- **Email**: enterprise-support@dodogeny.mu
+- **Response Time**: 24 hours for critical issues  
+- **Priority Support**: Available for licensed customers only
 
 ## 📄 License
 
@@ -1418,9 +1631,11 @@ This project is licensed under the Apache License 2.0 - see the [LICENSE](LICENS
 
 ---
 
-**Bastion Maven Plugin Enterprise** - Your enterprise fortress against security vulnerabilities.
+**Bastion Maven Plugin Community** - Your free, open-source fortress against security vulnerabilities.
 
 *Developed with ❤️ by [Dodogeny](https://dodogeny.mu) in Mauritius* 🇲🇺
+
+**Ready for Enterprise Features?** Upgrade to [Bastion Enterprise Edition](https://bastionplugin.lemonsqueezy.com) for advanced security capabilities.
 
 ---
 
