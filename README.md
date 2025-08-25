@@ -2345,79 +2345,81 @@ Bastion Community Edition provides **one Maven goal**:
 
 ### 📋 Complete Configuration Parameters Reference
 
-> **Legend**: 📦 = Community Edition | 🏢 = Enterprise Edition | 📦 🏢 = Both Editions
+> **📦 Community Edition** | **🏢 Enterprise Edition** | **📦🏢 Both Editions**
 
 All parameters can be configured in your `pom.xml` `<configuration>` section or passed as Maven properties (`-Dproperty=value`).
 
 ---
 
-## 🔧 Essential Parameters (Available in Both Editions)
+## Core Configuration
 
-### Core Configuration
-| Parameter | Property Key | Type | Default | Description |
-|-----------|--------------|------|---------|-------------|
-| `skip` | `bastion.skip` | boolean | `false` | Skip vulnerability scan entirely |
-| `failOnError` | `bastion.failOnError` | boolean | `true` | Fail build when vulnerabilities exceed threshold |
-| `severityThreshold` | `bastion.severityThreshold` | String | `MEDIUM` | Build failure threshold: `CRITICAL`, `HIGH`, `MEDIUM` |
+| Parameter | Property Key | Type | Default | Description | Edition |
+|-----------|--------------|------|---------|-------------|---------|
+| `skip` | `bastion.skip` | boolean | `false` | Skip vulnerability scan entirely | 📦🏢 |
+| `failOnError` | `bastion.failOnError` | boolean | `true` | Fail build when vulnerabilities exceed threshold | 📦🏢 |
+| `severityThreshold` | `bastion.severityThreshold` | String | `MEDIUM` | Build failure threshold: `CRITICAL`, `HIGH`, `MEDIUM` | 📦🏢 |
 
-### Output & Reporting
-| Parameter | Property Key | Type | Default | Description |
-|-----------|--------------|------|---------|-------------|
-| `outputDirectory` | `bastion.outputDirectory` | File | `${project.build.directory}/bastion-reports` | Directory for generated reports |
-| `reportFormats` | `bastion.reportFormats` | String | `HTML,JSON` | **Community**: `HTML,JSON,CSV` **Enterprise**: `+PDF,SARIF` |
+## Output & Reporting
 
-### Scanner Settings
-| Parameter | Property Key | Type | Default | Description |
-|-----------|--------------|------|---------|-------------|
-| `nvdApiKey` | `bastion.nvd.apiKey` | String | `null` | NVD API key for enhanced performance ([Get Free Key](https://nvd.nist.gov/developers/request-an-api-key)) |
-| `scannerTimeout` | `bastion.scanner.timeout` | int | `300000` | Scanner timeout in milliseconds (5 minutes) |
-| `enableMultiModule` | `bastion.enableMultiModule` | boolean | `true` | Enable multi-module project scanning |
+| Parameter | Property Key | Type | Default | Description | Edition |
+|-----------|--------------|------|---------|-------------|---------|
+| `outputDirectory` | `bastion.outputDirectory` | File | `${project.build.directory}/bastion-reports` | Directory for generated reports | 📦🏢 |
+| `reportFormats` | `bastion.reportFormats` | String | `HTML,JSON` | Report formats: HTML,JSON,CSV (📦) + PDF,SARIF (🏢) | 📦🏢 |
 
-### Storage Configuration  
-| Parameter | Property Key | Type | Default | Description |
-|-----------|--------------|------|---------|-------------|
-| `communityStorageMode` | `bastion.community.storageMode` | String | `IN_MEMORY` | Storage mode: `IN_MEMORY` or `JSON_FILE` |
-| `useJsonFileStorage` | `bastion.storage.useJsonFile` | boolean | `false` | Alternative way to enable JSON file storage |
-| `jsonFilePath` | `bastion.storage.jsonFilePath` | String | `${project.build.directory}/bastion-vulnerabilities.json` | Path for JSON file storage |
+## Scanner Configuration
 
-### Data Management
-| Parameter | Property Key | Type | Default | Description |
-|-----------|--------------|------|---------|-------------|
-| `purgeBeforeScan` | `bastion.purgeBeforeScan` | boolean | `false` | Purge existing data before scanning |
-| `force` | `bastion.purge.force` | boolean | `false` | Skip confirmation prompts for purge |
-| `confirmPurge` | `bastion.purge.confirm` | boolean | `false` | Auto-confirm purge operations |
-| `projectOnly` | `bastion.purge.projectOnly` | boolean | `false` | Purge only current project data |
-| `olderThanDays` | `bastion.purge.olderThanDays` | int | `0` | Purge records older than N days (0 = all) |
-| `dryRun` | `bastion.purge.dryRun` | boolean | `false` | Preview purge operations without execution |
+| Parameter | Property Key | Type | Default | Description | Edition |
+|-----------|--------------|------|---------|-------------|---------|
+| `nvdApiKey` | `bastion.nvd.apiKey` | String | `null` | NVD API key ([Get Free Key](https://nvd.nist.gov/developers/request-an-api-key)) | 📦🏢 |
+| `scannerTimeout` | `bastion.scanner.timeout` | int | `300000` | Scanner timeout in milliseconds (5 minutes) | 📦🏢 |
+| `enableMultiModule` | `bastion.enableMultiModule` | boolean | `true` | Enable multi-module project scanning | 📦🏢 |
 
----
+## Storage Configuration
 
-## 🏢 Enterprise-Only Parameters (License Required)
+| Parameter | Property Key | Type | Default | Description | Edition |
+|-----------|--------------|------|---------|-------------|---------|
+| `communityStorageMode` | `bastion.community.storageMode` | String | `IN_MEMORY` | Storage mode: `IN_MEMORY` or `JSON_FILE` | 📦🏢 |
+| `useJsonFileStorage` | `bastion.storage.useJsonFile` | boolean | `false` | Alternative way to enable JSON file storage | 📦🏢 |
+| `jsonFilePath` | `bastion.storage.jsonFilePath` | String | `${project.build.directory}/bastion-vulnerabilities.json` | Path for JSON file storage | 📦🏢 |
 
-### Database Configuration
-| Parameter | Property Key | Type | Default | Description |
-|-----------|--------------|------|---------|-------------|
-| `databaseUrl` | `bastion.database.url` | String | `null` | Database URL (e.g., `jdbc:postgresql://localhost:5432/bastion`) |
-| `databaseUsername` | `bastion.database.username` | String | `null` | Database username |
-| `databasePassword` | `bastion.database.password` | String | `null` | Database password |
+## Database Configuration (Enterprise Only)
 
-### Email Notifications
-| Parameter | Property Key | Type | Default | Description |
-|-----------|--------------|------|---------|-------------|
-| `emailEnabled` | `bastion.email.enabled` | boolean | `false` | Enable email notifications for vulnerabilities |
-| `smtpHost` | `bastion.email.smtp.host` | String | `null` | SMTP server hostname |
-| `smtpPort` | `bastion.email.smtp.port` | int | `587` | SMTP server port |
-| `smtpUsername` | `bastion.email.smtp.username` | String | `null` | SMTP authentication username |
-| `smtpPassword` | `bastion.email.smtp.password` | String | `null` | SMTP authentication password |
-| `smtpTls` | `bastion.email.smtp.tls` | boolean | `true` | Enable TLS encryption for SMTP |
-| `emailRecipients` | `bastion.email.recipients` | String | `null` | Comma-separated list of email recipients |
-| `emailSeverityThreshold` | `bastion.email.severityThreshold` | String | `HIGH` | Minimum severity level for email alerts |
+| Parameter | Property Key | Type | Default | Description | Edition |
+|-----------|--------------|------|---------|-------------|---------|
+| `databaseUrl` | `bastion.database.url` | String | `null` | Database URL (e.g., `jdbc:postgresql://localhost:5432/bastion`) | 🏢 |
+| `databaseUsername` | `bastion.database.username` | String | `null` | Database username | 🏢 |
+| `databasePassword` | `bastion.database.password` | String | `null` | Database password | 🏢 |
 
-### Enterprise Licensing
-| Parameter | Property Key | Type | Default | Description |
-|-----------|--------------|------|---------|-------------|
-| `apiKey` | `bastion.apiKey` | String | `null` | Enterprise license API key from [LemonSqueezy](https://bastionplugin.lemonsqueezy.com) |
-| `openSourceMode` | `bastion.openSourceMode` | boolean | `true` | Set to `false` to enable enterprise features |
+## Email Notifications (Enterprise Only)
+
+| Parameter | Property Key | Type | Default | Description | Edition |
+|-----------|--------------|------|---------|-------------|---------|
+| `emailEnabled` | `bastion.email.enabled` | boolean | `false` | Enable email notifications for vulnerabilities | 🏢 |
+| `smtpHost` | `bastion.email.smtp.host` | String | `null` | SMTP server hostname | 🏢 |
+| `smtpPort` | `bastion.email.smtp.port` | int | `587` | SMTP server port | 🏢 |
+| `smtpUsername` | `bastion.email.smtp.username` | String | `null` | SMTP authentication username | 🏢 |
+| `smtpPassword` | `bastion.email.smtp.password` | String | `null` | SMTP authentication password | 🏢 |
+| `smtpTls` | `bastion.email.smtp.tls` | boolean | `true` | Enable TLS encryption for SMTP | 🏢 |
+| `emailRecipients` | `bastion.email.recipients` | String | `null` | Comma-separated list of email recipients | 🏢 |
+| `emailSeverityThreshold` | `bastion.email.severityThreshold` | String | `HIGH` | Minimum severity level for email alerts | 🏢 |
+
+## Enterprise Licensing (Enterprise Only)
+
+| Parameter | Property Key | Type | Default | Description | Edition |
+|-----------|--------------|------|---------|-------------|---------|
+| `apiKey` | `bastion.apiKey` | String | `null` | Enterprise license API key from [LemonSqueezy](https://bastionplugin.lemonsqueezy.com) | 🏢 |
+| `openSourceMode` | `bastion.openSourceMode` | boolean | `true` | Set to `false` to enable enterprise features | 🏢 |
+
+## Data Management & Purge
+
+| Parameter | Property Key | Type | Default | Description | Edition |
+|-----------|--------------|------|---------|-------------|---------|
+| `purgeBeforeScan` | `bastion.purgeBeforeScan` | boolean | `false` | Purge existing data before scanning | 📦🏢 |
+| `force` | `bastion.purge.force` | boolean | `false` | Skip confirmation prompts for purge | 📦🏢 |
+| `confirmPurge` | `bastion.purge.confirm` | boolean | `false` | Auto-confirm purge operations | 📦🏢 |
+| `projectOnly` | `bastion.purge.projectOnly` | boolean | `false` | Purge only current project data | 📦🏢 |
+| `olderThanDays` | `bastion.purge.olderThanDays` | int | `0` | Purge records older than N days (0 = all) | 📦🏢 |
+| `dryRun` | `bastion.purge.dryRun` | boolean | `false` | Preview purge operations without execution | 📦🏢 |
 
 ---
 
