@@ -608,7 +608,7 @@ Bastion provides comprehensive scan statistics and performance metrics:
 
 ## 🚀 Upgrade to Enterprise Edition
 
-> **⚠️ IMPORTANT NOTICE**: We are currently working on the Enterprise Edition of Bastion Maven Plugin. The enterprise features and licensing system are still in development. We will communicate when the Enterprise Edition is ready for production use.
+> **🚀 Enterprise Edition Development Status**: The Bastion Maven Plugin Enterprise Edition is currently under active development. Advanced features including persistent databases, PDF reporting, email notifications, and enterprise licensing are being finalized. We will announce availability through our official channels once the Enterprise Edition reaches production readiness.
 
 Ready to unlock advanced security features? **Bastion Enterprise** provides everything in the Community Edition plus powerful enterprise-grade capabilities.
 
@@ -629,7 +629,7 @@ Ready to unlock advanced security features? **Bastion Enterprise** provides ever
 
 ### 🛒 How to Upgrade
 
-> **⚠️ NOT YET AVAILABLE**: The Enterprise Edition is currently in development. Enterprise features and licensing are not yet available for purchase.
+> **📋 Enterprise Edition Status**: The Enterprise Edition is currently in active development. Advanced features and commercial licensing will be made available once development and testing phases are complete.
 
 #### Step 1: Purchase Enterprise License (Coming Soon)
 
@@ -792,7 +792,7 @@ Enterprise Edition includes intelligent email alerts:
 
 ### 🆘 Enterprise Support
 
-> **⚠️ COMING SOON**: Enterprise support will be available when the Enterprise Edition is released.
+> **🎯 Enterprise Support**: Dedicated enterprise support services will be available with the Enterprise Edition release.
 
 Enterprise customers will get priority support:
 
@@ -803,7 +803,7 @@ Enterprise customers will get priority support:
 
 ### 📊 Enterprise Reporting Features
 
-> **⚠️ IN DEVELOPMENT**: These advanced reporting capabilities will be available in the Enterprise Edition.
+> **📊 Enterprise Reporting**: These advanced reporting capabilities will be included in the upcoming Enterprise Edition.
 
 Planned advanced reporting capabilities:
 
