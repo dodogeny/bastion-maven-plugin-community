@@ -6,7 +6,7 @@
     <modelVersion>4.0.0</modelVersion>
 
     <parent>
-        <groupId>mu.dodogeny</groupId>
+        <groupId>io.github.dodogeny</groupId>
         <artifactId>bastion-maven-plugin-community</artifactId>
         <version>1.0.0</version>
     </parent>
@@ -25,28 +25,28 @@
     <dependencies>
         <!-- Include all modules -->
         <dependency>
-            <groupId>mu.dodogeny</groupId>
+            <groupId>io.github.dodogeny</groupId>
             <artifactId>bastion-vulnerability-db</artifactId>
             <version>${project.version}</version>
         </dependency>
         <dependency>
-            <groupId>mu.dodogeny</groupId>
+            <groupId>io.github.dodogeny</groupId>
             <artifactId>bastion-scanner-core</artifactId>
             <version>${project.version}</version>
         </dependency>
         <dependency>
-            <groupId>mu.dodogeny</groupId>
+            <groupId>io.github.dodogeny</groupId>
             <artifactId>bastion-reporting</artifactId>
             <version>${project.version}</version>
         </dependency>
         <dependency>
-            <groupId>mu.dodogeny</groupId>
+            <groupId>io.github.dodogeny</groupId>
             <artifactId>bastion-maven-plugin</artifactId>
             <version>${project.version}</version>
             <type>maven-plugin</type>
         </dependency>
         <dependency>
-            <groupId>mu.dodogeny</groupId>
+            <groupId>io.github.dodogeny</groupId>
             <artifactId>bastion-enterprise</artifactId>
             <version>${project.version}</version>
         </dependency>

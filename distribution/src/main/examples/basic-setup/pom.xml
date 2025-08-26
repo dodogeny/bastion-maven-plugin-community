@@ -66,7 +66,7 @@
 
             <!-- Bastion Maven Plugin - Basic Configuration -->
             <plugin>
-                <groupId>mu.dodogeny</groupId>
+                <groupId>io.github.dodogeny</groupId>
                 <artifactId>bastion-maven-plugin-community</artifactId>
                 <version>${bastion.version}</version>
                 <executions>
@@ -106,7 +106,7 @@
             <build>
                 <plugins>
                     <plugin>
-                        <groupId>mu.dodogeny</groupId>
+                        <groupId>io.github.dodogeny</groupId>
                         <artifactId>bastion-maven-plugin-community</artifactId>
                         <executions>
                             <execution>

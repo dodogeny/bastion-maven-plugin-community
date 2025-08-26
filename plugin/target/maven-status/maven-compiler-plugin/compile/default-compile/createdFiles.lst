@@ -1,0 +1,5 @@
+io/github/dodogeny/security/plugin/BastionScanMojo.class
+io/github/dodogeny/security/plugin/BastionScanMojo$1.class
+io/github/dodogeny/security/plugin/BastionScanMojo$JsonProjectInfo.class
+io/github/dodogeny/security/plugin/BastionScanMojo$JsonScanEntry.class
+io/github/dodogeny/security/plugin/BastionScanMojo$JsonVulnerabilityStore.class

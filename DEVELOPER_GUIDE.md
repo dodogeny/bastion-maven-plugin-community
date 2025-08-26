@@ -467,7 +467,7 @@ private VulnerabilityScanner initializeScanner() {
 mvn bastion:scan -X
 
 # Specific logger configuration
-mvn bastion:scan -Dorg.slf4j.simpleLogger.log.mu.dodogeny.security=DEBUG
+mvn bastion:scan -Dorg.slf4j.simpleLogger.log.io.github.dodogeny.security=DEBUG
 ```
 
 ### Common Development Issues
