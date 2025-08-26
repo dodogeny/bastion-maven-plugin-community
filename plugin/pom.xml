@@ -16,36 +16,77 @@
 
     <name>Bastion Maven Plugin - Community Edition</name>
     <description>Community edition Maven plugin implementation for Bastion vulnerability scanning with basic reporting</description>
+    <url>https://github.com/dodogeny/bastion-maven-plugin-community</url>
+
+    <licenses>
+        <license>
+            <name>The Apache License, Version 2.0</name>
+            <url>http://www.apache.org/licenses/LICENSE-2.0.txt</url>
+            <distribution>repo</distribution>
+        </license>
+    </licenses>
+
+    <developers>
+        <developer>
+            <id>dodogeny</id>
+            <name>Javed Neemuth</name>
+            <email>dil.neemuth@gmail.com</email>
+        </developer>
+    </developers>
+
+    <scm>
+        <url>https://github.com/dodogeny/bastion-maven-plugin-community</url>
+        <connection>scm:git:git://github.com/dodogeny/bastion-maven-plugin-community.git</connection>
+        <developerConnection>scm:git:ssh://git@github.com:dodogeny/bastion-maven-plugin-community.git</developerConnection>
+    </scm>
 
     <dependencies>
         <!-- Internal dependencies -->
         <dependency>
             <groupId>io.github.dodogeny</groupId>
             <artifactId>bastion-vulnerability-db</artifactId>
+            <version>${project.version}</version>
         </dependency>
         <dependency>
             <groupId>io.github.dodogeny</groupId>
             <artifactId>bastion-scanner-core</artifactId>
+            <version>${project.version}</version>
         </dependency>
         <dependency>
             <groupId>io.github.dodogeny</groupId>
             <artifactId>bastion-reporting</artifactId>
+            <version>${project.version}</version>
+        </dependency>
+
+        <!-- JSON processing -->
+        <dependency>
+            <groupId>com.fasterxml.jackson.core</groupId>
+            <artifactId>jackson-databind</artifactId>
+            <version>2.15.2</version>
+        </dependency>
+        <dependency>
+            <groupId>com.fasterxml.jackson.datatype</groupId>
+            <artifactId>jackson-datatype-jsr310</artifactId>
+            <version>2.15.2</version>
         </dependency>
 
         <!-- Maven Plugin API -->
         <dependency>
             <groupId>org.apache.maven</groupId>
             <artifactId>maven-plugin-api</artifactId>
+            <version>${maven.version}</version>
             <scope>provided</scope>
         </dependency>
         <dependency>
             <groupId>org.apache.maven</groupId>
             <artifactId>maven-core</artifactId>
+            <version>${maven.version}</version>
             <scope>provided</scope>
         </dependency>
         <dependency>
             <groupId>org.apache.maven.plugin-tools</groupId>
             <artifactId>maven-plugin-annotations</artifactId>
+            <version>3.10.2</version>
             <scope>provided</scope>
         </dependency>
 
@@ -53,33 +94,39 @@
         <dependency>
             <groupId>org.slf4j</groupId>
             <artifactId>slf4j-api</artifactId>
+            <version>${slf4j.version}</version>
         </dependency>
 
         <!-- Utilities -->
         <dependency>
             <groupId>org.apache.commons</groupId>
             <artifactId>commons-lang3</artifactId>
+            <version>${commons-lang3.version}</version>
         </dependency>
 
         <dependency>
             <groupId>commons-io</groupId>
             <artifactId>commons-io</artifactId>
+            <version>${commons-io.version}</version>
         </dependency>
 
         <!-- Testing -->
         <dependency>
             <groupId>org.junit.jupiter</groupId>
             <artifactId>junit-jupiter</artifactId>
+            <version>${junit.version}</version>
             <scope>test</scope>
         </dependency>
         <dependency>
             <groupId>org.mockito</groupId>
             <artifactId>mockito-core</artifactId>
+            <version>${mockito.version}</version>
             <scope>test</scope>
         </dependency>
         <dependency>
             <groupId>org.mockito</groupId>
             <artifactId>mockito-junit-jupiter</artifactId>
+            <version>${mockito.version}</version>
             <scope>test</scope>
         </dependency>
     </dependencies>
@@ -97,6 +144,21 @@
                         </goals>
                     </execution>
                 </executions>
+            </plugin>
+            
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-source-plugin</artifactId>
+            </plugin>
+            
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-javadoc-plugin</artifactId>
+            </plugin>
+            
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-gpg-plugin</artifactId>
             </plugin>
         </plugins>
     </build>

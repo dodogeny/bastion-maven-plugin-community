@@ -1,0 +1,60 @@
+@options
+@packages
+-classpath
+'/root/.m2/repository/io/github/dodogeny/bastion-vulnerability-db/1.0.0/bastion-vulnerability-db-1.0.0.jar:/root/.m2/repository/org/flywaydb/flyway-core/8.5.13/flyway-core-8.5.13.jar:/root/.m2/repository/com/h2database/h2/2.2.224/h2-2.2.224.jar:/root/.m2/repository/org/postgresql/postgresql/42.7.0/postgresql-42.7.0.jar:/root/.m2/repository/org/freemarker/freemarker/2.3.31/freemarker-2.3.31.jar:/root/.m2/repository/com/openhtmltopdf/openhtmltopdf-pdfbox/1.0.10/openhtmltopdf-pdfbox-1.0.10.jar:/root/.m2/repository/org/apache/pdfbox/pdfbox/2.0.24/pdfbox-2.0.24.jar:/root/.m2/repository/org/apache/pdfbox/fontbox/2.0.24/fontbox-2.0.24.jar:/root/.m2/repository/commons-logging/commons-logging/1.2/commons-logging-1.2.jar:/root/.m2/repository/org/apache/pdfbox/xmpbox/2.0.24/xmpbox-2.0.24.jar:/root/.m2/repository/com/openhtmltopdf/openhtmltopdf-core/1.0.10/openhtmltopdf-core-1.0.10.jar:/root/.m2/repository/de/rototor/pdfbox/graphics2d/0.32/graphics2d-0.32.jar:/root/.m2/repository/com/fasterxml/jackson/core/jackson-databind/2.17.1/jackson-databind-2.17.1.jar:/root/.m2/repository/com/fasterxml/jackson/core/jackson-annotations/2.17.1/jackson-annotations-2.17.1.jar:/root/.m2/repository/com/fasterxml/jackson/core/jackson-core/2.17.1/jackson-core-2.17.1.jar:/root/.m2/repository/com/fasterxml/jackson/datatype/jackson-datatype-jsr310/2.17.1/jackson-datatype-jsr310-2.17.1.jar:/root/.m2/repository/org/slf4j/slf4j-api/1.7.36/slf4j-api-1.7.36.jar:/root/.m2/repository/org/apache/commons/commons-lang3/3.12.0/commons-lang3-3.12.0.jar:/root/.m2/repository/commons-io/commons-io/2.11.0/commons-io-2.11.0.jar'
+-encoding
+'UTF-8'
+-protected
+-source
+'8'
+-sourcepath
+'/home/dilneemuth/Documents/JvDN/DevProjects/Bastion-Security-Project/bastion-maven-plugin-community/reporting/src/main/java'
+-author
+-bottom
+'Copyright &#169; 2025 <a href="https://github.com/dodogeny/bastion-maven-plugin-community">Dodogeny</a>. All rights reserved.'
+-charset
+'UTF-8'
+-d
+'/home/dilneemuth/Documents/JvDN/DevProjects/Bastion-Security-Project/bastion-maven-plugin-community/reporting/target/site/apidocs'
+-docencoding
+'UTF-8'
+-doctitle
+'Bastion Reporting 1.0.0 API'
+-linkoffline
+'https://docs.oracle.com/javase/8/docs/api' '/home/dilneemuth/Documents/JvDN/DevProjects/Bastion-Security-Project/bastion-maven-plugin-community/reporting/target/javadoc-bundle-options'
+-use
+-version
+-windowtitle
+'Bastion Reporting 1.0.0 API'
+io.github.dodogeny.security.report
+/root/.m2/repository/io/github/dodogeny/bastion-vulnerability-db/1.0.0/bastion-vulnerability-db-1.0.0.jar = 1756240419733
+/root/.m2/repository/org/flywaydb/flyway-core/8.5.13/flyway-core-8.5.13.jar = 1655372066000
+/root/.m2/repository/com/h2database/h2/2.2.224/h2-2.2.224.jar = 1695020346000
+/root/.m2/repository/org/postgresql/postgresql/42.7.0/postgresql-42.7.0.jar = 1700503811000
+/root/.m2/repository/org/freemarker/freemarker/2.3.31/freemarker-2.3.31.jar = 1612907270000
+/root/.m2/repository/com/openhtmltopdf/openhtmltopdf-pdfbox/1.0.10/openhtmltopdf-pdfbox-1.0.10.jar = 1631510025000
+/root/.m2/repository/org/apache/pdfbox/pdfbox/2.0.24/pdfbox-2.0.24.jar = 1623080087000
+/root/.m2/repository/org/apache/pdfbox/fontbox/2.0.24/fontbox-2.0.24.jar = 1623079996000
+/root/.m2/repository/commons-logging/commons-logging/1.2/commons-logging-1.2.jar = 1404583945000
+/root/.m2/repository/org/apache/pdfbox/xmpbox/2.0.24/xmpbox-2.0.24.jar = 1623080011000
+/root/.m2/repository/com/openhtmltopdf/openhtmltopdf-core/1.0.10/openhtmltopdf-core-1.0.10.jar = 1631510004000
+/root/.m2/repository/de/rototor/pdfbox/graphics2d/0.32/graphics2d-0.32.jar = 1623779852000
+/root/.m2/repository/com/fasterxml/jackson/core/jackson-databind/2.17.1/jackson-databind-2.17.1.jar = 1714874874000
+/root/.m2/repository/com/fasterxml/jackson/core/jackson-annotations/2.17.1/jackson-annotations-2.17.1.jar = 1714873467000
+/root/.m2/repository/com/fasterxml/jackson/core/jackson-core/2.17.1/jackson-core-2.17.1.jar = 1714874075000
+/root/.m2/repository/com/fasterxml/jackson/datatype/jackson-datatype-jsr310/2.17.1/jackson-datatype-jsr310-2.17.1.jar = 1714876427000
+/root/.m2/repository/org/slf4j/slf4j-api/1.7.36/slf4j-api-1.7.36.jar = 1644327230000
+/root/.m2/repository/org/apache/commons/commons-lang3/3.12.0/commons-lang3-3.12.0.jar = 1614372051000
+/root/.m2/repository/commons-io/commons-io/2.11.0/commons-io-2.11.0.jar = 1625881379000
+/home/dilneemuth/Documents/JvDN/DevProjects/Bastion-Security-Project/bastion-maven-plugin-community/reporting/src/main/java = 1756225023253
+/home/dilneemuth/Documents/JvDN/DevProjects/Bastion-Security-Project/bastion-maven-plugin-community/reporting/target/site/apidocs/index-all.html = 1756240430638
+/home/dilneemuth/Documents/JvDN/DevProjects/Bastion-Security-Project/bastion-maven-plugin-community/reporting/target/site/apidocs/deprecated-list.html = 1756240430640
+/home/dilneemuth/Documents/JvDN/DevProjects/Bastion-Security-Project/bastion-maven-plugin-community/reporting/target/site/apidocs/index.html = 1756240430642
+/home/dilneemuth/Documents/JvDN/DevProjects/Bastion-Security-Project/bastion-maven-plugin-community/reporting/target/site/apidocs/constant-values.html = 1756240430626
+/home/dilneemuth/Documents/JvDN/DevProjects/Bastion-Security-Project/bastion-maven-plugin-community/reporting/target/site/apidocs/package-list = 1756240430612
+/home/dilneemuth/Documents/JvDN/DevProjects/Bastion-Security-Project/bastion-maven-plugin-community/reporting/target/site/apidocs/script.js = 1756240430644
+/home/dilneemuth/Documents/JvDN/DevProjects/Bastion-Security-Project/bastion-maven-plugin-community/reporting/target/site/apidocs/allclasses-frame.html = 1756240430640
+/home/dilneemuth/Documents/JvDN/DevProjects/Bastion-Security-Project/bastion-maven-plugin-community/reporting/target/site/apidocs/help-doc.html = 1756240430643
+/home/dilneemuth/Documents/JvDN/DevProjects/Bastion-Security-Project/bastion-maven-plugin-community/reporting/target/site/apidocs/allclasses-noframe.html = 1756240430641
+/home/dilneemuth/Documents/JvDN/DevProjects/Bastion-Security-Project/bastion-maven-plugin-community/reporting/target/site/apidocs/overview-tree.html = 1756240430636
+/home/dilneemuth/Documents/JvDN/DevProjects/Bastion-Security-Project/bastion-maven-plugin-community/reporting/target/site/apidocs/stylesheet.css = 1756240430644

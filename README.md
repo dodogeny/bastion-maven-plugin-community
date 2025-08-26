@@ -608,6 +608,8 @@ Bastion provides comprehensive scan statistics and performance metrics:
 
 ## 🚀 Upgrade to Enterprise Edition
 
+> **⚠️ IMPORTANT NOTICE**: We are currently working on the Enterprise Edition of Bastion Maven Plugin. The enterprise features and licensing system are still in development. We will communicate when the Enterprise Edition is ready for production use.
+
 Ready to unlock advanced security features? **Bastion Enterprise** provides everything in the Community Edition plus powerful enterprise-grade capabilities.
 
 ### 🆚 Community vs Enterprise Comparison
@@ -627,20 +629,22 @@ Ready to unlock advanced security features? **Bastion Enterprise** provides ever
 
 ### 🛒 How to Upgrade
 
-#### Step 1: Purchase Enterprise License
+> **⚠️ NOT YET AVAILABLE**: The Enterprise Edition is currently in development. Enterprise features and licensing are not yet available for purchase.
+
+#### Step 1: Purchase Enterprise License (Coming Soon)
 
 Visit our LemonSqueezy store to purchase your enterprise license:
 
 ```bash
-# Open in your browser
+# Will be available at:
 https://bastionplugin.lemonsqueezy.com
 ```
 
-**Available Plans:**
+**Planned Plans:**
 - **Monthly Subscription**: $29/month per team
 - **Annual Subscription**: $290/year per team (17% savings)
 
-#### Step 2: Update Your Project Configuration
+#### Step 2: Update Your Project Configuration (When Available)
 
 Replace the Community Edition plugin with Enterprise Edition:
 
@@ -788,16 +792,20 @@ Enterprise Edition includes intelligent email alerts:
 
 ### 🆘 Enterprise Support
 
-Enterprise customers get priority support:
+> **⚠️ COMING SOON**: Enterprise support will be available when the Enterprise Edition is released.
 
-- **Email Support**: enterprise-support@dodogeny.mu
+Enterprise customers will get priority support:
+
+- **Email Support**: enterprise-support@dodogeny.mu (when available)
 - **Response Time**: 24 hours for critical issues
 - **Dedicated Slack Channel**: Available for annual subscribers
 - **Migration Assistance**: Help migrating from Community to Enterprise
 
 ### 📊 Enterprise Reporting Features
 
-Unlock advanced reporting capabilities:
+> **⚠️ IN DEVELOPMENT**: These advanced reporting capabilities will be available in the Enterprise Edition.
+
+Planned advanced reporting capabilities:
 
 - **PDF Reports**: Executive-ready security summaries
 - **SARIF Output**: Integration with security tools and IDEs
