@@ -14,7 +14,7 @@
     <artifactId>bastion-reporting-community</artifactId>
     <packaging>jar</packaging>
 
-    <name>Bastion Reporting</name>
+    <name>Bastion Reporting - Community Edition</name>
     <description>Multi-format report generation (HTML, PDF, JSON, CSV, SARIF) with professional templates for Bastion Maven Plugin</description>
 
     <dependencies>

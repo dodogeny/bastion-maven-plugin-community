@@ -14,7 +14,7 @@
     <artifactId>bastion-scanner-community-core</artifactId>
     <packaging>jar</packaging>
 
-    <name>Bastion Scanner Core</name>
+    <name>Bastion Scanner Core - Community Edition</name>
     <description>Core vulnerability scanning engine with OWASP Dependency-Check, Snyk, and GitHub Security Advisory integration for Bastion Maven Plugin</description>
 
     <dependencies>
