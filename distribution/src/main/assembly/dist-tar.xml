@@ -110,11 +110,11 @@
         <moduleSet>
             <useAllReactorProjects>true</useAllReactorProjects>
             <includes>
-                <include>mu.dodogeny:bastion-vulnerability-db</include>
-                <include>mu.dodogeny:bastion-scanner-core</include>
-                <include>mu.dodogeny:bastion-reporting</include>
-                <include>mu.dodogeny:bastion-maven-plugin</include>
-                <include>mu.dodogeny:bastion-enterprise</include>
+                <include>io.github.dodogeny:bastion-vulnerability-community-db</include>
+                <include>io.github.dodogeny:bastion-scanner-community-core</include>
+                <include>io.github.dodogeny:bastion-reporting-community</include>
+                <include>io.github.dodogeny:bastion-maven-community-plugin</include>
+                <include>io.github.dodogeny:bastion-enterprise</include>
             </includes>
             <binaries>
                 <outputDirectory>lib/</outputDirectory>

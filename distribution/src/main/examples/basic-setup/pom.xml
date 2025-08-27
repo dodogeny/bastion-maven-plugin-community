@@ -67,7 +67,7 @@
             <!-- Bastion Maven Plugin - Basic Configuration -->
             <plugin>
                 <groupId>io.github.dodogeny</groupId>
-                <artifactId>bastion-maven-plugin-community</artifactId>
+                <artifactId>bastion-maven-community-plugin</artifactId>
                 <version>${bastion.version}</version>
                 <executions>
                     <execution>
@@ -107,7 +107,7 @@
                 <plugins>
                     <plugin>
                         <groupId>io.github.dodogeny</groupId>
-                        <artifactId>bastion-maven-plugin-community</artifactId>
+                        <artifactId>bastion-maven-community-plugin</artifactId>
                         <executions>
                             <execution>
                                 <id>detailed-security-scan</id>

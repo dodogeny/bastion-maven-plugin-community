@@ -7,11 +7,11 @@
 
     <parent>
         <groupId>io.github.dodogeny</groupId>
-        <artifactId>bastion-maven-plugin-community</artifactId>
+        <artifactId>bastion-maven-plugin-parent</artifactId>
         <version>1.0.0</version>
     </parent>
 
-    <artifactId>bastion-distribution</artifactId>
+    <artifactId>bastion-distribution-community</artifactId>
     <packaging>pom</packaging>
 
     <name>Bastion Maven Plugin - Distribution</name>
@@ -26,22 +26,22 @@
         <!-- Include all modules -->
         <dependency>
             <groupId>io.github.dodogeny</groupId>
-            <artifactId>bastion-vulnerability-db</artifactId>
+            <artifactId>bastion-vulnerability-community-db</artifactId>
             <version>${project.version}</version>
         </dependency>
         <dependency>
             <groupId>io.github.dodogeny</groupId>
-            <artifactId>bastion-scanner-core</artifactId>
+            <artifactId>bastion-scanner-community-core</artifactId>
             <version>${project.version}</version>
         </dependency>
         <dependency>
             <groupId>io.github.dodogeny</groupId>
-            <artifactId>bastion-reporting</artifactId>
+            <artifactId>bastion-reporting-community</artifactId>
             <version>${project.version}</version>
         </dependency>
         <dependency>
             <groupId>io.github.dodogeny</groupId>
-            <artifactId>bastion-maven-plugin</artifactId>
+            <artifactId>bastion-maven-community-plugin</artifactId>
             <version>${project.version}</version>
             <type>maven-plugin</type>
         </dependency>
