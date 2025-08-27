@@ -16,6 +16,29 @@
 
     <name>Bastion Maven Plugin - Distribution</name>
     <description>Distribution package containing all artifacts, documentation, and examples</description>
+    <url>https://github.com/dodogeny/bastion-maven-plugin-community</url>
+
+    <licenses>
+        <license>
+            <name>The Apache License, Version 2.0</name>
+            <url>http://www.apache.org/licenses/LICENSE-2.0.txt</url>
+            <distribution>repo</distribution>
+        </license>
+    </licenses>
+
+    <developers>
+        <developer>
+            <id>dodogeny</id>
+            <name>Javed Neemuth</name>
+            <email>dil.neemuth@gmail.com</email>
+        </developer>
+    </developers>
+
+    <scm>
+        <url>https://github.com/dodogeny/bastion-maven-plugin-community</url>
+        <connection>scm:git:git://github.com/dodogeny/bastion-maven-plugin-community.git</connection>
+        <developerConnection>scm:git:ssh://git@github.com:dodogeny/bastion-maven-plugin-community.git</developerConnection>
+    </scm>
 
     <properties>
         <maven.deploy.skip>false</maven.deploy.skip>
