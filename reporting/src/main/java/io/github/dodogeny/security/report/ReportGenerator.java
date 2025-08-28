@@ -88,6 +88,9 @@ public class ReportGenerator {
                         throw new RuntimeException("Trend data fetch was interrupted", e);
                     }
                 }
+            } catch (RuntimeException e) {
+                // Re-throw RuntimeExceptions (like database connection failures) to propagate them to the caller
+                throw e;
             } catch (Exception e) {
                 logger.warn("Failed to fetch trend data from database: {}", e.getMessage());
                 model.put("hasTrendData", false);

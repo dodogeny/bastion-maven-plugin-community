@@ -292,6 +292,10 @@ class ReportGeneratorTest {
         // Create dependencies with vulnerabilities instead of direct vulnerability list
         List<ScanResult.DependencyResult> dependencies = createDependenciesWithVulnerabilities(vulnerabilities);
         result.setDependencies(dependencies);
+        
+        // Also set the vulnerabilities list on the result - this is needed for CSV generation
+        result.setVulnerabilities(vulnerabilities);
+        
         return result;
     }
 
@@ -356,6 +360,10 @@ class ReportGeneratorTest {
         // Create dependencies with vulnerabilities instead of direct vulnerability list
         List<ScanResult.DependencyResult> dependencies = createDependenciesWithVulnerabilities(vulnerabilities);
         result.setDependencies(dependencies);
+        
+        // Also set the vulnerabilities list on the result - this is needed for CSV generation
+        result.setVulnerabilities(vulnerabilities);
+        
         result.setTotalDependencies(vulnerabilityCount * 2); // Assume some deps are clean
         
         return result;
