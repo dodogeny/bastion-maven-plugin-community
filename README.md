@@ -690,7 +690,7 @@ Visit our LemonSqueezy store to purchase your enterprise license:
 
 ```bash
 # Available at:
-https://bastionplugin.lemonsqueezy.com
+https://bastion-plugin.lemonsqueezy.com
 ```
 
 **Current Plans:**
@@ -2661,7 +2661,7 @@ This project is licensed under the Apache License 2.0 - see the [LICENSE](LICENS
 
 **Bastion Maven Plugin Community** - Your free, open-source fortress against security vulnerabilities.
 
-*Developed with ❤️ by [Dodogeny]([https://dodogeny.mu](https://github.com/dodogeny/bastion-maven-plugin-community)) in Mauritius* 🇲🇺
+*Developed with ❤️ by [dodogeny]([https://dodogeny.mu](https://github.com/dodogeny/bastion-maven-plugin-community)) in Mauritius* 🇲🇺
 
 **Ready for Enterprise Features?** Upgrade to [Bastion Enterprise Edition](https://bastion-plugin.lemonsqueezy.com) for advanced security capabilities.
 
