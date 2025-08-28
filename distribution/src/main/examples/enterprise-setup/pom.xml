@@ -98,7 +98,6 @@
                 </executions>
                 <configuration>
                     <!-- Enterprise Edition Configuration -->
-                    <openSourceMode>false</openSourceMode>
                     <licensePath>${env.BASTION_LICENSE_PATH}</licensePath>
                     
                     <!-- Advanced Scanning Configuration -->

@@ -21,7 +21,6 @@ Add the plugin to your `pom.xml`:
     <version>1.0.0</version>
     <configuration>
         <!-- Community Edition settings (default) -->
-        <openSourceMode>true</openSourceMode>
         
         <!-- In-memory database configuration -->
         <inMemoryDatabase>
@@ -85,7 +84,6 @@ Check that reports are generated in `target/security-reports/`:
     <version>1.0.0</version>
     <configuration>
         <!-- Commercial Edition configuration -->
-        <openSourceMode>false</openSourceMode>
         <apiKey>${env.BASTION_API_KEY}</apiKey>
         
         <!-- Enhanced database options -->
@@ -147,7 +145,6 @@ export SMTP_PASS="secure_app_password"
 
 ```bash
 # Commercial Edition
-mvn bastion:scan -Dbastion.openSourceMode=false
 ```
 
 Look for the commercial activation message:
@@ -254,7 +251,6 @@ If you prefer manual installation:
    **Method 2: Maven Configuration**
    ```xml
    <configuration>
-       <openSourceMode>false</openSourceMode>
        <apiKey>${env.BASTION_API_KEY}</apiKey>
        <licenseProvider>lemonsqueezy</licenseProvider>
    </configuration>

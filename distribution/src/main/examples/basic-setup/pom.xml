@@ -93,7 +93,6 @@
                     <scannerTimeout>180000</scannerTimeout> <!-- 3 minutes -->
                     
                     <!-- Open Source Edition (default) -->
-                    <openSourceMode>true</openSourceMode>
                 </configuration>
             </plugin>
         </plugins>

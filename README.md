@@ -665,7 +665,6 @@ Replace the Community Edition plugin with Enterprise Edition:
     <version>1.0.0</version>
     <configuration>
         <!-- Enable Enterprise features -->
-        <openSourceMode>false</openSourceMode>
         <apiKey>${env.BASTION_API_KEY}</apiKey>
         <licenseProvider>lemonsqueezy</licenseProvider>
         
@@ -901,7 +900,6 @@ After purchase, you'll receive your LemonSqueezy API key:
      <artifactId>bastion-maven-plugin-enterprise</artifactId>
      <version>1.0.0</version>
      <configuration>
-       <openSourceMode>false</openSourceMode>
        <apiKey>${bastion.apiKey}</apiKey>
        <!-- LemonSqueezy license validation -->
        <licenseProvider>lemonsqueezy</licenseProvider>
@@ -915,7 +913,6 @@ Run a scan to verify your commercial license:
 
 ```bash
 # Using environment variable
-mvn bastion:scan -Dbastion.openSourceMode=false
 
 # Using command-line parameter
 mvn bastion:scan -Dbastion.apiKey=bsk_live_abc123...
@@ -988,7 +985,6 @@ The Community Edition offers two storage modes to choose from:
     <version>1.0.0</version>
     <configuration>
         <!-- Community Edition (default) -->
-        <openSourceMode>true</openSourceMode>
         
         <!-- Storage mode selection -->
         <communityStorageMode>IN_MEMORY</communityStorageMode>
@@ -1017,7 +1013,6 @@ mvn bastion:scan -Dbastion.community.storageMode=IN_MEMORY
     <version>1.0.0</version>
     <configuration>
         <!-- Community Edition -->
-        <openSourceMode>true</openSourceMode>
         
         <!-- Storage mode selection -->
         <communityStorageMode>JSON_FILE</communityStorageMode>
@@ -1054,7 +1049,6 @@ mvn bastion:scan \
     <artifactId>bastion-maven-plugin-enterprise</artifactId>
     <version>1.0.0</version>
     <configuration>
-        <openSourceMode>false</openSourceMode>
         <apiKey>${env.BASTION_API_KEY}</apiKey>
         
         <!-- H2 Database Configuration -->
@@ -1076,7 +1070,6 @@ mvn bastion:scan \
     <artifactId>bastion-maven-plugin-enterprise</artifactId>
     <version>1.0.0</version>
     <configuration>
-        <openSourceMode>false</openSourceMode>
         <apiKey>${env.BASTION_API_KEY}</apiKey>
         
         <!-- PostgreSQL Configuration -->
@@ -1106,7 +1099,6 @@ mvn bastion:scan \
     <artifactId>bastion-maven-plugin-enterprise</artifactId>
     <version>1.0.0</version>
     <configuration>
-        <openSourceMode>false</openSourceMode>
         <apiKey>${env.BASTION_API_KEY}</apiKey>
         
         <!-- MySQL Configuration -->
@@ -1170,7 +1162,6 @@ mkdir -p ~/.m2/bastion-security-cache
 export DB_PASSWORD="your_secure_h2_password"
 
 # H2 will be automatically created on first run
-mvn bastion:scan -Dbastion.openSourceMode=false
 ```
 
 ### Database Migration Management
@@ -1237,7 +1228,6 @@ For enterprise deployments with large codebases:
     <version>1.0.0</version>
     <configuration>
         <!-- LemonSqueezy License Configuration -->
-        <openSourceMode>false</openSourceMode>
         <apiKey>${env.BASTION_API_KEY}</apiKey>
         <licenseProvider>lemonsqueezy</licenseProvider>
         
@@ -2416,7 +2406,6 @@ All parameters can be configured in your `pom.xml` `<configuration>` section or 
 | Parameter | Property Key | Type | Default | Description | Edition |
 |-----------|--------------|------|---------|-------------|---------|
 | `apiKey` | `bastion.apiKey` | String | `null` | Enterprise license API key from [LemonSqueezy](https://bastionplugin.lemonsqueezy.com) | 🏢 |
-| `openSourceMode` | `bastion.openSourceMode` | boolean | `true` | Set to `false` to enable enterprise features | 🏢 |
 
 ## Data Management & Purge
 

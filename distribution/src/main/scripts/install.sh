@@ -130,7 +130,6 @@ create_example_pom() {
         <failOnError>true</failOnError>
         
         <!-- For commercial edition -->
-        <!-- <openSourceMode>false</openSourceMode> -->
         <!-- <licensePath>/path/to/bastion-license.enc</licensePath> -->
     </configuration>
 </plugin>
