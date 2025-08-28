@@ -608,7 +608,7 @@ Bastion provides comprehensive scan statistics and performance metrics:
 
 ## 🚀 Upgrade to Enterprise Edition
 
-> **🚀 Enterprise Edition Development Status**: The Bastion Maven Plugin Enterprise Edition is currently under active development. Advanced features including persistent databases, PDF reporting, email notifications, and enterprise licensing are being finalized. We will announce availability through our official channels once the Enterprise Edition reaches production readiness.
+> **✅ Enterprise Edition Now Available**: The Bastion Maven Plugin Enterprise Edition is now available on Maven Central with advanced security features, IP-protected implementation, and enterprise licensing through LemonSqueezy.
 
 Ready to unlock advanced security features? **Bastion Enterprise** provides everything in the Community Edition plus powerful enterprise-grade capabilities.
 
@@ -629,22 +629,22 @@ Ready to unlock advanced security features? **Bastion Enterprise** provides ever
 
 ### 🛒 How to Upgrade
 
-> **📋 Enterprise Edition Status**: The Enterprise Edition is currently in active development. Advanced features and commercial licensing will be made available once development and testing phases are complete.
+> **🎉 Enterprise Edition Available Now**: The Enterprise Edition is now available on Maven Central with IP-protected implementation and enterprise licensing through LemonSqueezy.
 
-#### Step 1: Purchase Enterprise License (Coming Soon)
+#### Step 1: Purchase Enterprise License
 
 Visit our LemonSqueezy store to purchase your enterprise license:
 
 ```bash
-# Will be available at:
+# Available at:
 https://bastionplugin.lemonsqueezy.com
 ```
 
-**Planned Plans:**
+**Current Plans:**
 - **Monthly Subscription**: $29/month per team
 - **Annual Subscription**: $290/year per team (17% savings)
 
-#### Step 2: Update Your Project Configuration (When Available)
+#### Step 2: Update Your Project Configuration
 
 Replace the Community Edition plugin with Enterprise Edition:
 
@@ -711,6 +711,40 @@ export DB_PASSWORD="secure_password"
 export SMTP_USER="security-scanner@company.com"
 export SMTP_PASS="app_specific_password"
 ```
+
+### 🔒 Intellectual Property Protection
+
+The Enterprise Edition includes IP-protected implementation to safeguard proprietary code while maintaining full compatibility:
+
+#### Available Artifact Variants
+
+| Artifact Type | Classifier | Description |
+|---------------|------------|-------------|
+| **Standard JAR** | _(none)_ | Standard compiled classes for Maven Central compliance |
+| **Protected JAR** | `protected` | IP-protected implementation with code obfuscation |
+
+#### Installation Options
+
+**Option 1: Standard Artifact (Default)**
+```xml
+<dependency>
+    <groupId>io.github.dodogeny</groupId>
+    <artifactId>bastion-enterprise-features</artifactId>
+    <version>1.0.0</version>
+</dependency>
+```
+
+**Option 2: Protected Artifact (Recommended for Production)**
+```xml
+<dependency>
+    <groupId>io.github.dodogeny</groupId>
+    <artifactId>bastion-enterprise-features</artifactId>
+    <version>1.0.0</version>
+    <classifier>protected</classifier>
+</dependency>
+```
+
+> **🛡️ Protection Features**: The protected artifact includes Maven Shade Plugin-based obfuscation that protects implementation details while preserving public API compatibility for seamless integration with community edition and third-party tools.
 
 #### Step 4: Verify Enterprise Activation
 
