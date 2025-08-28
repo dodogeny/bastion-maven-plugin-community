@@ -628,7 +628,7 @@ Ready to unlock advanced security features? **Bastion Enterprise** provides ever
 | **📧 Email Alerts** | ❌ | ✅ Automated security notifications |
 | **🔗 Integrations** | ✅ Basic GitHub | ✅ **SIEM, Slack, Teams** + enhanced GitHub |
 | **🎛️ Monitoring** | Basic scan metrics | 🚀 **Real-Time Performance Monitor** + optimization |
-| **🛡️ Threat Intel** | ❌ | 🚀 **Live Exploit Data** + zero-day detection |
+| **🛡️ Threat Intel** | ❌ | 🚀 **Multi-Source Intelligence** + real-time threat context |
 | **⚙️ Optimization** | Manual configuration | 🚀 **Auto-Tuning** + performance recommendations |
 | **🏢 Enterprise Features** | ❌ | ✅ Multi-tenant, audit trails, compliance reports |
 | **🆘 Support** | Community support only | 🚀 **Priority Enterprise Support** + dedicated CSM |
@@ -645,17 +645,17 @@ Ready to unlock advanced security features? **Bastion Enterprise** provides ever
 - **Incremental Scanning**: Only scans changed files using SHA-256 fingerprinting
 - **Database Optimization**: Batch queries with prepared statements (4-6x faster DB access)
 
-#### 🧠 **AI-Powered Intelligence**
-- **Signature-Based Detection**: Instant recognition of known vulnerability patterns
-- **Machine Learning**: Anomaly detection for zero-day vulnerabilities
-- **Threat Intelligence**: Real-time exploit availability and attack vector analysis
-- **Risk Scoring**: Advanced algorithms for supply chain risk assessment
+#### 🧠 **Intelligence-Enhanced Scanning**
+- **Signature-Based Detection**: Pattern recognition for known vulnerability signatures
+- **Multi-Source Threat Intelligence**: Integration with NVD, MITRE, CISA KEV, and commercial feeds
+- **Real-Time Context**: Live exploit availability and attack vector intelligence
+- **Advanced Risk Assessment**: Algorithmic scoring with threat intelligence context
 
 #### 📊 **Real-Time Performance Monitoring**
 - **Live Metrics**: Throughput, cache efficiency, scan duration tracking
 - **Performance Alerts**: Automatic detection of bottlenecks and slowdowns
-- **Optimization Engine**: AI-driven recommendations for configuration tuning
-- **Trend Analysis**: Historical performance with predictive insights
+- **Optimization Recommendations**: Rule-based suggestions for configuration tuning
+- **Trend Analysis**: Historical performance tracking with insights
 
 ### 📈 **Performance Benchmarks**
 
