@@ -1037,7 +1037,7 @@ Bastion offers both community and commercial editions:
 1. **Visit LemonSqueezy Store**
    ```bash
    # Open in your browser
-   https://bastionplugin.lemonsqueezy.com
+   https://bastion-plugin.lemonsqueezy.com
    ```
 
 2. **Select Your Plan**
@@ -1520,7 +1520,7 @@ export BASTION_STORE_ID="12345"              # Your LemonSqueezy store ID
 ```
 ⚠️ LemonSqueezy subscription expired
 ```
-**Solution:** Renew your subscription at https://bastion.lemonsqueezy.com
+**Solution:** Renew your subscription at https://bastion-plugin.lemonsqueezy.com
 
 **API rate limits:**
 ```
@@ -2588,7 +2588,7 @@ All parameters can be configured in your `pom.xml` `<configuration>` section or 
 
 | Parameter | Property Key | Type | Default | Description | Edition |
 |-----------|--------------|------|---------|-------------|---------|
-| `apiKey` | `bastion.apiKey` | String | `null` | Enterprise license API key from [LemonSqueezy](https://bastionplugin.lemonsqueezy.com) | 🏢 |
+| `apiKey` | `bastion.apiKey` | String | `null` | Enterprise license API key from [LemonSqueezy](https://bastion-plugin.lemonsqueezy.com) | 🏢 |
 
 ## Data Management & Purge
 
@@ -2651,7 +2651,6 @@ Bastion is designed with security-first principles:
 
 ### Enterprise Support
 - **Email**: enterprise-support@dodogeny.mu
-- **Response Time**: 24 hours for critical issues  
 - **Priority Support**: Available for licensed customers only
 
 ## 📄 License
@@ -2662,9 +2661,9 @@ This project is licensed under the Apache License 2.0 - see the [LICENSE](LICENS
 
 **Bastion Maven Plugin Community** - Your free, open-source fortress against security vulnerabilities.
 
-*Developed with ❤️ by [Dodogeny](https://dodogeny.mu) in Mauritius* 🇲🇺
+*Developed with ❤️ by [Dodogeny]([https://dodogeny.mu](https://github.com/dodogeny/bastion-maven-plugin-community)) in Mauritius* 🇲🇺
 
-**Ready for Enterprise Features?** Upgrade to [Bastion Enterprise Edition](https://bastionplugin.lemonsqueezy.com) for advanced security capabilities.
+**Ready for Enterprise Features?** Upgrade to [Bastion Enterprise Edition](https://bastion-plugin.lemonsqueezy.com) for advanced security capabilities.
 
 ---
 
