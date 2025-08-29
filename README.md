@@ -1027,7 +1027,7 @@ Bastion offers both community and commercial editions:
 1. **Visit LemonSqueezy Store**
    ```bash
    # Open in your browser
-   https://bastion-plugin.lemonsqueezy.com
+   <a href="https://bastion-plugin.lemonsqueezy.com" target="_blank">https://bastion-plugin.lemonsqueezy.com</a>
    ```
 
 2. **Select Your Plan**
@@ -2578,7 +2578,7 @@ All parameters can be configured in your `pom.xml` `<configuration>` section or 
 
 | Parameter | Property Key | Type | Default | Description                                                                             | Edition |
 |-----------|--------------|------|---------|-----------------------------------------------------------------------------------------|---------|
-| `apiKey` | `bastion.apiKey` | String | `null` | Enterprise license API key from [LemonSqueezy](https://bastion-plugin.lemonsqueezy.com) | 🏢 |
+| `apiKey` | `bastion.apiKey` | String | `null` | Enterprise license API key from [LemonSqueezy](https://bastion-plugin.lemonsqueezy.com){:target="_blank"} | 🏢 |
 
 ## Data Management & Purge
 
@@ -2635,7 +2635,7 @@ Bastion is designed with security-first principles:
 ## 🆘 Support & Community
 
 ### Community Support
-- **GitHub Issues**: [Report bugs and feature requests](https://github.com/dodogeny/bastion-maven-plugin-community/issues)
+- **GitHub Issues**: [Report bugs and feature requests](https://github.com/dodogeny/bastion-maven-plugin-community/issues){:target="_blank"}
 - **Documentation**: Full documentation and examples in this README
 
 ### Enterprise Support
@@ -2652,7 +2652,7 @@ This project is licensed under the Apache License 2.0 - see the [LICENSE](LICENS
 
 *Developed with ❤️ by [dodogeny](https://github.com/dodogeny/bastion-maven-plugin-community) in Mauritius* 🇲🇺
 
-**Ready for Enterprise Features?** Upgrade to [Bastion Enterprise Edition](https://bastion-plugin.lemonsqueezy.com) for advanced security capabilities.
+**Ready for Enterprise Features?** Upgrade to [Bastion Enterprise Edition](https://bastion-plugin.lemonsqueezy.com){:target="_blank"} for advanced security capabilities.
 
 ---
 
