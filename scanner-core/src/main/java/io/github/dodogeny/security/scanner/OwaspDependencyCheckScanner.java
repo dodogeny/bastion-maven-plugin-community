@@ -34,14 +34,28 @@ public class OwaspDependencyCheckScanner implements VulnerabilityScanner {
     private final AtomicInteger totalScansFailed = new AtomicInteger(0);
     private final AtomicLong lastSuccessfulScanMs = new AtomicLong(0);
     private String nvdApiKey;
+    private NvdCacheManager cacheManager;
     
     public OwaspDependencyCheckScanner() {
         this.configuration = new ScannerConfiguration();
+        initializeCacheManager();
     }
     
     public OwaspDependencyCheckScanner(String nvdApiKey) {
         this.configuration = new ScannerConfiguration();
         this.nvdApiKey = nvdApiKey;
+        initializeCacheManager();
+    }
+    
+    private void initializeCacheManager() {
+        long cacheValidityHours = configuration.getCacheValidityHours();
+        int connectionTimeoutMs = 10000; // 10 seconds for cache checks
+        
+        this.cacheManager = new NvdCacheManager(
+            configuration.getCacheDirectory(), 
+            cacheValidityHours, 
+            connectionTimeoutMs
+        );
     }
     
     @Override
@@ -64,31 +78,7 @@ public class OwaspDependencyCheckScanner implements VulnerabilityScanner {
                 String effectiveNvdApiKey = getEffectiveApiKey();
                 configureSystemPropertiesForOwasp(effectiveNvdApiKey);
                 
-                Settings settings = new Settings();
-                
-                boolean hasApiKey = effectiveNvdApiKey != null && !effectiveNvdApiKey.trim().isEmpty();
-                
-                if (hasApiKey) {
-                    // Set all known NVD API key system properties for OWASP compatibility
-                    System.setProperty("nvd.api.key", effectiveNvdApiKey);
-                    System.setProperty("NVD_API_KEY", effectiveNvdApiKey); // Additional property
-                    System.setProperty("bastion.nvd.apiKey", effectiveNvdApiKey);
-                    
-                    // Configure OWASP settings directly for NVD API key
-                    settings.setString(Settings.KEYS.NVD_API_KEY, effectiveNvdApiKey);
-                    
-                    // Use user's autoUpdate configuration
-                    settings.setBoolean(Settings.KEYS.AUTO_UPDATE, configuration.isAutoUpdate());
-                    settings.setBoolean(Settings.KEYS.UPDATE_NVDCVE_ENABLED, configuration.isAutoUpdate());
-                    settings.setBoolean(Settings.KEYS.ANALYZER_NVD_CVE_ENABLED, true);
-                    logger.info("NVD API key configured - CVE analysis enabled, autoUpdate: {}", configuration.isAutoUpdate());
-                } else {
-                    // Fallback to offline mode only
-                    settings.setBoolean(Settings.KEYS.AUTO_UPDATE, false);
-                    settings.setBoolean(Settings.KEYS.UPDATE_NVDCVE_ENABLED, false);
-                    settings.setBoolean(Settings.KEYS.ANALYZER_NVD_CVE_ENABLED, false);
-                    logger.warn("No NVD API key provided - CVE analysis disabled (offline mode only)");
-                }
+                Settings settings = createSmartCachedSettings(effectiveNvdApiKey);
                 
                 // Disable experimental and problematic analyzers
                 settings.setBoolean(Settings.KEYS.ANALYZER_EXPERIMENTAL_ENABLED, false);
@@ -141,6 +131,9 @@ public class OwaspDependencyCheckScanner implements VulnerabilityScanner {
                 totalScansCompleted.incrementAndGet();
                 lastSuccessfulScanMs.set(System.currentTimeMillis());
                 
+                // Update cache metadata after successful scan
+                updateCacheAfterScan();
+                
                 logger.info("OWASP Dependency-Check scan completed. Found {} vulnerabilities", vulnerabilities.size());
                 return vulnerabilities;
                 
@@ -166,8 +159,7 @@ public class OwaspDependencyCheckScanner implements VulnerabilityScanner {
                 String effectiveNvdApiKey = getEffectiveApiKey();
                 configureSystemPropertiesForOwasp(effectiveNvdApiKey);
                 
-                Settings settings = new Settings();
-                settings.setBoolean(Settings.KEYS.AUTO_UPDATE, configuration.isAutoUpdate());
+                Settings settings = createSmartCachedSettings(effectiveNvdApiKey);
                 settings.setInt(Settings.KEYS.CONNECTION_TIMEOUT, configuration.getTimeoutMs());
                 
                 // Enable key analyzers that work offline
@@ -176,21 +168,9 @@ public class OwaspDependencyCheckScanner implements VulnerabilityScanner {
                 settings.setBoolean(Settings.KEYS.ANALYZER_ASSEMBLY_ENABLED, true);
                 settings.setBoolean(Settings.KEYS.ANALYZER_FILE_NAME_ENABLED, true);
                 
-                // Disable NVD CVE updates due to CVSS v4 parsing issues but keep analyzer enabled
-                settings.setBoolean(Settings.KEYS.UPDATE_NVDCVE_ENABLED, false);
-                settings.setBoolean(Settings.KEYS.ANALYZER_NVD_CVE_ENABLED, true); // Keep this enabled for offline DB
-                
                 // Configure connection timeouts
                 settings.setInt(Settings.KEYS.CONNECTION_TIMEOUT, 30000);
                 settings.setInt(Settings.KEYS.CONNECTION_READ_TIMEOUT, 60000);
-                
-                if (effectiveNvdApiKey != null && !effectiveNvdApiKey.trim().isEmpty()) {
-                    // Configure OWASP settings directly for NVD API key
-                    settings.setString(Settings.KEYS.NVD_API_KEY, effectiveNvdApiKey);
-                    logger.info("NVD API key configured for project scan");
-                } else {
-                    logger.warn("No NVD API key found from any source. Using offline mode only.");
-                }
                 
                 // Disable analyzers that require external data to avoid connection issues
                 settings.setBoolean(Settings.KEYS.ANALYZER_OSSINDEX_ENABLED, false);
@@ -216,6 +196,9 @@ public class OwaspDependencyCheckScanner implements VulnerabilityScanner {
                 
                 totalScansCompleted.incrementAndGet();
                 lastSuccessfulScanMs.set(System.currentTimeMillis());
+                
+                // Update cache metadata after successful scan
+                updateCacheAfterScan();
                 
                 logger.info("OWASP project scan completed: {} vulnerabilities in {} dependencies", 
                            result.getTotalVulnerabilities(), result.getTotalDependencies());
@@ -269,7 +252,9 @@ public class OwaspDependencyCheckScanner implements VulnerabilityScanner {
     @Override
     public void configure(ScannerConfiguration configuration) {
         this.configuration = configuration;
-        logger.info("OWASP Dependency-Check scanner configured with timeout: {}ms", configuration.getTimeoutMs());
+        initializeCacheManager(); // Reinitialize cache manager with new configuration
+        logger.info("OWASP Dependency-Check scanner configured with timeout: {}ms, cache validity: {}h, smart caching: {}", 
+                   configuration.getTimeoutMs(), configuration.getCacheValidityHours(), configuration.isSmartCachingEnabled());
     }
     
     @Override
@@ -618,6 +603,9 @@ public class OwaspDependencyCheckScanner implements VulnerabilityScanner {
                 totalScansCompleted.incrementAndGet();
                 lastSuccessfulScanMs.set(System.currentTimeMillis());
                 
+                // Update cache metadata after successful scan
+                updateCacheAfterScan();
+                
                 logger.info("OWASP enhanced scan completed: {} vulnerabilities in {} dependencies", 
                            result.getTotalVulnerabilities(), result.getTotalDependencies());
                 
@@ -901,6 +889,81 @@ public class OwaspDependencyCheckScanner implements VulnerabilityScanner {
             logger.info("API key system properties configured for OWASP Dependency-Check");
         } else {
             logger.warn("No NVD API key available - OWASP will run in offline mode");
+        }
+    }
+    
+    /**
+     * Creates OWASP settings with smart caching that only downloads if remote database has changed.
+     */
+    private Settings createSmartCachedSettings(String effectiveNvdApiKey) {
+        Settings settings = new Settings();
+        boolean hasApiKey = effectiveNvdApiKey != null && !effectiveNvdApiKey.trim().isEmpty();
+        
+        // Check if cache is valid first
+        boolean cacheValid = false;
+        boolean shouldUpdate = configuration.isAutoUpdate();
+        
+        if (shouldUpdate && configuration.isSmartCachingEnabled()) {
+            try {
+                logger.info("🔍 Checking NVD database cache status...");
+                cacheValid = cacheManager.isCacheValid(effectiveNvdApiKey);
+                
+                if (cacheValid) {
+                    logger.info("✅ NVD cache is valid - skipping database download");
+                    shouldUpdate = false; // Skip update since cache is valid
+                } else {
+                    logger.info("🔄 NVD cache is stale or remote database updated - will download latest");
+                }
+            } catch (Exception e) {
+                logger.warn("⚠️  Error checking cache validity, defaulting to update: {}", e.getMessage());
+                cacheValid = false;
+            }
+        }
+        
+        if (hasApiKey) {
+            // Set all known NVD API key system properties for OWASP compatibility
+            System.setProperty("nvd.api.key", effectiveNvdApiKey);
+            System.setProperty("NVD_API_KEY", effectiveNvdApiKey);
+            System.setProperty("bastion.nvd.apiKey", effectiveNvdApiKey);
+            
+            // Configure OWASP settings directly for NVD API key
+            settings.setString(Settings.KEYS.NVD_API_KEY, effectiveNvdApiKey);
+            
+            // Use smart cache decision for autoUpdate
+            settings.setBoolean(Settings.KEYS.AUTO_UPDATE, shouldUpdate);
+            settings.setBoolean(Settings.KEYS.UPDATE_NVDCVE_ENABLED, shouldUpdate);
+            settings.setBoolean(Settings.KEYS.ANALYZER_NVD_CVE_ENABLED, true);
+            
+            // Configure cache directory if specified
+            if (configuration.getCacheDirectory() != null) {
+                settings.setString(Settings.KEYS.DATA_DIRECTORY, cacheManager.getCacheDirectory());
+                logger.info("📁 Using cache directory: {}", cacheManager.getCacheDirectory());
+            }
+            
+            String updateMsg = shouldUpdate ? "will download latest" : "using cached database";
+            logger.info("🔑 NVD API key configured - CVE analysis enabled, cache status: {}", updateMsg);
+        } else {
+            // Fallback to offline mode only
+            settings.setBoolean(Settings.KEYS.AUTO_UPDATE, false);
+            settings.setBoolean(Settings.KEYS.UPDATE_NVDCVE_ENABLED, false);
+            settings.setBoolean(Settings.KEYS.ANALYZER_NVD_CVE_ENABLED, false);
+            logger.warn("❌ No NVD API key provided - CVE analysis disabled (offline mode only)");
+        }
+        
+        return settings;
+    }
+    
+    /**
+     * Updates cache metadata after successful database update.
+     */
+    private void updateCacheAfterScan() {
+        if (configuration.isAutoUpdate()) {
+            try {
+                cacheManager.updateCacheMetadata();
+                logger.debug("Cache metadata updated after successful scan");
+            } catch (Exception e) {
+                logger.debug("Could not update cache metadata: {}", e.getMessage());
+            }
         }
     }
 }
