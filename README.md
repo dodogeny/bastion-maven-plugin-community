@@ -968,7 +968,7 @@ Enterprise Edition includes intelligent email alerts:
 
 Enterprise customers will get priority support:
 
-- **Email Support**: enterprise-support@dodogeny.mu (when available)
+- **Email Support**: it.dodogeny@gmail.com (when available)
 - **Response Time**: 24 hours for critical issues
 - **Dedicated Slack Channel**: Available for annual subscribers
 - **Migration Assistance**: Help migrating from Community to Enterprise
@@ -2635,7 +2635,7 @@ Bastion is designed with security-first principles:
 ## 🆘 Support & Community
 
 ### Community Support
-- **GitHub Issues**: [Report bugs and feature requests](https://github.com/jdneemuth/bastion-maven-community-plugin/issues)
+- **GitHub Issues**: [Report bugs and feature requests](https://github.com/dodogeny/bastion-maven-plugin-community/issues)
 - **Documentation**: Full documentation and examples in this README
 
 ### Enterprise Support
