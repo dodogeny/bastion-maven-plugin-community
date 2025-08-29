@@ -185,14 +185,36 @@ public class NvdCacheManager {
     }
     
     private boolean checkRemoteChangesWithApi(Properties metadata, String apiKey) {
-        logger.debug("Checking remote NVD database changes with API key (including record count analysis)");
+        logger.debug("Checking remote NVD database changes with API key (optimized check)");
         
         try {
-            // First check timestamp-based changes
+            // Quick exit: Check if we're within minimum check interval (e.g., 1 hour)
+            String lastCheckStr = metadata.getProperty(LAST_UPDATE_CHECK_KEY);
+            if (lastCheckStr != null) {
+                long lastCheck = Long.parseLong(lastCheckStr);
+                long minutesSinceLastCheck = (System.currentTimeMillis() - lastCheck) / (1000 * 60);
+                
+                // If checked within last hour, skip remote checks entirely
+                if (minutesSinceLastCheck < 60) {
+                    logger.debug("Skipping remote check - last check was {} minutes ago (minimum interval: 60 min)", minutesSinceLastCheck);
+                    return true; // Cache is valid, no need for expensive network calls
+                }
+            }
+            
+            // First check timestamp-based changes (lighter check)
             long remoteModified = getRemoteLastModified(NVD_CVE_RECENT_URL);
             String lastRemoteModifiedStr = metadata.getProperty(LAST_REMOTE_MODIFIED_KEY);
             
-            // Check record count changes using NVD API 2.0
+            // Early exit if timestamp hasn't changed - avoid expensive API call
+            if (lastRemoteModifiedStr != null) {
+                long lastRemoteModified = Long.parseLong(lastRemoteModifiedStr);
+                if (remoteModified <= lastRemoteModified) {
+                    logger.debug("Timestamp unchanged - skipping record count check");
+                    return true; // Cache is valid
+                }
+            }
+            
+            // Only check record count if timestamp changed
             Long remoteRecordCount = getRemoteRecordCount(apiKey);
             String lastRecordCountStr = metadata.getProperty(LAST_RECORD_COUNT_KEY);
             

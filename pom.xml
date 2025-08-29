@@ -52,7 +52,7 @@
         <junit.version>5.9.3</junit.version>
         <mockito.version>4.11.0</mockito.version>
         <slf4j.version>1.7.36</slf4j.version>
-        <jackson.version>2.17.2</jackson.version>
+        <jackson.version>2.15.4</jackson.version>
         <h2.version>2.2.224</h2.version>
         <postgresql.version>42.7.0</postgresql.version>
         <owasp-dc.version>10.0.4</owasp-dc.version>
@@ -76,6 +76,15 @@
 
     <dependencyManagement>
         <dependencies>
+            <!-- Jackson BOM for consistent versions -->
+            <dependency>
+                <groupId>com.fasterxml.jackson</groupId>
+                <artifactId>jackson-bom</artifactId>
+                <version>${jackson.version}</version>
+                <type>pom</type>
+                <scope>import</scope>
+            </dependency>
+            
             <!-- Internal modules -->
             <dependency>
                 <groupId>io.github.dodogeny</groupId>
@@ -140,7 +149,17 @@
                 <version>${postgresql.version}</version>
             </dependency>
             
-            <!-- JSON Processing -->
+            <!-- JSON Processing - Explicit versions to override OWASP transitive deps -->
+            <dependency>
+                <groupId>com.fasterxml.jackson.core</groupId>
+                <artifactId>jackson-core</artifactId>
+                <version>${jackson.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>com.fasterxml.jackson.core</groupId>
+                <artifactId>jackson-annotations</artifactId>
+                <version>${jackson.version}</version>
+            </dependency>
             <dependency>
                 <groupId>com.fasterxml.jackson.core</groupId>
                 <artifactId>jackson-databind</artifactId>
