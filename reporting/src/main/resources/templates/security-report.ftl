@@ -1062,8 +1062,10 @@
                     </div>
                     <div class="tree-stat-card">
                         <div class="tree-stat-value">
-                            <#if (summary.totalDependencies!0) gt 0>
-                                ${((summary.vulnerableDependencies!0) * 100 / (summary.totalDependencies!0))?string("0")}%
+                            <#assign totalDeps = (summary.totalDependencies!0)>
+                            <#assign vulnDeps = (summary.vulnerableDependencies!0)>
+                            <#if totalDeps gt 0>
+                                ${((vulnDeps * 100) / totalDeps)?string("0")}%
                             <#else>
                                 0%
                             </#if>
@@ -1440,7 +1442,7 @@
                             <div class="stat-label">Total Scan Time</div>
                         </div>
                         <div class="stat-card">
-                            <div class="stat-value">${((scanResult.performanceMetrics.cacheHits * 100) / (scanResult.performanceMetrics.cacheHits + scanResult.performanceMetrics.cacheMisses))?round}%</div>
+                            <div class="stat-value">${((scanResult.performanceMetrics.cacheHits + scanResult.performanceMetrics.cacheMisses) > 0)?then(((scanResult.performanceMetrics.cacheHits * 100) / (scanResult.performanceMetrics.cacheHits + scanResult.performanceMetrics.cacheMisses))?round, 0)}%</div>
                             <div class="stat-label">Cache Hit Rate</div>
                         </div>
                         <div class="stat-card">
@@ -1448,7 +1450,15 @@
                             <div class="stat-label">Peak Memory</div>
                         </div>
                         <div class="stat-card">
-                            <div class="stat-value">${(scanResult.totalDependencies * 1000 / scanResult.performanceMetrics.totalScanTimeMs)?round}</div>
+                            <#assign totalScanTime = (scanResult.performanceMetrics.totalScanTimeMs!0)>
+                            <#assign totalDeps = (scanResult.totalDependencies!0)>
+                            <div class="stat-value">
+                                <#if totalScanTime gt 0>
+                                    ${((totalDeps * 1000) / totalScanTime)?round}
+                                <#else>
+                                    0
+                                </#if>
+                            </div>
                             <div class="stat-label">Processing Speed</div>
                         </div>
                     </#if>

@@ -107,6 +107,9 @@ public class BastionScanMojo extends AbstractMojo {
     @Parameter(property = "bastion.nvd.apiKey")
     private String nvdApiKey;
 
+    @Parameter(property = "bastion.autoUpdate", defaultValue = "false")
+    private boolean autoUpdate;
+
     @Parameter(property = "bastion.community.storageMode", defaultValue = "IN_MEMORY")
     private String communityStorageMode;
 
@@ -228,10 +231,11 @@ public class BastionScanMojo extends AbstractMojo {
         
         // Create in-memory database configuration
         VulnerabilityDatabase.DatabaseConfig config = new VulnerabilityDatabase.DatabaseConfig();
-        config.setType("in-memory");
-        config.setUrl("jdbc:h2:mem:bastion;DB_CLOSE_DELAY=-1;DB_CLOSE_ON_EXIT=FALSE");
+        config.setType("h2");
+        config.setPath("mem:bastion");
         
         database = new VulnerabilityDatabase(config, LoggerFactory.getLogger(VulnerabilityDatabase.class));
+        database.initialize(); // Initialize the database schema
         getLog().info("✅ In-memory database initialized successfully");
     }
 
@@ -265,18 +269,46 @@ public class BastionScanMojo extends AbstractMojo {
     }
 
     private void initializeScanner() {
-        if (nvdApiKey != null && !nvdApiKey.trim().isEmpty()) {
-            scanner = new OwaspDependencyCheckScanner(nvdApiKey);
-            getLog().info("NVD API key provided via plugin parameter");
+        // Check multiple sources for NVD API key
+        String apiKey = nvdApiKey;
+        String keySource = "plugin parameter";
+        
+        if (apiKey == null || apiKey.trim().isEmpty()) {
+            // Try common system properties
+            apiKey = System.getProperty("nvd.api.key");
+            if (apiKey != null && !apiKey.trim().isEmpty()) {
+                keySource = "system property 'nvd.api.key'";
+            }
+        }
+        
+        if (apiKey == null || apiKey.trim().isEmpty()) {
+            apiKey = System.getProperty("bastion.nvd.apiKey");
+            if (apiKey != null && !apiKey.trim().isEmpty()) {
+                keySource = "system property 'bastion.nvd.apiKey'";
+            }
+        }
+        
+        if (apiKey == null || apiKey.trim().isEmpty()) {
+            // Try environment variables
+            apiKey = System.getenv("NVD_API_KEY");
+            if (apiKey != null && !apiKey.trim().isEmpty()) {
+                keySource = "environment variable 'NVD_API_KEY'";
+            }
+        }
+        
+        if (apiKey != null && !apiKey.trim().isEmpty()) {
+            scanner = new OwaspDependencyCheckScanner(apiKey.trim());
+            getLog().info("NVD API key loaded from " + keySource);
         } else {
             scanner = new OwaspDependencyCheckScanner();
-            getLog().info("No NVD API key provided via plugin parameter, checking environment variable");
+            getLog().info("No NVD API key found - using offline mode only");
         }
         
         VulnerabilityScanner.ScannerConfiguration config = new VulnerabilityScanner.ScannerConfiguration();
         config.setTimeoutMs(scannerTimeout);
         config.setSeverityThreshold(severityThreshold);
         config.setEnableCache(true);
+        config.setAutoUpdate(autoUpdate);
         
         scanner.configure(config);
         getLog().info("Scanner initialized: " + scanner.getName());

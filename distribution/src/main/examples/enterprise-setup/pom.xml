@@ -25,7 +25,7 @@
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
         
         <!-- Bastion Plugin Version -->
-        <bastion.version>1.0.0</bastion.version>
+        <bastion.version>1.1.0</bastion.version>
     </properties>
 
     <dependencies>
