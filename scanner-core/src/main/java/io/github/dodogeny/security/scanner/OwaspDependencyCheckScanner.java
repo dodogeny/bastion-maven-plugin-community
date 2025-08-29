@@ -50,11 +50,13 @@ public class OwaspDependencyCheckScanner implements VulnerabilityScanner {
     private void initializeCacheManager() {
         long cacheValidityHours = configuration.getCacheValidityHours();
         int connectionTimeoutMs = 10000; // 10 seconds for cache checks
+        double updateThresholdPercent = configuration.getUpdateThresholdPercent();
         
         this.cacheManager = new NvdCacheManager(
             configuration.getCacheDirectory(), 
             cacheValidityHours, 
-            connectionTimeoutMs
+            connectionTimeoutMs,
+            updateThresholdPercent
         );
     }
     
@@ -140,10 +142,28 @@ public class OwaspDependencyCheckScanner implements VulnerabilityScanner {
             } catch (Exception e) {
                 totalScansFailed.incrementAndGet();
                 logger.error("OWASP Dependency-Check scan failed", e);
+                
+                // Handle specific error types with helpful messages
                 if (e.getMessage() != null && e.getMessage().contains("No documents exist")) {
                     logger.error("NVD database is not initialized. Try running with NVD_API_KEY set or wait for database initialization.");
                     return new ArrayList<>(); // Return empty list instead of failing
                 }
+                
+                // Handle CVSS v4.0 parsing errors
+                if (e.getCause() != null && e.getCause().getMessage() != null && 
+                    (e.getCause().getMessage().contains("CVSS") || e.getCause().getMessage().contains("SAFETY"))) {
+                    logger.error("⚠️ CVSS v4.0 parsing error detected. This may be due to new NVD data format.");
+                    logger.error("💡 Try updating OWASP Dependency-Check version or running scan without auto-update.");
+                    logger.error("🔧 Workaround: Add -Dbastion.autoUpdate=false to disable NVD updates temporarily.");
+                }
+                
+                // Handle Jackson/JSON parsing errors
+                if (e.getCause() != null && e.getCause().getMessage() != null && 
+                    e.getCause().getMessage().contains("jackson")) {
+                    logger.error("⚠️ JSON parsing library conflict detected.");
+                    logger.error("💡 Try updating Jackson dependencies or check for version conflicts.");
+                }
+                
                 throw new RuntimeException("OWASP scan failed", e);
             }
         });

@@ -52,10 +52,10 @@
         <junit.version>5.9.3</junit.version>
         <mockito.version>4.11.0</mockito.version>
         <slf4j.version>1.7.36</slf4j.version>
-        <jackson.version>2.17.1</jackson.version>
+        <jackson.version>2.17.2</jackson.version>
         <h2.version>2.2.224</h2.version>
         <postgresql.version>42.7.0</postgresql.version>
-        <owasp-dc.version>10.0.2</owasp-dc.version>
+        <owasp-dc.version>10.0.4</owasp-dc.version>
         <flyway.version>8.5.13</flyway.version>
         <freemarker.version>2.3.31</freemarker.version>
         <openhtmltopdf.version>1.0.10</openhtmltopdf.version>

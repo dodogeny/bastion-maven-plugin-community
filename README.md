@@ -211,18 +211,24 @@ mvn bastion:scan -Dbastion.scanner.timeout=300000
 mvn bastion:scan -Dbastion.enableMultiModule=true
 ```
 
-#### 8. Smart NVD Database Caching (New in v1.1.0)
+#### 8. Smart NVD Database Caching (Enhanced in v1.1.0)
 
 **🚀 Smart Caching dramatically reduces scan times by avoiding unnecessary NVD database downloads!**
 
 ##### **How Smart Caching Works**
 
-The intelligent caching system:
+The intelligent caching system now uses **dual optimization**:
 
-1. **Checks Remote Changes**: Before downloading, queries NVD servers to check if the database has been modified since the last download
+**🔍 Timestamp Analysis**
+1. **Checks Remote Changes**: Queries NVD servers to check if the database has been modified since the last download
 2. **Validates Local Cache**: Compares local cache timestamps with remote modification times  
-3. **Downloads Only When Needed**: Only downloads the database if there are actual changes
-4. **Configurable Validity**: Allows customization of cache validity periods
+
+**📊 Record Count Intelligence** *(New!)*
+3. **CVE Record Monitoring**: Tracks the total number of CVE records using NVD API 2.0
+4. **Threshold-Based Updates**: Only downloads if record count changes by configurable percentage (default: 5%)
+5. **Avoids Minor Updates**: Prevents full downloads for insignificant database changes (1-2 new CVEs)
+
+**⚡ Result**: Even more efficient caching - downloads only when there are substantial database changes!
 
 ##### **Command-Line Usage**
 
@@ -266,6 +272,9 @@ mvn bastion:scan \
         
         <!-- Cache validity period in hours (default: 6 hours) -->
         <cacheValidityHours>6</cacheValidityHours>
+        
+        <!-- Record count change threshold for updates (default: 5.0%) -->
+        <updateThresholdPercent>5.0</updateThresholdPercent>
         
         <!-- Optional: specify cache directory -->
         <cacheDirectory>${user.home}/.bastion/nvd-cache</cacheDirectory>
@@ -770,7 +779,7 @@ Bastion provides comprehensive scan statistics and performance metrics:
 
 ### 🏗️ **Development Status**
 - **Current Phase**: Active development and testing
-- **Expected Release**: wil be communicated when ready
+- **Expected Release**: Will be communicated when ready
 - **Beta Program**: Early access available for select enterprise customers
 - **Pricing**: Competitive enterprise licensing with volume discounts
 
@@ -843,24 +852,24 @@ Ready to learn more about advanced security features? **Bastion Enterprise** wil
 
 ### 🛒 How to Upgrade
 
-> **🎉 Enterprise Edition Available Now**: The Enterprise Edition is now available on Maven Central with IP-protected implementation and enterprise licensing through LemonSqueezy.
+> **🏗️ Enterprise Edition In Development**: The Enterprise Edition is currently under active development. It will be available soon with advanced security features, IP-protected implementation, and enterprise licensing.
 
-#### Step 1: Purchase Enterprise License
+#### Step 1: Express Interest in Enterprise License (When Available)
 
-The enterprise edition uses LemonSqueezy for license management and validation:
+The enterprise edition will use LemonSqueezy for license management and validation once released:
 
 ```bash
-# Enterprise licensing through LemonSqueezy
-# Contact for pricing and licensing options
+# Enterprise licensing through LemonSqueezy (when available)
+# Contact it.dodogeny@gmail.com for early access information
 ```
 
-**Enterprise Features Available:**
-- **LemonSqueezy License Management**: API-based license validation
+**Planned Enterprise Features:**
+- **LemonSqueezy License Management**: API-based license validation (when released)
 - **Commercial Support**: Priority assistance for enterprise customers
 
-#### Step 2: Update Your Project Configuration
+#### Step 2: Update Your Project Configuration (When Enterprise Edition Releases)
 
-Replace the Community Edition plugin with Enterprise Edition:
+Replace the Community Edition plugin with Enterprise Edition once available:
 
 ```xml
 <!-- Remove Community Edition -->
@@ -872,11 +881,11 @@ Replace the Community Edition plugin with Enterprise Edition:
 </plugin>
 -->
 
-<!-- Add Enterprise Edition -->
+<!-- Add Enterprise Edition (When Available) -->
 <plugin>
     <groupId>io.github.dodogeny</groupId>
     <artifactId>bastion-maven-plugin-enterprise</artifactId>
-    <version>[1.1.0,)</version> <!-- Use latest stable version -->
+    <version>[1.1.0,)</version> <!-- Will use latest version when released -->
     <configuration>
         <!-- Enable Enterprise features -->
         <apiKey>${env.BASTION_API_KEY}</apiKey>
@@ -1054,12 +1063,13 @@ The Enterprise Edition includes IP-protected implementation to safeguard proprie
 Run a scan to verify your enterprise license:
 
 ```bash
-mvn io.github.dodogeny:bastion-maven-plugin-enterprise:1.0.0:scan
+# When Enterprise Edition becomes available:
+mvn io.github.dodogeny:bastion-maven-plugin-enterprise:LATEST:scan
 ```
 
-Look for the success message:
+Look for the success message (when Enterprise Edition is available):
 ```
-✅ LemonSqueezy license validated successfully
+✅ LemonSqueezy license validated successfully (Example output)
 💼 Bastion Enterprise Edition activated
 🚀 All premium features unlocked
 ```
@@ -1200,29 +1210,32 @@ Bastion offers both community and commercial editions:
 - **Real-time monitoring capabilities**
 - **Enterprise support and priority assistance**
 
-### LemonSqueezy Licensing (Commercial Edition Only)
+### LemonSqueezy Licensing (Commercial Edition - Coming Soon)
 
-**Important**: All commercial licenses are exclusively managed through LemonSqueezy. No other licensing methods are supported.
+**Important**: All commercial licenses will be exclusively managed through LemonSqueezy once the Enterprise Edition is released. No other licensing methods will be supported.
 
-#### Step 1: Purchase Commercial License
+#### Step 1: Purchase Commercial License (When Available)
 
-1. **Visit LemonSqueezy Store**
+1. **Visit LemonSqueezy Store** (Coming Soon)
    ```bash
-   # Open in your browser
-   <a href="https://bastion-plugin.lemonsqueezy.com" target="_blank">https://bastion-plugin.lemonsqueezy.com</a>
+   https://bastion-plugin.lemonsqueezy.com (Not yet live)
    ```
 
-2. **Select Your Plan**
-   - **Monthly**: Monthly Subscription License
+2. **Select Your Plan** (Pricing To Be Announced)
+   - **Monthly**: Monthly Subscription License (pricing TBD)
+   - **Annual**: Annual Subscription with discount (pricing TBD)
+   - **Enterprise**: Volume licensing for organizations (custom pricing)
+   
+   > **📋 Pricing Note**: Specific pricing has not yet been determined. Contact it.dodogeny@gmail.com for early pricing information and founding customer discounts.
 
-3. **Complete Payment**
+3. **Complete Payment** (When Available)
    - Secure checkout via LemonSqueezy
-   - Supports credit cards, PayPal, and international payment methods
+   - Will support credit cards, PayPal, and international payment methods
    - Instant license delivery via email
 
 #### Step 2: Configure API Key
 
-After purchase, you'll receive your LemonSqueezy API key:
+After purchase (when available), you'll receive your LemonSqueezy API key:
 
 1. **Set Environment Variable** (Recommended)
    ```bash
@@ -1273,9 +1286,9 @@ Run a scan to verify your commercial license:
 mvn bastion:scan -Dbastion.apiKey=bsk_live_abc123...
 ```
 
-Look for the success message:
+Look for the success message (when Commercial Edition is available):
 ```
-✅ LemonSqueezy license validated successfully
+✅ LemonSqueezy license validated successfully (Example output)
 💼 Bastion Commercial Edition activated
 🚀 All premium features unlocked
 ```
@@ -2727,6 +2740,16 @@ All parameters can be configured in your `pom.xml` `<configuration>` section or 
 | `scannerTimeout` | `bastion.scanner.timeout` | int | `300000` | Scanner timeout in milliseconds (5 minutes) | 📦🏢 |
 | `enableMultiModule` | `bastion.enableMultiModule` | boolean | `true` | Enable multi-module project scanning | 📦🏢 |
 
+## NVD Caching Configuration
+
+| Parameter | Property Key | Type | Default | Description | Edition |
+|-----------|--------------|------|---------|-------------|---------|
+| `autoUpdate` | `bastion.autoUpdate` | boolean | `false` | Enable automatic NVD database updates | 📦🏢 |
+| `smartCachingEnabled` | `bastion.smart.caching.enabled` | boolean | `true` | Enable intelligent caching with remote change detection | 📦🏢 |
+| `cacheValidityHours` | `bastion.cache.validity.hours` | long | `6` | Cache validity period in hours | 📦🏢 |
+| `updateThresholdPercent` | `bastion.cache.update.threshold` | double | `5.0` | Record count change percentage that triggers update | 📦🏢 |
+| `cacheDirectory` | `bastion.cache.directory` | String | `${user.home}/.bastion/nvd-cache` | Directory for NVD database cache files | 📦🏢 |
+
 ## Storage Configuration
 
 | Parameter | Property Key | Type | Default | Description | Edition |
@@ -2826,7 +2849,7 @@ Bastion is designed with security-first principles:
 
 ## 📄 License
 
-This project is licensed under the Apache License 2.0 - see the [LICENSE](LICENSE) file for details.
+This project is licensed under the GPL 3.0 - see the [LICENSE](LICENSE) file for details.
 
 ---
 

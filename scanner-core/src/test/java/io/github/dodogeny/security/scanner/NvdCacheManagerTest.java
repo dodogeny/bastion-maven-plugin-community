@@ -70,7 +70,7 @@ class NvdCacheManagerTest {
     void shouldReturnTrueWhenRecentlyValid() throws IOException {
         // Create recent valid metadata
         Properties metadata = new Properties();
-        metadata.setProperty("cache.version", "1.0");
+        metadata.setProperty("cache.version", "2.0");
         metadata.setProperty("last.update.check", String.valueOf(System.currentTimeMillis() - (2 * 60 * 60 * 1000))); // 2 hours ago
         
         File metadataFile = new File(cacheDirectory, "nvd-cache.properties");
@@ -88,7 +88,7 @@ class NvdCacheManagerTest {
     void shouldReturnFalseWhenExpired() throws IOException {
         // Create expired metadata (more than 6 hours old)
         Properties metadata = new Properties();
-        metadata.setProperty("cache.version", "1.0");
+        metadata.setProperty("cache.version", "2.0");
         metadata.setProperty("last.update.check", String.valueOf(System.currentTimeMillis() - (8 * 60 * 60 * 1000))); // 8 hours ago
         
         File metadataFile = new File(cacheDirectory, "nvd-cache.properties");

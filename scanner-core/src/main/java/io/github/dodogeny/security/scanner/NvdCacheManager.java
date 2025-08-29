@@ -3,10 +3,12 @@ package io.github.dodogeny.security.scanner;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import java.io.BufferedReader;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileOutputStream;
 import java.io.IOException;
+import java.io.InputStreamReader;
 import java.net.HttpURLConnection;
 import java.net.URL;
 import java.nio.file.Files;
@@ -16,6 +18,8 @@ import java.time.Instant;
 import java.time.LocalDateTime;
 import java.time.ZoneId;
 import java.util.Properties;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 /**
  * Manages NVD database caching with smart remote change detection.
@@ -28,25 +32,35 @@ public class NvdCacheManager {
     // NVD API endpoints for checking updates
     private static final String NVD_CVE_META_URL = "https://nvd.nist.gov/feeds/json/cve/1.1/nvdcve-1.1-modified.meta";
     private static final String NVD_CVE_RECENT_URL = "https://nvd.nist.gov/feeds/json/cve/1.1/nvdcve-1.1-recent.meta";
+    private static final String NVD_API_2_0_BASE_URL = "https://services.nvd.nist.gov/rest/json/cves/2.0";
+    private static final Pattern TOTAL_RESULTS_PATTERN = Pattern.compile("\"totalResults\"\\s*:\\s*(\\d+)");
     
     private static final String CACHE_METADATA_FILE = "nvd-cache.properties";
     private static final String LAST_UPDATE_CHECK_KEY = "last.update.check";
     private static final String LAST_REMOTE_MODIFIED_KEY = "last.remote.modified";
     private static final String CACHE_VERSION_KEY = "cache.version";
-    private static final String CURRENT_CACHE_VERSION = "1.0";
+    private static final String LAST_RECORD_COUNT_KEY = "last.record.count";
+    private static final String UPDATE_THRESHOLD_KEY = "update.threshold.percent";
+    private static final String CURRENT_CACHE_VERSION = "2.0"; // Bumped for new features
     
     private final String cacheDirectory;
     private final long cacheValidityHours;
     private final int connectionTimeoutMs;
+    private final double updateThresholdPercent;
     
     public NvdCacheManager(String cacheDirectory, long cacheValidityHours, int connectionTimeoutMs) {
+        this(cacheDirectory, cacheValidityHours, connectionTimeoutMs, 5.0); // Default 5% threshold
+    }
+    
+    public NvdCacheManager(String cacheDirectory, long cacheValidityHours, int connectionTimeoutMs, double updateThresholdPercent) {
         this.cacheDirectory = cacheDirectory != null ? cacheDirectory : getDefaultCacheDirectory();
         this.cacheValidityHours = cacheValidityHours;
         this.connectionTimeoutMs = connectionTimeoutMs;
+        this.updateThresholdPercent = updateThresholdPercent;
         
         ensureCacheDirectoryExists();
-        logger.info("NVD Cache Manager initialized with cache directory: {} and validity: {} hours", 
-                   this.cacheDirectory, cacheValidityHours);
+        logger.info("NVD Cache Manager initialized with cache directory: {}, validity: {} hours, update threshold: {}%", 
+                   this.cacheDirectory, cacheValidityHours, updateThresholdPercent);
     }
     
     /**
@@ -77,18 +91,21 @@ public class NvdCacheManager {
                 long lastCheck = Long.parseLong(lastCheckStr);
                 long hoursSinceLastCheck = (System.currentTimeMillis() - lastCheck) / (1000 * 60 * 60);
                 
-                if (hoursSinceLastCheck < cacheValidityHours) {
-                    logger.debug("Cache is still valid - {} hours since last check (validity: {} hours)", 
+                if (hoursSinceLastCheck >= cacheValidityHours) {
+                    logger.info("Cache expired - {} hours since last check (validity: {} hours) - cache update required", 
                                 hoursSinceLastCheck, cacheValidityHours);
-                    return true;
+                    return false;
                 }
+                
+                logger.debug("Cache is still valid - {} hours since last check (validity: {} hours)", 
+                            hoursSinceLastCheck, cacheValidityHours);
             }
             
-            // Check if remote NVD database has been modified
+            // Cache is within validity period, now check if remote NVD database has been modified or record count changed significantly
             if (apiKey != null && !apiKey.trim().isEmpty()) {
-                return checkRemoteModificationWithApi(metadata, apiKey.trim());
+                return checkRemoteChangesWithApi(metadata, apiKey.trim());
             } else {
-                return checkRemoteModificationWithoutApi(metadata);
+                return checkRemoteChangesWithoutApi(metadata);
             }
             
         } catch (Exception e) {
@@ -101,10 +118,23 @@ public class NvdCacheManager {
      * Updates the cache metadata after a successful database update.
      */
     public void updateCacheMetadata() {
+        updateCacheMetadata(-1); // Use -1 to indicate no record count available
+    }
+    
+    /**
+     * Updates the cache metadata with record count information.
+     */
+    public void updateCacheMetadata(long recordCount) {
         try {
             Properties metadata = new Properties();
             metadata.setProperty(LAST_UPDATE_CHECK_KEY, String.valueOf(System.currentTimeMillis()));
             metadata.setProperty(CACHE_VERSION_KEY, CURRENT_CACHE_VERSION);
+            metadata.setProperty(UPDATE_THRESHOLD_KEY, String.valueOf(updateThresholdPercent));
+            
+            if (recordCount > 0) {
+                metadata.setProperty(LAST_RECORD_COUNT_KEY, String.valueOf(recordCount));
+                logger.debug("Stored record count: {}", recordCount);
+            }
             
             // Try to get current remote modification time
             try {
@@ -117,7 +147,7 @@ public class NvdCacheManager {
             }
             
             saveCacheMetadata(metadata);
-            logger.info("Cache metadata updated successfully");
+            logger.info("Cache metadata updated successfully" + (recordCount > 0 ? " with " + recordCount + " records" : ""));
             
         } catch (Exception e) {
             logger.warn("Failed to update cache metadata: {}", e.getMessage());
@@ -154,41 +184,76 @@ public class NvdCacheManager {
         }
     }
     
-    private boolean checkRemoteModificationWithApi(Properties metadata, String apiKey) {
-        logger.debug("Checking remote NVD database changes with API key");
+    private boolean checkRemoteChangesWithApi(Properties metadata, String apiKey) {
+        logger.debug("Checking remote NVD database changes with API key (including record count analysis)");
         
-        // With API key, we can check more frequently and get better information
         try {
+            // First check timestamp-based changes
             long remoteModified = getRemoteLastModified(NVD_CVE_RECENT_URL);
             String lastRemoteModifiedStr = metadata.getProperty(LAST_REMOTE_MODIFIED_KEY);
             
+            // Check record count changes using NVD API 2.0
+            Long remoteRecordCount = getRemoteRecordCount(apiKey);
+            String lastRecordCountStr = metadata.getProperty(LAST_RECORD_COUNT_KEY);
+            
+            boolean timestampChanged = false;
+            boolean significantRecordChange = false;
+            
+            // Timestamp analysis
             if (lastRemoteModifiedStr != null && remoteModified > 0) {
                 long lastRemoteModified = Long.parseLong(lastRemoteModifiedStr);
+                timestampChanged = remoteModified > lastRemoteModified;
                 
-                if (remoteModified <= lastRemoteModified) {
-                    logger.info("NVD database unchanged - using cache (remote modified: {}, cached: {})", 
+                if (!timestampChanged) {
+                    logger.debug("Timestamp unchanged - remote: {}, cached: {}", 
                                formatTimestamp(remoteModified), formatTimestamp(lastRemoteModified));
-                    updateLastCheckTime();
-                    return true;
-                } else {
-                    logger.info("NVD database updated - cache refresh needed (remote: {}, cached: {})", 
-                               formatTimestamp(remoteModified), formatTimestamp(lastRemoteModified));
-                    return false;
                 }
             }
             
-            // If we can't determine modification times, be conservative
-            logger.info("Cannot determine remote modification time - forcing cache update");
-            return false;
+            // Record count analysis  
+            if (remoteRecordCount != null && lastRecordCountStr != null) {
+                try {
+                    long lastRecordCount = Long.parseLong(lastRecordCountStr);
+                    double changePercent = Math.abs((remoteRecordCount - lastRecordCount) * 100.0 / lastRecordCount);
+                    significantRecordChange = changePercent >= updateThresholdPercent;
+                    
+                    logger.debug("Record count analysis - remote: {}, cached: {}, change: {:.2f}% (threshold: {}%)", 
+                               remoteRecordCount, lastRecordCount, changePercent, updateThresholdPercent);
+                } catch (NumberFormatException e) {
+                    logger.debug("Invalid cached record count format: {}", lastRecordCountStr);
+                }
+            }
+            
+            // Decision logic: update if timestamp changed OR significant record count change
+            if (!timestampChanged && !significantRecordChange) {
+                if (remoteRecordCount != null && lastRecordCountStr != null) {
+                    logger.info("🎯 Smart cache hit - NVD database unchanged (records: {}, change < {}%)", 
+                               remoteRecordCount, updateThresholdPercent);
+                } else {
+                    logger.info("📅 Timestamp-based cache hit - NVD database unchanged");
+                }
+                updateLastCheckTime();
+                return true;
+            } else {
+                if (timestampChanged && significantRecordChange) {
+                    logger.info("🔄 Cache refresh needed - both timestamp and record count changed significantly");
+                } else if (timestampChanged) {
+                    logger.info("🔄 Cache refresh needed - timestamp updated (remote: {}, cached: {})", 
+                               formatTimestamp(remoteModified), formatTimestamp(Long.parseLong(lastRemoteModifiedStr)));
+                } else {
+                    logger.info("🔄 Cache refresh needed - record count changed significantly by {:.1f}%", 
+                               Math.abs((remoteRecordCount - Long.parseLong(lastRecordCountStr)) * 100.0 / Long.parseLong(lastRecordCountStr)));
+                }
+                return false;
+            }
             
         } catch (Exception e) {
-            logger.debug("Error checking remote modification with API: {}", e.getMessage());
-            // Fallback to without API method
-            return checkRemoteModificationWithoutApi(metadata);
+            logger.debug("Error checking remote changes with API: {}", e.getMessage());
+            return checkRemoteChangesWithoutApi(metadata);
         }
     }
     
-    private boolean checkRemoteModificationWithoutApi(Properties metadata) {
+    private boolean checkRemoteChangesWithoutApi(Properties metadata) {
         logger.debug("Checking remote NVD database changes without API key");
         
         // Without API key, be more conservative and check less frequently
@@ -248,6 +313,73 @@ public class NvdCacheManager {
             return valid;
         }
         return false;
+    }
+    
+    /**
+     * Gets the total number of CVE records from NVD API 2.0
+     */
+    private Long getRemoteRecordCount(String apiKey) {
+        HttpURLConnection connection = null;
+        BufferedReader reader = null;
+        
+        try {
+            String urlString = NVD_API_2_0_BASE_URL + "?resultsPerPage=1"; // Only need count, not actual records
+            URL url = new URL(urlString);
+            
+            connection = (HttpURLConnection) url.openConnection();
+            connection.setRequestMethod("GET");
+            connection.setConnectTimeout(connectionTimeoutMs);
+            connection.setReadTimeout(connectionTimeoutMs);
+            connection.setRequestProperty("User-Agent", "Bastion-Security-Scanner/2.0");
+            
+            if (apiKey != null && !apiKey.trim().isEmpty()) {
+                connection.setRequestProperty("apiKey", apiKey.trim());
+            }
+            
+            int responseCode = connection.getResponseCode();
+            if (responseCode == HttpURLConnection.HTTP_OK) {
+                reader = new BufferedReader(new InputStreamReader(connection.getInputStream()));
+                String line;
+                StringBuilder response = new StringBuilder();
+                
+                // Read only first few lines to find totalResults
+                int lineCount = 0;
+                while ((line = reader.readLine()) != null && lineCount < 10) {
+                    response.append(line);
+                    lineCount++;
+                    
+                    // Look for totalResults in the current accumulated response
+                    Matcher matcher = TOTAL_RESULTS_PATTERN.matcher(response.toString());
+                    if (matcher.find()) {
+                        long totalResults = Long.parseLong(matcher.group(1));
+                        logger.debug("Found totalResults from NVD API 2.0: {}", totalResults);
+                        return totalResults;
+                    }
+                }
+                
+                logger.debug("Could not find totalResults in NVD API response");
+                return null;
+                
+            } else {
+                logger.debug("HTTP {} when checking NVD API 2.0 record count", responseCode);
+                return null;
+            }
+            
+        } catch (Exception e) {
+            logger.debug("Error getting remote record count: {}", e.getMessage());
+            return null;
+        } finally {
+            if (reader != null) {
+                try {
+                    reader.close();
+                } catch (IOException e) {
+                    logger.debug("Error closing reader: {}", e.getMessage());
+                }
+            }
+            if (connection != null) {
+                connection.disconnect();
+            }
+        }
     }
     
     private long getRemoteLastModified(String url) throws IOException {
