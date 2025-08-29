@@ -1,6 +1,7 @@
 package io.github.dodogeny.security.plugin;
 
 import io.github.dodogeny.security.database.VulnerabilityDatabase;
+import io.github.dodogeny.security.database.InMemoryVulnerabilityDatabase;
 import io.github.dodogeny.security.model.ScanResult;
 import io.github.dodogeny.security.model.ScanResult.ScanStatistics;
 import io.github.dodogeny.security.model.ScanResult.PerformanceMetrics;
@@ -114,6 +115,7 @@ public class BastionScanMojo extends AbstractMojo {
     private String communityStorageMode;
 
     private VulnerabilityDatabase database;
+    private InMemoryVulnerabilityDatabase inMemoryDatabase;
     private VulnerabilityScanner scanner;
     private ReportGenerator reportGenerator;
     private ObjectMapper jsonMapper;
@@ -229,13 +231,8 @@ public class BastionScanMojo extends AbstractMojo {
     private void initializeInMemoryDatabase() throws Exception {
         getLog().info("🗃️  Initializing in-memory database for community edition");
         
-        // Create in-memory database configuration
-        VulnerabilityDatabase.DatabaseConfig config = new VulnerabilityDatabase.DatabaseConfig();
-        config.setType("h2");
-        config.setPath("mem:bastion");
-        
-        database = new VulnerabilityDatabase(config, LoggerFactory.getLogger(VulnerabilityDatabase.class));
-        database.initialize(); // Initialize the database schema
+        // Create the InMemoryVulnerabilityDatabase
+        inMemoryDatabase = new InMemoryVulnerabilityDatabase(LoggerFactory.getLogger(InMemoryVulnerabilityDatabase.class));
         getLog().info("✅ In-memory database initialized successfully");
     }
 
@@ -351,6 +348,8 @@ public class BastionScanMojo extends AbstractMojo {
         // Add trend data if available
         if (useJsonFileStorage) {
             addTrendDataFromJson(result);
+        } else if (inMemoryDatabase != null) {
+            addTrendDataFromInMemory(result);
         }
         
         List<String> formats = Arrays.asList(reportFormats.split(","));
@@ -451,6 +450,97 @@ public class BastionScanMojo extends AbstractMojo {
             
         } catch (Exception e) {
             getLog().warn("Failed to generate trend analysis from JSON data", e);
+        }
+    }
+
+    private void addTrendDataFromInMemory(ScanResult result) {
+        try {
+            getLog().info("📊 Generating trend analysis from in-memory data...");
+            
+            // Get scan history from in-memory database
+            List<InMemoryVulnerabilityDatabase.ScanSummary> scanHistory = inMemoryDatabase.getScanHistory(
+                project.getGroupId(), project.getArtifactId(), 10);
+            
+            if (scanHistory.size() < 2) {
+                getLog().info("📊 Insufficient historical data for trend analysis (need at least 2 scans)");
+                return;
+            }
+            
+            getLog().info("📈 Generating trend analysis from " + scanHistory.size() + " historical scans");
+            
+            // Get previous scan (second most recent, since scanHistory is sorted by most recent first)
+            InMemoryVulnerabilityDatabase.ScanSummary previousScan = scanHistory.get(1);
+            
+            // Calculate trends compared to previous scan
+            int vulnerabilityTrend = result.getTotalVulnerabilities() - previousScan.totalVulnerabilities;
+            int criticalTrend = result.getCriticalVulnerabilities() - previousScan.criticalCount;
+            int highTrend = result.getHighVulnerabilities() - previousScan.highCount;
+            int mediumTrend = result.getMediumVulnerabilities() - previousScan.mediumCount;
+            int lowTrend = result.getLowVulnerabilities() - previousScan.lowCount;
+            
+            // Add trend metadata to result
+            result.addTrendData("totalVulnerabilityTrend", vulnerabilityTrend);
+            result.addTrendData("criticalTrend", criticalTrend);
+            result.addTrendData("highTrend", highTrend);
+            result.addTrendData("mediumTrend", mediumTrend);
+            result.addTrendData("lowTrend", lowTrend);
+            result.addTrendData("previousScanDate", previousScan.startTime.toString());
+            result.addTrendData("historicalScansCount", scanHistory.size());
+            
+            // Generate JAR analysis using in-memory data
+            generateInMemoryJarAnalysis(result, previousScan);
+            
+            // Display trend information
+            displayTrendAnalysis(vulnerabilityTrend, criticalTrend, highTrend, mediumTrend, lowTrend, 
+                               previousScan.startTime, scanHistory.size());
+            
+        } catch (Exception e) {
+            getLog().warn("Failed to generate trend analysis from in-memory data", e);
+        }
+    }
+
+    private void generateInMemoryJarAnalysis(ScanResult currentResult, InMemoryVulnerabilityDatabase.ScanSummary previousScan) {
+        try {
+            getLog().info("📦 Generating JAR-level vulnerability analysis from in-memory data...");
+            
+            // Since the in-memory database doesn't store detailed JAR information per scan,
+            // we'll do a simplified analysis based on overall vulnerability counts
+            ScanResult.JarAnalysis jarAnalysis = new ScanResult.JarAnalysis();
+            jarAnalysis.setTotalJarsAnalyzed(currentResult.getTotalDependencies());
+            
+            // For in-memory analysis, we'll estimate based on vulnerability changes
+            // This is simplified since we don't have detailed JAR-level historical data
+            int vulnerabilityChange = currentResult.getTotalVulnerabilities() - previousScan.totalVulnerabilities;
+            int dependencyChange = currentResult.getTotalDependencies() - previousScan.totalDependencies;
+            
+            // Create simplified analysis
+            List<ScanResult.VulnerableJar> newVulnerableJars = new ArrayList<>();
+            List<ScanResult.VulnerableJar> resolvedJars = new ArrayList<>();
+            List<ScanResult.VulnerableJar> pendingVulnerableJars = currentResult.getVulnerableJars();
+            
+            // Estimate new and resolved JARs based on trend data
+            if (vulnerabilityChange > 0 && dependencyChange >= 0) {
+                // More vulnerabilities, likely new vulnerable JARs
+                getLog().info("📈 Trend indicates new vulnerable dependencies detected");
+            } else if (vulnerabilityChange < 0) {
+                // Fewer vulnerabilities, likely some JARs were fixed or removed
+                getLog().info("📉 Trend indicates vulnerabilities were resolved");
+            }
+            
+            jarAnalysis.setResolvedJars(resolvedJars);
+            jarAnalysis.setNewVulnerableJars(newVulnerableJars);
+            jarAnalysis.setPendingVulnerableJars(pendingVulnerableJars);
+            
+            currentResult.setJarAnalysis(jarAnalysis);
+            
+            // Log the analysis results
+            getLog().info("📊 In-Memory JAR Analysis Results:");
+            getLog().info("  📦 Total JARs analyzed: " + jarAnalysis.getTotalJarsAnalyzed());
+            getLog().info("  📈 Vulnerability trend: " + (vulnerabilityChange >= 0 ? "+" : "") + vulnerabilityChange);
+            getLog().info("  📦 Dependency count change: " + (dependencyChange >= 0 ? "+" : "") + dependencyChange);
+            
+        } catch (Exception e) {
+            getLog().warn("Failed to generate in-memory JAR analysis", e);
         }
     }
 
@@ -572,11 +662,17 @@ public class BastionScanMojo extends AbstractMojo {
     private void storeResults(ScanResult result) {
         if (useJsonFileStorage) {
             storeResultsInJsonFile(result);
+        } else if (inMemoryDatabase != null) {
+            try {
+                getLog().info("Storing scan results in in-memory database...");
+                inMemoryDatabase.storeScanResult(result);
+                getLog().info("Scan results stored successfully in in-memory database");
+            } catch (Exception e) {
+                getLog().warn("Failed to store scan results in in-memory database", e);
+            }
         } else if (database != null) {
             try {
-                String storageType = "IN_MEMORY".equalsIgnoreCase(communityStorageMode) ? 
-                    "in-memory database" : "database";
-                getLog().info("Storing scan results in " + storageType + "...");
+                getLog().info("Storing scan results in database...");
                 database.storeScanResultBatch(result);
                 getLog().info("Scan results stored successfully");
             } catch (Exception e) {
@@ -1275,6 +1371,11 @@ public class BastionScanMojo extends AbstractMojo {
         try {
             if (database != null) {
                 database.close();
+            }
+            // Note: InMemoryVulnerabilityDatabase doesn't need explicit cleanup
+            // as it's designed for session-based storage with automatic cleanup
+            if (inMemoryDatabase != null) {
+                getLog().debug("In-memory database cleanup completed");
             }
         } catch (Exception e) {
             getLog().warn("Error during cleanup", e);
