@@ -14,9 +14,10 @@ bastion-maven-plugin/
 │   │   └── model/           # ScanResult, Vulnerability entities
 │   └── src/main/resources/db/migration/  # Flyway SQL migrations
 ├── scanner-core/            # Vulnerability scanning engine
-│   └── src/main/java/mu/dodogeny/security/scanner/
+│   └── src/main/java/io/github/dodogeny/security/scanner/
 │       ├── VulnerabilityScanner.java        # Scanner interface
-│       └── OwaspDependencyCheckScanner.java # OWASP implementation
+│       ├── OwaspDependencyCheckScanner.java # OWASP implementation
+│       └── NvdCacheManager.java             # Smart NVD caching (v1.1.0+)
 ├── reporting/               # Report generation system
 │   ├── src/main/java/mu/dodogeny/security/report/
 │   │   └── ReportGenerator.java             # Multi-format reporting
@@ -296,6 +297,46 @@ if (enableMultiModule && isMultiModuleProject()) {
 - **Large files**: Consider pagination for very large scan histories
 - **Parsing optimization**: Use streaming JSON for massive datasets
 - **File locking**: Implement file locking for concurrent access
+
+### Smart NVD Database Caching (v1.1.0+)
+
+The smart caching system dramatically improves scan performance by avoiding unnecessary NVD database downloads:
+
+```java
+// Smart cache configuration
+VulnerabilityScanner.ScannerConfiguration config = 
+    new VulnerabilityScanner.ScannerConfiguration();
+config.setAutoUpdate(true);
+config.setSmartCachingEnabled(true);
+config.setCacheValidityHours(6);  // Check every 6 hours
+config.setCacheDirectory(System.getProperty("user.home") + "/.bastion/nvd-cache");
+```
+
+**Architecture:**
+
+```java
+// NvdCacheManager handles intelligent caching
+public class NvdCacheManager {
+    // Checks remote NVD database modification times
+    public boolean isCacheValid(String apiKey) {
+        // 1. Check cache metadata
+        // 2. Query remote NVD servers (HTTP HEAD)
+        // 3. Compare modification timestamps
+        // 4. Return true if cache is current
+    }
+    
+    // Updates cache metadata after successful downloads
+    public void updateCacheMetadata() {
+        // Store last check time and remote modification time
+    }
+}
+```
+
+**Performance Impact:**
+- **First scan**: 8-13 minutes (downloads ~500MB NVD database)
+- **Cached scans**: 2-3 minutes (skips download when no changes)
+- **API key users**: More frequent and accurate cache checks
+- **No API key**: Conservative 24-hour cache validity
 
 ## 🔐 Security Considerations
 

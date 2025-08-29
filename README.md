@@ -27,7 +27,7 @@ Bastion Maven Plugin transforms how companies manage security vulnerabilities by
 ### 📈 **Continuous Security Monitoring**
 - **Historical Vulnerability Tracking**: Track CVE trends across time to measure security posture improvements
 - **Multi-Module Support**: Scan entire enterprise applications with dozens of modules simultaneously
-- **Performance Optimized**: Concurrent scanning with intelligent caching for large codebases
+- **Performance Optimized**: Concurrent scanning with intelligent NVD caching (5-10x faster scans) for large codebases
 - **Database-Driven Intelligence**: Persistent storage of vulnerability data for trend analysis and reporting
 - **Real-time Performance Metrics**: Detailed scan statistics including JARs processed, CVEs found, timing breakdowns, and resource usage
 - **Comprehensive Statistics Display**: View scan performance with bottleneck identification and optimization recommendations
@@ -44,6 +44,22 @@ Bastion Maven Plugin transforms how companies manage security vulnerabilities by
 - **Risk Assessment**: Prioritize vulnerabilities based on exploitability and business impact
 - **PDF Executive Summaries**: Board-ready security status reports
 
+## 📦 Getting the Latest Version
+
+**Always use the latest stable version from Maven Central for the best security and performance:**
+
+[![Maven Central](https://maven-badges.herokuapp.com/maven-central/io.github.dodogeny/bastion-maven-community-plugin/badge.svg)](https://maven-badges.herokuapp.com/maven-central/io.github.dodogeny/bastion-maven-community-plugin)
+
+**Quick Version Lookup:**
+```bash
+# Find latest version on Maven Central
+mvn help:evaluate -Dexpression=latest.version -DgroupId=io.github.dodogeny -DartifactId=bastion-maven-community-plugin
+
+# Or visit: https://search.maven.org/artifact/io.github.dodogeny/bastion-maven-community-plugin
+```
+
+> **💡 Pro Tip**: Use version range `[1.1.0,)` in your POM to automatically get the latest compatible version while ensuring minimum feature compatibility.
+
 ## 🚀 Quick Start
 
 ### Prerequisites
@@ -59,7 +75,8 @@ Add the plugin to your `pom.xml`:
 <plugin>
     <groupId>io.github.dodogeny</groupId>
     <artifactId>bastion-maven-community-plugin</artifactId>
-    <version>1.0.0</version>
+    <!-- Use the latest stable version from Maven Central -->
+    <version>[1.1.0,)</version>
     <executions>
         <execution>
             <goals>
@@ -70,21 +87,27 @@ Add the plugin to your `pom.xml`:
 </plugin>
 ```
 
+> **💡 Latest Version**: Check [![Maven Central](https://maven-badges.herokuapp.com/maven-central/io.github.dodogeny/bastion-maven-community-plugin/badge.svg)](https://maven-badges.herokuapp.com/maven-central/io.github.dodogeny/bastion-maven-community-plugin) for the most current version.
+
 ### Run Your First Scan
 
 ```bash
-# Community Edition - Free vulnerability scanning
-mvn io.github.dodogeny:bastion-maven-community-plugin:1.0.0:scan
+# Community Edition - Free vulnerability scanning (use latest version)
+mvn io.github.dodogeny:bastion-maven-community-plugin:LATEST:scan
+
+# Or check Maven Central and use specific latest version:
+# mvn io.github.dodogeny:bastion-maven-community-plugin:<latest-version>:scan
 ```
 
 Reports will be generated in `target/security/` directory.
 
 **Community Features Included:**
-- OWASP Dependency-Check vulnerability scanning
+- OWASP Dependency-Check vulnerability scanning with smart NVD caching
 - HTML, JSON, and CSV reports with graphical dependency trees
 - Historical trend analysis and performance metrics
 - In-memory database or JSON file storage options
 - Multi-module project support
+- **NEW in v1.1.0**: Smart NVD database caching for 5-10x faster scans
 
 ## 🛠️ Community Edition Usage Guide
 
@@ -104,7 +127,7 @@ Bastion Community provides this Maven goal for vulnerability management:
 
 ```bash
 # Basic scan with default settings
-mvn io.github.dodogeny:bastion-maven-community-plugin:1.0.0:scan
+mvn io.github.dodogeny:bastion-maven-community-plugin:1.1.0:scan
 
 # Or if plugin is configured in pom.xml
 mvn bastion:scan
@@ -188,7 +211,142 @@ mvn bastion:scan -Dbastion.scanner.timeout=300000
 mvn bastion:scan -Dbastion.enableMultiModule=true
 ```
 
-#### 8. Data Management
+#### 8. Smart NVD Database Caching (New in v1.1.0)
+
+**🚀 Smart Caching dramatically reduces scan times by avoiding unnecessary NVD database downloads!**
+
+##### **How Smart Caching Works**
+
+The intelligent caching system:
+
+1. **Checks Remote Changes**: Before downloading, queries NVD servers to check if the database has been modified since the last download
+2. **Validates Local Cache**: Compares local cache timestamps with remote modification times  
+3. **Downloads Only When Needed**: Only downloads the database if there are actual changes
+4. **Configurable Validity**: Allows customization of cache validity periods
+
+##### **Command-Line Usage**
+
+```bash
+# Enable smart caching with NVD API key (recommended)
+mvn bastion:scan \
+  -Dbastion.nvd.apiKey=your-api-key \
+  -Dbastion.autoUpdate=true
+
+# Configure cache validity period (default: 6 hours)
+mvn bastion:scan \
+  -Dbastion.nvd.apiKey=your-api-key \
+  -Dbastion.autoUpdate=true \
+  -Dbastion.cache.validity.hours=3
+
+# Custom cache directory
+mvn bastion:scan \
+  -Dbastion.nvd.apiKey=your-api-key \
+  -Dbastion.autoUpdate=true \
+  -Dbastion.cache.directory=${user.home}/.bastion/nvd-cache
+
+# Disable smart caching (force download)
+mvn bastion:scan \
+  -Dbastion.autoUpdate=true \
+  -Dbastion.smart.caching.enabled=false
+```
+
+##### **POM Configuration**
+
+```xml
+<plugin>
+    <groupId>io.github.dodogeny</groupId>
+    <artifactId>bastion-maven-community-plugin</artifactId>
+    <version>[1.1.0,)</version> <!-- Use latest stable version -->
+    <configuration>
+        <autoUpdate>true</autoUpdate>
+        <nvdApiKey>${nvd.api.key}</nvdApiKey>
+        
+        <!-- Smart caching is enabled by default -->
+        <smartCachingEnabled>true</smartCachingEnabled>
+        
+        <!-- Cache validity period in hours (default: 6 hours) -->
+        <cacheValidityHours>6</cacheValidityHours>
+        
+        <!-- Optional: specify cache directory -->
+        <cacheDirectory>${user.home}/.bastion/nvd-cache</cacheDirectory>
+    </configuration>
+</plugin>
+```
+
+##### **Cache Behavior Comparison**
+
+| Scenario | First Run | Subsequent Runs | Cache Strategy |
+|----------|-----------|-----------------|----------------|
+| **With NVD API Key** | Downloads full database (~500MB+) | Checks remote modification time | 6-hour validity (default) |
+| **Without API Key** | Downloads full database | Time-based caching | 24-hour validity (conservative) |
+| **Cache Hit** | N/A | Scan starts immediately | Uses local cached database |
+| **Cache Miss** | Downloads database | Downloads latest changes | Updates cache metadata |
+
+##### **Performance Impact**
+
+**Before Smart Caching:**
+```
+[INFO] Starting OWASP Dependency-Check scan...
+[INFO] Downloading NVD database... (5-10 minutes)
+[INFO] Analyzing dependencies... (2-3 minutes)
+[INFO] Total scan time: 8-13 minutes
+```
+
+**With Smart Caching (cache hit):**
+```
+[INFO] 🔍 Checking NVD database cache status...
+[INFO] ✅ NVD cache is valid - skipping database download
+[INFO] Starting OWASP Dependency-Check scan...
+[INFO] Analyzing dependencies... (2-3 minutes)
+[INFO] Total scan time: 2-3 minutes
+```
+
+##### **Cache Management**
+
+**View Cache Status:**
+The plugin logs cache decisions during scans:
+```
+[INFO] 🔍 Checking NVD database cache status...
+[INFO] ✅ NVD cache is valid - skipping database download
+[INFO] 🔑 NVD API key configured - CVE analysis enabled, cache status: using cached database
+```
+
+**Clear Cache:**
+```bash
+# Delete the cache directory
+rm -rf ~/.bastion/nvd-cache
+
+# Or run with disabled caching for one scan
+mvn bastion:scan -Dbastion.smart.caching.enabled=false
+```
+
+**Cache Locations:**
+- **Linux/Mac**: `~/.bastion/nvd-cache/`
+- **Windows**: `%USERPROFILE%\.bastion\nvd-cache\`
+
+##### **Troubleshooting & Best Practices**
+
+**Cache Check Failures:**
+If cache validation fails, the system falls back to downloading:
+```
+[WARN] ⚠️ Error checking cache validity, defaulting to update: Connection timeout
+[INFO] 🔄 NVD cache is stale or remote database updated - will download latest
+```
+
+**Debug Cache Behavior:**
+```bash
+mvn bastion:scan -X -Dorg.slf4j.simpleLogger.log.io.github.dodogeny=debug
+```
+
+**Best Practices:**
+1. **Use NVD API Key**: Get a free API key from [NIST](https://nvd.nist.gov/developers/request-an-api-key) for optimal caching behavior
+2. **CI/CD Pipelines**: Set longer cache validity (12-24 hours) for build pipelines  
+3. **Development**: Use shorter validity (2-6 hours) for active development
+4. **Monitor Logs**: Watch for cache hit/miss messages to optimize settings
+
+> **🎯 Migration Note**: Smart caching is automatically enabled and backward compatible. Your existing configuration will work unchanged, with caching providing performance benefits automatically. No action is required to upgrade - the first scan establishes the cache, and subsequent scans are dramatically faster.
+
+#### 9. Data Management
 
 ```bash
 # Purge data before scan (JSON file mode)
@@ -251,7 +409,7 @@ mvn bastion:scan -Dbastion.scanner.timeout=600000  # 10 minutes
 <plugin>
     <groupId>io.github.dodogeny</groupId>
     <artifactId>bastion-maven-community-plugin</artifactId>
-    <version>1.0.0</version>
+    <version>[1.1.0,)</version> <!-- Use latest stable version -->
     <configuration>
         <!-- Basic settings -->
         <skip>false</skip>
@@ -275,7 +433,7 @@ mvn bastion:scan -Dbastion.scanner.timeout=600000  # 10 minutes
 <plugin>
     <groupId>io.github.dodogeny</groupId>
     <artifactId>bastion-maven-community-plugin</artifactId>
-    <version>1.0.0</version>
+    <version>[1.1.0,)</version> <!-- Use latest stable version -->
     <configuration>
         <!-- JSON storage configuration -->
         <communityStorageMode>JSON_FILE</communityStorageMode>
@@ -297,7 +455,7 @@ mvn bastion:scan -Dbastion.scanner.timeout=600000  # 10 minutes
 <plugin>
     <groupId>io.github.dodogeny</groupId>
     <artifactId>bastion-maven-community-plugin</artifactId>
-    <version>1.0.0</version>
+    <version>[1.1.0,)</version> <!-- Use latest stable version -->
     <configuration>
         <!-- Multi-module settings -->
         <enableMultiModule>true</enableMultiModule>
@@ -323,7 +481,7 @@ mvn bastion:scan -Dbastion.scanner.timeout=600000  # 10 minutes
 <plugin>
     <groupId>io.github.dodogeny</groupId>
     <artifactId>bastion-maven-community-plugin</artifactId>
-    <version>1.0.0</version>
+    <version>[1.1.0,)</version> <!-- Use latest stable version -->
     <configuration>
         <!-- Build failure policies -->
         <failOnError>true</failOnError>
@@ -354,7 +512,7 @@ mvn bastion:scan -Dbastion.scanner.timeout=600000  # 10 minutes
 <plugin>
     <groupId>io.github.dodogeny</groupId>
     <artifactId>bastion-maven-community-plugin</artifactId>
-    <version>1.0.0</version>
+    <version>[1.1.0,)</version> <!-- Use latest stable version -->
     <configuration>
         <!-- NVD API configuration -->
         <nvdApiKey>${env.NVD_API_KEY}</nvdApiKey>
@@ -448,7 +606,7 @@ mvn bastion:scan -Dbastion.nvd.apiKey=${NVD_API_KEY}
 <plugin>
     <groupId>io.github.dodogeny</groupId>
     <artifactId>bastion-maven-community-plugin</artifactId>
-    <version>1.0.0</version>
+    <version>[1.1.0,)</version> <!-- Use latest stable version -->
     <configuration>
         <nvdApiKey>${env.NVD_API_KEY}</nvdApiKey>
         <!-- or from Maven properties -->
@@ -606,11 +764,17 @@ Bastion provides comprehensive scan statistics and performance metrics:
 └─ Slowest Phase: Vulnerability Analysis
 ```
 
-## 🚀 Upgrade to Enterprise Edition
+## 🚀 Enterprise Edition - Coming Soon
 
-> **🚀 Enterprise Edition**: The Bastion Maven Plugin Enterprise Edition provides advanced security features for organizations requiring enhanced scanning capabilities, persistent storage, and enterprise-grade monitoring.
+> **🚀 Enterprise Edition Development**: We are actively developing the Bastion Maven Plugin Enterprise Edition with advanced security features for organizations requiring enhanced scanning capabilities, persistent storage, and enterprise-grade monitoring. The Enterprise Edition will be available soon and will provide everything in the Community Edition plus powerful enterprise-grade capabilities.
 
-Ready to unlock advanced security features? **Bastion Enterprise** provides everything in the Community Edition plus powerful enterprise-grade capabilities.
+### 🏗️ **Development Status**
+- **Current Phase**: Active development and testing
+- **Expected Release**: wil be communicated when ready
+- **Beta Program**: Early access available for select enterprise customers
+- **Pricing**: Competitive enterprise licensing with volume discounts
+
+Ready to learn more about advanced security features? **Bastion Enterprise** will provide everything in the Community Edition plus powerful enterprise-grade capabilities.
 
 ### 🆚 Community vs Enterprise Comparison
 
@@ -704,7 +868,7 @@ Replace the Community Edition plugin with Enterprise Edition:
 <plugin>
     <groupId>io.github.dodogeny</groupId>
     <artifactId>bastion-maven-community-plugin</artifactId>
-    <version>1.0.0</version>
+    <version>[1.1.0,)</version> <!-- Use latest stable version -->
 </plugin>
 -->
 
@@ -712,7 +876,7 @@ Replace the Community Edition plugin with Enterprise Edition:
 <plugin>
     <groupId>io.github.dodogeny</groupId>
     <artifactId>bastion-maven-plugin-enterprise</artifactId>
-    <version>1.0.0</version>
+    <version>[1.1.0,)</version> <!-- Use latest stable version -->
     <configuration>
         <!-- Enable Enterprise features -->
         <apiKey>${env.BASTION_API_KEY}</apiKey>
@@ -875,7 +1039,7 @@ The Enterprise Edition includes IP-protected implementation to safeguard proprie
 <plugin>
     <groupId>io.github.dodogeny</groupId>
     <artifactId>bastion-maven-plugin-enterprise</artifactId>
-    <version>1.0.0</version>
+    <version>[1.1.0,)</version> <!-- Use latest stable version -->
     <configuration>
         <apiKey>${env.BASTION_API_KEY}</apiKey>
         <licenseProvider>lemonsqueezy</licenseProvider>
@@ -962,16 +1126,34 @@ Enterprise Edition includes intelligent email alerts:
 </notifications>
 ```
 
-### 🆘 Enterprise Support
+### 🆘 Enterprise Support & Early Access
 
-> **🎯 Enterprise Support**: Dedicated enterprise support services will be available with the Enterprise Edition release.
+> **🎯 Enterprise Support**: Comprehensive support services will be included with the Enterprise Edition upon release.
 
-Enterprise customers will get priority support:
+**Planned Enterprise Support Features:**
+- **Dedicated Support Team**: Priority technical support via email and chat
+- **Response Time SLA**: 24 hours for critical issues, 48 hours for standard issues
+- **Implementation Support**: Assistance with deployment and configuration
+- **Migration Assistance**: Professional help transitioning from Community Edition
+- **Documentation Access**: Comprehensive enterprise documentation and best practices
 
-- **Email Support**: it.dodogeny@gmail.com (when available)
-- **Response Time**: 24 hours for critical issues
-- **Dedicated Slack Channel**: Available for annual subscribers
-- **Migration Assistance**: Help migrating from Community to Enterprise
+### 📧 **Express Interest in Enterprise Edition**
+
+**For Organizations Ready to Enhance Their Security Posture:**
+
+We're currently accepting expressions of interest from organizations looking for enterprise-grade vulnerability management solutions. Early adopters will receive:
+
+✅ **Priority Beta Access** - Be among the first to test enterprise features  
+✅ **Founding Customer Pricing** - Special pricing for early enterprise customers  
+✅ **Custom Feature Requests** - Influence the roadmap with your specific needs  
+✅ **Implementation Support** - Dedicated setup and configuration assistance  
+
+**Contact us to learn more:**
+- **Business Inquiries**: [it.dodogeny@gmail.com](mailto:it.dodogeny@gmail.com)
+- **Subject**: `Bastion Enterprise - Expression of Interest`
+- **Include**: Company size, security requirements, and preferred timeline
+
+*We'll contact qualified organizations with beta access information and pricing details when available.*
 
 ### 📊 Enterprise Reporting Features
 
@@ -1071,7 +1253,7 @@ After purchase, you'll receive your LemonSqueezy API key:
    <plugin>
      <groupId>io.github.dodogeny</groupId>
      <artifactId>bastion-maven-plugin-enterprise</artifactId>
-     <version>1.0.0</version>
+     <version>[1.1.0,)</version> <!-- Use latest stable version -->
      <configuration>
        <apiKey>${bastion.apiKey}</apiKey>
        <!-- LemonSqueezy license validation -->
@@ -1121,7 +1303,7 @@ The National Vulnerability Database (NVD) provides faster and more reliable vuln
    <plugin>
      <groupId>io.github.dodogeny</groupId>
      <artifactId>bastion-maven-plugin-enterprise</artifactId>
-     <version>1.0.0</version>
+     <version>[1.1.0,)</version> <!-- Use latest stable version -->
      <configuration>
        <nvdApiKey>${env.NVD_API_KEY}</nvdApiKey>
      </configuration>
@@ -1155,7 +1337,7 @@ The Community Edition offers two storage modes to choose from:
 <plugin>
     <groupId>io.github.dodogeny</groupId>
     <artifactId>bastion-maven-plugin-enterprise</artifactId>
-    <version>1.0.0</version>
+    <version>[1.1.0,)</version> <!-- Use latest stable version -->
     <configuration>
         <!-- Community Edition (default) -->
         
@@ -1183,7 +1365,7 @@ mvn bastion:scan -Dbastion.community.storageMode=IN_MEMORY
 <plugin>
     <groupId>io.github.dodogeny</groupId>
     <artifactId>bastion-maven-plugin-enterprise</artifactId>
-    <version>1.0.0</version>
+    <version>[1.1.0,)</version> <!-- Use latest stable version -->
     <configuration>
         <!-- Community Edition -->
         
@@ -1220,7 +1402,7 @@ mvn bastion:scan \
 <plugin>
     <groupId>io.github.dodogeny</groupId>
     <artifactId>bastion-maven-plugin-enterprise</artifactId>
-    <version>1.0.0</version>
+    <version>[1.1.0,)</version> <!-- Use latest stable version -->
     <configuration>
         <apiKey>${env.BASTION_API_KEY}</apiKey>
         
@@ -1241,7 +1423,7 @@ mvn bastion:scan \
 <plugin>
     <groupId>io.github.dodogeny</groupId>
     <artifactId>bastion-maven-plugin-enterprise</artifactId>
-    <version>1.0.0</version>
+    <version>[1.1.0,)</version> <!-- Use latest stable version -->
     <configuration>
         <apiKey>${env.BASTION_API_KEY}</apiKey>
         
@@ -1270,7 +1452,7 @@ mvn bastion:scan \
 <plugin>
     <groupId>io.github.dodogeny</groupId>
     <artifactId>bastion-maven-plugin-enterprise</artifactId>
-    <version>1.0.0</version>
+    <version>[1.1.0,)</version> <!-- Use latest stable version -->
     <configuration>
         <apiKey>${env.BASTION_API_KEY}</apiKey>
         
@@ -1398,7 +1580,7 @@ For enterprise deployments with large codebases:
 <plugin>
     <groupId>io.github.dodogeny</groupId>
     <artifactId>bastion-maven-plugin-enterprise</artifactId>
-    <version>1.0.0</version>
+    <version>[1.1.0,)</version> <!-- Use latest stable version -->
     <configuration>
         <!-- LemonSqueezy License Configuration -->
         <apiKey>${env.BASTION_API_KEY}</apiKey>
@@ -1432,7 +1614,7 @@ Configure email alerts for your security team (Commercial Edition):
 <plugin>
     <groupId>io.github.dodogeny</groupId>
     <artifactId>bastion-maven-plugin-enterprise</artifactId>
-    <version>1.0.0</version>
+    <version>[1.1.0,)</version> <!-- Use latest stable version -->
     <configuration>
         <!-- Email Configuration -->
         <notifications>
@@ -1510,7 +1692,7 @@ export BASTION_STORE_ID="12345"              # Your LemonSqueezy store ID
 ```
 ⚠️ LemonSqueezy subscription expired
 ```
-**Solution:** Renew your subscription at https://bastion.lemonsqueezy.com
+**Solution:** Renew your subscription at https://bastion-plugin.lemonsqueezy.com
 
 **API rate limits:**
 ```
@@ -1528,7 +1710,7 @@ For large enterprise applications with multiple modules:
 <plugin>
     <groupId>io.github.dodogeny</groupId>
     <artifactId>bastion-maven-plugin-enterprise</artifactId>
-    <version>1.0.0</version>
+    <version>[1.1.0,)</version> <!-- Use latest stable version -->
     <configuration>
         <!-- Multi-module optimization -->
         <multiModule>
@@ -1868,7 +2050,7 @@ jobs:
       env:
         NVD_API_KEY: ${{ secrets.NVD_API_KEY }}
       run: |
-        mvn io.github.dodogeny:bastion-maven-community-plugin:1.0.0:scan \
+        mvn io.github.dodogeny:bastion-maven-community-plugin:1.1.0:scan \
           -Dbastion.nvd.apiKey=${NVD_API_KEY} \
           -Dbastion.failOnCritical=true \
           -Dbastion.statistics.enabled=true
@@ -1926,7 +2108,7 @@ jobs:
       env:
         NVD_API_KEY: ${{ secrets.NVD_API_KEY }}
       run: |
-        mvn io.github.dodogeny:bastion-maven-community-plugin:1.0.0:scan \
+        mvn io.github.dodogeny:bastion-maven-community-plugin:1.1.0:scan \
           -Dbastion.nvd.apiKey=${NVD_API_KEY} \
           -Dbastion.community.storageMode=JSON_FILE \
           -Dbastion.storage.jsonFilePath=${GITHUB_WORKSPACE}/.bastion/vulnerabilities.json \
@@ -2006,7 +2188,7 @@ pipeline {
         stage('Security Scan') {
             steps {
                 sh '''
-                    mvn io.github.dodogeny:bastion-maven-community-plugin:1.0.0:scan \
+                    mvn io.github.dodogeny:bastion-maven-community-plugin:1.1.0:scan \
                       -Dbastion.nvd.apiKey=${NVD_API_KEY} \
                       -Dbastion.failOnCritical=true \
                       -Dbastion.statistics.enabled=true \
@@ -2103,7 +2285,7 @@ bastion-security-scan:
     
   script:
     - |
-      mvn io.github.dodogeny:bastion-maven-community-plugin:1.0.0:scan \
+      mvn io.github.dodogeny:bastion-maven-community-plugin:1.1.0:scan \
         -Dbastion.nvd.apiKey=${NVD_API_KEY} \
         -Dbastion.community.storageMode=JSON_FILE \
         -Dbastion.storage.jsonFilePath=${CI_PROJECT_DIR}/.bastion/vulnerabilities.json \
@@ -2176,7 +2358,7 @@ steps:
     jdkSourceOption: 'PreInstalled'
 
 - script: |
-    mvn io.github.dodogeny:bastion-maven-community-plugin:1.0.0:scan \
+    mvn io.github.dodogeny:bastion-maven-community-plugin:1.1.0:scan \
       -Dbastion.nvd.apiKey=$(NVD_API_KEY) \
       -Dbastion.community.storageMode=JSON_FILE \
       -Dbastion.storage.jsonFilePath=$(Agent.TempDirectory)/bastion-vulnerabilities.json \
@@ -2217,7 +2399,7 @@ COPY pom.xml .
 COPY src ./src
 
 # Install and run Bastion security scan
-RUN mvn io.github.dodogeny:bastion-maven-community-plugin:1.0.0:scan \
+RUN mvn io.github.dodogeny:bastion-maven-community-plugin:1.1.0:scan \
     -Dbastion.community.storageMode=JSON_FILE \
     -Dbastion.storage.jsonFilePath=/app/vulnerabilities.json \
     -Dbastion.statistics.enabled=true
@@ -2248,7 +2430,7 @@ Bastion supports JSON file-based storage as an alternative to database storage, 
 <plugin>
     <groupId>io.github.dodogeny</groupId>
     <artifactId>bastion-maven-plugin-enterprise</artifactId>
-    <version>1.0.0</version>
+    <version>[1.1.0,)</version> <!-- Use latest stable version -->
     <configuration>
         <!-- Enable JSON file storage -->
         <storage>

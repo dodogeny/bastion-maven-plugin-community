@@ -2,6 +2,20 @@
 
 This guide covers installation methods for both Community and Commercial editions.
 
+## 📦 Finding the Latest Version
+
+**Always use the latest stable version from Maven Central:**
+
+[![Maven Central](https://maven-badges.herokuapp.com/maven-central/io.github.dodogeny/bastion-maven-community-plugin/badge.svg)](https://maven-badges.herokuapp.com/maven-central/io.github.dodogeny/bastion-maven-community-plugin)
+
+```bash
+# Quick version lookup
+mvn help:evaluate -Dexpression=latest.version -DgroupId=io.github.dodogeny -DartifactId=bastion-maven-community-plugin
+
+# Or visit Maven Central directly:
+# https://search.maven.org/artifact/io.github.dodogeny/bastion-maven-community-plugin
+```
+
 ## Prerequisites
 
 - **Java**: JDK 8 or higher
@@ -18,7 +32,7 @@ Add the plugin to your `pom.xml`:
 <plugin>
     <groupId>mu.dodogeny</groupId>
     <artifactId>bastion-maven-plugin</artifactId>
-    <version>1.0.0</version>
+    <version>LATEST</version> <!-- Check Maven Central for latest stable version -->
     <configuration>
         <!-- Community Edition settings (default) -->
         
@@ -81,7 +95,7 @@ Check that reports are generated in `target/security-reports/`:
 <plugin>
     <groupId>mu.dodogeny</groupId>
     <artifactId>bastion-maven-plugin</artifactId>
-    <version>1.0.0</version>
+    <version>LATEST</version> <!-- Check Maven Central for latest stable version -->
     <configuration>
         <!-- Commercial Edition configuration -->
         <apiKey>${env.BASTION_API_KEY}</apiKey>
