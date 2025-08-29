@@ -608,7 +608,7 @@ Bastion provides comprehensive scan statistics and performance metrics:
 
 ## 🚀 Upgrade to Enterprise Edition
 
-> **✅ Enterprise Edition Now Available**: The Bastion Maven Plugin Enterprise Edition is now available on Maven Central with advanced security features, IP-protected implementation, and enterprise licensing through LemonSqueezy.
+> **🚀 Enterprise Edition**: The Bastion Maven Plugin Enterprise Edition provides advanced security features for organizations requiring enhanced scanning capabilities, persistent storage, and enterprise-grade monitoring.
 
 Ready to unlock advanced security features? **Bastion Enterprise** provides everything in the Community Edition plus powerful enterprise-grade capabilities.
 
@@ -616,12 +616,12 @@ Ready to unlock advanced security features? **Bastion Enterprise** provides ever
 
 | Feature | Community Edition | Enterprise Edition |
 |---------|------------------|-------------------|
-| **🔍 Scanning Engine** | ✅ OWASP Dependency-Check | 🚀 **Next-Gen Enterprise Scanner** |
-| **⚡ Performance** | Sequential processing | 🚀 **5-10x Faster** with parallel scanning |
-| **🧠 Intelligence** | Basic vulnerability detection | 🚀 **AI-Powered** threat intelligence + ML detection |
-| **💾 Caching** | Basic file caching | 🚀 **Advanced Multi-Level Cache** (80%+ hit rate) |
-| **🔄 Incremental Scanning** | Full rescan every time | 🚀 **Smart Change Detection** (2-3x faster) |
-| **🎯 Accuracy** | Standard OWASP database | 🚀 **Enhanced Database** + signature-based detection |
+| **🔍 Scanning Engine** | ✅ OWASP Dependency-Check | ✅ **Enhanced Enterprise Scanner** with parallel processing |
+| **⚡ Performance** | Sequential processing | 🚀 **Multi-threaded scanning** with optimized batching |
+| **🧠 Intelligence** | Basic vulnerability detection | 🚀 **Threat Intelligence** integration (NVD, MITRE, CISA KEV) |
+| **💾 Caching** | Basic file caching | 🚀 **Advanced Caffeine Cache** with intelligent invalidation |
+| **🔄 Incremental Scanning** | Full rescan every time | 🚀 **File Change Detection** with MD5 fingerprinting |
+| **🎯 Accuracy** | Standard OWASP database | 🚀 **Multi-source detection** with enhanced vulnerability mapping |
 | **📊 Report Formats** | ✅ HTML, JSON, CSV | ✅ + PDF, SARIF, Executive dashboards |
 | **🗄️ Storage Options** | ✅ In-memory, JSON file | ✅ + PostgreSQL, MySQL, H2 |
 | **📈 Trend Analysis** | ✅ Basic historical tracking | 🚀 **Advanced Analytics** + trend prediction |
@@ -638,18 +638,18 @@ Ready to unlock advanced security features? **Bastion Enterprise** provides ever
 
 > **⚡ Up to 10x Faster**: Our revolutionary Enterprise Scanner delivers unprecedented performance through advanced parallel processing, intelligent caching, and AI-powered optimization.
 
-#### 🔥 **Performance Breakthrough**
-- **Multi-Threaded Architecture**: Leverages all CPU cores with optimized thread pools
-- **Intelligent Batching**: Processes dependencies in optimized batches (100+ items/batch)
-- **Advanced Caching**: 3-tier Caffeine cache system with 80%+ hit rates
-- **Incremental Scanning**: Only scans changed files using SHA-256 fingerprinting
-- **Database Optimization**: Batch queries with prepared statements (4-6x faster DB access)
+#### 🔥 **Performance Features**
+- **Multi-Threaded Architecture**: ForkJoinPool and ExecutorService for parallel processing
+- **Intelligent Batching**: Configurable batch sizes for optimal throughput
+- **Advanced Caching**: Caffeine cache with vulnerability and file hash caching
+- **Incremental Scanning**: MD5-based change detection for efficient rescanning
+- **Performance Monitoring**: Real-time metrics and bottleneck identification
 
 #### 🧠 **Intelligence-Enhanced Scanning**
-- **Signature-Based Detection**: Pattern recognition for known vulnerability signatures
-- **Multi-Source Threat Intelligence**: Integration with NVD, MITRE, CISA KEV, and commercial feeds
-- **Real-Time Context**: Live exploit availability and attack vector intelligence
-- **Advanced Risk Assessment**: Algorithmic scoring with threat intelligence context
+- **Threat Intelligence Integration**: NVD, MITRE ATT&CK, CISA KEV feeds
+- **Enhanced Risk Scoring**: CVSS scoring with exploit availability context
+- **Vulnerability Enrichment**: Additional context from multiple intelligence sources
+- **Real-time Updates**: Scheduled threat intelligence feed updates
 
 #### 📊 **Real-Time Performance Monitoring**
 - **Live Metrics**: Throughput, cache efficiency, scan duration tracking
@@ -663,22 +663,19 @@ Ready to unlock advanced security features? **Bastion Enterprise** provides ever
 
 | Scenario | Community Edition | Enterprise Edition | **Improvement** |
 |----------|------------------|-------------------|----------------|
-| **🏗️ Large Maven Project** (500+ deps) | 8.5 minutes | **52 seconds** | **🚀 10x faster** |
-| **🔄 Incremental Scan** (50 changed deps) | 8.5 minutes | **12 seconds** | **🚀 43x faster** |
-| **💾 Memory Usage** | 512 MB peak | **256 MB peak** | **🚀 50% less memory** |
-| **🎯 Cache Hit Rate** | ~20% (basic file cache) | **85%** (multi-level cache) | **🚀 4x better caching** |
-| **🔍 Vulnerability Detection** | Standard OWASP | **OWASP + AI + Signatures** | **🚀 15% more accurate** |
-| **⚡ Throughput** | 2.3 deps/sec | **18.7 deps/sec** | **🚀 8x faster processing** |
+| **🏗️ Large Maven Project** (500+ deps) | Sequential processing | **Parallel processing** | **🚀 2-3x faster** |
+| **🔄 Incremental Scan** (50 changed deps) | Full rescan | **Change detection** | **🚀 5-10x faster** |
+| **💾 Memory Usage** | Standard memory usage | **Optimized memory** | **🚀 More efficient** |
+| **🎯 Cache Hit Rate** | Basic file caching | **Advanced caching** | **🚀 Improved efficiency** |
+| **🔍 Vulnerability Detection** | OWASP Dependency-Check | **Enhanced detection** | **🚀 Better accuracy** |
+| **⚡ Throughput** | Single-threaded | **Multi-threaded** | **🚀 Improved performance** |
 
 ### 💡 **ROI Calculator**
 
 **For a team scanning 10 projects daily:**
-- **Time Saved**: 68 minutes per scan × 10 scans = **11+ hours daily**
-- **Developer Productivity**: $150/hour × 11 hours = **$1,650 daily savings**
-- **Monthly ROI**: $1,650 × 22 days = **$36,300 vs $29 license cost**
-- **Annual Savings**: **$435,600 in productivity gains**
-
-> **💰 Enterprise Edition pays for itself in the first day of use!**
+- **Time Saved**: Significant reduction in scan times through parallel processing
+- **Developer Productivity**: Faster feedback cycles and more efficient vulnerability detection
+- **Operational Efficiency**: Reduced CI/CD pipeline duration and improved resource utilization
 
 ### 🛒 How to Upgrade
 
@@ -686,16 +683,16 @@ Ready to unlock advanced security features? **Bastion Enterprise** provides ever
 
 #### Step 1: Purchase Enterprise License
 
-Visit our LemonSqueezy store to purchase your enterprise license:
+The enterprise edition uses LemonSqueezy for license management and validation:
 
 ```bash
-# Available at:
-https://bastionplugin.lemonsqueezy.com
+# Enterprise licensing through LemonSqueezy
+# Contact for pricing and licensing options
 ```
 
-**Current Plans:**
-- **Monthly Subscription**: $29/month per team
-- **Annual Subscription**: $290/year per team (17% savings)
+**Enterprise Features Available:**
+- **LemonSqueezy License Management**: API-based license validation
+- **Commercial Support**: Priority assistance for enterprise customers
 
 #### Step 2: Update Your Project Configuration
 
@@ -803,63 +800,62 @@ graph TB
 
 #### 🛡️ **Security Intelligence Features**
 
-- **🔥 Zero-Day Detection**: ML models trained on 10M+ vulnerability patterns
-- **🎯 Exploit Prediction**: Real-time threat intelligence from 500+ sources
-- **🏗️ Supply Chain Analysis**: Deep dependency tree risk assessment
-- **🚨 Active Threat Monitoring**: Live CVE feeds with exploit availability tracking
-- **📈 Risk Trending**: Predictive analytics for emerging vulnerability patterns
+- **🔍 Enhanced Detection**: Advanced signature-based vulnerability detection
+- **🎯 Threat Intelligence**: Integration with NVD, MITRE, and CISA KEV feeds
+- **🏗️ Dependency Analysis**: Comprehensive dependency tree vulnerability mapping
+- **🚨 Real-time Monitoring**: Performance metrics and scan optimization
+- **📈 Risk Assessment**: Enhanced CVSS scoring with threat context
 
 #### 🔧 **Enterprise Integration APIs**
 
 ```java
-// Real-time performance monitoring
-ScannerPerformanceMonitor monitor = new ScannerPerformanceMonitor();
-EnterprisePerformanceReport report = monitor.generatePerformanceReport();
-
-// Advanced vulnerability database optimization  
-VulnerabilityDatabaseOptimizer optimizer = new VulnerabilityDatabaseOptimizer();
-CompletableFuture<List<VulnerabilityRecord>> vulns = 
-    optimizer.findVulnerabilitiesOptimized(components);
-
-// High-performance scanning with intelligent caching
+// Enterprise vulnerability scanning with threat intelligence
 EnterpriseVulnerabilityScanner scanner = new EnterpriseVulnerabilityScanner();
 CompletableFuture<ScanResult> result = scanner.scanProject(projectPath);
+
+// LemonSqueezy license management
+LemonSqueezyLicenseManager licenseManager = new LemonSqueezyLicenseManager();
+boolean isAuthorized = licenseManager.isCommercialEditionAllowed(apiKey);
+
+// Email notification system
+EmailNotificationService notifications = new EmailNotificationService(config);
+CompletableFuture<NotificationResult> emailResult = notifications.processScanResults(scanResult);
 ```
 
 ### 🏆 **Why Choose Bastion Enterprise**
 
-| Capability | Bastion Enterprise | Snyk | Veracode | JFrog Xray |
-|------------|-------------------|------|----------|-------------|
-| **⚡ Scan Speed** | **10x faster** | Baseline | 2x slower | 3x slower |
-| **🧠 AI Detection** | **ML + Signatures** | Basic ML | Rule-based | Signature only |
-| **💾 Memory Usage** | **50% less** | Baseline | 2x more | 1.5x more |
-| **🎯 Accuracy** | **97.3%** | 94.1% | 92.8% | 89.7% |
-| **🔄 Incremental** | **✅ Smart Change Detection** | ❌ | ❌ | Limited |
-| **🏢 Enterprise Ready** | **✅ Complete Platform** | Partial | Limited | Partial |
-| **💰 Cost Efficiency** | **$29/month** | $89/month | $299/month | $149/month |
+| Capability | Bastion Enterprise | Community Edition |
+|------------|-------------------|------------------|
+| **⚡ Scan Speed** | **Multi-threaded with caching** | Single-threaded processing |
+| **🧠 Intelligence** | **Threat intelligence integration** | Basic OWASP database |
+| **💾 Storage** | **Persistent databases (H2/PostgreSQL/MySQL)** | In-memory or JSON file |
+| **📧 Notifications** | **Email alerts with SMTP** | None |
+| **🔄 Incremental** | **✅ File change detection** | Full rescans |
+| **🏢 Enterprise Ready** | **✅ LemonSqueezy licensing** | Open source |
+| **💰 Licensing** | **Commercial license required** | Free and open source |
 
 ### 🎯 **Enterprise Exclusive Features**
 
 #### 🔐 **Advanced Security Capabilities**
-- **Multi-Tenant Architecture**: Isolated scanning environments for different teams
-- **Compliance Automation**: SOC 2, ISO 27001, NIST framework alignment  
-- **Audit Trail**: Complete scan history with tamper-proof logging
-- **Role-Based Access**: Granular permissions for security teams
-- **API Rate Limiting**: Enterprise-grade throttling and quotas
+- **Enhanced Scanner Architecture**: Optimized vulnerability detection engine
+- **Persistent Storage**: H2, PostgreSQL, and MySQL database support  
+- **Email Notifications**: Automated security alerts with customizable thresholds
+- **Performance Monitoring**: Real-time scan metrics and optimization
+- **License Management**: LemonSqueezy-based commercial license validation
 
-#### 📊 **Executive Reporting & Analytics**
-- **C-Suite Dashboards**: Executive summary reports with risk trends
-- **Compliance Reports**: Automated generation for audits and certifications
-- **Risk Scoring**: Business impact assessment for vulnerabilities
-- **Trend Analytics**: Predictive insights for security posture improvement
-- **Custom KPIs**: Configurable metrics aligned with business objectives
+#### 📊 **Advanced Reporting & Analytics**
+- **Performance Metrics**: Comprehensive scan statistics and timing breakdowns
+- **Threat Intelligence Reports**: Enhanced vulnerability context and risk scoring
+- **Multi-format Reports**: Support for additional enterprise report formats
+- **Database-driven Analytics**: Persistent storage for historical analysis
+- **Email Alert System**: Configurable notifications for security teams
 
 #### 🔗 **Enterprise Integrations**
-- **SIEM Platforms**: Splunk, QRadar, ArcSight, Sentinel
-- **Ticketing Systems**: Jira, ServiceNow, PagerDuty
-- **Chat Platforms**: Slack, Microsoft Teams, Discord
-- **CI/CD Pipelines**: Jenkins, GitHub Actions, GitLab CI, Azure DevOps
-- **Cloud Security**: AWS Security Hub, Azure Security Center, GCP Security Command
+- **Email Systems**: SMTP-based notification system with configurable recipients
+- **Database Systems**: H2, PostgreSQL, MySQL support for persistent storage
+- **CI/CD Pipelines**: Maven plugin integration for build pipelines
+- **Threat Intelligence**: NVD, MITRE ATT&CK, CISA KEV feed integration
+- **License Management**: LemonSqueezy API integration for commercial licensing
 
 ### 🔒 Intellectual Property Protection
 
@@ -874,26 +870,20 @@ The Enterprise Edition includes IP-protected implementation to safeguard proprie
 
 #### Installation Options
 
-**Option 1: Standard Artifact (Default)**
+**Enterprise Plugin Configuration:**
 ```xml
-<dependency>
+<plugin>
     <groupId>io.github.dodogeny</groupId>
-    <artifactId>bastion-enterprise-features</artifactId>
+    <artifactId>bastion-maven-plugin-enterprise</artifactId>
     <version>1.0.0</version>
-</dependency>
+    <configuration>
+        <apiKey>${env.BASTION_API_KEY}</apiKey>
+        <licenseProvider>lemonsqueezy</licenseProvider>
+    </configuration>
+</plugin>
 ```
 
-**Option 2: Protected Artifact (Recommended for Production)**
-```xml
-<dependency>
-    <groupId>io.github.dodogeny</groupId>
-    <artifactId>bastion-enterprise-features</artifactId>
-    <version>1.0.0</version>
-    <classifier>protected</classifier>
-</dependency>
-```
-
-> **🛡️ Protection Features**: The protected artifact includes Maven Shade Plugin-based obfuscation that protects implementation details while preserving public API compatibility for seamless integration with community edition and third-party tools.
+> **🛡️ Enterprise Implementation**: The enterprise edition includes enhanced scanning capabilities, persistent storage options, and commercial licensing through LemonSqueezy while maintaining compatibility with standard Maven plugin architecture.
 
 #### Step 4: Verify Enterprise Activation
 
