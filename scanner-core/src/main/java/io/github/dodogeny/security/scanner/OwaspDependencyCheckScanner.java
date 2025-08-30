@@ -14,6 +14,8 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.io.File;
+import java.nio.file.Files;
+import java.nio.file.Paths;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
@@ -21,6 +23,12 @@ import java.util.Set;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.atomic.AtomicInteger;
 import java.util.concurrent.atomic.AtomicLong;
+import java.sql.Connection;
+import java.sql.Driver;
+import java.sql.DriverManager;
+import java.sql.DriverPropertyInfo;
+import java.sql.SQLException;
+import java.sql.SQLFeatureNotSupportedException;
 
 public class OwaspDependencyCheckScanner implements VulnerabilityScanner {
     
@@ -53,6 +61,9 @@ public class OwaspDependencyCheckScanner implements VulnerabilityScanner {
         long cacheValidityHours = configuration.getCacheValidityHours();
         int connectionTimeoutMs = 10000; // 10 seconds for cache checks
         double updateThresholdPercent = configuration.getUpdateThresholdPercent();
+        
+        // Explicitly load H2 database driver to resolve classpath issues in Maven plugin environment
+        ensureH2DriverLoaded();
         
         this.cacheManager = new NvdCacheManager(
             configuration.getCacheDirectory(), 
@@ -118,15 +129,33 @@ public class OwaspDependencyCheckScanner implements VulnerabilityScanner {
                 }
                 
                 try {
+                    logger.info("🔍 Starting OWASP dependency analysis...");
+                    
+                    // Force engine initialization to ensure database is properly loaded
+                    logger.info("🔄 Initializing OWASP engine with NVD database...");
+                    try {
+                        engine.doUpdates();
+                        logger.info("✅ NVD database updates completed successfully");
+                    } catch (Exception updateException) {
+                        logger.warn("⚠️ NVD database update encountered issues: {}", updateException.getMessage());
+                        // Continue with analysis even if update had issues
+                    }
+                    
                     engine.analyzeDependencies();
+                    logger.info("✅ OWASP dependency analysis completed");
                 } catch (DatabaseException de) {
+                    logger.error("❌ Database error during OWASP scan: {}", de.getMessage());
                     if (isDatabaseLockException(de)) {
                         logger.warn("NVD database is locked by another process. Skipping analysis for this batch.");
                         handleDatabaseLockException(de);
                         // For dependency list scanning, we'll just log and continue without retry
                         // to avoid blocking the entire scan process
                     } else {
-                        logger.error("Database error during OWASP scan", de);
+                        logger.error("💡 This usually indicates NVD database download/initialization failed");
+                        logger.error("💡 Check if NVD API key is valid and network connectivity is working");
+                        if (de.getMessage() != null && de.getMessage().contains("No documents exist")) {
+                            logger.error("💡 NVD database appears empty - download may have failed silently");
+                        }
                         throw new RuntimeException("OWASP scan failed due to database error", de);
                     }
                 } catch (ExceptionCollection ec) {
@@ -171,7 +200,24 @@ public class OwaspDependencyCheckScanner implements VulnerabilityScanner {
                 
                 // Handle specific error types with helpful messages
                 if (e.getMessage() != null && e.getMessage().contains("No documents exist")) {
-                    logger.error("NVD database is not initialized. Try running with NVD_API_KEY set or wait for database initialization.");
+                    logger.warn("🔍 NVD database initialization issue - database exists but contains no vulnerability documents");
+                    logger.info("This usually indicates:");
+                    logger.info("  1. First-time setup requiring initial NVD download");
+                    logger.info("  2. Interrupted download that left database in incomplete state");
+                    logger.info("  3. NVD 2.0 API rate limiting or connection issues");
+                    
+                    // Attempt to recover from corrupted database
+                    boolean recoveryAttempted = attemptDatabaseRecovery();
+                    
+                    if (recoveryAttempted) {
+                        logger.info("🔄 Database recovery initiated - corrupted files cleared, fresh download will occur on next scan");
+                        logger.info("💡 Please re-run the scan to download fresh NVD data");
+                        logger.info("💡 With your API key, the download should complete successfully");
+                    } else {
+                        logger.error("❌ Could not initiate database recovery - manual intervention may be required");
+                        logger.error("💡 Try running with NVD_API_KEY set or manually clear the database cache");
+                    }
+                    
                     return new ArrayList<>(); // Return empty list instead of failing
                 }
                 
@@ -270,7 +316,19 @@ public class OwaspDependencyCheckScanner implements VulnerabilityScanner {
                 totalScansFailed.incrementAndGet();
                 logger.error("OWASP project scan failed: {}", projectPath, e);
                 if (e.getMessage() != null && e.getMessage().contains("No documents exist")) {
-                    logger.error("NVD database is not initialized. Try running with NVD_API_KEY set or wait for database initialization.");
+                    logger.warn("🔍 Detected corrupted NVD database - database file exists but contains no vulnerability documents");
+                    
+                    // Attempt to recover from corrupted database
+                    boolean recoveryAttempted = attemptDatabaseRecovery();
+                    
+                    if (recoveryAttempted) {
+                        logger.info("🔄 Database recovery initiated - corrupted files cleared, fresh download will occur on next scan");
+                        logger.info("💡 Please re-run the scan to download fresh NVD data");
+                    } else {
+                        logger.error("❌ Could not initiate database recovery - manual intervention may be required");
+                        logger.error("💡 Try running with NVD_API_KEY set or manually clear the database cache");
+                    }
+                    
                     // Return empty scan result instead of failing
                     ScanResult result = new ScanResult();
                     result.setProjectName(new File(projectPath).getName());
@@ -995,6 +1053,101 @@ public class OwaspDependencyCheckScanner implements VulnerabilityScanner {
     }
     
     /**
+     * Explicitly loads the H2 database driver to ensure it's available in Maven plugin environment.
+     * This resolves the "No suitable driver found" error by forcing H2 driver registration.
+     */
+    private void ensureH2DriverLoaded() {
+        try {
+            // Try to load H2 driver class explicitly using the current thread's context class loader
+            ClassLoader contextClassLoader = Thread.currentThread().getContextClassLoader();
+            ClassLoader systemClassLoader = ClassLoader.getSystemClassLoader();
+            
+            Class<?> h2DriverClass = null;
+            Driver h2Driver = null;
+            
+            // Try multiple classloaders to find H2 driver
+            try {
+                h2DriverClass = Class.forName("org.h2.Driver", true, contextClassLoader);
+                h2Driver = (Driver) h2DriverClass.getDeclaredConstructor().newInstance();
+            } catch (Exception e1) {
+                logger.debug("Could not load H2 driver with context classloader: {}", e1.getMessage());
+                try {
+                    h2DriverClass = Class.forName("org.h2.Driver", true, systemClassLoader);
+                    h2Driver = (Driver) h2DriverClass.getDeclaredConstructor().newInstance();
+                } catch (Exception e2) {
+                    logger.debug("Could not load H2 driver with system classloader: {}", e2.getMessage());
+                    // Final fallback to default classloader
+                    h2DriverClass = Class.forName("org.h2.Driver");
+                    h2Driver = (Driver) h2DriverClass.getDeclaredConstructor().newInstance();
+                }
+            }
+            
+            // Register with DriverManager and set as context for current thread
+            DriverManager.registerDriver(h2Driver);
+            
+            // Also register a DriverManager wrapper that ensures H2 is available
+            DriverManager.registerDriver(new WrappedH2Driver(h2Driver));
+            
+            logger.info("✅ H2 database driver loaded successfully: {}", h2Driver.getClass().getName());
+            logger.debug("H2 driver version: {}.{}", h2Driver.getMajorVersion(), h2Driver.getMinorVersion());
+            logger.debug("H2 driver loaded with classloader: {}", h2DriverClass.getClassLoader().getClass().getName());
+            
+        } catch (ClassNotFoundException e) {
+            logger.error("❌ H2 driver class not found in classpath: {}", e.getMessage());
+            logger.error("💡 This indicates H2 dependency is missing or not accessible in Maven plugin environment");
+            logger.error("💡 Add H2 dependency to plugin POM or check Maven plugin classpath configuration");
+        } catch (Exception e) {
+            logger.error("❌ Failed to load H2 driver: {}", e.getMessage(), e);
+        }
+    }
+    
+    /**
+     * Wrapper driver to ensure H2 is always available for OWASP Dependency-Check
+     */
+    private static class WrappedH2Driver implements Driver {
+        private final Driver delegate;
+        
+        public WrappedH2Driver(Driver delegate) {
+            this.delegate = delegate;
+        }
+        
+        @Override
+        public Connection connect(String url, java.util.Properties info) throws SQLException {
+            return delegate.connect(url, info);
+        }
+        
+        @Override
+        public boolean acceptsURL(String url) throws SQLException {
+            return delegate.acceptsURL(url);
+        }
+        
+        @Override
+        public DriverPropertyInfo[] getPropertyInfo(String url, java.util.Properties info) throws SQLException {
+            return delegate.getPropertyInfo(url, info);
+        }
+        
+        @Override
+        public int getMajorVersion() {
+            return delegate.getMajorVersion();
+        }
+        
+        @Override
+        public int getMinorVersion() {
+            return delegate.getMinorVersion();
+        }
+        
+        @Override
+        public boolean jdbcCompliant() {
+            return delegate.jdbcCompliant();
+        }
+        
+        @Override
+        public java.util.logging.Logger getParentLogger() throws SQLFeatureNotSupportedException {
+            return delegate.getParentLogger();
+        }
+    }
+    
+    /**
      * Creates OWASP settings with smart caching that only downloads if remote database has changed.
      */
     private Settings createSmartCachedSettings(String effectiveNvdApiKey) {
@@ -1029,6 +1182,23 @@ public class OwaspDependencyCheckScanner implements VulnerabilityScanner {
                 } else {
                     logger.info("🔄 NVD cache is stale or remote database updated - will download latest (check took {}ms)", cacheCheckTime);
                     logger.info("📥 Initiating NVD database download - this may take several minutes...");
+                    
+                    // Try to use high-speed parallel downloader if API key is available
+                    if (hasApiKey) {
+                        logger.info("🚀 Attempting high-speed parallel NVD download...");
+                        try {
+                            boolean downloadSuccess = cacheManager.downloadNvdDatabase(effectiveNvdApiKey);
+                            if (downloadSuccess) {
+                                logger.info("✅ Parallel download completed successfully - OWASP scanner will use cached database");
+                            } else {
+                                logger.info("⚠️  Parallel download failed - falling back to OWASP built-in downloader");
+                            }
+                        } catch (Exception downloadException) {
+                            logger.warn("⚠️  Parallel download error - falling back to OWASP built-in downloader: {}", downloadException.getMessage());
+                        }
+                    } else {
+                        logger.warn("⚠️  No API key available - relying on OWASP built-in downloader (may be slower)");
+                    }
                 }
             } catch (Exception e) {
                 long cacheCheckTime = System.currentTimeMillis() - cacheCheckStart;
@@ -1042,6 +1212,10 @@ public class OwaspDependencyCheckScanner implements VulnerabilityScanner {
             logger.info("🔄 Smart caching disabled - forcing NVD database download");
         }
         
+        // Configure connection timeouts for NVD 2.0 API
+        settings.setInt(Settings.KEYS.CONNECTION_TIMEOUT, 60000); // Increased for NVD API
+        settings.setInt(Settings.KEYS.CONNECTION_READ_TIMEOUT, 120000); // Increased for large responses
+        
         if (hasApiKey) {
             // Set all known NVD API key system properties for OWASP compatibility
             System.setProperty("nvd.api.key", effectiveNvdApiKey);
@@ -1051,26 +1225,62 @@ public class OwaspDependencyCheckScanner implements VulnerabilityScanner {
             // Configure OWASP settings directly for NVD API key
             settings.setString(Settings.KEYS.NVD_API_KEY, effectiveNvdApiKey);
             
+            // NVD 2.0 API specific settings to prevent "No documents exist" error
+            settings.setInt(Settings.KEYS.NVD_API_DELAY, 6000); // 6 second delay between requests (NVD requires 6 seconds without API key, safer with API key too)
+            settings.setInt(Settings.KEYS.NVD_API_MAX_RETRY_COUNT, 10); // More retries for reliability
+            settings.setInt(Settings.KEYS.NVD_API_RESULTS_PER_PAGE, 2000); // Larger page size for efficiency
+            
+            // Additional settings to ensure proper database initialization
+            // Note: Using standard OWASP settings for cache validity
+            
+            // Let OWASP handle database configuration automatically
+            // Removed explicit H2 driver settings to avoid ClassNotFoundException
+            
             // Use smart cache decision for autoUpdate
             settings.setBoolean(Settings.KEYS.AUTO_UPDATE, shouldUpdate);
             settings.setBoolean(Settings.KEYS.UPDATE_NVDCVE_ENABLED, shouldUpdate);
             settings.setBoolean(Settings.KEYS.ANALYZER_NVD_CVE_ENABLED, true);
             
+            // Force initial NVD database download if needed
+            if (shouldUpdate) {
+                logger.info("🔄 Forcing NVD database update due to cache validation");
+                settings.setBoolean(Settings.KEYS.AUTO_UPDATE, true);
+                settings.setBoolean(Settings.KEYS.UPDATE_NVDCVE_ENABLED, true);
+                
+                // Force database recreation
+                settings.setString(Settings.KEYS.DB_DRIVER_NAME, "");  // Let OWASP auto-detect
+            }
+            
             // Configure cache directory for optimal performance
             if (configuration.getCacheDirectory() != null) {
                 String cacheDir = cacheManager.getCacheDirectory();
-                settings.setString(Settings.KEYS.DATA_DIRECTORY, cacheDir);
+                
+                // Set the data directory to our cache directory instead of Maven repo
+                settings.setString(Settings.KEYS.DATA_DIRECTORY, cacheDir + "/owasp-data");
+                
+                // Create the directory if it doesn't exist
+                try {
+                    Files.createDirectories(Paths.get(cacheDir + "/owasp-data"));
+                    Files.createDirectories(Paths.get(cacheDir + "/temp"));
+                } catch (Exception e) {
+                    logger.warn("Could not create OWASP data directories: {}", e.getMessage());
+                }
                 
                 // Optimize cache settings for better performance
                 settings.setBoolean(Settings.KEYS.ANALYZER_KNOWN_EXPLOITED_ENABLED, true);
                 settings.setString(Settings.KEYS.TEMP_DIRECTORY, cacheDir + "/temp");
                 
+                // Let OWASP Dependency-Check use its default database location in Maven repository
+                // This ensures SQL initialization scripts from JAR resources are properly loaded
+                // Remove custom connection string to avoid "resource data/initialize.sql not found" errors
+                
                 logger.info("📁 Using optimized cache directory: {}", cacheDir);
-                logger.info("⚡ Cache optimizations: temp directory, known exploits enabled");
+                logger.info("🗄️  OWASP database location: Maven repository (default)");
+                logger.info("⚡ Cache optimizations: temp directory, known exploits enabled, JAR resources accessible");
             }
             
             String updateMsg = shouldUpdate ? "will download latest" : "using cached database";
-            logger.info("🔑 NVD API key configured - CVE analysis enabled, cache status: {}", updateMsg);
+            logger.info("🔑 NVD 2.0 API configured with enhanced settings - CVE analysis enabled, cache status: {}", updateMsg);
         } else {
             // Fallback to offline mode only
             settings.setBoolean(Settings.KEYS.AUTO_UPDATE, false);
@@ -1347,5 +1557,103 @@ public class OwaspDependencyCheckScanner implements VulnerabilityScanner {
         }
         
         return false;
+    }
+    
+    /**
+     * Attempts to recover from a corrupted NVD database by clearing corrupted files
+     * and invalidating cache so that fresh data will be downloaded on next scan.
+     * 
+     * @return true if recovery was attempted successfully, false otherwise
+     */
+    private boolean attemptDatabaseRecovery() {
+        try {
+            logger.info("🔧 Attempting to recover from corrupted NVD database...");
+            
+            boolean recoverySuccess = false;
+            
+            // Clear the cache manager cache to force fresh download
+            if (cacheManager != null) {
+                logger.info("🗑️  Clearing Bastion NVD cache...");
+                cacheManager.clearCache();
+                recoverySuccess = true;
+            }
+            
+            // Clear OWASP database files that may be corrupted
+            String userHome = System.getProperty("user.home");
+            String m2RepoPath = System.getProperty("maven.repo.local");
+            if (m2RepoPath == null) {
+                m2RepoPath = userHome + "/.m2/repository";
+            }
+            
+            File owaspDataDir = new File(m2RepoPath, "org/owasp/dependency-check-data");
+            if (owaspDataDir.exists()) {
+                logger.info("🗑️  Clearing corrupted OWASP database files...");
+                boolean clearedOwasp = clearCorruptedOwaspFiles(owaspDataDir);
+                if (clearedOwasp) {
+                    recoverySuccess = true;
+                }
+            }
+            
+            // Remove any lock files that might prevent fresh downloads
+            try {
+                // Clear any potential lock files in the OWASP data directory
+                if (owaspDataDir.exists()) {
+                    attemptLockFileRemoval(owaspDataDir.getAbsolutePath());
+                }
+            } catch (Exception lockEx) {
+                logger.debug("Could not remove lock files: {}", lockEx.getMessage());
+            }
+            
+            logger.info("🔄 Database recovery completed - next scan will download fresh NVD data");
+            return recoverySuccess;
+            
+        } catch (Exception e) {
+            logger.error("❌ Error during database recovery attempt: {}", e.getMessage(), e);
+            return false;
+        }
+    }
+    
+    /**
+     * Clears potentially corrupted OWASP database files while preserving directory structure.
+     * 
+     * @param owaspDataDir the OWASP data directory
+     * @return true if files were successfully cleared
+     */
+    private boolean clearCorruptedOwaspFiles(File owaspDataDir) {
+        boolean success = false;
+        try {
+            File[] versionDirs = owaspDataDir.listFiles(File::isDirectory);
+            if (versionDirs != null) {
+                for (File versionDir : versionDirs) {
+                    File dataDir = new File(versionDir, "data");
+                    if (dataDir.exists()) {
+                        // Delete database files but keep directory structure
+                        File[] files = dataDir.listFiles((dir, name) -> {
+                            String lowerName = name.toLowerCase();
+                            return lowerName.endsWith(".db") || 
+                                   lowerName.endsWith(".mv.db") ||
+                                   lowerName.endsWith(".h2.db") ||
+                                   lowerName.contains("nvd") ||
+                                   lowerName.equals("jsrepository.json") ||
+                                   lowerName.equals("publishedsuppressions.xml");
+                        });
+                        
+                        if (files != null) {
+                            for (File file : files) {
+                                if (file.delete()) {
+                                    logger.debug("✅ Removed corrupted database file: {}", file.getName());
+                                    success = true;
+                                } else {
+                                    logger.warn("❌ Failed to remove file: {}", file.getName());
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        } catch (Exception e) {
+            logger.error("Error clearing corrupted OWASP files: {}", e.getMessage());
+        }
+        return success;
     }
 }

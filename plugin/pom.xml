@@ -109,6 +109,13 @@
             <artifactId>commons-io</artifactId>
             <version>${commons-io.version}</version>
         </dependency>
+        
+        <!-- H2 Database driver for OWASP Dependency-Check -->
+        <dependency>
+            <groupId>com.h2database</groupId>
+            <artifactId>h2</artifactId>
+            <version>2.2.224</version>
+        </dependency>
 
         <!-- Testing -->
         <dependency>
