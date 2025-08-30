@@ -116,24 +116,6 @@ class CacheOptimizationTest {
         assertTrue(cacheManager.isLocalCacheValid(), "Current cache version should be valid");
     }
     
-    @Test
-    void testParallelDownloaderConfiguration() {
-        VulnerabilityScanner.ScannerConfiguration config = new VulnerabilityScanner.ScannerConfiguration();
-        
-        // Test defaults
-        assertTrue(config.isParallelDownloadEnabled(), "Parallel download should be enabled by default");
-        assertEquals(4, config.getMaxDownloadThreads(), "Should have 4 threads by default");
-        assertEquals(2, config.getDownloadChunkSizeMB(), "Should use 2MB chunks by default");
-        
-        // Test customization
-        config.setParallelDownloadEnabled(false);
-        config.setMaxDownloadThreads(8);
-        config.setDownloadChunkSizeMB(4);
-        
-        assertFalse(config.isParallelDownloadEnabled());
-        assertEquals(8, config.getMaxDownloadThreads());
-        assertEquals(4, config.getDownloadChunkSizeMB());
-    }
     
     /**
      * Helper method to create cache metadata for testing

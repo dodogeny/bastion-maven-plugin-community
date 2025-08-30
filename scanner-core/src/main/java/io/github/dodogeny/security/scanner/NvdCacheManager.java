@@ -48,7 +48,6 @@ public class NvdCacheManager {
     private final long cacheValidityHours;
     private final int connectionTimeoutMs;
     private final double updateThresholdPercent;
-    private ParallelNvdDownloader parallelDownloader;
     
     public NvdCacheManager(String cacheDirectory, long cacheValidityHours, int connectionTimeoutMs) {
         this(cacheDirectory, cacheValidityHours, connectionTimeoutMs, 5.0); // Default 5% threshold
@@ -66,7 +65,6 @@ public class NvdCacheManager {
         this.updateThresholdPercent = updateThresholdPercent;
         
         ensureCacheDirectoryExists();
-        initializeParallelDownloader(config);
         logger.info("NVD Cache Manager initialized with cache directory: {}, validity: {} hours, update threshold: {}%", 
                    this.cacheDirectory, cacheValidityHours, updateThresholdPercent);
     }
@@ -899,44 +897,6 @@ public class NvdCacheManager {
         return false;
     }
     
-    /**
-     * Initializes the parallel downloader with optimized settings
-     */
-    private void initializeParallelDownloader(VulnerabilityScanner.ScannerConfiguration scannerConfig) {
-        ParallelNvdDownloader.DownloadConfig config = new ParallelNvdDownloader.DownloadConfig();
-        
-        // Configure based on system resources, connection timeout, and user preferences
-        int maxThreads;
-        int chunkSizeMB;
-        boolean enableParallel = true;
-        
-        if (scannerConfig != null) {
-            enableParallel = scannerConfig.isParallelDownloadEnabled();
-            maxThreads = Math.min(scannerConfig.getMaxDownloadThreads(), Runtime.getRuntime().availableProcessors());
-            chunkSizeMB = scannerConfig.getDownloadChunkSizeMB();
-        } else {
-            // Default configuration
-            maxThreads = Math.min(4, Runtime.getRuntime().availableProcessors());
-            chunkSizeMB = 2;
-        }
-        
-        if (!enableParallel) {
-            logger.info("Parallel download disabled by configuration");
-            this.parallelDownloader = null;
-            return;
-        }
-        
-        config.setMaxConcurrentDownloads(maxThreads);
-        config.setConnectionTimeoutMs(connectionTimeoutMs);
-        config.setReadTimeoutMs(connectionTimeoutMs * 2);
-        config.setChunkSizeBytes(chunkSizeMB * 1024 * 1024);
-        config.setEnableRangeRequests(true);
-        config.setEnableProgressReporting(true);
-        
-        this.parallelDownloader = new ParallelNvdDownloader(cacheDirectory, config);
-        logger.info("Parallel NVD downloader initialized: {} threads, {} MB chunks", 
-                   maxThreads, chunkSizeMB);
-    }
     
     /**
      * Downloads NVD database using NVD 2.0 API through OWASP Dependency-Check
@@ -991,51 +951,19 @@ public class NvdCacheManager {
         }
     }
     
-    /**
-     * Checks if parallel download is available and recommended
-     */
-    public boolean isParallelDownloadRecommended() {
-        // Recommend parallel download for fresh installs or when cache is very stale
-        try {
-            Properties metadata = loadCacheMetadata();
-            String lastCheckStr = metadata.getProperty(LAST_UPDATE_CHECK_KEY);
-            
-            if (lastCheckStr == null) {
-                return true; // Fresh install
-            }
-            
-            long lastCheck = Long.parseLong(lastCheckStr);
-            long hoursSinceLastCheck = (System.currentTimeMillis() - lastCheck) / (1000 * 60 * 60);
-            
-            // Recommend parallel download if cache is older than 7 days
-            return hoursSinceLastCheck > 168;
-            
-        } catch (Exception e) {
-            return true; // When in doubt, use parallel download
-        }
-    }
     
     /**
      * Gets download performance statistics
      */
     public String getDownloadStats() {
-        if (parallelDownloader != null) {
-            long totalBytes = parallelDownloader.getTotalBytesDownloaded();
-            if (totalBytes > 0) {
-                return String.format("Total downloaded: %.1f MB", totalBytes / 1024.0 / 1024.0);
-            }
-        }
         return "No download statistics available";
     }
     
     /**
-     * Shuts down the parallel downloader
+     * Shuts down the cache manager
      */
     public void shutdown() {
-        if (parallelDownloader != null) {
-            parallelDownloader.shutdown();
-            logger.debug("NVD Cache Manager shutdown completed");
-        }
+        logger.debug("NVD Cache Manager shutdown completed");
     }
     
     // DEPRECATED: NVD CVE modified metadata URL - deprecated in December 2023

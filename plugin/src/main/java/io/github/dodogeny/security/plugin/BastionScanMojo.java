@@ -114,6 +114,7 @@ public class BastionScanMojo extends AbstractMojo {
     @Parameter(property = "bastion.community.storageMode", defaultValue = "IN_MEMORY")
     private String communityStorageMode;
 
+
     private VulnerabilityDatabase database;
     private InMemoryVulnerabilityDatabase inMemoryDatabase;
     private VulnerabilityScanner scanner;
@@ -1324,7 +1325,7 @@ public class BastionScanMojo extends AbstractMojo {
             for (org.apache.maven.artifact.Artifact artifact : artifacts) {
                 if (artifact.getFile() != null && artifact.getFile().exists()) {
                     dependencyPaths.add(artifact.getFile().getAbsolutePath());
-                    getLog().debug("Added dependency: " + artifact.getGroupId() + ":" + artifact.getArtifactId() + ":" + artifact.getVersion() + " -> " + artifact.getFile().getAbsolutePath());
+                    getLog().info("Added dependency: " + artifact.getGroupId() + ":" + artifact.getArtifactId() + ":" + artifact.getVersion() + " -> " + artifact.getFile().getAbsolutePath());
                 } else {
                     getLog().warn("Dependency file not found for: " + artifact.getGroupId() + ":" + artifact.getArtifactId() + ":" + artifact.getVersion());
                 }

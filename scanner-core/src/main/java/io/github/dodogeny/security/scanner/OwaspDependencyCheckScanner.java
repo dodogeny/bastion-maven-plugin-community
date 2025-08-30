@@ -692,22 +692,30 @@ public class OwaspDependencyCheckScanner implements VulnerabilityScanner {
                 Engine engine = new Engine(settings);
                 
                 // Scan all explicit dependency paths (only JAR files)
+                int scannedCount = 0;
                 for (String dependencyPath : dependencyPaths) {
                     File depFile = new File(dependencyPath);
                     if (depFile.exists()) {
                         if (shouldScanFile(depFile)) {
-                            logger.debug("Scanning dependency: {}", dependencyPath);
+                            logger.info("Scanning dependency: {} (size: {} bytes)", dependencyPath, depFile.length());
                             engine.scan(depFile);
+                            scannedCount++;
                         } else {
-                            logger.debug("Skipping non-JAR file: {}", dependencyPath);
+                            logger.info("Skipping non-JAR file: {}", dependencyPath);
                         }
                     } else {
                         logger.warn("Dependency file not found: {}", dependencyPath);
                     }
                 }
+                logger.info("Successfully scanned {} dependency files", scannedCount);
                 
-                // Also scan project directory for additional files
-                scanProjectDirectory(engine, new File(projectPath));
+                // Only scan project directory if no explicit dependencies were provided
+                if (scannedCount == 0) {
+                    logger.info("No explicit dependencies scanned, falling back to project directory scan");
+                    scanProjectDirectory(engine, new File(projectPath));
+                } else {
+                    logger.info("Skipping project directory scan since {} explicit dependencies were scanned", scannedCount);
+                }
                 
                 try {
                     engine.analyzeDependencies();
@@ -1183,21 +1191,21 @@ public class OwaspDependencyCheckScanner implements VulnerabilityScanner {
                     logger.info("🔄 NVD cache is stale or remote database updated - will download latest (check took {}ms)", cacheCheckTime);
                     logger.info("📥 Initiating NVD database download - this may take several minutes...");
                     
-                    // Try to use high-speed parallel downloader if API key is available
+                    // Use OWASP built-in downloader
                     if (hasApiKey) {
-                        logger.info("🚀 Attempting high-speed parallel NVD download...");
+                        logger.info("🔑 NVD API key configured - OWASP will use NVD 2.0 API for download");
                         try {
                             boolean downloadSuccess = cacheManager.downloadNvdDatabase(effectiveNvdApiKey);
                             if (downloadSuccess) {
-                                logger.info("✅ Parallel download completed successfully - OWASP scanner will use cached database");
+                                logger.info("✅ NVD database download completed successfully");
                             } else {
-                                logger.info("⚠️  Parallel download failed - falling back to OWASP built-in downloader");
+                                logger.info("⚠️  NVD database download preparation completed - OWASP will handle actual download");
                             }
                         } catch (Exception downloadException) {
-                            logger.warn("⚠️  Parallel download error - falling back to OWASP built-in downloader: {}", downloadException.getMessage());
+                            logger.warn("⚠️  Error preparing NVD database download: {}", downloadException.getMessage());
                         }
                     } else {
-                        logger.warn("⚠️  No API key available - relying on OWASP built-in downloader (may be slower)");
+                        logger.warn("⚠️  No API key available - download may be rate-limited");
                     }
                 }
             } catch (Exception e) {
