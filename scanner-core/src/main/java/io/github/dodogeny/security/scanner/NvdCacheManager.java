@@ -47,31 +47,39 @@ public class NvdCacheManager {
     private final long cacheValidityHours;
     private final int connectionTimeoutMs;
     private final double updateThresholdPercent;
+    private ParallelNvdDownloader parallelDownloader;
     
     public NvdCacheManager(String cacheDirectory, long cacheValidityHours, int connectionTimeoutMs) {
         this(cacheDirectory, cacheValidityHours, connectionTimeoutMs, 5.0); // Default 5% threshold
     }
     
     public NvdCacheManager(String cacheDirectory, long cacheValidityHours, int connectionTimeoutMs, double updateThresholdPercent) {
+        this(cacheDirectory, cacheValidityHours, connectionTimeoutMs, updateThresholdPercent, null);
+    }
+    
+    public NvdCacheManager(String cacheDirectory, long cacheValidityHours, int connectionTimeoutMs, 
+                          double updateThresholdPercent, VulnerabilityScanner.ScannerConfiguration config) {
         this.cacheDirectory = cacheDirectory != null ? cacheDirectory : getDefaultCacheDirectory();
         this.cacheValidityHours = cacheValidityHours;
         this.connectionTimeoutMs = connectionTimeoutMs;
         this.updateThresholdPercent = updateThresholdPercent;
         
         ensureCacheDirectoryExists();
+        initializeParallelDownloader(config);
         logger.info("NVD Cache Manager initialized with cache directory: {}, validity: {} hours, update threshold: {}%", 
                    this.cacheDirectory, cacheValidityHours, updateThresholdPercent);
     }
     
     /**
-     * Checks if the NVD database cache is valid and up to date.
+     * Checks if the local NVD database cache is valid based on time only.
+     * This is the primary method for unit tests and frequent scanning - NO network calls.
      * Returns true if cache can be used, false if update is needed.
      */
-    public boolean isCacheValid(String apiKey) {
+    public boolean isLocalCacheValid() {
         try {
             File metadataFile = new File(cacheDirectory, CACHE_METADATA_FILE);
             if (!metadataFile.exists()) {
-                logger.info("No cache metadata found - cache update required");
+                logger.debug("No cache metadata found - cache update required");
                 return false;
             }
             
@@ -92,16 +100,40 @@ public class NvdCacheManager {
                 long hoursSinceLastCheck = (System.currentTimeMillis() - lastCheck) / (1000 * 60 * 60);
                 
                 if (hoursSinceLastCheck >= cacheValidityHours) {
-                    logger.info("Cache expired - {} hours since last check (validity: {} hours) - cache update required", 
+                    logger.info("Local cache expired - {} hours since last check (validity: {} hours)", 
                                 hoursSinceLastCheck, cacheValidityHours);
                     return false;
                 }
                 
-                logger.debug("Cache is still valid - {} hours since last check (validity: {} hours)", 
+                logger.debug("✅ Local cache is valid - {} hours since last check (validity: {} hours)", 
                             hoursSinceLastCheck, cacheValidityHours);
+                return true; // Valid cache, no network calls needed
             }
             
-            // Cache is within validity period, now check if remote NVD database has been modified or record count changed significantly
+            // No last check time found, assume cache is invalid
+            return false;
+            
+        } catch (Exception e) {
+            logger.debug("Error checking local cache validity: {}", e.getMessage());
+            return false;
+        }
+    }
+    
+    /**
+     * Checks if the NVD database cache is valid and up to date, including remote checks.
+     * This method makes network calls and should be used sparingly.
+     * Returns true if cache can be used, false if update is needed.
+     */
+    public boolean isCacheValid(String apiKey) {
+        // First check local cache validity - if invalid locally, no point checking remote
+        if (!isLocalCacheValid()) {
+            return false;
+        }
+        
+        try {
+            Properties metadata = loadCacheMetadata();
+            
+            // Cache is within validity period, now check if remote NVD database has been modified
             if (apiKey != null && !apiKey.trim().isEmpty()) {
                 return checkRemoteChangesWithApi(metadata, apiKey.trim());
             } else {
@@ -109,8 +141,8 @@ public class NvdCacheManager {
             }
             
         } catch (Exception e) {
-            logger.warn("Error checking cache validity - forcing update: {}", e.getMessage());
-            return false;
+            logger.warn("Error checking remote cache validity - using local cache: {}", e.getMessage());
+            return true; // Use local cache if remote check fails
         }
     }
     
@@ -476,6 +508,127 @@ public class NvdCacheManager {
     
     private String formatTimestamp(long timestamp) {
         return LocalDateTime.ofInstant(Instant.ofEpochMilli(timestamp), ZoneId.systemDefault()).toString();
+    }
+    
+    /**
+     * Initializes the parallel downloader with optimized settings
+     */
+    private void initializeParallelDownloader(VulnerabilityScanner.ScannerConfiguration scannerConfig) {
+        ParallelNvdDownloader.DownloadConfig config = new ParallelNvdDownloader.DownloadConfig();
+        
+        // Configure based on system resources, connection timeout, and user preferences
+        int maxThreads;
+        int chunkSizeMB;
+        boolean enableParallel = true;
+        
+        if (scannerConfig != null) {
+            enableParallel = scannerConfig.isParallelDownloadEnabled();
+            maxThreads = Math.min(scannerConfig.getMaxDownloadThreads(), Runtime.getRuntime().availableProcessors());
+            chunkSizeMB = scannerConfig.getDownloadChunkSizeMB();
+        } else {
+            // Default configuration
+            maxThreads = Math.min(4, Runtime.getRuntime().availableProcessors());
+            chunkSizeMB = 2;
+        }
+        
+        if (!enableParallel) {
+            logger.info("Parallel download disabled by configuration");
+            this.parallelDownloader = null;
+            return;
+        }
+        
+        config.setMaxConcurrentDownloads(maxThreads);
+        config.setConnectionTimeoutMs(connectionTimeoutMs);
+        config.setReadTimeoutMs(connectionTimeoutMs * 2);
+        config.setChunkSizeBytes(chunkSizeMB * 1024 * 1024);
+        config.setEnableRangeRequests(true);
+        config.setEnableProgressReporting(true);
+        
+        this.parallelDownloader = new ParallelNvdDownloader(cacheDirectory, config);
+        logger.info("Parallel NVD downloader initialized: {} threads, {} MB chunks", 
+                   maxThreads, chunkSizeMB);
+    }
+    
+    /**
+     * Downloads NVD database using high-speed parallel downloader
+     */
+    public boolean downloadNvdDatabase(String apiKey) {
+        if (parallelDownloader == null) {
+            logger.warn("Parallel downloader not initialized - falling back to standard download");
+            return false;
+        }
+        
+        try {
+            logger.info("🚀 Initiating high-speed parallel NVD database download...");
+            ParallelNvdDownloader.DownloadResult result = parallelDownloader.downloadNvdDatabase(apiKey).get();
+            
+            if (result.isSuccess()) {
+                logger.info("✅ Parallel download completed successfully!");
+                logger.info("📊 Performance: {} files, {:.1f} MB in {:.1f}s ({:.1f} Mbps)", 
+                           result.getFilesDownloaded(), 
+                           result.getTotalBytes() / 1024.0 / 1024.0,
+                           result.getDurationMs() / 1000.0,
+                           result.getAverageSpeedMbps());
+                
+                // Update cache metadata after successful download
+                updateCacheMetadata();
+                return true;
+            } else {
+                logger.error("❌ Parallel download failed: {}", result.getErrorMessage());
+                return false;
+            }
+            
+        } catch (Exception e) {
+            logger.error("❌ Error during parallel NVD download", e);
+            return false;
+        }
+    }
+    
+    /**
+     * Checks if parallel download is available and recommended
+     */
+    public boolean isParallelDownloadRecommended() {
+        // Recommend parallel download for fresh installs or when cache is very stale
+        try {
+            Properties metadata = loadCacheMetadata();
+            String lastCheckStr = metadata.getProperty(LAST_UPDATE_CHECK_KEY);
+            
+            if (lastCheckStr == null) {
+                return true; // Fresh install
+            }
+            
+            long lastCheck = Long.parseLong(lastCheckStr);
+            long hoursSinceLastCheck = (System.currentTimeMillis() - lastCheck) / (1000 * 60 * 60);
+            
+            // Recommend parallel download if cache is older than 7 days
+            return hoursSinceLastCheck > 168;
+            
+        } catch (Exception e) {
+            return true; // When in doubt, use parallel download
+        }
+    }
+    
+    /**
+     * Gets download performance statistics
+     */
+    public String getDownloadStats() {
+        if (parallelDownloader != null) {
+            long totalBytes = parallelDownloader.getTotalBytesDownloaded();
+            if (totalBytes > 0) {
+                return String.format("Total downloaded: %.1f MB", totalBytes / 1024.0 / 1024.0);
+            }
+        }
+        return "No download statistics available";
+    }
+    
+    /**
+     * Shuts down the parallel downloader
+     */
+    public void shutdown() {
+        if (parallelDownloader != null) {
+            parallelDownloader.shutdown();
+            logger.debug("NVD Cache Manager shutdown completed");
+        }
     }
     
     // Correct URL for NVD CVE modified metadata
