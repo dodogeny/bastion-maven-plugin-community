@@ -14,7 +14,7 @@ Bastion is built as a sophisticated multi-module Maven project with clean separa
 
 - **📊 vulnerability-db**: Database layer with in-memory community database and commercial H2/PostgreSQL support
 - **🔍 scanner-core**: Multi-source vulnerability scanning with OWASP Dependency-Check integration  
-- **📋 reporting**: Multi-format report generation with graphical dependency trees (HTML, JSON, CSV, PDF*, SARIF*)
+- **📋 reporting**: Multi-format report generation with graphical dependency trees (HTML, JSON , PDF*, SARIF*)
 - **🔌 plugin**: Maven plugin implementation with comprehensive statistics and licensing
 - **🏢 enterprise**: Commercial features including persistent databases, licensing, email notifications, and advanced analytics
 
@@ -287,14 +287,6 @@ mvn bastion:scan \
   -Dbastion.nvd.apiKey=your-api-key \
   -Dbastion.autoUpdate=true \
   -Dbastion.enableRemoteValidation=true
-
-# Configure parallel download settings
-mvn bastion:scan \
-  -Dbastion.nvd.apiKey=your-api-key \
-  -Dbastion.autoUpdate=true \
-  -Dbastion.parallelDownloadEnabled=true \
-  -Dbastion.maxDownloadThreads=6 \
-  -Dbastion.downloadChunkSizeMB=4
 
 # Disable smart caching (force download)
 mvn bastion:scan \
@@ -1226,9 +1218,6 @@ Enterprise Edition includes intelligent email alerts:
 
 **Planned Enterprise Support Features:**
 - **Dedicated Support Team**: Priority technical support via email and chat
-- **Response Time SLA**: 24 hours for critical issues, 48 hours for standard issues
-- **Implementation Support**: Assistance with deployment and configuration
-- **Migration Assistance**: Professional help transitioning from Community Edition
 - **Documentation Access**: Comprehensive enterprise documentation and best practices
 
 ### 📧 **Express Interest in Enterprise Edition**
@@ -1302,7 +1291,7 @@ Bastion offers both community and commercial editions:
 
 1. **Visit LemonSqueezy Store** (Coming Soon)
    ```bash
-   https://bastion-plugin.lemonsqueezy.com (Not yet live)
+   https://bastion-plugin.lemonsqueezy.com
    ```
 
 2. **Select Your Plan** (Pricing To Be Announced)
