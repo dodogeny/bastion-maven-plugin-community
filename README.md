@@ -69,15 +69,12 @@ mvn help:evaluate -Dexpression=latest.version -DgroupId=io.github.dodogeny -Dart
 - **Intelligent Fallback**: Auto-detects server capabilities and uses best available method
 
 ### 🧪 **Automatic Test Environment Optimization**
-- **Zero-Config Unit Testing**: Automatically detects JUnit/TestNG and disables network calls
 - **Sub-second Cache Validation**: Lightning-fast local-only checks for frequent test runs
 - **CI/CD Optimized**: No more 3-5 minute NVD downloads during unit test phases
 - **Manual Override**: Force test mode with `bastion.environment=test` for any environment
 
 ### 🔍 **Enhanced Smart Caching**
-- **Triple-Layer Optimization**: Local validation + Remote monitoring + Parallel downloads
 - **Production Mode**: Enable `enableRemoteValidation=true` for full NVD server validation
-- **Test Mode**: Default `enableRemoteValidation=false` for instant local-only validation
 - **Configurable Thresholds**: Fine-tune cache behavior for different environments
 
 ### ⚡ **Performance Improvements**
@@ -247,21 +244,21 @@ The intelligent caching system now uses **triple optimization**:
 
 **🔍 Local Cache Intelligence** *(New!)*
 1. **Fast Local Validation**: Lightning-fast local-only cache checks for unit tests and frequent scans
-3. **Sub-millisecond Validation**: Instant cache validation without network overhead
+2. **Sub-millisecond Validation**: Instant cache validation without network overhead
 
 **🌐 Remote Change Analysis**
-4. **Smart Remote Validation**: Queries NVD servers only when explicitly enabled for production scans
-5. **Timestamp Monitoring**: Compares local cache timestamps with remote modification times  
+3. **Smart Remote Validation**: Queries NVD servers only when explicitly enabled for production scans
+4. **Timestamp Monitoring**: Compares local cache timestamps with remote modification times  
 
 **📊 Record Count Intelligence** 
-6. **CVE Record Monitoring**: Tracks the total number of CVE records using NVD API 2.0
-7. **Threshold-Based Updates**: Only downloads if record count changes by configurable percentage (default: 5%)
-8. **Avoids Minor Updates**: Prevents full downloads for insignificant database changes (1-2 new CVEs)
+5. **CVE Record Monitoring**: Tracks the total number of CVE records using NVD API 2.0
+6. **Threshold-Based Updates**: Only downloads if record count changes by configurable percentage (default: 5%)
+7. **Avoids Minor Updates**: Prevents full downloads for insignificant database changes (1-2 new CVEs)
 
 **🚀 Parallel Download Engine** *(New!)*
-9. **High-Speed Downloads**: 4-6 concurrent download threads with HTTP chunking
-10. **Range Request Optimization**: 2MB chunks downloaded in parallel for 3-5x faster speeds
-11. **Intelligent Fallback**: Auto-detects file sizes and uses optimal download strategy
+8. **High-Speed Downloads**: 4-6 concurrent download threads with HTTP chunking
+9. **Range Request Optimization**: 2MB chunks downloaded in parallel for 3-5x faster speeds
+10. **Intelligent Fallback**: Auto-detects file sizes and uses optimal download strategy
 
 **⚡ Result**: Even more efficient caching with blazing-fast downloads when updates are needed!
 
