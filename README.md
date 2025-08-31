@@ -6,7 +6,7 @@
 
 **Bastion Maven Plugin Community** is your Maven project's fortified defense against security vulnerabilities. This free, open-source scanner helps developers and teams maintain secure codebases through automated CVE detection, comprehensive reporting, and historical trend analysis.
 
-> **💡 Looking for Enterprise Features?** This is the **Community Edition** with core vulnerability scanning capabilities. For advanced features like persistent databases, email notifications, PDF reports, and enterprise support, see the [Upgrade to Enterprise](#-upgrade-to-enterprise-edition) section below.
+> **💡 Looking for Enterprise Features?** This is the **Community Edition** with core vulnerability scanning capabilities. For advanced features like persistent databases, email notifications, PDF reports, and enterprise support, see the [Enterprise Edition](#-enterprise-edition---coming-soon) section below.
 
 ## 🏗️ Multi-Module Architecture
 
@@ -134,8 +134,6 @@ Reports will be generated in `target/security/` directory.
 - In-memory database or JSON file storage options
 - Multi-module project support
 - **NEW in v1.1.0**: Smart NVD database caching for 5-10x faster scans
-- **NEW in v1.1.0**: Parallel download engine with HTTP chunking for 3-5x faster downloads
-- **NEW in v1.1.0**: Automatic test environment detection for instant unit test execution
 
 ## 🛠️ Community Edition Usage Guide
 
@@ -249,7 +247,6 @@ The intelligent caching system now uses **triple optimization**:
 
 **🔍 Local Cache Intelligence** *(New!)*
 1. **Fast Local Validation**: Lightning-fast local-only cache checks for unit tests and frequent scans
-2. **Test Environment Detection**: Automatically disables network calls during unit testing
 3. **Sub-millisecond Validation**: Instant cache validation without network overhead
 
 **🌐 Remote Change Analysis**
@@ -1313,8 +1310,6 @@ Bastion offers both community and commercial editions:
 
 2. **Select Your Plan** (Pricing To Be Announced)
    - **Monthly**: Monthly Subscription License (pricing TBD)
-   - **Annual**: Annual Subscription with discount (pricing TBD)
-   - **Enterprise**: Volume licensing for organizations (custom pricing)
    
    > **📋 Pricing Note**: Specific pricing has not yet been determined. Contact it.dodogeny@gmail.com for early pricing information and founding customer discounts.
 
