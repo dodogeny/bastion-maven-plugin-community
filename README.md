@@ -185,13 +185,13 @@ mvn bastion:scan \
 #### 4. Report Generation
 
 ```bash
-# Generate all available reports (HTML, JSON, CSV)
+# Generate all available reports (HTML, JSON)
 mvn bastion:scan
 
 # Specific report format focus
 mvn bastion:scan -Dbastion.reporting.formats.html=true
 mvn bastion:scan -Dbastion.reporting.formats.json=true
-mvn bastion:scan -Dbastion.reporting.formats.csv=true
+
 ```
 
 #### 5. Historical Trend Analysis
@@ -864,14 +864,14 @@ Ready to learn more about advanced security features? **Bastion Enterprise** wil
 ### 🆚 Community vs Enterprise Comparison
 
 | Feature | Community Edition | Enterprise Edition |
-|---------|------------------|-------------------|
+|---------|----------------|-------------------|
 | **🔍 Scanning Engine** | ✅ OWASP Dependency-Check | ✅ **Enhanced Enterprise Scanner** with parallel processing |
 | **⚡ Performance** | Sequential processing | 🚀 **Multi-threaded scanning** with optimized batching |
 | **🧠 Intelligence** | Basic vulnerability detection | 🚀 **Threat Intelligence** integration (NVD, MITRE, CISA KEV) |
 | **💾 Caching** | Basic file caching | 🚀 **Advanced Caffeine Cache** with intelligent invalidation |
 | **🔄 Incremental Scanning** | Full rescan every time | 🚀 **File Change Detection** with MD5 fingerprinting |
 | **🎯 Accuracy** | Standard OWASP database | 🚀 **Multi-source detection** with enhanced vulnerability mapping |
-| **📊 Report Formats** | ✅ HTML, JSON, CSV | ✅ + PDF, SARIF, Executive dashboards |
+| **📊 Report Formats** | ✅ HTML, JSON | ✅ + PDF, SARIF, Executive dashboards |
 | **🗄️ Storage Options** | ✅ In-memory, JSON file | ✅ + PostgreSQL, MySQL, H2 |
 | **📈 Trend Analysis** | ✅ Basic historical tracking | 🚀 **Advanced Analytics** + trend prediction |
 | **📧 Email Alerts** | ❌ | ✅ Automated security notifications |
@@ -2003,7 +2003,6 @@ The enhanced HTML reports include:
             <html>true</html>          <!-- Human readable -->
             <pdf>true</pdf>            <!-- Executive summaries (Licensed) -->
             <sarif>true</sarif>        <!-- Security tools integration (Licensed) -->
-            <csv>true</csv>            <!-- Data analysis -->
         </formats>
         
         <!-- Basic report options -->
@@ -2800,7 +2799,7 @@ All parameters can be configured in your `pom.xml` `<configuration>` section or 
 | Parameter | Property Key | Type | Default | Description | Edition |
 |-----------|--------------|------|---------|-------------|---------|
 | `outputDirectory` | `bastion.outputDirectory` | File | `${project.build.directory}/bastion-reports` | Directory for generated reports | 📦🏢 |
-| `reportFormats` | `bastion.reportFormats` | String | `HTML,JSON` | Report formats: HTML,JSON,CSV (📦) + PDF,SARIF (🏢) | 📦🏢 |
+| `reportFormats` | `bastion.reportFormats` | String | `HTML,JSON` | Report formats: HTML,JSON (📦) + PDF,SARIF (🏢) | 📦🏢 |
 
 ## Scanner Configuration
 
