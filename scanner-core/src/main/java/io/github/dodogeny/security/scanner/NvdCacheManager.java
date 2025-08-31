@@ -793,7 +793,8 @@ public class NvdCacheManager {
                     for (String pattern : dbFilePatterns) {
                         if (fileName.equals(pattern.toLowerCase())) {
                             long fileSizeKB = file.length() / 1024;
-                            if (fileSizeKB > 512) { // Reduced threshold - some valid DBs are smaller with NVD 2.0
+                            // A complete NVD database should be at least 50MB with NVD 2.0 API
+                            if (fileSizeKB > 50000) { // Increased threshold for NVD 2.0 - full database is ~200MB
                                 boolean dbValid = validateOwaspDatabase(file);
                                 if (dbValid) {
                                     logger.debug("✅ Valid OWASP database found: {} ({}MB) in version {} - NVD 2.0 compatible", 
@@ -804,8 +805,9 @@ public class NvdCacheManager {
                                                file.getName(), fileSizeKB / 1024);
                                 }
                             } else {
-                                logger.debug("Found small database file: {} ({}KB) - may be incomplete or initializing", 
+                                logger.debug("Database file too small: {} ({}KB) - incomplete download or initialization in progress", 
                                            file.getName(), fileSizeKB);
+                                logger.debug("Expected size: >50MB for complete NVD 2.0 database");
                             }
                         }
                     }

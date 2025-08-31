@@ -129,7 +129,7 @@ Reports will be generated in `target/security/` directory.
 
 **Community Features Included:**
 - OWASP Dependency-Check vulnerability scanning with smart NVD caching
-- HTML, JSON, and CSV reports with graphical dependency trees
+- HTML and JSON reports with graphical dependency trees
 - Historical trend analysis and performance metrics
 - In-memory database or JSON file storage options
 - Multi-module project support
@@ -1284,7 +1284,7 @@ Bastion offers both community and commercial editions:
 
 **Community Edition** (Free):
 - OWASP Dependency-Check scanner with NVD API key support
-- HTML, JSON, CSV reports with graphical dependency trees
+- HTML and JSON reports with graphical dependency trees
 - Dedicated trend analysis report with historical tracking
 - Configurable storage (in-memory database or JSON file)
 - Basic performance metrics
@@ -1439,7 +1439,7 @@ The Community Edition offers two storage modes to choose from:
 ```xml
 <plugin>
     <groupId>io.github.dodogeny</groupId>
-    <artifactId>bastion-maven-plugin-enterprise</artifactId>
+    <artifactId>bastion-maven-community-plugin</artifactId>
     <version>[1.1.0,)</version> <!-- Use latest stable version -->
     <configuration>
         <!-- Community Edition (default) -->
@@ -1453,7 +1453,7 @@ The Community Edition offers two storage modes to choose from:
 **Command Line Usage:**
 ```bash
 # Use in-memory database (default)
-mvn bastion:scan -Dbastion.community.storageMode=IN_MEMORY
+mvn io.github.dodogeny:bastion-maven-community-plugin:1.1.0:scan -Dbastion.community.storageMode=IN_MEMORY
 ```
 
 **Features:**
@@ -1467,7 +1467,7 @@ mvn bastion:scan -Dbastion.community.storageMode=IN_MEMORY
 ```xml
 <plugin>
     <groupId>io.github.dodogeny</groupId>
-    <artifactId>bastion-maven-plugin-enterprise</artifactId>
+    <artifactId>bastion-maven-community-plugin</artifactId>
     <version>[1.1.0,)</version> <!-- Use latest stable version -->
     <configuration>
         <!-- Community Edition -->
@@ -1482,10 +1482,10 @@ mvn bastion:scan -Dbastion.community.storageMode=IN_MEMORY
 **Command Line Usage:**
 ```bash
 # Use JSON file storage
-mvn bastion:scan -Dbastion.community.storageMode=JSON_FILE
+mvn io.github.dodogeny:bastion-maven-community-plugin:1.1.0:scan -Dbastion.community.storageMode=JSON_FILE
 
 # Custom JSON file location
-mvn bastion:scan \
+mvn io.github.dodogeny:bastion-maven-community-plugin:1.1.0:scan \
   -Dbastion.community.storageMode=JSON_FILE \
   -Dbastion.storage.jsonFilePath=/custom/path/vulnerabilities.json
 ```
@@ -1971,8 +1971,7 @@ Bastion generates comprehensive reports with advanced visualizations:
 #### Community Edition Reports
 - **HTML**: Interactive reports with graphical dependency trees, CVE documentation tables, and trend analysis
 - **Trend Report**: Dedicated trend analysis report showing historical vulnerability patterns
-- **JSON**: Machine-readable format with detailed vulnerability descriptions for CI/CD integration  
-- **CSV**: Enhanced data export with CVE descriptions and official documentation links
+- **JSON**: Machine-readable format with detailed vulnerability descriptions for CI/CD integration
 
 #### Commercial Edition Reports
 - **All Community Formats**: Plus enhanced features with persistent historical data
