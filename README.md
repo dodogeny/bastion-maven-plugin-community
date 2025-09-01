@@ -6,6 +6,27 @@
 
 **Bastion Maven Plugin Community** is your Maven project's fortified defense against security vulnerabilities. This free, open-source scanner helps developers and teams maintain secure codebases through automated CVE detection, comprehensive reporting, and historical trend analysis.
 
+## 🚀 Why Choose Bastion Over Standard Vulnerability Scanners?
+
+**Built on the trusted foundation of OWASP Dependency-Check**, Bastion transforms basic vulnerability scanning into an **enterprise-grade security intelligence platform**:
+
+**⚡ Performance Excellence**
+- **5-10x faster scans** with intelligent NVD caching
+- **Sub-second validation** for CI/CD environments
+- **Smart cache management** reduces 8-13 minute scans to 2-3 minutes
+
+**📊 Enterprise Intelligence** 
+- **Historical trend analysis** tracks security posture over time
+- **Comprehensive performance metrics** with bottleneck identification
+- **Multi-format reporting** including executive summaries and compliance reports
+
+**🏗️ Enterprise Scale**
+- **Multi-module optimization** for complex enterprise applications
+- **Persistent database storage** with H2/PostgreSQL support
+- **Zero-configuration migration** from existing OWASP dependency-check setups
+
+**Perfect for organizations requiring faster scans, detailed analytics, and enterprise-scale vulnerability management while maintaining the proven reliability of OWASP's vulnerability detection engine.**
+
 > **💡 Looking for Enterprise Features?** This is the **Community Edition** with core vulnerability scanning capabilities. For advanced features like persistent databases, email notifications, PDF reports, and enterprise support, see the [Enterprise Edition](#-enterprise-edition---coming-soon) section below.
 
 ## 🏗️ Multi-Module Architecture
@@ -27,7 +48,7 @@ Bastion Maven Plugin transforms how companies manage security vulnerabilities by
 ### 📈 **Continuous Security Monitoring**
 - **Historical Vulnerability Tracking**: Track CVE trends across time to measure security posture improvements
 - **Multi-Module Support**: Scan entire enterprise applications with dozens of modules simultaneously
-- **Performance Optimized**: Concurrent scanning with intelligent NVD caching and parallel downloads (10-15x faster scans) for large codebases
+- **Performance Optimized**: Concurrent scanning with intelligent NVD caching (5-10x faster scans) for large codebases
 - **Database-Driven Intelligence**: Persistent storage of vulnerability data for trend analysis and reporting
 - **Real-time Performance Metrics**: Detailed scan statistics including JARs processed, CVEs found, timing breakdowns, and resource usage
 - **Comprehensive Statistics Display**: View scan performance with bottleneck identification and optimization recommendations
@@ -62,11 +83,10 @@ mvn help:evaluate -Dexpression=latest.version -DgroupId=io.github.dodogeny -Dart
 
 ## 🎉 What's New in v1.1.0
 
-### 🚀 **High-Performance Parallel Download Engine**
-- **3-5x Faster Downloads**: Multi-threaded HTTP downloads with chunked range requests
-- **Smart File Detection**: Automatically optimizes download strategy based on file sizes
-- **Configurable Performance**: Adjust thread count (1-16) and chunk size (1-10MB) per your bandwidth
-- **Intelligent Fallback**: Auto-detects server capabilities and uses best available method
+### 🧪 **Automatic Test Environment Optimization**
+- **Sub-second Cache Validation**: Lightning-fast local-only checks for frequent test runs
+- **CI/CD Optimized**: No more 3-5 minute NVD downloads during unit test phases
+- **Manual Override**: Force test mode with `bastion.environment=test` for any environment
 
 ### 🧪 **Automatic Test Environment Optimization**
 - **Sub-second Cache Validation**: Lightning-fast local-only checks for frequent test runs
@@ -78,7 +98,7 @@ mvn help:evaluate -Dexpression=latest.version -DgroupId=io.github.dodogeny -Dart
 - **Configurable Thresholds**: Fine-tune cache behavior for different environments
 
 ### ⚡ **Performance Improvements**
-- **10-15x Faster Scans**: Combined caching and parallel download improvements
+- **5-10x Faster Scans**: Intelligent caching improvements
 - **Millisecond Cache Checks**: Sub-millisecond validation for test environments
 - **Bandwidth Optimization**: Concurrent connections maximize download utilization
 - **Memory Efficient**: Streaming chunk processing with automatic cleanup
@@ -255,10 +275,10 @@ The intelligent caching system now uses **triple optimization**:
 6. **Threshold-Based Updates**: Only downloads if record count changes by configurable percentage (default: 5%)
 7. **Avoids Minor Updates**: Prevents full downloads for insignificant database changes (1-2 new CVEs)
 
-**🚀 Parallel Download Engine** *(New!)*
-8. **High-Speed Downloads**: 4-6 concurrent download threads with HTTP chunking
-9. **Range Request Optimization**: 2MB chunks downloaded in parallel for 3-5x faster speeds
-10. **Intelligent Fallback**: Auto-detects file sizes and uses optimal download strategy
+**📊 Record Count Intelligence** 
+8. **CVE Record Monitoring**: Tracks the total number of CVE records using NVD API 2.0
+9. **Threshold-Based Updates**: Only downloads if record count changes by configurable percentage (default: 5%)
+10. **Avoids Minor Updates**: Prevents full downloads for insignificant database changes (1-2 new CVEs)
 
 **⚡ Result**: Even more efficient caching with blazing-fast downloads when updates are needed!
 
@@ -320,10 +340,9 @@ mvn bastion:scan \
         <!-- Enhanced cache settings (New in v1.1.0) -->
         <enableRemoteValidation>false</enableRemoteValidation> <!-- Local-only for unit tests -->
         
-        <!-- Parallel download settings (New in v1.1.0) -->
-        <parallelDownloadEnabled>true</parallelDownloadEnabled>
-        <maxDownloadThreads>4</maxDownloadThreads>
-        <downloadChunkSizeMB>2</downloadChunkSizeMB>
+        <!-- Record count monitoring settings (New in v1.1.0) -->
+        <updateThresholdPercent>5.0</updateThresholdPercent>
+        <enableRecordCountValidation>true</enableRecordCountValidation>
     </configuration>
 </plugin>
 ```
@@ -2819,9 +2838,8 @@ All parameters can be configured in your `pom.xml` `<configuration>` section or 
 | `updateThresholdPercent` | `bastion.cache.update.threshold` | double | `5.0` | Record count change percentage that triggers update | 📦🏢 |
 | `cacheDirectory` | `bastion.cache.directory` | String | `${user.home}/.bastion/nvd-cache` | Directory for NVD database cache files | 📦🏢 |
 | `enableRemoteValidation` | `bastion.enableRemoteValidation` | boolean | `false` | Enable remote NVD server validation (local-only for unit tests) | 📦🏢 |
-| `parallelDownloadEnabled` | `bastion.parallelDownloadEnabled` | boolean | `true` | Enable high-speed parallel downloads with chunking | 📦🏢 |
-| `maxDownloadThreads` | `bastion.maxDownloadThreads` | int | `4` | Maximum concurrent download threads (auto-limited by CPU cores) | 📦🏢 |
-| `downloadChunkSizeMB` | `bastion.downloadChunkSizeMB` | int | `2` | Size of download chunks in MB for parallel processing | 📦🏢 |
+| `updateThresholdPercent` | `bastion.updateThresholdPercent` | double | `5.0` | Percentage change in CVE records required to trigger update | 📦🏢 |
+| `enableRecordCountValidation` | `bastion.enableRecordCountValidation` | boolean | `true` | Enable CVE record count monitoring for smart updates | 📦🏢 |
 
 ## Storage Configuration
 
