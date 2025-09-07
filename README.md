@@ -1303,15 +1303,29 @@ mvn bastion:predictive-analysis -Dbastion.apiKey=YOUR_LICENSE_KEY
 📄 Check the detailed HTML report for specific update recommendations
 ```
 
-#### **🎨 Beautiful HTML Reports**
+#### **🎨 Multi-Format Reports**
 
-The predictive analysis generates **professional, interactive HTML reports** featuring:
+The predictive analysis generates **multiple report formats** to suit different needs:
 
+**📄 HTML Reports (Interactive)**
 - **📊 Executive Dashboard**: High-level metrics with visual charts
-- **🔍 Detailed Analysis**: Expandable sections for each dependency
-- **📈 Risk Visualization**: Color-coded risk levels and confidence bars  
+- **🔍 Detailed Analysis**: Expandable sections for each dependency  
+- **📈 Risk Visualization**: Color-coded risk levels and confidence bars
 - **📋 Version Comparison**: Side-by-side analysis of available versions
 - **💡 Actionable Recommendations**: Clear next steps for each dependency
+
+**📋 PDF Reports (Executive-Ready)**
+- **🏢 Professional Layout**: Clean, print-friendly design optimized for stakeholders
+- **📊 Executive Summary**: High-level metrics and key findings
+- **📈 Vulnerability Tables**: Detailed CVE information with severity levels
+- **🎯 Recommendations**: Prioritized update suggestions with risk assessments
+- **📄 Compliance Ready**: Perfect for board meetings and audit documentation
+
+**💾 JSON Reports (CI/CD Integration)**
+- **🔧 Machine-Readable**: Perfect for automation and toolchain integration
+- **📊 Complete Data**: All analysis results in structured format
+- **🚀 CI/CD Friendly**: Easy parsing for build pipeline decisions
+- **📈 Historical Tracking**: Store and compare results over time
 
 #### **⚙️ Configuration Options**
 
@@ -1331,6 +1345,15 @@ The predictive analysis generates **professional, interactive HTML reports** fea
             <onlyVulnerableDependencies>true</onlyVulnerableDependencies>
             <severityThreshold>MEDIUM</severityThreshold>
             <timeoutMinutes>10</timeoutMinutes>
+            
+            <!-- Report Configuration -->
+            <reportName>my-security-analysis</reportName>  <!-- Custom report name -->
+            <reportFormats>HTML,PDF,JSON</reportFormats>   <!-- Report formats to generate -->
+            
+            <!-- Custom Report Paths (Optional) -->
+            <htmlReportPath>/custom/path/security-report.html</htmlReportPath>
+            <pdfReportPath>/custom/path/security-report.pdf</pdfReportPath>
+            <jsonReportPath>/custom/path/security-report.json</jsonReportPath>
         </predictive>
         
         <!-- Output Configuration -->
@@ -1350,20 +1373,30 @@ The predictive analysis generates **professional, interactive HTML reports** fea
 #### **🚀 Usage Examples**
 
 ```bash
-# Quick analysis for CI/CD
+# Quick analysis for CI/CD with JSON output
 mvn bastion:predictive-analysis \
     -Dbastion.predictive.analysisDepth=QUICK \
+    -Dbastion.predictive.reportFormats=JSON \
     -Dbastion.predictive.onlyVulnerableDependencies=true
 
-# Comprehensive security audit
+# Comprehensive security audit with HTML and PDF reports
 mvn bastion:predictive-analysis \
     -Dbastion.predictive.analysisDepth=COMPREHENSIVE \
+    -Dbastion.predictive.reportFormats=HTML,PDF \
     -Dbastion.predictive.includePreReleases=true \
     -Dbastion.predictive.maxVersionsToAnalyze=10
 
-# Focus on critical vulnerabilities only
+# Custom report names and paths
+mvn bastion:predictive-analysis \
+    -Dbastion.predictive.reportName=security-audit-2024 \
+    -Dbastion.predictive.htmlReportPath=/reports/security-audit.html \
+    -Dbastion.predictive.pdfReportPath=/reports/security-audit.pdf
+
+# Executive summary with PDF for stakeholders
 mvn bastion:predictive-analysis \
     -Dbastion.predictive.severityThreshold=HIGH \
+    -Dbastion.predictive.reportFormats=PDF \
+    -Dbastion.predictive.reportName=executive-security-summary \
     -Dbastion.predictive.timeoutMinutes=15
 ```
 
@@ -3000,6 +3033,11 @@ All parameters can be configured in your `pom.xml` `<configuration>` section or 
 | `predictive.severityThreshold` | `bastion.predictive.severityThreshold` | String | `MEDIUM` | Minimum severity level to consider for analysis | 🏢 |
 | `predictive.timeoutMinutes` | `bastion.predictive.timeoutMinutes` | int | `10` | Analysis timeout in minutes | 🏢 |
 | `predictive.outputDirectory` | `bastion.predictive.outputDirectory` | String | `${project.build.directory}/bastion-predictive-reports` | Directory for predictive analysis reports | 🏢 |
+| `predictive.reportName` | `bastion.predictive.reportName` | String | `bastion-predictive-analysis` | Base name for generated reports | 🏢 |
+| `predictive.reportFormats` | `bastion.predictive.reportFormats` | String | `HTML,JSON` | Comma-separated report formats: `HTML`, `PDF`, `JSON` | 🏢 |
+| `predictive.htmlReportPath` | `bastion.predictive.htmlReportPath` | String | `null` | Custom path for HTML report (overrides default naming) | 🏢 |
+| `predictive.pdfReportPath` | `bastion.predictive.pdfReportPath` | String | `null` | Custom path for PDF report (overrides default naming) | 🏢 |
+| `predictive.jsonReportPath` | `bastion.predictive.jsonReportPath` | String | `null` | Custom path for JSON report (overrides default naming) | 🏢 |
 
 ## Email Notifications (Enterprise Only)
 
