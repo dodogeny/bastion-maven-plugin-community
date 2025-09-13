@@ -131,27 +131,22 @@ public class OwaspDependencyCheckScanner implements VulnerabilityScanner {
                 try {
                     logger.info("🔍 Starting OWASP dependency analysis...");
                     
-                    // Force engine initialization to ensure database is properly loaded
+                    // Initialize engine and handle database connectivity issues more gracefully
                     logger.info("🔄 Initializing OWASP engine with NVD database...");
                     try {
-                        // Check if database is incomplete before analysis
-                        if (!isDatabaseComplete()) {
-                            logger.warn("🔍 Detected incomplete NVD database - forcing fresh download");
-                            clearIncompleteDatabase();
+                        // Skip database updates when using offline mode with autoUpdate=false
+                        if (configuration.isAutoUpdate()) {
+                            logger.info("🔄 Performing NVD database updates...");
+                            engine.doUpdates();
+                            logger.info("✅ NVD database updates completed successfully");
+                        } else {
+                            logger.info("🚫 Auto-update disabled - using existing NVD database");
                         }
-                        
-                        engine.doUpdates();
-                        logger.info("✅ NVD database updates completed successfully");
-                        
-                        // Verify database is now complete after update
-                        if (!isDatabaseComplete()) {
-                            logger.error("❌ Database is still incomplete after update - this may indicate download issues");
-                            throw new DatabaseException("NVD database incomplete after update");
-                        }
-                        
+
                     } catch (Exception updateException) {
                         logger.warn("⚠️ NVD database update encountered issues: {}", updateException.getMessage());
-                        // Continue with analysis even if update had issues
+                        // Continue with analysis even if update had issues - the scan can still succeed
+                        logger.info("📊 Attempting to proceed with existing database for vulnerability analysis");
                     }
                     
                     engine.analyzeDependencies();
@@ -1346,10 +1341,15 @@ public class OwaspDependencyCheckScanner implements VulnerabilityScanner {
             // Let OWASP handle database configuration automatically
             // Removed explicit H2 driver settings to avoid ClassNotFoundException
             
-            // Use smart cache decision for autoUpdate
-            settings.setBoolean(Settings.KEYS.AUTO_UPDATE, shouldUpdate);
-            settings.setBoolean(Settings.KEYS.UPDATE_NVDCVE_ENABLED, shouldUpdate);
+            // Configure settings to prevent database corruption issues
+            boolean safeAutoUpdate = shouldUpdate && cacheValid; // Only update if cache is actually valid
+            settings.setBoolean(Settings.KEYS.AUTO_UPDATE, safeAutoUpdate);
+            settings.setBoolean(Settings.KEYS.UPDATE_NVDCVE_ENABLED, safeAutoUpdate);
             settings.setBoolean(Settings.KEYS.ANALYZER_NVD_CVE_ENABLED, true);
+
+            // Configure database settings to prevent corruption
+            settings.setString(Settings.KEYS.DB_DRIVER_NAME, "org.h2.Driver");
+            settings.setString(Settings.KEYS.DB_CONNECTION_STRING, "jdbc:h2:file:%s;AUTOCOMMIT=ON;MV_STORE=FALSE;MVCC=FALSE");
             
             // Force initial NVD database download if needed
             if (shouldUpdate) {
@@ -1408,11 +1408,12 @@ public class OwaspDependencyCheckScanner implements VulnerabilityScanner {
             String updateMsg = shouldUpdate ? "will download latest" : "using cached database";
             logger.info("🔑 NVD 2.0 API configured with enhanced settings - CVE analysis enabled, cache status: {}", updateMsg);
         } else {
-            // Fallback to offline mode only
+            // Configure offline mode to use existing database
             settings.setBoolean(Settings.KEYS.AUTO_UPDATE, false);
             settings.setBoolean(Settings.KEYS.UPDATE_NVDCVE_ENABLED, false);
-            settings.setBoolean(Settings.KEYS.ANALYZER_NVD_CVE_ENABLED, false);
-            logger.warn("❌ No NVD API key provided - CVE analysis disabled (offline mode only)");
+            settings.setBoolean(Settings.KEYS.ANALYZER_NVD_CVE_ENABLED, true); // KEEP CVE ANALYSIS ENABLED!
+            logger.info("🔍 No NVD API key provided - using offline mode with existing database");
+            logger.info("📊 CVE analysis will use cached vulnerability data from previous downloads");
         }
         
         return settings;
