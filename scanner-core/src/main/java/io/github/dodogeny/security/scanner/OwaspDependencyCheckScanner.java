@@ -432,7 +432,7 @@ public class OwaspDependencyCheckScanner implements VulnerabilityScanner {
         vuln.setCveId(owaspVuln.getName());
         vuln.setDescription(owaspVuln.getDescription());
         vuln.setSeverity(mapSeverity(owaspVuln.getCvssV3()));
-        vuln.setCvssV3Score(owaspVuln.getCvssV3() != null && owaspVuln.getCvssV3().getCvssData() != null ? 
+        vuln.setCvssV3Score(owaspVuln.getCvssV3() != null && owaspVuln.getCvssV3().getCvssData() != null ?
                 owaspVuln.getCvssV3().getCvssData().getBaseScore() : null);
         vuln.setAffectedComponent(dependency.getActualFilePath());
         vuln.setSource("OWASP Dependency-Check");
@@ -471,7 +471,7 @@ public class OwaspDependencyCheckScanner implements VulnerabilityScanner {
     
     private String mapSeverity(CvssV3 cvssV3) {
         if (cvssV3 == null || cvssV3.getCvssData() == null) return "UNKNOWN";
-        
+
         Double score = cvssV3.getCvssData().getBaseScore();
         if (score == null) return "UNKNOWN";
         
