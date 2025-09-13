@@ -31,6 +31,8 @@ import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.*;
 import java.util.concurrent.CompletableFuture;
+import java.util.HashSet;
+import java.util.Set;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.SerializationFeature;
 import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule;
@@ -114,6 +116,14 @@ public class BastionScanMojo extends AbstractMojo {
     @Parameter(property = "bastion.community.storageMode", defaultValue = "IN_MEMORY")
     private String communityStorageMode;
 
+    @Parameter(property = "bastion.useOwaspPlugin", defaultValue = "true")
+    private boolean useOwaspPlugin;
+
+    @Parameter(property = "bastion.owaspVersion", defaultValue = "12.1.3")
+    private String owaspVersion;
+
+    @Parameter(property = "bastion.owaspReportPath", defaultValue = "${project.build.directory}/dependency-check-report.json")
+    private String owaspReportPath;
 
     private VulnerabilityDatabase database;
     private InMemoryVulnerabilityDatabase inMemoryDatabase;
@@ -320,13 +330,47 @@ public class BastionScanMojo extends AbstractMojo {
 
     private ScanResult performScan() throws Exception {
         getLog().info("Scanning project dependencies...");
-        
+
+        // Check if hybrid mode is enabled (default: true)
+        if (useOwaspPlugin) {
+            getLog().info("🔀 Hybrid mode ENABLED - using official OWASP plugin for scanning");
+            return performHybridScan();
+        } else {
+            getLog().info("🔀 Hybrid mode DISABLED - using direct OWASP Engine API");
+            return performDirectScan();
+        }
+    }
+
+    /**
+     * Hybrid approach: Invoke OWASP plugin -> Parse JSON -> Convert to Bastion format
+     */
+    private ScanResult performHybridScan() throws Exception {
+        // Step 1: Invoke OWASP plugin to generate JSON report
+        File owaspReport = invokeOwaspPlugin();
+
+        // Step 2: Parse OWASP JSON report
+        Map<String, Object> owaspData = parseOwaspJsonReport(owaspReport);
+
+        // Step 3: Convert OWASP data to Bastion format
+        ScanResult result = convertOwaspToBastion(owaspData);
+
+        getLog().info("✅ Hybrid scan completed successfully!");
+        getLog().info("📊 Total vulnerabilities found: " + result.getTotalVulnerabilities());
+        getLog().info("📦 Total dependencies scanned: " + result.getTotalDependencies());
+
+        return result;
+    }
+
+    /**
+     * Direct approach: Use OWASP Engine API directly (legacy mode)
+     */
+    private ScanResult performDirectScan() throws Exception {
         // Collect all dependency paths from Maven
         List<String> dependencyPaths = collectDependencyPaths();
         getLog().info("Found " + dependencyPaths.size() + " dependency paths to scan");
-        
+
         CompletableFuture<ScanResult> scanFuture;
-        
+
         if (enableMultiModule && isMultiModuleProject()) {
             getLog().info("Multi-module project detected");
             scanFuture = scanWithDependencies(session.getTopLevelProject().getBasedir().getAbsolutePath(), dependencyPaths);
@@ -335,11 +379,11 @@ public class BastionScanMojo extends AbstractMojo {
         }
 
         ScanResult result = scanFuture.get();
-        
+
         getLog().info("Scan completed successfully!");
         getLog().info("Total vulnerabilities found: " + result.getTotalVulnerabilities());
         getLog().info("Total dependencies scanned: " + result.getTotalDependencies());
-        
+
         return result;
     }
 
@@ -1368,6 +1412,259 @@ public class BastionScanMojo extends AbstractMojo {
         });
     }
     
+    /**
+     * Invoke official OWASP Dependency-Check plugin to generate JSON report
+     */
+    private File invokeOwaspPlugin() throws MojoExecutionException {
+        getLog().info("🔄 Invoking official OWASP Dependency-Check plugin v" + owaspVersion + "...");
+        getLog().info("📋 Hybrid mode: OWASP for scanning + Bastion for enhanced reporting");
+
+        try {
+            // Build Maven command
+            List<String> command = new ArrayList<>();
+            command.add("mvn");
+            command.add("org.owasp:dependency-check-maven:" + owaspVersion + ":check");
+            command.add("-DautoUpdate=" + autoUpdate);
+            command.add("-Dformat=JSON");
+            command.add("-Dformat=HTML"); // Keep HTML for OWASP native report
+
+            // Pass through NVD API key if available
+            if (nvdApiKey != null && !nvdApiKey.isEmpty()) {
+                command.add("-DnvdApiKey=" + nvdApiKey);
+            }
+
+            getLog().debug("Executing: " + String.join(" ", command));
+
+            // Execute Maven command
+            ProcessBuilder pb = new ProcessBuilder(command);
+            pb.directory(project.getBasedir());
+            pb.redirectErrorStream(true);
+
+            Process process = pb.start();
+
+            // Capture output
+            StringBuilder output = new StringBuilder();
+            try (BufferedReader reader = new BufferedReader(new InputStreamReader(process.getInputStream()))) {
+                String line;
+                while ((line = reader.readLine()) != null) {
+                    output.append(line).append("\n");
+                    // Log important lines
+                    if (line.contains("ERROR") || line.contains("WARNING") || line.contains("vulnerabilities found")) {
+                        getLog().info("  " + line);
+                    }
+                }
+            }
+
+            int exitCode = process.waitFor();
+
+            if (exitCode != 0) {
+                getLog().warn("OWASP plugin exited with code " + exitCode);
+                getLog().debug("OWASP plugin output:\n" + output);
+            } else {
+                getLog().info("✅ OWASP scan completed successfully");
+            }
+
+            // Check if report was generated
+            File reportFile = new File(project.getBuild().getDirectory(), "dependency-check-report.json");
+            if (!reportFile.exists()) {
+                throw new MojoExecutionException("OWASP report not generated at: " + reportFile.getAbsolutePath());
+            }
+
+            getLog().info("📄 OWASP JSON report: " + reportFile.getAbsolutePath() + " (" + (reportFile.length() / 1024) + " KB)");
+            return reportFile;
+
+        } catch (IOException | InterruptedException e) {
+            throw new MojoExecutionException("Failed to invoke OWASP plugin", e);
+        }
+    }
+
+    /**
+     * Parse OWASP JSON report
+     */
+    @SuppressWarnings("unchecked")
+    private Map<String, Object> parseOwaspJsonReport(File reportFile) throws MojoExecutionException {
+        getLog().info("📖 Parsing OWASP JSON report...");
+
+        try {
+            ObjectMapper mapper = new ObjectMapper();
+            Map<String, Object> report = mapper.readValue(reportFile, Map.class);
+
+            // Validate report structure
+            if (!report.containsKey("dependencies")) {
+                throw new MojoExecutionException("Invalid OWASP report format: missing 'dependencies' field");
+            }
+
+            List<Map<String, Object>> dependencies = (List<Map<String, Object>>) report.get("dependencies");
+            getLog().info("✅ Parsed " + dependencies.size() + " dependencies from OWASP report");
+
+            return report;
+
+        } catch (IOException e) {
+            throw new MojoExecutionException("Failed to parse OWASP JSON report", e);
+        }
+    }
+
+    /**
+     * Convert OWASP report data to Bastion ScanResult format
+     */
+    @SuppressWarnings("unchecked")
+    private ScanResult convertOwaspToBastion(Map<String, Object> owaspReport) throws MojoExecutionException {
+        getLog().info("🔄 Converting OWASP data to Bastion format...");
+
+        try {
+            List<Map<String, Object>> owaspDependencies = (List<Map<String, Object>>) owaspReport.get("dependencies");
+
+            // Create Bastion ScanResult
+            ScanResult result = new ScanResult();
+            result.setProjectName(project.getName());
+            result.setProjectGroupId(project.getGroupId());
+            result.setProjectArtifactId(project.getArtifactId());
+            result.setProjectVersion(project.getVersion());
+            result.setStartTime(LocalDateTime.now());
+
+            // Statistics
+            int totalVulnerabilities = 0;
+            int criticalCount = 0;
+            int highCount = 0;
+            int mediumCount = 0;
+            int lowCount = 0;
+            int vulnerableDependenciesCount = 0;
+
+            // Convert each dependency
+            List<ScanResult.DependencyResult> bastionDependencies = new ArrayList<>();
+            List<io.github.dodogeny.security.model.Vulnerability> allVulnerabilities = new ArrayList<>();
+
+            for (Map<String, Object> owaspDep : owaspDependencies) {
+                String fileName = (String) owaspDep.get("fileName");
+                String filePath = (String) owaspDep.get("filePath");
+
+                // Extract identifiers from PURL format: pkg:maven/groupId/artifactId@version
+                List<Map<String, Object>> packages = (List<Map<String, Object>>) owaspDep.get("packages");
+                String groupId = "unknown";
+                String artifactId = fileName;
+                String version = "unknown";
+
+                if (packages != null && !packages.isEmpty()) {
+                    Map<String, Object> pkg = packages.get(0);
+                    String id = (String) pkg.get("id");
+                    if (id != null && id.startsWith("pkg:maven/")) {
+                        // Remove "pkg:maven/" prefix
+                        String mavenCoords = id.substring("pkg:maven/".length());
+
+                        // Split by @ to separate coordinates from version
+                        String[] coordsAndVersion = mavenCoords.split("@");
+                        if (coordsAndVersion.length == 2) {
+                            version = coordsAndVersion[1];
+
+                            // Split coordinates by / to get groupId and artifactId
+                            String[] coords = coordsAndVersion[0].split("/");
+                            if (coords.length == 2) {
+                                groupId = coords[0];
+                                artifactId = coords[1];
+                            }
+                        }
+                    }
+                }
+
+                // Create DependencyResult
+                ScanResult.DependencyResult bastionDep = new ScanResult.DependencyResult();
+                bastionDep.setGroupId(groupId);
+                bastionDep.setArtifactId(artifactId);
+                bastionDep.setVersion(version);
+                bastionDep.setFilePath(filePath);
+
+                List<Map<String, Object>> vulnerabilities = (List<Map<String, Object>>) owaspDep.get("vulnerabilities");
+
+                if (vulnerabilities != null && !vulnerabilities.isEmpty()) {
+                    vulnerableDependenciesCount++;
+
+                    // Collect vulnerability IDs for this dependency
+                    Set<String> vulnerabilityIds = new HashSet<>();
+
+                    // Convert vulnerabilities
+                    for (Map<String, Object> owaspVuln : vulnerabilities) {
+                        String cveId = (String) owaspVuln.get("name");
+                        String description = (String) owaspVuln.get("description");
+                        String severity = (String) owaspVuln.get("severity");
+
+                        // Create Vulnerability object
+                        io.github.dodogeny.security.model.Vulnerability bastionVuln =
+                            new io.github.dodogeny.security.model.Vulnerability(cveId, severity, description);
+
+                        // Extract CVSS score
+                        Map<String, Object> cvssv3 = (Map<String, Object>) owaspVuln.get("cvssv3");
+                        if (cvssv3 != null && cvssv3.containsKey("baseScore")) {
+                            Object baseScoreObj = cvssv3.get("baseScore");
+                            if (baseScoreObj instanceof Number) {
+                                bastionVuln.setCvssV3Score(((Number) baseScoreObj).doubleValue());
+                            }
+                        }
+
+                        // Count by severity
+                        if (severity != null) {
+                            switch (severity.toUpperCase()) {
+                                case "CRITICAL":
+                                    criticalCount++;
+                                    break;
+                                case "HIGH":
+                                    highCount++;
+                                    break;
+                                case "MEDIUM":
+                                    mediumCount++;
+                                    break;
+                                case "LOW":
+                                    lowCount++;
+                                    break;
+                            }
+                        }
+
+                        allVulnerabilities.add(bastionVuln);
+                        vulnerabilityIds.add(cveId);
+                        totalVulnerabilities++;
+                    }
+
+                    bastionDep.setVulnerabilityIds(vulnerabilityIds);
+                }
+
+                bastionDependencies.add(bastionDep);
+            }
+
+            result.setDependencies(bastionDependencies);
+            result.setVulnerabilities(allVulnerabilities);
+
+            // Set summary statistics
+            result.setTotalDependencies(owaspDependencies.size());
+            result.setVulnerableDependencies(vulnerableDependenciesCount);
+            result.setTotalVulnerabilities(totalVulnerabilities);
+            result.setCriticalVulnerabilities(criticalCount);
+            result.setHighVulnerabilities(highCount);
+            result.setMediumVulnerabilities(mediumCount);
+            result.setLowVulnerabilities(lowCount);
+
+            // Set enhanced statistics
+            ScanStatistics stats = new ScanStatistics();
+            stats.setTotalJarsScanned(owaspDependencies.size());
+            stats.setTotalCvesFound(totalVulnerabilities);
+            stats.setUniqueCvesFound(allVulnerabilities.size());
+            stats.setCriticalCves(criticalCount);
+            stats.setHighCves(highCount);
+            stats.setMediumCves(mediumCount);
+            stats.setLowCves(lowCount);
+            result.setStatistics(stats);
+
+            getLog().info("✅ Converted to Bastion format:");
+            getLog().info("   📦 Total dependencies: " + owaspDependencies.size());
+            getLog().info("   ⚠️  Vulnerable dependencies: " + vulnerableDependenciesCount);
+            getLog().info("   🔴 Total vulnerabilities: " + totalVulnerabilities);
+            getLog().info("   🔴 Critical: " + criticalCount + " | High: " + highCount + " | Medium: " + mediumCount + " | Low: " + lowCount);
+
+            return result;
+
+        } catch (Exception e) {
+            throw new MojoExecutionException("Failed to convert OWASP data to Bastion format", e);
+        }
+    }
+
     private void cleanup() {
         try {
             if (database != null) {

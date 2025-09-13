@@ -39,23 +39,79 @@ public class NvdJsonPreprocessor {
         if (jsonResponse == null || jsonResponse.trim().isEmpty()) {
             return jsonResponse;
         }
-        
+
         try {
-            JsonNode root = mapper.readTree(jsonResponse);
+            // First, try simple string replacement for common cases
+            String preprocessed = preprocessStringLevel(jsonResponse);
+
+            // Then apply JSON-level preprocessing for more complex cases
+            JsonNode root = mapper.readTree(preprocessed);
             boolean modified = processNode(root, "");
-            
+
             if (modified) {
                 String result = mapper.writeValueAsString(root);
                 logger.debug("NVD JSON response preprocessed successfully - replaced problematic CVSS v4.0 enum values");
                 return result;
             }
-            
-            return jsonResponse; // No modifications needed
-            
+
+            return preprocessed; // Return string-level preprocessed version
+
         } catch (IOException e) {
             logger.warn("Failed to preprocess NVD JSON response: {}", e.getMessage());
-            return jsonResponse; // Return original on error
+            // Try string-level preprocessing as fallback
+            return preprocessStringLevel(jsonResponse);
         }
+    }
+
+    /**
+     * Performs aggressive string-level preprocessing to replace problematic enum values
+     * before JSON parsing. This is a fallback for cases where JSON parsing fails.
+     */
+    private static String preprocessStringLevel(String jsonResponse) {
+        if (jsonResponse == null) {
+            return jsonResponse;
+        }
+
+        String result = jsonResponse;
+        int replacements = 0;
+
+        // Replace all instances of "SAFETY" with "HIGH" in CVSS v4.0 contexts
+        String pattern1 = "\"SAFETY\"";
+        String replacement1 = "\"HIGH\"";
+
+        if (result.contains(pattern1)) {
+            String newResult = result.replace(pattern1, replacement1);
+            replacements += countOccurrences(result, pattern1);
+            result = newResult;
+        }
+
+        // Handle other problematic enum values
+        String[] problematicValues = {"\"UNKNOWN\"", "\"UNDEFINED\"", "\"NOT_DEFINED\""};
+        for (String problematic : problematicValues) {
+            if (result.contains(problematic)) {
+                result = result.replace(problematic, "\"NONE\"");
+                replacements++;
+            }
+        }
+
+        if (replacements > 0) {
+            logger.info("String-level preprocessing: replaced {} problematic enum values in NVD JSON", replacements);
+        }
+
+        return result;
+    }
+
+    /**
+     * Counts occurrences of a substring in a string
+     */
+    private static int countOccurrences(String text, String pattern) {
+        int count = 0;
+        int index = 0;
+        while ((index = text.indexOf(pattern, index)) != -1) {
+            count++;
+            index += pattern.length();
+        }
+        return count;
     }
     
     /**
