@@ -8,7 +8,7 @@
 
 ## 🚀 Why Choose Bastion Over Standard Vulnerability Scanners?
 
-**Built on the trusted foundation of OWASP Dependency-Check**, Bastion transforms basic vulnerability scanning into an **enterprise-grade security intelligence platform**:
+**Built on the trusted foundation of OWASP Dependency-Check 11.1.0**, Bastion transforms basic vulnerability scanning into an **enterprise-grade security intelligence platform**:
 
 **⚡ Performance Excellence**
 - **5-10x faster scans** with intelligent NVD caching
@@ -40,6 +40,34 @@ Bastion is built as a sophisticated multi-module Maven project with clean separa
 - **🏢 enterprise**: Commercial features including persistent databases, licensing, email notifications, and advanced analytics
 
 *Commercial Edition only
+
+## 🆕 What's New in v1.1.0 - Major Infrastructure Upgrade
+
+**This release brings significant improvements to performance, reliability, and future-proofing:**
+
+### ⚡ **Core Engine Upgrade**
+- **OWASP Dependency-Check 11.1.0**: Latest vulnerability detection engine with enhanced CVSS v4.0 support
+- **Java 11+ Foundation**: Modern runtime for improved performance and security
+- **H2 Database Compatibility**: Resolved persistent database corruption issues that affected earlier versions
+
+### 🛡️ **Enhanced Security & Reliability**
+- **Database Corruption Resolution**: Eliminated the primary cause of scan failures and incomplete vulnerability detection
+- **Dynamic Path Detection**: Future-proof version detection eliminates hardcoded paths
+- **Improved Error Handling**: Graceful fallbacks when database issues occur
+- **CVSS v4.0 Support**: Better parsing of newer vulnerability data with enhanced enum handling
+
+### 🔧 **Technical Improvements**
+- **Concurrent Processing**: Better multi-threading for faster dependency analysis
+- **Memory Optimization**: Reduced memory footprint for large enterprise projects
+- **API Compatibility**: Enhanced NVD 2.0 API integration with improved rate limiting
+- **Build Performance**: Faster Maven plugin initialization and execution
+
+### 📊 **Breaking Changes & Migration**
+- **Java 11+ Required**: Upgraded from Java 8 minimum requirement
+- **Database Format**: H2 database files from v1.0.x are not compatible (automatic migration on first run)
+- **Plugin Configuration**: Some advanced database settings have been simplified for better reliability
+
+> **Migration Note**: Existing users upgrading from v1.0.x will need to upgrade to Java 11+ and allow for a one-time NVD database re-download (typically 2-4GB, takes 5-15 minutes depending on connection speed).
 
 ## 🏢 Enterprise Security Management
 
@@ -108,9 +136,11 @@ mvn help:evaluate -Dexpression=latest.version -DgroupId=io.github.dodogeny -Dart
 ## 🚀 Quick Start
 
 ### Prerequisites
-- **Java**: JDK 8 or higher
-- **Maven**: 3.6.0 or higher  
+- **Java**: **JDK 11 or higher** ⚠️ **BREAKING CHANGE** (v1.1.0+)
+- **Maven**: 3.6.0 or higher
 - **Memory**: 1GB+ RAM for large enterprise projects
+
+> **🚨 BREAKING CHANGE**: Starting with v1.1.0, Bastion requires **Java 11+** due to the upgrade to OWASP Dependency-Check 11.1.0. For Java 8 compatibility, use Bastion v1.0.x with OWASP 10.0.4.
 
 ### Basic Installation
 
@@ -147,12 +177,21 @@ mvn io.github.dodogeny:bastion-maven-community-plugin:LATEST:scan
 Reports will be generated in `target/security/` directory.
 
 **Community Features Included:**
-- OWASP Dependency-Check vulnerability scanning with smart NVD caching
+- OWASP Dependency-Check 11.1.0 vulnerability scanning with smart NVD caching
 - HTML and JSON reports with graphical dependency trees
 - Historical trend analysis and performance metrics
 - In-memory database or JSON file storage options
 - Multi-module project support
-- **NEW in v1.1.0**: Smart NVD database caching for 5-10x faster scans
+- **NEW in v1.1.0**: Enhanced database reliability and CVSS v4.0 support
+
+### 📋 Compatibility Matrix
+
+| Bastion Version | Java Requirement | OWASP Dependency-Check | Key Features | Status |
+|-----------------|------------------|------------------------|--------------|--------|
+| **1.1.0+** | **Java 11+** | **11.1.0** | Database corruption fixes, CVSS v4.0, Dynamic paths | ✅ **Current** |
+| 1.0.x | Java 8+ | 10.0.4 | Basic scanning, Legacy H2 database | ⚠️ **Legacy** |
+
+> **Upgrade Recommendation**: All users should upgrade to v1.1.0+ for improved reliability and security. The v1.0.x series will receive critical security patches only.
 
 ## 🛠️ Community Edition Usage Guide
 
@@ -2076,11 +2115,11 @@ Bastion supports multiple vulnerability intelligence sources:
 
 ## 📊 Reports & Analytics
 
-### Enhanced Trend Analysis (v1.0.0+)
+### Enhanced Trend Analysis (v1.1.0+)
 
-Bastion now features advanced trend analysis capabilities with interactive visualizations:
+Bastion features advanced trend analysis capabilities with interactive visualizations:
 
-#### 🚀 **New Features in v1.0.0**
+#### 🚀 **Latest Features in v1.1.0**
 
 ##### 📈 **Historical Trend Charts**
 - **Interactive Timeline**: Visual representation of vulnerable JARs and CVEs over time
@@ -3110,6 +3149,66 @@ Bastion is designed with security-first principles:
 - **Audit Logging**: Complete audit trail of all security scanning activities
 - **Role-Based Access**: Fine-grained permissions for different user roles
 
+## 🛠️ Troubleshooting v1.1.0 Upgrade
+
+### Common Upgrade Issues
+
+#### ❓ **"Unsupported major.minor version" Error**
+```
+Error: A JNI error has occurred, please check your installation and try again
+Exception in thread "main" java.lang.UnsupportedClassVersionError:
+org/owasp/dependencycheck/Main has been compiled by a more recent version of
+the Java Runtime (class file version 55.0), this version of the Java Runtime
+only recognizes class file versions up to 52.0
+```
+
+**Solution**: Upgrade to Java 11 or higher.
+```bash
+# Check current Java version
+java -version
+
+# Set JAVA_HOME to Java 11+ installation
+export JAVA_HOME=/path/to/java-11-installation
+mvn clean verify
+```
+
+#### ❓ **"Unable to connect to the database" After Upgrade**
+```
+DatabaseException: Unable to connect to the database - if this error
+persists it may be due to a corrupt database
+```
+
+**Solution**: Clear old database files (they're not compatible between major versions):
+```bash
+# Clear old OWASP database files
+rm -rf ~/.m2/repository/org/owasp/dependency-check-utils/10.0.4
+rm -rf ~/.m2/repository/org/owasp/dependency-check-data/9.0
+
+# Run scan to download new database
+mvn bastion:scan
+```
+
+#### ❓ **First Scan Takes Very Long (15+ minutes)**
+This is expected behavior after upgrading. Bastion needs to download the latest NVD database (~2-4GB) which is not compatible with the v1.0.x format.
+
+**Solution**: Be patient during the first scan. Subsequent scans will be much faster (2-5 minutes) due to smart caching.
+
+#### ❓ **Maven Can't Find Java 11**
+```bash
+# Set Java 11 for Maven specifically
+export JAVA_HOME=/path/to/java-11
+export PATH=$JAVA_HOME/bin:$PATH
+
+# Verify
+mvn -version
+```
+
+### Performance Optimization Tips
+
+- **Use NVD API Key**: Significantly speeds up database updates
+- **Configure Maven Memory**: `export MAVEN_OPTS="-Xmx2g"` for large projects
+- **Enable Parallel Builds**: `mvn -T 4 bastion:scan` for multi-module projects
+
 ## 🆘 Support & Community
 
 ### Community Support
@@ -3131,6 +3230,37 @@ This project is licensed under the GPL 3.0 - see the [LICENSE](LICENSE) file for
 *Developed with ❤️ by [dodogeny](https://github.com/dodogeny/bastion-maven-plugin-community) in Mauritius* 🇲🇺
 
 **Ready for Enterprise Features?** Upgrade to <a href="https://bastion-plugin.lemonsqueezy.com" target="_blank">Bastion Enterprise Edition</a> for advanced security capabilities.
+
+## 📝 Changelog
+
+### v1.1.0 - Major Infrastructure Upgrade (2025-09-14)
+
+**🚨 BREAKING CHANGES:**
+- **Java 11+ Required**: Minimum Java version upgraded from 8 to 11
+- **Database Compatibility**: H2 database files from v1.0.x are not compatible
+
+**✨ New Features:**
+- **OWASP Dependency-Check 11.1.0**: Latest vulnerability detection engine
+- **Enhanced CVSS v4.0 Support**: Better parsing of newer vulnerability data
+- **Dynamic Path Detection**: Future-proof version detection eliminates hardcoded paths
+- **Database Corruption Resolution**: Eliminated primary cause of scan failures
+
+**🛠️ Technical Improvements:**
+- Improved error handling with graceful fallbacks
+- Enhanced NVD 2.0 API integration with better rate limiting
+- Memory optimization for large enterprise projects
+- Faster Maven plugin initialization and execution
+
+**🔧 Bug Fixes:**
+- Fixed persistent H2 database corruption issues
+- Resolved incomplete vulnerability detection in some scenarios
+- Enhanced enum handling for CVSS v4.0 parsing errors
+
+### v1.0.x - Legacy Series
+- Java 8+ compatibility
+- OWASP Dependency-Check 10.0.4
+- Basic vulnerability scanning with smart caching
+- Community features with in-memory storage
 
 ---
 

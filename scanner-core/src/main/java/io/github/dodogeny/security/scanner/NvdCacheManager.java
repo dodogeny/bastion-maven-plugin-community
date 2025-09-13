@@ -728,6 +728,7 @@ public class NvdCacheManager {
             }
             
             // Check both dependency-check-utils and dependency-check-core locations
+            // Updated for OWASP 11.x compatibility - supports both legacy and new database locations
             String[] owaspPaths = {
                 "org/owasp/dependency-check-utils",
                 "org/owasp/dependency-check-core",

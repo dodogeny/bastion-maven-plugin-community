@@ -1347,9 +1347,8 @@ public class OwaspDependencyCheckScanner implements VulnerabilityScanner {
             settings.setBoolean(Settings.KEYS.UPDATE_NVDCVE_ENABLED, safeAutoUpdate);
             settings.setBoolean(Settings.KEYS.ANALYZER_NVD_CVE_ENABLED, true);
 
-            // Configure database settings to prevent corruption
-            settings.setString(Settings.KEYS.DB_DRIVER_NAME, "org.h2.Driver");
-            settings.setString(Settings.KEYS.DB_CONNECTION_STRING, "jdbc:h2:file:%s;AUTOCOMMIT=ON;MV_STORE=FALSE;MVCC=FALSE");
+            // Let OWASP 11.x use its default H2 database configuration
+            // This prevents connection string parsing errors and allows OWASP to manage database settings optimally
             
             // Force initial NVD database download if needed
             if (shouldUpdate) {

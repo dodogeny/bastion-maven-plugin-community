@@ -11,6 +11,7 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 
 /**
@@ -172,13 +173,34 @@ public class CustomNvdClient {
      * Static method to find the local NVD database path
      */
     public static String findLocalNvdDatabase() {
-        // Common locations where OWASP Dependency Check stores the NVD database
-        String[] possiblePaths = {
-            "/home/dilneemuth/.m2/repository/org/owasp/dependency-check-utils/10.0.4/data/9.0/odc",
-            System.getProperty("user.home") + "/.m2/repository/org/owasp/dependency-check-utils/10.0.4/data/9.0/odc",
-            System.getProperty("user.home") + "/.bastion/nvd-cache/odc"
-        };
-        
+        // Dynamically discover OWASP Dependency Check NVD database locations
+        List<String> possiblePaths = new ArrayList<>();
+        String userHome = System.getProperty("user.home");
+        String m2RepoPath = System.getProperty("maven.repo.local", userHome + "/.m2/repository");
+
+        // Add common OWASP paths with version detection
+        File owaspUtilsDir = new File(m2RepoPath, "org/owasp/dependency-check-utils");
+        if (owaspUtilsDir.exists()) {
+            File[] versions = owaspUtilsDir.listFiles(File::isDirectory);
+            if (versions != null) {
+                Arrays.sort(versions, (a, b) -> b.getName().compareTo(a.getName())); // Sort descending by version
+                for (File versionDir : versions) {
+                    File dataDir = new File(versionDir, "data");
+                    if (dataDir.exists()) {
+                        File[] dataDirs = dataDir.listFiles(File::isDirectory);
+                        if (dataDirs != null) {
+                            for (File nvdDataDir : dataDirs) {
+                                possiblePaths.add(nvdDataDir.getAbsolutePath() + "/odc");
+                            }
+                        }
+                    }
+                }
+            }
+        }
+
+        // Add fallback paths
+        possiblePaths.add(userHome + "/.bastion/nvd-cache/odc");
+
         for (String path : possiblePaths) {
             File dbFile = new File(path + ".mv.db");
             if (dbFile.exists() && dbFile.length() > 50_000_000) { // Should be >50MB for complete database

@@ -42,12 +42,12 @@
     </scm>
 
     <properties>
-        <maven.compiler.source>8</maven.compiler.source>
-        <maven.compiler.target>8</maven.compiler.target>
+        <maven.compiler.source>11</maven.compiler.source>
+        <maven.compiler.target>11</maven.compiler.target>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
         <gpg.skip>false</gpg.skip>
         
-        <!-- Dependency versions (JDK 8 compatible) -->
+        <!-- Dependency versions (JDK 11+ compatible) -->
         <maven.version>3.8.6</maven.version>
         <junit.version>5.9.3</junit.version>
         <mockito.version>4.11.0</mockito.version>
@@ -55,7 +55,7 @@
         <jackson.version>2.15.4</jackson.version>
         <h2.version>2.2.224</h2.version>
         <postgresql.version>42.7.0</postgresql.version>
-        <owasp-dc.version>10.0.4</owasp-dc.version>
+        <owasp-dc.version>11.1.0</owasp-dc.version>
         <flyway.version>8.5.13</flyway.version>
         <freemarker.version>2.3.31</freemarker.version>
         <openhtmltopdf.version>1.0.10</openhtmltopdf.version>
