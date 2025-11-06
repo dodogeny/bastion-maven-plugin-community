@@ -4,155 +4,27 @@
 [![Build Status](https://github.com/dodogeny/bastion-maven-community-plugin/workflows/CI/badge.svg)](https://github.com/dodogeny/bastion-maven-community-plugin/actions)
 [![License](https://img.shields.io/badge/License-Apache%202.0-blue.svg)](https://opensource.org/licenses/Apache-2.0)
 
-**Bastion Maven Plugin Community** is your Maven project's fortified defense against security vulnerabilities. This free, open-source scanner helps developers and teams maintain secure codebases through automated CVE detection, comprehensive reporting, and historical trend analysis.
+A Maven plugin for automated vulnerability scanning and CVE detection in your dependencies. Built on OWASP Dependency-Check 11.1.0 with enhanced performance, caching, and trend analysis capabilities.
 
-## 🚀 Why Choose Bastion Over Standard Vulnerability Scanners?
+## Features
 
-**Built on the trusted foundation of OWASP Dependency-Check 12.1.3**, Bastion transforms basic vulnerability scanning into an **enterprise-grade security intelligence platform**:
+- **Automated CVE Detection**: Scans project dependencies against the National Vulnerability Database (NVD)
+- **Smart NVD Caching**: Reduces scan times from 8-13 minutes to 2-3 minutes with intelligent cache management
+- **Historical Trend Analysis**: Track vulnerability trends over time with JSON file storage
+- **Multi-Module Support**: Scan complex Maven projects with multiple modules
+- **Multiple Report Formats**: HTML and JSON reports with graphical dependency trees
+- **CI/CD Integration**: Compatible with GitHub Actions, Jenkins, GitLab CI, and Azure DevOps
+- **Performance Metrics**: Detailed scan statistics with bottleneck identification
 
-**⚡ Performance Excellence**
-- **5-10x faster scans** with intelligent NVD caching
-- **Sub-second validation** for CI/CD environments
-- **Smart cache management** reduces 8-13 minute scans to 2-3 minutes
-
-**📊 Enterprise Intelligence** 
-- **Historical trend analysis** tracks security posture over time
-- **Comprehensive performance metrics** with bottleneck identification
-- **Multi-format reporting** including executive summaries and compliance reports
-
-**🏗️ Enterprise Scale**
-- **Multi-module optimization** for complex enterprise applications
-- **Persistent database storage** with H2/PostgreSQL support
-- **Zero-configuration migration** from existing OWASP dependency-check setups
-
-**Perfect for organizations requiring faster scans, detailed analytics, and enterprise-scale vulnerability management while maintaining the proven reliability of OWASP's vulnerability detection engine.**
-
-> **💡 Looking for Enterprise Features?** This is the **Community Edition** with core vulnerability scanning capabilities. For advanced features like persistent databases, email notifications, PDF reports, and enterprise support, see the [Enterprise Edition](#-enterprise-edition---coming-soon) section below.
-
-## 🏗️ Multi-Module Architecture
-
-Bastion is built as a sophisticated multi-module Maven project with clean separation of concerns:
-
-- **📊 vulnerability-db**: Database layer with in-memory community database and commercial H2/PostgreSQL support
-- **🔍 scanner-core**: Multi-source vulnerability scanning with OWASP Dependency-Check integration  
-- **📋 reporting**: Multi-format report generation with graphical dependency trees (HTML, JSON , PDF*, SARIF*)
-- **🔌 plugin**: Maven plugin implementation with comprehensive statistics and licensing
-- **🏢 enterprise**: Commercial features including persistent databases, licensing, email notifications, and advanced analytics
-
-*Commercial Edition only
-
-## 🆕 What's New in v1.1.0 - Major Infrastructure Upgrade
-
-**This release brings significant improvements to performance, reliability, and future-proofing:**
-
-### ⚡ **Core Engine Upgrade**
-- **OWASP Dependency-Check 12.1.3**: Latest vulnerability detection engine with enhanced CVSS v4.0 support
-- **Hybrid Scanning Architecture**: Leverages official OWASP plugin for proven scanning + Bastion's enhanced reporting (default mode)
-- **Java 21 Foundation**: Modern LTS runtime for improved performance and security
-- **H2 Database Compatibility**: Resolved persistent database corruption issues that affected earlier versions
-
-### 🔀 **NEW: Hybrid Scanning Mode** (Default)
-- **Proven Vulnerability Detection**: Uses official OWASP 12.1.3 plugin for scanning (137 CVEs detected in test project)
-- **Enhanced Bastion Reporting**: Adds trend analysis, performance metrics, and custom formatting
-- **Backward Compatible**: Legacy direct Engine API mode available via `bastion.useOwaspPlugin=false`
-- **Resilient Design**: Continues scan even with non-critical OWASP errors (e.g., Sonatype OSS Index issues)
-- **Configurable OWASP Version**: Control which OWASP version to use via `bastion.owaspVersion` parameter
-
-### 🛡️ **Enhanced Security & Reliability**
-- **Database Corruption Resolution**: Eliminated the primary cause of scan failures and incomplete vulnerability detection
-- **Dynamic Path Detection**: Future-proof version detection eliminates hardcoded paths
-- **Improved Error Handling**: Graceful fallbacks when database issues occur
-- **CVSS v4.0 Support**: Better parsing of newer vulnerability data with enhanced enum handling
-
-### 🔧 **Technical Improvements**
-- **Concurrent Processing**: Better multi-threading for faster dependency analysis
-- **Memory Optimization**: Reduced memory footprint for large enterprise projects
-- **API Compatibility**: Enhanced NVD 2.0 API integration with improved rate limiting
-- **Build Performance**: Faster Maven plugin initialization and execution
-
-### 📊 **Breaking Changes & Migration**
-- **Java 21 Required**: Upgraded from Java 8 minimum requirement
-- **OWASP 12.1.3**: Major version upgrade from 11.1.0 with enhanced CVSS v4.0 support
-- **Hybrid Mode Default**: Now uses official OWASP plugin by default (can revert with `bastion.useOwaspPlugin=false`)
-- **Database Format**: H2 database files from v1.0.x are not compatible (automatic migration on first run)
-- **Plugin Configuration**: Some advanced database settings have been simplified for better reliability
-
-> **Migration Note**: Existing users upgrading from v1.0.x will need to upgrade to Java 21 and allow for a one-time NVD database re-download (typically 2-4GB, takes 5-15 minutes depending on connection speed). The hybrid scanning mode is now the default and provides improved vulnerability detection.
-
-## 🏢 Enterprise Security Management
-
-Bastion Maven Plugin transforms how companies manage security vulnerabilities by providing:
-
-### 📈 **Continuous Security Monitoring**
-- **Historical Vulnerability Tracking**: Track CVE trends across time to measure security posture improvements
-- **Multi-Module Support**: Scan entire enterprise applications with dozens of modules simultaneously
-- **Performance Optimized**: Concurrent scanning with intelligent NVD caching (5-10x faster scans) for large codebases
-- **Database-Driven Intelligence**: Persistent storage of vulnerability data for trend analysis and reporting
-- **Real-time Performance Metrics**: Detailed scan statistics including JARs processed, CVEs found, timing breakdowns, and resource usage
-- **Comprehensive Statistics Display**: View scan performance with bottleneck identification and optimization recommendations
-
-### 🔔 **Intelligent Alert System**
-- **Email Notifications**: Automated alerts to security teams when critical/high vulnerabilities are discovered
-- **Configurable Thresholds**: Set custom severity levels for different notification channels
-- **Distribution Lists**: Support for multiple stakeholder groups (dev teams, security, management)
-- **Rich HTML Emails**: Professional email reports with charts and detailed vulnerability information
-
-### 📊 **Executive Reporting**
-- **Security Dashboards**: Real-time vulnerability metrics and trends
-- **Compliance Reports**: Generate reports for SOX, PCI-DSS, HIPAA compliance requirements
-- **Risk Assessment**: Prioritize vulnerabilities based on exploitability and business impact
-- **PDF Executive Summaries**: Board-ready security status reports
-
-## 📦 Getting the Latest Version
-
-**Always use the latest stable version from Maven Central for the best security and performance:**
-
-[![Maven Central](https://maven-badges.herokuapp.com/maven-central/io.github.dodogeny/bastion-maven-community-plugin/badge.svg)](https://maven-badges.herokuapp.com/maven-central/io.github.dodogeny/bastion-maven-community-plugin)
-
-**Quick Version Lookup:**
-```bash
-# Find latest version on Maven Central
-mvn help:evaluate -Dexpression=latest.version -DgroupId=io.github.dodogeny -DartifactId=bastion-maven-community-plugin
-
-# Or visit: https://search.maven.org/artifact/io.github.dodogeny/bastion-maven-community-plugin
-```
-
-> **💡 Pro Tip**: Use version range `[1.1.0,)` in your POM to automatically get the latest compatible version while ensuring minimum feature compatibility.
-
-## 🎉 What's New in v1.1.0
-
-### 🔮 **NEW: Predictive Update Analysis** *(Enterprise Edition)*
-- **🧠 AI-Powered Recommendations**: Intelligent dependency update suggestions with CVE impact prediction
-- **📊 Risk Assessment**: Confidence-scored analysis of version upgrade risks and benefits  
-- **🎯 Smart Prioritization**: Focus on updates that resolve the most CVEs with lowest risk
-- **📈 Beautiful Reports**: Interactive HTML dashboards with executive summaries
-- **⚡ Multiple Analysis Depths**: QUICK (30s), STANDARD (2min), COMPREHENSIVE (5min)
-
-### 🧪 **Automatic Test Environment Optimization**
-- **Sub-second Cache Validation**: Lightning-fast local-only checks for frequent test runs
-- **CI/CD Optimized**: No more 3-5 minute NVD downloads during unit test phases
-- **Manual Override**: Force test mode with `bastion.environment=test` for any environment
-
-### 🔍 **Enhanced Smart Caching**
-- **Production Mode**: Enable `enableRemoteValidation=true` for full NVD server validation
-- **Configurable Thresholds**: Fine-tune cache behavior for different environments
-
-### ⚡ **Performance Improvements**
-- **5-10x Faster Scans**: Intelligent caching improvements
-- **Millisecond Cache Checks**: Sub-millisecond validation for test environments
-- **Bandwidth Optimization**: Concurrent connections maximize download utilization
-- **Memory Efficient**: Streaming chunk processing with automatic cleanup
-
-## 🚀 Quick Start
+## Quick Start
 
 ### Prerequisites
-- **Java**: **JDK 21** ⚠️ **BREAKING CHANGE** (v1.1.0+)
+
+- **Java**: JDK 11 or higher (required for v1.1.0+)
 - **Maven**: 3.6.0 or higher
-- **Memory**: 1GB+ RAM for large enterprise projects
+- **Memory**: 1GB+ RAM for large projects
 
-> **🚨 BREAKING CHANGE**: Starting with v1.1.0, Bastion requires **Java 21** due to the upgrade to OWASP Dependency-Check 12.1.3. For Java 8 compatibility, use Bastion v1.0.x with OWASP 10.0.4.
-
-### Basic Installation
+### Installation
 
 Add the plugin to your `pom.xml`:
 
@@ -160,8 +32,7 @@ Add the plugin to your `pom.xml`:
 <plugin>
     <groupId>io.github.dodogeny</groupId>
     <artifactId>bastion-maven-community-plugin</artifactId>
-    <!-- Use the latest stable version from Maven Central -->
-    <version>[1.1.0,)</version>
+    <version>1.1.0</version>
     <executions>
         <execution>
             <goals>
@@ -172,391 +43,60 @@ Add the plugin to your `pom.xml`:
 </plugin>
 ```
 
-> **💡 Latest Version**: Check [![Maven Central](https://maven-badges.herokuapp.com/maven-central/io.github.dodogeny/bastion-maven-community-plugin/badge.svg)](https://maven-badges.herokuapp.com/maven-central/io.github.dodogeny/bastion-maven-community-plugin) for the most current version.
-
 ### Run Your First Scan
 
 ```bash
-# Community Edition - Free vulnerability scanning (use latest version)
-mvn io.github.dodogeny:bastion-maven-community-plugin:LATEST:scan
+# Basic scan
+mvn bastion:scan
 
-# Or check Maven Central and use specific latest version:
-# mvn io.github.dodogeny:bastion-maven-community-plugin:<latest-version>:scan
+# With NVD API key (recommended for better performance)
+mvn bastion:scan -Dbastion.nvd.apiKey=YOUR_NVD_API_KEY
 ```
 
 Reports will be generated in `target/security/` directory.
 
-**Community Features Included:**
-- OWASP Dependency-Check 11.1.0 vulnerability scanning with smart NVD caching
-- HTML and JSON reports with graphical dependency trees
-- Historical trend analysis and performance metrics
-- In-memory database or JSON file storage options
-- Multi-module project support
-- **NEW in v1.1.0**: Enhanced database reliability and CVSS v4.0 support
+## What's New in v1.1.0
 
-### 📋 Compatibility Matrix
+### Core Improvements
+- **OWASP Dependency-Check 11.1.0**: Latest vulnerability detection engine
+- **Java 11+ Required**: Modern runtime for improved performance (breaking change)
+- **Database Corruption Fix**: Resolved H2 database issues affecting earlier versions
+- **CVSS v4.0 Support**: Enhanced parsing of newer vulnerability data
+- **Dynamic Path Detection**: Eliminates hardcoded version paths
 
-| Bastion Version | Java Requirement | OWASP Dependency-Check | Key Features | Status |
-|-----------------|------------------|------------------------|--------------|--------|
-| **1.1.0+** | **Java 21** | **11.1.0** | Database corruption fixes, CVSS v4.0, Dynamic paths | ✅ **Current** |
-| 1.0.x | Java 8+ | 10.0.4 | Basic scanning, Legacy H2 database | ⚠️ **Legacy** |
+### Performance Enhancements
+- Smart NVD caching with sub-second validation for test environments
+- Improved concurrent processing for faster dependency analysis
+- Memory optimization for large enterprise projects
+- Enhanced NVD API 2.0 integration with better rate limiting
 
-> **Upgrade Recommendation**: All users should upgrade to v1.1.0+ for improved reliability and security. The v1.0.x series will receive critical security patches only.
+### Migration Notes
+- Upgrading from v1.0.x requires Java 11+
+- First scan will re-download NVD database (2-4GB, 5-15 minutes)
+- H2 database files from v1.0.x are not compatible
 
-## 🛠️ Community Edition Usage Guide
+## Usage
 
-### Available Maven Goals
-
-Bastion Community provides this Maven goal for vulnerability management:
-
-| Goal | Description | Community Edition |
-|------|-------------|------------------|
-| `scan` | Run complete vulnerability scan with integrated trend analysis | ✅ Full support |
-
-> **📊 Trend Analysis:** Historical trend analysis is built into the `scan` goal when using JSON file storage. No separate `trend-analysis` goal needed!
-
-### Basic Usage Examples
-
-#### 1. Simple Vulnerability Scan
+### Basic Commands
 
 ```bash
-# Basic scan with default settings
-mvn io.github.dodogeny:bastion-maven-community-plugin:1.1.0:scan
-
-# Or if plugin is configured in pom.xml
-mvn bastion:scan
-```
-
-#### 2. With NVD API Key (Recommended)
-
-```bash
-# Using NVD API key for faster, more reliable scans
-mvn bastion:scan -Dbastion.nvd.apiKey=YOUR_NVD_API_KEY
-
-# Using environment variable
-export NVD_API_KEY="your-nvd-api-key"
-mvn bastion:scan -Dbastion.nvd.apiKey=${NVD_API_KEY}
-```
-
-#### 3. Storage Mode Options
-
-```bash
-# In-memory database (default - fastest)
-mvn bastion:scan -Dbastion.community.storageMode=IN_MEMORY
-
-# JSON file storage (persistent, with trend analysis)
-mvn bastion:scan -Dbastion.community.storageMode=JSON_FILE
-
-# Custom JSON file location
-mvn bastion:scan \
-  -Dbastion.community.storageMode=JSON_FILE \
-  -Dbastion.storage.jsonFilePath=/path/to/custom-vulnerabilities.json
-```
-
-#### 4. Report Generation
-
-```bash
-# Generate all available reports (HTML, JSON)
+# Simple scan with default settings
 mvn bastion:scan
 
-# Specific report format focus
-mvn bastion:scan -Dbastion.reporting.formats.html=true
-mvn bastion:scan -Dbastion.reporting.formats.json=true
+# With NVD API key for faster scans
+mvn bastion:scan -Dbastion.nvd.apiKey=YOUR_API_KEY
 
-```
-
-#### 5. Historical Trend Analysis
-
-```bash
-# Enable trend analysis with JSON storage (first scan)
+# JSON file storage for trend analysis
 mvn bastion:scan -Dbastion.community.storageMode=JSON_FILE
 
-# Subsequent scans automatically generate trend analysis
-mvn bastion:scan -Dbastion.community.storageMode=JSON_FILE
-
-# Custom JSON file location for trend tracking
-mvn bastion:scan \
-  -Dbastion.community.storageMode=JSON_FILE \
-  -Dbastion.storage.jsonFilePath=/path/to/trend-data.json
-```
-
-> **📈 How Trend Analysis Works:** Trend analysis is automatically generated when using JSON file storage and you have at least 2 historical scans. The scan goal creates both regular reports AND a dedicated trend report (`bastion-trend-report-{project}.html`).
-
-#### 6. Multi-Module Projects
-
-```bash
-# Scan multi-module project from parent directory
+# Multi-module projects
 mvn bastion:scan -Dbastion.multiModule.enabled=true
 
-# With parallel scanning for faster results
-mvn bastion:scan \
-  -Dbastion.multiModule.enabled=true \
-  -Dbastion.multiModule.parallelScanning=true \
-  -Dbastion.multiModule.threadCount=4
+# Fail build on critical vulnerabilities
+mvn bastion:scan -Dbastion.failOnError=true -Dbastion.severityThreshold=CRITICAL
 ```
 
-#### 7. Performance Options
-
-```bash
-# Enhanced scanning with timeout configuration
-mvn bastion:scan -Dbastion.scanner.timeout=300000
-
-# Multi-module scanning enabled
-mvn bastion:scan -Dbastion.enableMultiModule=true
-```
-
-#### 8. Smart NVD Database Caching (Enhanced in v1.1.0)
-
-**🚀 Smart Caching dramatically reduces scan times by avoiding unnecessary NVD database downloads!**
-
-##### **How Smart Caching Works**
-
-The intelligent caching system now uses **triple optimization**:
-
-**🔍 Local Cache Intelligence** *(New!)*
-1. **Fast Local Validation**: Lightning-fast local-only cache checks for unit tests and frequent scans
-2. **Sub-millisecond Validation**: Instant cache validation without network overhead
-
-**🌐 Remote Change Analysis**
-3. **Smart Remote Validation**: Queries NVD servers only when explicitly enabled for production scans
-4. **Timestamp Monitoring**: Compares local cache timestamps with remote modification times  
-
-**📊 Record Count Intelligence** 
-5. **CVE Record Monitoring**: Tracks the total number of CVE records using NVD API 2.0
-6. **Threshold-Based Updates**: Only downloads if record count changes by configurable percentage (default: 5%)
-7. **Avoids Minor Updates**: Prevents full downloads for insignificant database changes (1-2 new CVEs)
-
-**📊 Record Count Intelligence** 
-8. **CVE Record Monitoring**: Tracks the total number of CVE records using NVD API 2.0
-9. **Threshold-Based Updates**: Only downloads if record count changes by configurable percentage (default: 5%)
-10. **Avoids Minor Updates**: Prevents full downloads for insignificant database changes (1-2 new CVEs)
-
-**⚡ Result**: Even more efficient caching with blazing-fast downloads when updates are needed!
-
-##### **Command-Line Usage**
-
-```bash
-# Enable smart caching with NVD API key (recommended)
-mvn bastion:scan \
-  -Dbastion.nvd.apiKey=your-api-key \
-  -Dbastion.autoUpdate=true
-
-# Configure cache validity period (default: 6 hours)
-mvn bastion:scan \
-  -Dbastion.nvd.apiKey=your-api-key \
-  -Dbastion.autoUpdate=true \
-  -Dbastion.cache.validity.hours=3
-
-# Custom cache directory
-mvn bastion:scan \
-  -Dbastion.nvd.apiKey=your-api-key \
-  -Dbastion.autoUpdate=true \
-  -Dbastion.cache.directory=${user.home}/.bastion/nvd-cache
-
-# Enable enhanced remote validation for production (default: disabled for tests)
-mvn bastion:scan \
-  -Dbastion.nvd.apiKey=your-api-key \
-  -Dbastion.autoUpdate=true \
-  -Dbastion.enableRemoteValidation=true
-
-# Disable smart caching (force download)
-mvn bastion:scan \
-  -Dbastion.autoUpdate=true \
-  -Dbastion.smart.caching.enabled=false
-```
-
-##### **POM Configuration**
-
-```xml
-<plugin>
-    <groupId>io.github.dodogeny</groupId>
-    <artifactId>bastion-maven-community-plugin</artifactId>
-    <version>[1.1.0,)</version> <!-- Use latest stable version -->
-    <configuration>
-        <autoUpdate>true</autoUpdate>
-        <nvdApiKey>${nvd.api.key}</nvdApiKey>
-        
-        <!-- Smart caching is enabled by default -->
-        <smartCachingEnabled>true</smartCachingEnabled>
-        
-        <!-- Cache validity period in hours (default: 6 hours) -->
-        <cacheValidityHours>6</cacheValidityHours>
-        
-        <!-- Record count change threshold for updates (default: 5.0%) -->
-        <updateThresholdPercent>5.0</updateThresholdPercent>
-        
-        <!-- Optional: specify cache directory -->
-        <cacheDirectory>${user.home}/.bastion/nvd-cache</cacheDirectory>
-        
-        <!-- Enhanced cache settings (New in v1.1.0) -->
-        <enableRemoteValidation>false</enableRemoteValidation> <!-- Local-only for unit tests -->
-        
-        <!-- Record count monitoring settings (New in v1.1.0) -->
-        <updateThresholdPercent>5.0</updateThresholdPercent>
-        <enableRecordCountValidation>true</enableRecordCountValidation>
-    </configuration>
-</plugin>
-```
-
-##### **Cache Behavior Comparison**
-
-| Scenario | First Run | Subsequent Runs | Cache Strategy |
-|----------|-----------|-----------------|----------------|
-| **With NVD API Key** | Downloads full database (~500MB+) | Checks remote modification time | 6-hour validity (default) |
-| **Without API Key** | Downloads full database | Time-based caching | 24-hour validity (conservative) |
-| **Cache Hit** | N/A | Scan starts immediately | Uses local cached database |
-| **Cache Miss** | Downloads database | Downloads latest changes | Updates cache metadata |
-
-##### **Performance Impact**
-
-**Before Smart Caching:**
-```
-[INFO] Starting OWASP Dependency-Check scan...
-[INFO] Downloading NVD database... (5-10 minutes)
-[INFO] Analyzing dependencies... (2-3 minutes)
-[INFO] Total scan time: 8-13 minutes
-```
-
-**With Smart Caching (cache hit):**
-```
-[INFO] 🔍 Checking NVD database cache status...
-[INFO] ✅ NVD cache is valid - skipping database download
-[INFO] Starting OWASP Dependency-Check scan...
-[INFO] Analyzing dependencies... (2-3 minutes)
-[INFO] Total scan time: 2-3 minutes
-```
-
-##### **Cache Management**
-
-**View Cache Status:**
-The plugin logs cache decisions during scans:
-```
-[INFO] 🔍 Checking NVD database cache status...
-[INFO] ✅ NVD cache is valid - skipping database download
-[INFO] 🔑 NVD API key configured - CVE analysis enabled, cache status: using cached database
-```
-
-**Clear Cache:**
-```bash
-# Delete the cache directory
-rm -rf ~/.bastion/nvd-cache
-
-# Or run with disabled caching for one scan
-mvn bastion:scan -Dbastion.smart.caching.enabled=false
-```
-
-**Cache Locations:**
-- **Linux/Mac**: `~/.bastion/nvd-cache/`
-- **Windows**: `%USERPROFILE%\.bastion\nvd-cache\`
-
-##### **Troubleshooting & Best Practices**
-
-**Cache Check Failures:**
-If cache validation fails, the system falls back to downloading:
-```
-[WARN] ⚠️ Error checking cache validity, defaulting to update: Connection timeout
-[INFO] 🔄 NVD cache is stale or remote database updated - will download latest
-```
-
-**Debug Cache Behavior:**
-```bash
-mvn bastion:scan -X -Dorg.slf4j.simpleLogger.log.io.github.dodogeny=debug
-```
-
-**Best Practices:**
-1. **Use NVD API Key**: Get a free API key from [NIST](https://nvd.nist.gov/developers/request-an-api-key) for optimal caching behavior
-2. **CI/CD Pipelines**: Set longer cache validity (12-24 hours) for build pipelines  
-3. **Development**: Use shorter validity (2-6 hours) for active development
-4. **Monitor Logs**: Watch for cache hit/miss messages to optimize settings
-
-##### **🧪 Unit Testing Optimization (New in v1.1.0)**
-
-**Automatic Test Environment Detection:**
-Bastion automatically detects when running in unit test environments and optimizes for speed:
-
-```java
-// Test environments automatically get these optimizations:
-enableRemoteValidation = false  // No network calls during tests
-autoUpdate = false             // Disable NVD updates during tests  
-cacheValidityHours = 24        // Extended cache for test stability
-```
-
-**Manual Test Optimization:**
-```bash
-# Force test-mode optimizations for any environment
-mvn bastion:scan \
-  -Dbastion.environment=test \
-  -Dbastion.enableRemoteValidation=false \
-  -Dbastion.autoUpdate=false
-
-# Ultra-fast local-only mode for CI/CD unit tests  
-mvn test -Dbastion.enableRemoteValidation=false
-```
-
-**Performance Results:**
-- **Unit Tests**: ⚡ **Sub-second cache validation** (was 3-5 minutes with downloads)
-- **CI/CD Builds**: 🚀 **No NVD downloads** during test phases
-- **Development**: 💨 **Instant repeated scans** within 6-hour window
-- **Production**: 🔄 **Full validation** with `enableRemoteValidation=true`
-
-> **🎯 Migration Note**: Smart caching is automatically enabled and backward compatible. Your existing configuration will work unchanged, with caching providing performance benefits automatically. No action is required to upgrade - the first scan establishes the cache, and subsequent scans are dramatically faster.
-
-#### 9. Data Management
-
-```bash
-# Purge data before scan (JSON file mode)
-mvn bastion:scan \
-  -Dbastion.community.storageMode=JSON_FILE \
-  -Dbastion.purgeBeforeScan=true
-
-# Purge with confirmation
-mvn bastion:scan \
-  -Dbastion.community.storageMode=JSON_FILE \
-  -Dbastion.purgeBeforeScan=true \
-  -Dbastion.purge.force=true
-
-# Dry run - preview what would be purged
-mvn bastion:scan \
-  -Dbastion.community.storageMode=JSON_FILE \
-  -Dbastion.purgeBeforeScan=true \
-  -Dbastion.purge.dryRun=true
-```
-
-#### 9. Build Integration
-
-```bash
-# Control build failure behavior
-mvn bastion:scan -Dbastion.failOnError=true
-
-# Set severity threshold for build failures
-mvn bastion:scan -Dbastion.severityThreshold=CRITICAL
-mvn bastion:scan -Dbastion.severityThreshold=HIGH
-mvn bastion:scan -Dbastion.severityThreshold=MEDIUM
-
-# Skip scan entirely
-mvn bastion:scan -Dbastion.skip=true
-```
-
-#### 10. Advanced Configuration Options
-
-```bash
-# Custom output directory
-mvn bastion:scan -Dbastion.outputDirectory=${project.build.directory}/custom-reports
-
-# Specify report formats
-mvn bastion:scan -Dbastion.reportFormats=HTML,JSON
-
-# Database connection (if available)
-mvn bastion:scan \
-  -Dbastion.database.url=jdbc:h2:~/bastion-db \
-  -Dbastion.database.username=bastion \
-  -Dbastion.database.password=secure
-
-# Scanner timeout (milliseconds)
-mvn bastion:scan -Dbastion.scanner.timeout=600000  # 10 minutes
-```
-
-### 📋 POM Configuration Examples
+### Configuration Examples
 
 #### Basic Configuration
 
@@ -564,1783 +104,192 @@ mvn bastion:scan -Dbastion.scanner.timeout=600000  # 10 minutes
 <plugin>
     <groupId>io.github.dodogeny</groupId>
     <artifactId>bastion-maven-community-plugin</artifactId>
-    <version>[1.1.0,)</version> <!-- Use latest stable version -->
+    <version>1.1.0</version>
     <configuration>
-        <!-- Basic settings -->
         <skip>false</skip>
         <failOnError>true</failOnError>
         <severityThreshold>MEDIUM</severityThreshold>
         <reportFormats>HTML,JSON</reportFormats>
     </configuration>
-    <executions>
-        <execution>
-            <goals>
-                <goal>scan</goal>
-            </goals>
-        </execution>
-    </executions>
 </plugin>
 ```
 
-#### JSON File Storage Configuration
+#### JSON Storage with Trend Analysis
 
 ```xml
 <plugin>
     <groupId>io.github.dodogeny</groupId>
     <artifactId>bastion-maven-community-plugin</artifactId>
-    <version>[1.1.0,)</version> <!-- Use latest stable version -->
+    <version>1.1.0</version>
     <configuration>
-        <!-- JSON storage configuration -->
         <communityStorageMode>JSON_FILE</communityStorageMode>
-        <jsonFilePath>${project.build.directory}/security/bastion-vulnerabilities.json</jsonFilePath>
-        
-        <!-- Alternative: use explicit JSON file storage -->
-        <useJsonFileStorage>true</useJsonFileStorage>
-        
-        <!-- Output settings -->
-        <outputDirectory>${project.build.directory}/bastion-reports</outputDirectory>
+        <jsonFilePath>${project.build.directory}/security/vulnerabilities.json</jsonFilePath>
+        <outputDirectory>${project.build.directory}/security</outputDirectory>
         <reportFormats>HTML,JSON</reportFormats>
     </configuration>
 </plugin>
 ```
 
-#### Multi-Module Project Configuration
+#### Multi-Module Configuration
 
 ```xml
 <plugin>
     <groupId>io.github.dodogeny</groupId>
     <artifactId>bastion-maven-community-plugin</artifactId>
-    <version>[1.1.0,)</version> <!-- Use latest stable version -->
+    <version>1.1.0</version>
     <configuration>
-        <!-- Multi-module settings -->
         <enableMultiModule>true</enableMultiModule>
-        
-        <!-- Storage for trend analysis -->
         <communityStorageMode>JSON_FILE</communityStorageMode>
-        <jsonFilePath>${project.build.directory}/security/multi-module-vulnerabilities.json</jsonFilePath>
-        
-        <!-- Scanner configuration -->
-        <scannerTimeout>600000</scannerTimeout> <!-- 10 minutes -->
+        <scannerTimeout>600000</scannerTimeout>
         <severityThreshold>HIGH</severityThreshold>
-        
-        <!-- Output settings -->
-        <reportFormats>HTML,JSON</reportFormats>
-        <outputDirectory>${project.build.directory}/bastion-reports</outputDirectory>
     </configuration>
 </plugin>
 ```
 
-#### Build Failure Configuration
+#### Smart Caching Configuration
 
 ```xml
 <plugin>
     <groupId>io.github.dodogeny</groupId>
     <artifactId>bastion-maven-community-plugin</artifactId>
-    <version>[1.1.0,)</version> <!-- Use latest stable version -->
+    <version>1.1.0</version>
     <configuration>
-        <!-- Build failure policies -->
-        <failOnError>true</failOnError>
-        <severityThreshold>CRITICAL</severityThreshold> <!-- CRITICAL, HIGH, MEDIUM -->
-        
-        <!-- Scanner settings -->
-        <scannerTimeout>300000</scannerTimeout> <!-- 5 minutes -->
-        
-        <!-- Database configuration -->
-        <databaseUrl>jdbc:h2:${project.build.directory}/bastion-db/vulnerabilities</databaseUrl>
-        <databaseUsername>bastion</databaseUsername>
-        <databasePassword>secure</databasePassword>
-    </configuration>
-    <executions>
-        <execution>
-            <phase>verify</phase>
-            <goals>
-                <goal>scan</goal>
-            </goals>
-        </execution>
-    </executions>
-</plugin>
-```
-
-#### Advanced Configuration with All Options
-
-```xml
-<plugin>
-    <groupId>io.github.dodogeny</groupId>
-    <artifactId>bastion-maven-community-plugin</artifactId>
-    <version>[1.1.0,)</version> <!-- Use latest stable version -->
-    <configuration>
-        <!-- NVD API configuration -->
+        <autoUpdate>true</autoUpdate>
         <nvdApiKey>${env.NVD_API_KEY}</nvdApiKey>
-        
-        <!-- Storage configuration -->
-        <communityStorageMode>JSON_FILE</communityStorageMode>
-        <jsonFilePath>${user.home}/.m2/bastion-cache/${project.artifactId}-vulnerabilities.json</jsonFilePath>
-        
-        <!-- Alternative storage method -->
-        <!-- <useJsonFileStorage>true</useJsonFileStorage> -->
-        
-        <!-- Purge settings -->
-        <purgeBeforeScan>false</purgeBeforeScan>
-        <force>false</force>
-        <confirmPurge>false</confirmPurge>
-        <projectOnly>true</projectOnly>
-        <olderThanDays>30</olderThanDays>
-        <dryRun>false</dryRun>
-        
-        <!-- Multi-module support -->
-        <enableMultiModule>true</enableMultiModule>
-        
-        <!-- Scanner configuration -->
-        <scannerTimeout>600000</scannerTimeout> <!-- 10 minutes -->
-        <severityThreshold>HIGH</severityThreshold>
-        
-        <!-- Build control -->
-        <skip>false</skip>
-        <failOnError>true</failOnError>
-        
-        <!-- Output configuration -->
-        <outputDirectory>${project.build.directory}/bastion-reports</outputDirectory>
-        <reportFormats>HTML,JSON</reportFormats>
-        
-        <!-- Database configuration (if not using JSON) -->
-        <databaseUrl>jdbc:h2:${project.build.directory}/bastion-db/vulnerabilities</databaseUrl>
-        <databaseUsername>bastion</databaseUsername>
-        <databasePassword>${env.DB_PASSWORD}</databasePassword>
+        <smartCachingEnabled>true</smartCachingEnabled>
+        <cacheValidityHours>6</cacheValidityHours>
+        <cacheDirectory>${user.home}/.bastion/nvd-cache</cacheDirectory>
+        <enableRemoteValidation>false</enableRemoteValidation>
     </configuration>
 </plugin>
 ```
 
-### 🔑 NVD API Key Setup (Recommended)
+## NVD API Key Setup
 
-The National Vulnerability Database (NVD) API key significantly improves scanning performance and reliability.
+Get a free NVD API key for better performance and reliability:
 
-#### Get Your Free NVD API Key
+1. Visit https://nvd.nist.gov/developers/request-an-api-key
+2. Complete registration and verify email
+3. Configure the API key:
 
-1. **Visit NVD Developer Portal**
-   ```bash
-   https://nvd.nist.gov/developers/request-an-api-key
-   ```
-
-2. **Register for Free Account**
-   - Complete the registration form
-   - Verify your email address
-   - Request API key (instant approval)
-
-#### Configure NVD API Key
-
-**Option 1: Environment Variable (Recommended)**
+**Environment Variable (Recommended)**
 ```bash
-# Add to ~/.bashrc or ~/.zshrc
-export NVD_API_KEY="your-nvd-api-key-here"
-
-# Or set for current session
-export NVD_API_KEY="your-nvd-api-key-here"
+export NVD_API_KEY="your-api-key"
 mvn bastion:scan -Dbastion.nvd.apiKey=${NVD_API_KEY}
 ```
 
-**Option 2: Maven Settings**
+**Maven Settings (~/.m2/settings.xml)**
 ```xml
-<!-- ~/.m2/settings.xml -->
 <settings>
     <profiles>
         <profile>
-            <id>bastion-community</id>
+            <id>bastion</id>
             <properties>
-                <nvd.api.key>your-nvd-api-key-here</nvd.api.key>
+                <nvd.api.key>your-api-key</nvd.api.key>
             </properties>
         </profile>
     </profiles>
     <activeProfiles>
-        <activeProfile>bastion-community</activeProfile>
+        <activeProfile>bastion</activeProfile>
     </activeProfiles>
 </settings>
 ```
 
-**Option 3: Project POM**
-```xml
-<plugin>
-    <groupId>io.github.dodogeny</groupId>
-    <artifactId>bastion-maven-community-plugin</artifactId>
-    <version>[1.1.0,)</version> <!-- Use latest stable version -->
-    <configuration>
-        <nvdApiKey>${env.NVD_API_KEY}</nvdApiKey>
-        <!-- or from Maven properties -->
-        <nvdApiKey>${nvd.api.key}</nvdApiKey>
-    </configuration>
-</plugin>
-```
+**Benefits:**
+- 5x faster scans (2000 requests/30s vs 50/30s rate limit)
+- More reliable with reduced rate limiting
+- Access to latest vulnerability data
 
-**Benefits of NVD API Key:**
-- 📈 **5x Faster Scans**: Higher rate limits (2000 requests/30s vs 50/30s)
-- 🔄 **More Reliable**: Reduced chance of rate limiting
-- 📊 **Latest Data**: Access to most current vulnerability information
-- 🚀 **Better Performance**: Priority processing from NVD servers
+## Storage Options
 
-### 💾 Storage Configuration Options
+### In-Memory Database (Default)
 
-#### In-Memory Database (Default)
+Best for quick scans and CI/CD pipelines.
 
-**Best for:** Quick scans, CI/CD pipelines, temporary analysis
-
-```xml
-<configuration>
-    <communityStorageMode>IN_MEMORY</communityStorageMode>
-</configuration>
-```
-
-**Command Line:**
 ```bash
 mvn bastion:scan -Dbastion.community.storageMode=IN_MEMORY
 ```
 
-**Features:**
-- ⚡ **Zero Setup**: No files created
-- 🚀 **Fastest Performance**: All data in memory
-- 🧹 **Auto Cleanup**: Data cleared when Maven session ends
-- ❌ **No Persistence**: No historical trend analysis
+**Pros:** Zero setup, fastest performance, auto cleanup
+**Cons:** No persistence, no trend analysis
 
-#### JSON File Storage
+### JSON File Storage
 
-**Best for:** Historical tracking, trend analysis, audit trails
+Best for historical tracking and trend analysis.
 
-```xml
-<configuration>
-    <communityStorageMode>JSON_FILE</communityStorageMode>
-    <jsonFilePath>${project.build.directory}/security/bastion-vulnerabilities.json</jsonFilePath>
-</configuration>
-```
-
-**Command Line:**
 ```bash
-# Default JSON location
-mvn bastion:scan -Dbastion.community.storageMode=JSON_FILE
-
-# Custom location
 mvn bastion:scan \
   -Dbastion.community.storageMode=JSON_FILE \
-  -Dbastion.storage.jsonFilePath=/path/to/custom.json
+  -Dbastion.storage.jsonFilePath=/path/to/vulnerabilities.json
 ```
 
-**Features:**
-- 📄 **Persistent Storage**: Data survives between scans
-- 📈 **Full Trend Analysis**: Historical vulnerability tracking
-- 🔍 **Version Control**: JSON files can be committed
-- 👁️ **Human Readable**: Easy to inspect and analyze manually
+**Pros:** Persistent storage, trend analysis, version control friendly, human readable
+**Cons:** Slightly slower than in-memory
 
-**Recommended JSON File Locations:**
+## Smart NVD Caching
 
-```xml
-<!-- Per-project storage (recommended) -->
-<jsonFilePath>${project.build.directory}/security/${project.artifactId}-vulnerabilities.json</jsonFilePath>
+Bastion uses intelligent caching to avoid unnecessary NVD database downloads:
 
-<!-- Global storage across projects -->
-<jsonFilePath>${user.home}/.m2/bastion-cache/global-vulnerabilities.json</jsonFilePath>
+### How It Works
 
-<!-- Team shared storage -->
-<jsonFilePath>${project.basedir}/.bastion/vulnerabilities.json</jsonFilePath>
+1. **Local Cache Validation**: Fast local-only checks for unit tests
+2. **Remote Change Detection**: Queries NVD servers only when enabled
+3. **Threshold-Based Updates**: Downloads only if record count changes by 5%+ (configurable)
 
-<!-- CI/CD friendly -->
-<jsonFilePath>${env.WORKSPACE}/security-reports/${project.artifactId}-vulnerabilities.json</jsonFilePath>
-```
-
-### 🗑️ Data Purge Options
-
-#### Purge Commands
+### Usage
 
 ```bash
-# Preview what would be purged (safe)
+# Enable smart caching
 mvn bastion:scan \
-  -Dbastion.community.storageMode=JSON_FILE \
-  -Dbastion.purgeBeforeScan=true \
-  -Dbastion.purge.dryRun=true
+  -Dbastion.nvd.apiKey=your-api-key \
+  -Dbastion.autoUpdate=true
 
-# Purge with confirmation prompt
+# Configure cache validity (default: 6 hours)
 mvn bastion:scan \
-  -Dbastion.community.storageMode=JSON_FILE \
-  -Dbastion.purgeBeforeScan=true
+  -Dbastion.nvd.apiKey=your-api-key \
+  -Dbastion.autoUpdate=true \
+  -Dbastion.cache.validity.hours=3
 
-# Force purge (no confirmation)
+# Enable remote validation for production
 mvn bastion:scan \
-  -Dbastion.community.storageMode=JSON_FILE \
-  -Dbastion.purgeBeforeScan=true \
-  -Dbastion.purge.force=true
-
-# Purge only current project data
-mvn bastion:scan \
-  -Dbastion.community.storageMode=JSON_FILE \
-  -Dbastion.purgeBeforeScan=true \
-  -Dbastion.purge.projectOnly=true
-
-# Purge data older than 30 days
-mvn bastion:scan \
-  -Dbastion.community.storageMode=JSON_FILE \
-  -Dbastion.purgeBeforeScan=true \
-  -Dbastion.purge.olderThanDays=30
+  -Dbastion.nvd.apiKey=your-api-key \
+  -Dbastion.autoUpdate=true \
+  -Dbastion.enableRemoteValidation=true
 ```
 
-#### POM Purge Configuration
+### Performance Impact
 
-```xml
-<configuration>
-    <communityStorageMode>JSON_FILE</communityStorageMode>
-    <purgeBeforeScan>true</purgeBeforeScan>
-    <purge>
-        <force>false</force>              <!-- Ask for confirmation -->
-        <projectOnly>true</projectOnly>   <!-- Only current project -->
-        <olderThanDays>0</olderThanDays>  <!-- All records (0 = no age limit) -->
-        <dryRun>false</dryRun>           <!-- Execute the purge -->
-    </purge>
-</configuration>
+**Without caching:**
+```
+[INFO] Downloading NVD database... (5-10 minutes)
+[INFO] Analyzing dependencies... (2-3 minutes)
+[INFO] Total: 8-13 minutes
 ```
 
-### 📊 Scan Statistics Output
-
-Bastion provides comprehensive scan statistics and performance metrics:
-
+**With caching (cache hit):**
 ```
-📊 Bastion Scan Statistics & Performance Metrics
-📦 JARs Scanned: 127
-🔍 CVEs Found: 23 (8 unique)
-🎯 CVEs with Exploits: 5
-📈 Average CVSS Score: 6.7
-🚨 Most Vulnerable: com.fasterxml.jackson.core:jackson-core:2.9.8
-
-⏱️ Performance Breakdown:
-├─ Initialization: 1.2s
-├─ Dependency Resolution: 3.4s  
-├─ Vulnerability Analysis: 12.8s
-├─ Report Generation: 2.1s
-└─ Total Duration: 19.5s
-
-💾 Resource Usage:
-├─ Peak Memory: 384 MB
-├─ Processing Speed: 6.5 JARs/second
-├─ Cache Performance: 78% hit rate (234/300 queries)
-└─ Slowest Phase: Vulnerability Analysis
+[INFO] NVD cache is valid - skipping download
+[INFO] Analyzing dependencies... (2-3 minutes)
+[INFO] Total: 2-3 minutes
 ```
 
-## 🚀 Enterprise Edition - Coming Soon
+### Cache Management
 
-> **🚀 Enterprise Edition Development**: We are actively developing the Bastion Maven Plugin Enterprise Edition with advanced security features for organizations requiring enhanced scanning capabilities, persistent storage, and enterprise-grade monitoring. The Enterprise Edition will be available soon and will provide everything in the Community Edition plus powerful enterprise-grade capabilities.
+View cache location:
+- Linux/Mac: `~/.bastion/nvd-cache/`
+- Windows: `%USERPROFILE%\.bastion\nvd-cache\`
 
-### 🏗️ **Development Status**
-- **Current Phase**: Active development and testing
-- **Expected Release**: Will be communicated when ready
-- **Beta Program**: Early access available for select enterprise customers
-- **Pricing**: Competitive enterprise licensing with volume discounts
-
-Ready to learn more about advanced security features? **Bastion Enterprise** will provide everything in the Community Edition plus powerful enterprise-grade capabilities.
-
-### 🆚 Community vs Enterprise Comparison
-
-| Feature | Community Edition | Enterprise Edition |
-|---------|----------------|-------------------|
-| **🔍 Scanning Engine** | ✅ OWASP Dependency-Check | ✅ **Enhanced Enterprise Scanner** with parallel processing |
-| **🔮 Predictive Analysis** | ❌ | 🚀 **NEW: Intelligent Update Recommendations** with CVE impact prediction |
-| **⚡ Performance** | Sequential processing | 🚀 **Multi-threaded scanning** with optimized batching |
-| **🧠 Intelligence** | Basic vulnerability detection | 🚀 **Threat Intelligence** integration (NVD, MITRE, CISA KEV) |
-| **💾 Caching** | Basic file caching | 🚀 **Advanced Caffeine Cache** with intelligent invalidation |
-| **🔄 Incremental Scanning** | Full rescan every time | 🚀 **File Change Detection** with MD5 fingerprinting |
-| **🎯 Accuracy** | Standard OWASP database | 🚀 **Multi-source detection** with enhanced vulnerability mapping |
-| **📊 Report Formats** | ✅ HTML, JSON | ✅ + **Predictive Analysis Reports**, PDF, SARIF, Executive dashboards |
-| **🗄️ Storage Options** | ✅ In-memory, JSON file | ✅ + PostgreSQL, MySQL, H2 |
-| **📈 Trend Analysis** | ✅ Basic historical tracking | 🚀 **Advanced Analytics** + trend prediction |
-| **📧 Email Alerts** | ❌ | ✅ Automated security notifications |
-| **🔗 Integrations** | ✅ Basic GitHub | ✅ **SIEM, Slack, Teams** + enhanced GitHub |
-| **🎛️ Monitoring** | Basic scan metrics | 🚀 **Real-Time Performance Monitor** + optimization |
-| **🛡️ Threat Intel** | ❌ | 🚀 **Multi-Source Intelligence** + real-time threat context |
-| **⚙️ Optimization** | Manual configuration | 🚀 **Auto-Tuning** + performance recommendations |
-| **🏢 Enterprise Features** | ❌ | ✅ Multi-tenant, audit trails, compliance reports |
-| **🆘 Support** | Community support only | 🚀 **Priority Enterprise Support** + dedicated CSM |
-| **💰 Licensing** | ✅ Free & Open Source | 💰 Commercial license required |
-
-### 🚀 **Enterprise Scanner: Performance Revolution**
-
-> **⚡ Up to 10x Faster**: Our revolutionary Enterprise Scanner delivers unprecedented performance through advanced parallel processing, intelligent caching, and AI-powered optimization.
-
-#### 🔥 **Performance Features**
-- **Multi-Threaded Architecture**: ForkJoinPool and ExecutorService for parallel processing
-- **Intelligent Batching**: Configurable batch sizes for optimal throughput
-- **Advanced Caching**: Caffeine cache with vulnerability and file hash caching
-- **Incremental Scanning**: MD5-based change detection for efficient rescanning
-- **Performance Monitoring**: Real-time metrics and bottleneck identification
-
-#### 🧠 **Intelligence-Enhanced Scanning**
-- **Threat Intelligence Integration**: NVD, MITRE ATT&CK, CISA KEV feeds
-- **Enhanced Risk Scoring**: CVSS scoring with exploit availability context
-- **Vulnerability Enrichment**: Additional context from multiple intelligence sources
-- **Real-time Updates**: Scheduled threat intelligence feed updates
-
-#### 📊 **Real-Time Performance Monitoring**
-- **Live Metrics**: Throughput, cache efficiency, scan duration tracking
-- **Performance Alerts**: Automatic detection of bottlenecks and slowdowns
-- **Optimization Recommendations**: Rule-based suggestions for configuration tuning
-- **Trend Analysis**: Historical performance tracking with insights
-
-### 📈 **Performance Benchmarks**
-
-> **Real-World Performance**: Tested on enterprise projects with 500+ dependencies
-
-| Scenario | Community Edition | Enterprise Edition | **Improvement** |
-|----------|------------------|-------------------|----------------|
-| **🏗️ Large Maven Project** (500+ deps) | Sequential processing | **Parallel processing** | **🚀 2-3x faster** |
-| **🔄 Incremental Scan** (50 changed deps) | Full rescan | **Change detection** | **🚀 5-10x faster** |
-| **💾 Memory Usage** | Standard memory usage | **Optimized memory** | **🚀 More efficient** |
-| **🎯 Cache Hit Rate** | Basic file caching | **Advanced caching** | **🚀 Improved efficiency** |
-| **🔍 Vulnerability Detection** | OWASP Dependency-Check | **Enhanced detection** | **🚀 Better accuracy** |
-| **⚡ Throughput** | Single-threaded | **Multi-threaded** | **🚀 Improved performance** |
-
-### 💡 **ROI Calculator**
-
-**For a team scanning 10 projects daily:**
-- **Time Saved**: Significant reduction in scan times through parallel processing
-- **Developer Productivity**: Faster feedback cycles and more efficient vulnerability detection
-- **Operational Efficiency**: Reduced CI/CD pipeline duration and improved resource utilization
-
-### 🛒 How to Upgrade
-
-> **🏗️ Enterprise Edition In Development**: The Enterprise Edition is currently under active development. It will be available soon with advanced security features, IP-protected implementation, and enterprise licensing.
-
-#### Step 1: Express Interest in Enterprise License (When Available)
-
-The enterprise edition will use LemonSqueezy for license management and validation once released:
-
+Clear cache:
 ```bash
-# Enterprise licensing through LemonSqueezy (when available)
-# Contact it.dodogeny@gmail.com for early access information
+rm -rf ~/.bastion/nvd-cache
 ```
 
-**Planned Enterprise Features:**
-- **LemonSqueezy License Management**: API-based license validation (when released)
-- **Commercial Support**: Priority assistance for enterprise customers
-
-#### Step 2: Update Your Project Configuration (When Enterprise Edition Releases)
-
-Replace the Community Edition plugin with Enterprise Edition once available:
-
-```xml
-<!-- Remove Community Edition -->
-<!-- 
-<plugin>
-    <groupId>io.github.dodogeny</groupId>
-    <artifactId>bastion-maven-community-plugin</artifactId>
-    <version>[1.1.0,)</version> <!-- Use latest stable version -->
-</plugin>
--->
-
-<!-- Add Enterprise Edition (When Available) -->
-<plugin>
-    <groupId>io.github.dodogeny</groupId>
-    <artifactId>bastion-maven-plugin-enterprise</artifactId>
-    <version>[1.1.0,)</version> <!-- Will use latest version when released -->
-    <configuration>
-        <!-- Enable Enterprise features -->
-        <apiKey>${env.BASTION_API_KEY}</apiKey>
-        <licenseProvider>lemonsqueezy</licenseProvider>
-        
-        <!-- Enterprise database configuration -->
-        <database>
-            <type>postgresql</type>
-            <url>jdbc:postgresql://localhost:5432/bastion_security</url>
-            <username>${env.DB_USER}</username>
-            <password>${env.DB_PASSWORD}</password>
-        </database>
-        
-        <!-- Email notifications -->
-        <notifications>
-            <enabled>true</enabled>
-            <smtp>
-                <host>smtp.company.com</host>
-                <port>587</port>
-                <username>${env.SMTP_USER}</username>
-                <password>${env.SMTP_PASS}</password>
-                <useStartTLS>true</useStartTLS>
-            </smtp>
-            <recipients>
-                <securityTeam>security@company.com</securityTeam>
-                <developmentTeam>dev-team@company.com</developmentTeam>
-            </recipients>
-        </notifications>
-    </configuration>
-</plugin>
-```
-
-#### Step 3: Configure Environment Variables
-
-Set up your enterprise license and database credentials:
-
-```bash
-# LemonSqueezy license key (from purchase email)
-export BASTION_API_KEY="bsk_live_abc123..."
-
-# Database credentials
-export DB_USER="bastion_user"
-export DB_PASSWORD="secure_password"
-
-# Email notification credentials
-export SMTP_USER="security-scanner@company.com"
-export SMTP_PASS="app_specific_password"
-```
-
-### 🏗️ **Enterprise Architecture Deep Dive**
-
-> **Next-Generation Security Scanning Platform**: Built from the ground up for enterprise-scale performance and reliability.
-
-#### 🚀 **Core Engine Architecture**
-
-```mermaid
-graph TB
-    A[Enterprise Scanner] --> B[Parallel Processing Engine]
-    A --> C[AI Intelligence Layer]
-    A --> D[Multi-Level Cache System]
-    
-    B --> E[Thread Pool Manager]
-    B --> F[Batch Optimizer]
-    B --> G[Load Balancer]
-    
-    C --> H[Signature Detection]
-    C --> I[ML Anomaly Detection]
-    C --> J[Threat Intelligence Feed]
-    
-    D --> K[Vulnerability Cache]
-    D --> L[Component Cache]
-    D --> M[File Hash Cache]
-```
-
-#### ⚡ **Performance Technologies**
-
-| Technology | Implementation | Benefit |
-|------------|---------------|---------|
-| **🔄 ForkJoinPool** | Recursive task splitting | **Work-stealing efficiency** |
-| **☕ Caffeine Cache** | 3-tier cache hierarchy | **Sub-millisecond lookups** |
-| **🔍 SHA-256 Fingerprinting** | File change detection | **Incremental scan precision** |
-| **📊 PreparedStatements** | Batch SQL optimization | **Database query efficiency** |
-| **🧵 Async CompletableFuture** | Non-blocking operations | **CPU utilization maximization** |
-| **🎯 Reactive Streams** | Backpressure management | **Memory-efficient processing** |
-
-#### 🛡️ **Security Intelligence Features**
-
-- **🔍 Enhanced Detection**: Advanced signature-based vulnerability detection
-- **🎯 Threat Intelligence**: Integration with NVD, MITRE, and CISA KEV feeds
-- **🏗️ Dependency Analysis**: Comprehensive dependency tree vulnerability mapping
-- **🚨 Real-time Monitoring**: Performance metrics and scan optimization
-- **📈 Risk Assessment**: Enhanced CVSS scoring with threat context
-
-#### 🔧 **Enterprise Integration APIs**
-
-```java
-// Enterprise vulnerability scanning with threat intelligence
-EnterpriseVulnerabilityScanner scanner = new EnterpriseVulnerabilityScanner();
-CompletableFuture<ScanResult> result = scanner.scanProject(projectPath);
-
-// LemonSqueezy license management
-LemonSqueezyLicenseManager licenseManager = new LemonSqueezyLicenseManager();
-boolean isAuthorized = licenseManager.isCommercialEditionAllowed(apiKey);
-
-// Email notification system
-EmailNotificationService notifications = new EmailNotificationService(config);
-CompletableFuture<NotificationResult> emailResult = notifications.processScanResults(scanResult);
-```
-
-### 🏆 **Why Choose Bastion Enterprise**
-
-| Capability | Bastion Enterprise | Community Edition |
-|------------|-------------------|------------------|
-| **⚡ Scan Speed** | **Multi-threaded with caching** | Single-threaded processing |
-| **🧠 Intelligence** | **Threat intelligence integration** | Basic OWASP database |
-| **💾 Storage** | **Persistent databases (H2/PostgreSQL/MySQL)** | In-memory or JSON file |
-| **📧 Notifications** | **Email alerts with SMTP** | None |
-| **🔄 Incremental** | **✅ File change detection** | Full rescans |
-| **🏢 Enterprise Ready** | **✅ LemonSqueezy licensing** | Open source |
-| **💰 Licensing** | **Commercial license required** | Free and open source |
-
-### 🎯 **Enterprise Exclusive Features**
-
-#### 🔐 **Advanced Security Capabilities**
-- **Enhanced Scanner Architecture**: Optimized vulnerability detection engine
-- **Persistent Storage**: H2, PostgreSQL, and MySQL database support  
-- **Email Notifications**: Automated security alerts with customizable thresholds
-- **Performance Monitoring**: Real-time scan metrics and optimization
-- **License Management**: LemonSqueezy-based commercial license validation
-
-#### 📊 **Advanced Reporting & Analytics**
-- **Performance Metrics**: Comprehensive scan statistics and timing breakdowns
-- **Threat Intelligence Reports**: Enhanced vulnerability context and risk scoring
-- **Multi-format Reports**: Support for additional enterprise report formats
-- **Database-driven Analytics**: Persistent storage for historical analysis
-- **Email Alert System**: Configurable notifications for security teams
-
-#### 🔗 **Enterprise Integrations**
-- **Email Systems**: SMTP-based notification system with configurable recipients
-- **Database Systems**: H2, PostgreSQL, MySQL support for persistent storage
-- **CI/CD Pipelines**: Maven plugin integration for build pipelines
-- **Threat Intelligence**: NVD, MITRE ATT&CK, CISA KEV feed integration
-- **License Management**: LemonSqueezy API integration for commercial licensing
-
-### 🔒 Intellectual Property Protection
-
-The Enterprise Edition includes IP-protected implementation to safeguard proprietary code while maintaining full compatibility:
-
-#### Available Artifact Variants
-
-| Artifact Type | Classifier | Description |
-|---------------|------------|-------------|
-| **Standard JAR** | _(none)_ | Standard compiled classes for Maven Central compliance |
-| **Protected JAR** | `protected` | IP-protected implementation with code obfuscation |
-
-#### Installation Options
-
-**Enterprise Plugin Configuration:**
-```xml
-<plugin>
-    <groupId>io.github.dodogeny</groupId>
-    <artifactId>bastion-maven-plugin-enterprise</artifactId>
-    <version>[1.1.0,)</version> <!-- Use latest stable version -->
-    <configuration>
-        <apiKey>${env.BASTION_API_KEY}</apiKey>
-        <licenseProvider>lemonsqueezy</licenseProvider>
-    </configuration>
-</plugin>
-```
-
-> **🛡️ Enterprise Implementation**: The enterprise edition includes enhanced scanning capabilities, persistent storage options, and commercial licensing through LemonSqueezy while maintaining compatibility with standard Maven plugin architecture.
-
-#### Step 4: Verify Enterprise Activation
-
-Run a scan to verify your enterprise license:
-
-```bash
-# When Enterprise Edition becomes available:
-mvn io.github.dodogeny:bastion-maven-plugin-enterprise:LATEST:scan
-```
-
-Look for the success message (when Enterprise Edition is available):
-```
-✅ LemonSqueezy license validated successfully (Example output)
-💼 Bastion Enterprise Edition activated
-🚀 All premium features unlocked
-```
-
-### 🗄️ Setting Up Enterprise Database
-
-#### PostgreSQL Setup (Recommended)
-
-```bash
-# Install PostgreSQL
-sudo apt-get install postgresql postgresql-contrib
-
-# Create database and user
-sudo -u postgres psql
-CREATE DATABASE bastion_security;
-CREATE USER bastion_user WITH ENCRYPTED PASSWORD 'secure_password';
-GRANT ALL PRIVILEGES ON DATABASE bastion_security TO bastion_user;
-\q
-
-# Configure environment
-export DB_USER="bastion_user"
-export DB_PASSWORD="secure_password"
-```
-
-#### Alternative: H2 File Database (Simpler Setup)
-
-```xml
-<database>
-    <type>h2</type>
-    <path>${user.home}/.m2/bastion-security-cache/vulnerability-db</path>
-    <username>bastion</username>
-    <password>${env.DB_PASSWORD}</password>
-</database>
-```
-
-### 📧 Configure Email Notifications
-
-Enterprise Edition includes intelligent email alerts:
-
-```xml
-<notifications>
-    <enabled>true</enabled>
-    <smtp>
-        <host>smtp.company.com</host>
-        <port>587</port>
-        <username>${env.SMTP_USER}</username>
-        <password>${env.SMTP_PASS}</password>
-        <useStartTLS>true</useStartTLS>
-    </smtp>
-    
-    <!-- Alert thresholds -->
-    <alertOn>
-        <critical>true</critical>       <!-- Always alert on critical -->
-        <high>true</high>              <!-- Alert on high severity -->
-        <vulnerabilityCount>5</vulnerabilityCount>  <!-- Alert if >5 total -->
-    </alertOn>
-    
-    <!-- Distribution lists -->
-    <recipients>
-        <securityTeam>security@company.com,ciso@company.com</securityTeam>
-        <developmentTeam>dev-leads@company.com</developmentTeam>
-        <management>vp-engineering@company.com</management>
-    </recipients>
-</notifications>
-```
-
-### 🆘 Enterprise Support & Early Access
-
-> **🎯 Enterprise Support**: Comprehensive support services will be included with the Enterprise Edition upon release.
-
-**Planned Enterprise Support Features:**
-- **Dedicated Support Team**: Priority technical support via email and chat
-- **Documentation Access**: Comprehensive enterprise documentation and best practices
-
-### 📧 **Express Interest in Enterprise Edition**
-
-**For Organizations Ready to Enhance Their Security Posture:**
-
-We're currently accepting expressions of interest from organizations looking for enterprise-grade vulnerability management solutions. Early adopters will receive:
-
-✅ **Priority Beta Access** - Be among the first to test enterprise features  
-✅ **Founding Customer Pricing** - Special pricing for early enterprise customers  
-✅ **Custom Feature Requests** - Influence the roadmap with your specific needs  
-✅ **Implementation Support** - Dedicated setup and configuration assistance  
-
-**Contact us to learn more:**
-- **Business Inquiries**: [it.dodogeny@gmail.com](mailto:it.dodogeny@gmail.com)
-- **Subject**: `Bastion Enterprise - Expression of Interest`
-- **Include**: Company size, security requirements, and preferred timeline
-
-*We'll contact qualified organizations with beta access information and pricing details when available.*
-
-### 🔮 **NEW: Predictive Update Analysis** *(Enterprise Edition)*
-
-> **🎉 Now Available**: Advanced predictive analysis for intelligent dependency update recommendations
-
-The **Predictive Update Analysis** feature represents a breakthrough in proactive vulnerability management. Instead of just identifying vulnerabilities, Bastion now predicts which dependency updates will resolve CVEs and assesses the risks of each upgrade path.
-
-#### **🧠 Intelligent Analysis Algorithm**
-
-```bash
-# Run predictive analysis on your project
-mvn bastion:predictive-analysis -Dbastion.apiKey=YOUR_LICENSE_KEY
-```
-
-**Key Capabilities:**
-- **🔍 Maven Central Integration**: Real-time lookup of all available versions
-- **📊 CVE Impact Prediction**: Estimates which CVEs will be resolved by each version upgrade
-- **⚖️ Risk Assessment**: Calculates upgrade risks including pre-release warnings and potential new vulnerabilities
-- **🎯 Confidence Scoring**: Provides 0-100% confidence ratings for each recommendation
-- **📈 Net Security Impact**: Shows the balance between resolved and potentially introduced CVEs
-
-#### **📋 Sample Report Output**
-
-```
-╭─────────────────────────────────────────────────────────────╮
-│  🔮 Predictive Update Analysis Summary                     │
-├─────────────────────────────────────────────────────────────┤
-│  📦 Dependencies Analyzed: 47                              │
-│  ✅ Safe Updates Available: 12                             │
-│  ⚠️  Updates with Risks: 3                                 │
-│  🚫 No Safe Updates: 2                                     │
-│  💾 Total CVEs Resolvable: 23                              │
-│  🆕 Potential New CVEs: 1                                  │
-├─────────────────────────────────────────────────────────────┤
-│  🏆 Top Recommendations:                                   │
-│    • spring-core: 5.2.0 → 5.3.23 (resolves 3 CVEs)      │
-│    • jackson-databind: 2.11.0 → 2.14.2 (resolves 5 CVEs) │
-│    • log4j-core: 2.14.1 → 2.17.2 (resolves 8 CVEs)       │
-╰─────────────────────────────────────────────────────────────╯
-
-🎉 12 dependencies can be safely updated to resolve vulnerabilities!
-📄 Check the detailed HTML report for specific update recommendations
-```
-
-#### **🎨 Multi-Format Reports**
-
-The predictive analysis generates **multiple report formats** to suit different needs:
-
-**📄 HTML Reports (Interactive)**
-- **📊 Executive Dashboard**: High-level metrics with visual charts
-- **🔍 Detailed Analysis**: Expandable sections for each dependency  
-- **📈 Risk Visualization**: Color-coded risk levels and confidence bars
-- **📋 Version Comparison**: Side-by-side analysis of available versions
-- **💡 Actionable Recommendations**: Clear next steps for each dependency
-
-**📋 PDF Reports (Executive-Ready)**
-- **🏢 Professional Layout**: Clean, print-friendly design optimized for stakeholders
-- **📊 Executive Summary**: High-level metrics and key findings
-- **📈 Vulnerability Tables**: Detailed CVE information with severity levels
-- **🎯 Recommendations**: Prioritized update suggestions with risk assessments
-- **📄 Compliance Ready**: Perfect for board meetings and audit documentation
-
-**💾 JSON Reports (CI/CD Integration)**
-- **🔧 Machine-Readable**: Perfect for automation and toolchain integration
-- **📊 Complete Data**: All analysis results in structured format
-- **🚀 CI/CD Friendly**: Easy parsing for build pipeline decisions
-- **📈 Historical Tracking**: Store and compare results over time
-
-#### **⚙️ Configuration Options**
-
-```xml
-<plugin>
-    <groupId>io.github.dodogeny</groupId>
-    <artifactId>bastion-maven-plugin-enterprise</artifactId>
-    <version>1.1.0</version>
-    <configuration>
-        <apiKey>${env.BASTION_API_KEY}</apiKey>
-        
-        <!-- Predictive Analysis Configuration -->
-        <predictive>
-            <analysisDepth>COMPREHENSIVE</analysisDepth>  <!-- QUICK|STANDARD|COMPREHENSIVE -->
-            <includePreReleases>false</includePreReleases>
-            <maxVersionsToAnalyze>5</maxVersionsToAnalyze>
-            <onlyVulnerableDependencies>true</onlyVulnerableDependencies>
-            <severityThreshold>MEDIUM</severityThreshold>
-            <timeoutMinutes>10</timeoutMinutes>
-            
-            <!-- Report Configuration -->
-            <reportName>my-security-analysis</reportName>  <!-- Custom report name -->
-            <reportFormats>HTML,PDF,JSON</reportFormats>   <!-- Report formats to generate -->
-            
-            <!-- Custom Report Paths (Optional) -->
-            <htmlReportPath>/custom/path/security-report.html</htmlReportPath>
-            <pdfReportPath>/custom/path/security-report.pdf</pdfReportPath>
-            <jsonReportPath>/custom/path/security-report.json</jsonReportPath>
-        </predictive>
-        
-        <!-- Output Configuration -->
-        <outputDirectory>${project.build.directory}/bastion-predictive-reports</outputDirectory>
-    </configuration>
-</plugin>
-```
-
-#### **🎯 Analysis Depth Levels**
-
-| Level | Versions Analyzed | Use Case | Analysis Time |
-|-------|------------------|----------|---------------|
-| **QUICK** | Latest stable only | CI/CD pipelines | ~30 seconds |
-| **STANDARD** | Up to 3 versions | Regular development | ~2 minutes |
-| **COMPREHENSIVE** | Up to 5+ versions | Security audits | ~5 minutes |
-
-#### **🚀 Usage Examples**
-
-```bash
-# Quick analysis for CI/CD with JSON output
-mvn bastion:predictive-analysis \
-    -Dbastion.predictive.analysisDepth=QUICK \
-    -Dbastion.predictive.reportFormats=JSON \
-    -Dbastion.predictive.onlyVulnerableDependencies=true
-
-# Comprehensive security audit with HTML and PDF reports
-mvn bastion:predictive-analysis \
-    -Dbastion.predictive.analysisDepth=COMPREHENSIVE \
-    -Dbastion.predictive.reportFormats=HTML,PDF \
-    -Dbastion.predictive.includePreReleases=true \
-    -Dbastion.predictive.maxVersionsToAnalyze=10
-
-# Custom report names and paths
-mvn bastion:predictive-analysis \
-    -Dbastion.predictive.reportName=security-audit-2024 \
-    -Dbastion.predictive.htmlReportPath=/reports/security-audit.html \
-    -Dbastion.predictive.pdfReportPath=/reports/security-audit.pdf
-
-# Executive summary with PDF for stakeholders
-mvn bastion:predictive-analysis \
-    -Dbastion.predictive.severityThreshold=HIGH \
-    -Dbastion.predictive.reportFormats=PDF \
-    -Dbastion.predictive.reportName=executive-security-summary \
-    -Dbastion.predictive.timeoutMinutes=15
-```
-
-#### **📈 ROI for Enterprise Teams**
-
-**Real-world impact measurements:**
-
-| Benefit | Before Bastion Predictive | After Bastion Predictive | **Improvement** |
-|---------|-------------------------|--------------------------|----------------|
-| **🕐 Update Decision Time** | 2-4 hours manual research | **5 minutes automated analysis** | **🚀 95% faster** |
-| **⚖️ Risk Assessment Accuracy** | Manual, inconsistent | **AI-powered, confidence scored** | **🎯 More reliable** |
-| **🔍 Version Coverage** | Latest version only | **5+ versions analyzed** | **📊 Comprehensive** |
-| **🛡️ Security Posture** | Reactive patching | **Proactive upgrade planning** | **🚀 Preventive** |
-
-#### **🔐 Enterprise Security Benefits**
-
-- **📋 Audit Trail**: Complete decision history with reasoning
-- **🎯 Prioritization**: Focus on highest-impact, lowest-risk updates
-- **⚡ Faster Patching**: Reduce time from vulnerability discovery to resolution
-- **🔒 Risk Mitigation**: Avoid introducing new vulnerabilities during updates
-- **📊 Compliance**: Demonstrate proactive security management
-
-### 📊 Enterprise Reporting Features
-
-> **📊 Enterprise Reporting**: These advanced reporting capabilities are included in the Enterprise Edition.
-
-Advanced reporting capabilities:
-
-- **📄 Predictive Analysis Reports**: Interactive HTML reports with dependency update recommendations
-- **PDF Reports**: Executive-ready security summaries
-- **SARIF Output**: Integration with security tools and IDEs
-- **Multi-Project Analytics**: Cross-project vulnerability tracking  
-- **Compliance Reports**: SOX, PCI-DSS, HIPAA compliance templates
-- **Real-time Dashboards**: Live security metrics
-
-### 🔄 Migration Process
-
-Upgrading from Community to Enterprise is seamless:
-
-1. **Data Migration**: Existing JSON files automatically imported
-2. **Configuration**: Minimal changes to existing setup
-3. **Zero Downtime**: No disruption to existing workflows
-4. **Backward Compatible**: All Community features preserved
-
-## 🔐 Enterprise Licensing
-
-### Open Source vs Commercial Edition
-
-Bastion offers both community and commercial editions:
-
-**Community Edition** (Free):
-- OWASP Dependency-Check scanner with NVD API key support
-- HTML and JSON reports with graphical dependency trees
-- Dedicated trend analysis report with historical tracking
-- Configurable storage (in-memory database or JSON file)
-- Basic performance metrics
-- Multi-module scanning support
-
-**Commercial Edition** (Licensed through LemonSqueezy):
-- All Community Edition features plus:
-- **Persistent H2/PostgreSQL/MySQL databases**
-- **Enhanced historical trend analysis** across projects
-- **PDF and SARIF report generation**
-- **Advanced email notifications**
-- **Enhanced GitHub Security Advisory integration** 
-- **Real-time monitoring capabilities**
-- **Enterprise support and priority assistance**
-
-### LemonSqueezy Licensing (Commercial Edition - Coming Soon)
-
-**Important**: All commercial licenses will be exclusively managed through LemonSqueezy once the Enterprise Edition is released. No other licensing methods will be supported.
-
-#### Step 1: Purchase Commercial License (When Available)
-
-1. **Visit LemonSqueezy Store** (Coming Soon)
-   ```bash
-   https://bastion-plugin.lemonsqueezy.com
-   ```
-
-2. **Select Your Plan** (Pricing To Be Announced)
-   - **Monthly**: Monthly Subscription License (pricing TBD)
-   
-   > **📋 Pricing Note**: Specific pricing has not yet been determined. Contact it.dodogeny@gmail.com for early pricing information and founding customer discounts.
-
-3. **Complete Payment** (When Available)
-   - Secure checkout via LemonSqueezy
-   - Will support credit cards, PayPal, and international payment methods
-   - Instant license delivery via email
-
-#### Step 2: Configure API Key
-
-After purchase (when available), you'll receive your LemonSqueezy API key:
-
-1. **Set Environment Variable** (Recommended)
-   ```bash
-   export BASTION_API_KEY="bsk_live_abc123..."
-   ```
-
-2. **Configure in Maven Settings**
-   Add to `~/.m2/settings.xml`:
-   ```xml
-   <settings>
-     <profiles>
-       <profile>
-         <id>bastion-commercial</id>
-         <properties>
-           <bastion.apiKey>${env.BASTION_API_KEY}</bastion.apiKey>
-         </properties>
-       </profile>
-     </profiles>
-     <activeProfiles>
-       <activeProfile>bastion-commercial</activeProfile>
-     </activeProfiles>
-   </settings>
-   ```
-
-3. **Project-Level Configuration**
-   Add to your project's `pom.xml`:
-   ```xml
-   <plugin>
-     <groupId>io.github.dodogeny</groupId>
-     <artifactId>bastion-maven-plugin-enterprise</artifactId>
-     <version>[1.1.0,)</version> <!-- Use latest stable version -->
-     <configuration>
-       <apiKey>${bastion.apiKey}</apiKey>
-       <!-- LemonSqueezy license validation -->
-       <licenseProvider>lemonsqueezy</licenseProvider>
-     </configuration>
-   </plugin>
-   ```
-
-#### Step 3: Verify License Activation
-
-Run a scan to verify your commercial license:
-
-```bash
-# Using environment variable
-
-# Using command-line parameter
-mvn bastion:scan -Dbastion.apiKey=bsk_live_abc123...
-```
-
-Look for the success message (when Commercial Edition is available):
-```
-✅ LemonSqueezy license validated successfully (Example output)
-💼 Bastion Commercial Edition activated
-🚀 All premium features unlocked
-```
-
-##### NVD API Key Configuration (Optional but Recommended)
-
-The National Vulnerability Database (NVD) provides faster and more reliable vulnerability data when using an API key:
-
-1. **Get Your Free NVD API Key**
-   - Visit: https://nvd.nist.gov/developers/request-an-api-key
-   - Register for a free account
-   - Request an API key
-
-2. **Configure the API Key**
-   ```bash
-   # Environment variable (recommended)
-   export NVD_API_KEY="your-nvd-api-key-here"
-   
-   # Command line parameter
-   mvn bastion:scan -Dbastion.nvd.apiKey=your-nvd-api-key-here
-   ```
-
-3. **Maven Configuration**
-   ```xml
-   <plugin>
-     <groupId>io.github.dodogeny</groupId>
-     <artifactId>bastion-maven-plugin-enterprise</artifactId>
-     <version>[1.1.0,)</version> <!-- Use latest stable version -->
-     <configuration>
-       <nvdApiKey>${env.NVD_API_KEY}</nvdApiKey>
-     </configuration>
-   </plugin>
-   ```
-
-**Benefits of NVD API Key:**
-- 📈 **Faster scans**: Higher rate limits for vulnerability database updates
-- 🔄 **More reliable**: Reduced chance of rate limiting during scans
-- 📊 **Better data**: Access to the latest vulnerability information
-
-### Security Best Practices
-
-- **Never commit API keys** to version control
-- Store API keys in environment variables or secure vaults
-- Use Maven settings encryption for additional security:
-  ```bash
-  mvn --encrypt-master-password
-  mvn --encrypt-password bsk_live_abc123...
-  ```
-
-## 💾 Storage Configuration
-
-### Community Edition Storage Options
-
-The Community Edition offers two storage modes to choose from:
-
-#### Option 1: In-Memory Database (Default)
-
-```xml
-<plugin>
-    <groupId>io.github.dodogeny</groupId>
-    <artifactId>bastion-maven-community-plugin</artifactId>
-    <version>[1.1.0,)</version> <!-- Use latest stable version -->
-    <configuration>
-        <!-- Community Edition (default) -->
-        
-        <!-- Storage mode selection -->
-        <communityStorageMode>IN_MEMORY</communityStorageMode>
-    </configuration>
-</plugin>
-```
-
-**Command Line Usage:**
-```bash
-# Use in-memory database (default)
-mvn io.github.dodogeny:bastion-maven-community-plugin:1.1.0:scan -Dbastion.community.storageMode=IN_MEMORY
-```
-
-**Features:**
-- ⚡ **Zero Setup**: No database installation required
-- 🗄️ **Session Storage**: Data persists during Maven session
-- 📊 **Basic Trends**: Limited trend analysis capabilities
-- 🧹 **Memory Management**: Automatic cleanup when Maven session ends
-
-#### Option 2: JSON File Storage
-
-```xml
-<plugin>
-    <groupId>io.github.dodogeny</groupId>
-    <artifactId>bastion-maven-community-plugin</artifactId>
-    <version>[1.1.0,)</version> <!-- Use latest stable version -->
-    <configuration>
-        <!-- Community Edition -->
-        
-        <!-- Storage mode selection -->
-        <communityStorageMode>JSON_FILE</communityStorageMode>
-        <jsonFilePath>${project.build.directory}/bastion-vulnerabilities.json</jsonFilePath>
-    </configuration>
-</plugin>
-```
-
-**Command Line Usage:**
-```bash
-# Use JSON file storage
-mvn io.github.dodogeny:bastion-maven-community-plugin:1.1.0:scan -Dbastion.community.storageMode=JSON_FILE
-
-# Custom JSON file location
-mvn io.github.dodogeny:bastion-maven-community-plugin:1.1.0:scan \
-  -Dbastion.community.storageMode=JSON_FILE \
-  -Dbastion.storage.jsonFilePath=/custom/path/vulnerabilities.json
-```
-
-**Features:**
-- 📄 **File Persistence**: Data survives between scans and reboots
-- 📈 **Full Trend Analysis**: Complete historical trend tracking
-- 🔍 **Version Control**: JSON files can be committed for audit trails
-- 🛠️ **Manual Analysis**: Human-readable format for direct inspection
-- 🧹 **Purge Support**: Selective data cleanup capabilities
-
-### Commercial Edition - Persistent Databases
-
-#### H2 Database (File-based)
-
-```xml
-<plugin>
-    <groupId>io.github.dodogeny</groupId>
-    <artifactId>bastion-maven-plugin-enterprise</artifactId>
-    <version>[1.1.0,)</version> <!-- Use latest stable version -->
-    <configuration>
-        <apiKey>${env.BASTION_API_KEY}</apiKey>
-        
-        <!-- H2 Database Configuration -->
-        <database>
-            <type>h2</type>
-            <path>${user.home}/.m2/bastion-security-cache/vulnerability-db</path>
-            <username>bastion</username>
-            <password>${env.DB_PASSWORD}</password>
-        </database>
-    </configuration>
-</plugin>
-```
-
-#### PostgreSQL Database
-
-```xml
-<plugin>
-    <groupId>io.github.dodogeny</groupId>
-    <artifactId>bastion-maven-plugin-enterprise</artifactId>
-    <version>[1.1.0,)</version> <!-- Use latest stable version -->
-    <configuration>
-        <apiKey>${env.BASTION_API_KEY}</apiKey>
-        
-        <!-- PostgreSQL Configuration -->
-        <database>
-            <type>postgresql</type>
-            <url>jdbc:postgresql://localhost:5432/bastion_security</url>
-            <username>${env.DB_USER}</username>
-            <password>${env.DB_PASSWORD}</password>
-            <connectionPoolSize>10</connectionPoolSize>
-            
-            <!-- Flyway Migration Settings -->
-            <flyway>
-                <locations>classpath:db/migration</locations>
-                <validateOnMigrate>true</validateOnMigrate>
-                <baselineOnMigrate>true</baselineOnMigrate>
-            </flyway>
-        </database>
-    </configuration>
-</plugin>
-```
-
-#### MySQL Database
-
-```xml
-<plugin>
-    <groupId>io.github.dodogeny</groupId>
-    <artifactId>bastion-maven-plugin-enterprise</artifactId>
-    <version>[1.1.0,)</version> <!-- Use latest stable version -->
-    <configuration>
-        <apiKey>${env.BASTION_API_KEY}</apiKey>
-        
-        <!-- MySQL Configuration -->
-        <database>
-            <type>mysql</type>
-            <url>jdbc:mysql://localhost:3306/bastion_security_db</url>
-            <username>${env.DB_USER}</username>
-            <password>${env.DB_PASSWORD}</password>
-            <connectionPoolSize>15</connectionPoolSize>
-        </database>
-    </configuration>
-</plugin>
-```
-
-### Database Setup Steps
-
-#### 1. PostgreSQL Setup
-
-```bash
-# Install PostgreSQL
-sudo apt-get install postgresql postgresql-contrib
-
-# Create database and user
-sudo -u postgres psql
-CREATE DATABASE bastion_security;
-CREATE USER bastion_user WITH ENCRYPTED PASSWORD 'secure_password';
-GRANT ALL PRIVILEGES ON DATABASE bastion_security TO bastion_user;
-\q
-
-# Set environment variables
-export DB_USER="bastion_user"
-export DB_PASSWORD="secure_password"
-```
-
-#### 2. MySQL Setup
-
-```bash
-# Install MySQL
-sudo apt-get install mysql-server
-
-# Create database and user
-mysql -u root -p
-CREATE DATABASE bastion_security_db;
-CREATE USER 'bastion_user'@'localhost' IDENTIFIED BY 'secure_password';
-GRANT ALL PRIVILEGES ON bastion_security_db.* TO 'bastion_user'@'localhost';
-FLUSH PRIVILEGES;
-EXIT;
-
-# Set environment variables
-export DB_USER="bastion_user"
-export DB_PASSWORD="secure_password"
-```
-
-#### 3. H2 Database (File-based)
-
-```bash
-# Create directory for H2 database
-mkdir -p ~/.m2/bastion-security-cache
-
-# Set database password
-export DB_PASSWORD="your_secure_h2_password"
-
-# H2 will be automatically created on first run
-```
-
-### Database Migration Management
-
-Bastion uses Flyway for database schema management:
-
-```xml
-<configuration>
-    <database>
-        <flyway>
-            <!-- Migration script locations -->
-            <locations>classpath:db/migration</locations>
-            
-            <!-- Validation settings -->
-            <validateOnMigrate>true</validateOnMigrate>
-            <baselineOnMigrate>true</baselineOnMigrate>
-            <cleanOnValidationError>false</cleanOnValidationError>
-            
-            <!-- Advanced settings -->
-            <outOfOrder>false</outOfOrder>
-            <ignoreMissingMigrations>false</ignoreMissingMigrations>
-            <repairOnMigrate>false</repairOnMigrate>
-        </flyway>
-    </database>
-</configuration>
-```
-
-### Database Performance Tuning
-
-For enterprise deployments with large codebases:
-
-```xml
-<configuration>
-    <database>
-        <!-- Connection pool settings -->
-        <connectionPoolSize>20</connectionPoolSize>
-        <connectionTimeout>30000</connectionTimeout>
-        <idleTimeout>600000</idleTimeout>
-        <maxLifetime>1800000</maxLifetime>
-        
-        <!-- Performance optimizations -->
-        <performance>
-            <batchSize>1000</batchSize>
-            <enableStatistics>true</enableStatistics>
-            <enableQueryCache>true</enableQueryCache>
-            <queryTimeout>300000</queryTimeout>
-        </performance>
-        
-        <!-- Indexing strategy -->
-        <indexing>
-            <createOnStartup>true</createOnStartup>
-            <rebuildPeriodDays>7</rebuildPeriodDays>
-        </indexing>
-    </database>
-</configuration>
-```
-
-### License Configuration
-
-```xml
-<plugin>
-    <groupId>io.github.dodogeny</groupId>
-    <artifactId>bastion-maven-plugin-enterprise</artifactId>
-    <version>[1.1.0,)</version> <!-- Use latest stable version -->
-    <configuration>
-        <!-- LemonSqueezy License Configuration -->
-        <apiKey>${env.BASTION_API_KEY}</apiKey>
-        <licenseProvider>lemonsqueezy</licenseProvider>
-        
-        <!-- LemonSqueezy Settings -->
-        <lemonsqueezy>
-            <storeId>your-store-id</storeId>
-            <validateOnline>true</validateOnline>
-            <cacheValidation>true</cacheValidation>
-            <cacheDurationHours>24</cacheDurationHours>
-        </lemonsqueezy>
-    </configuration>
-</plugin>
-```
-
-### LemonSqueezy License Security
-
-Bastion's LemonSqueezy integration provides enterprise-grade security:
-- **API Key Authentication**: Secure token-based validation
-- **Real-time Verification**: License status checked against LemonSqueezy API
-- **Fraud Protection**: Built-in LemonSqueezy fraud detection
-- **Subscription Management**: Automatic renewal and cancellation handling
-- **Usage Analytics**: Track license usage across your organization
-
-## 📧 Email Notifications Setup
-
-Configure email alerts for your security team (Commercial Edition):
-
-```xml
-<plugin>
-    <groupId>io.github.dodogeny</groupId>
-    <artifactId>bastion-maven-plugin-enterprise</artifactId>
-    <version>[1.1.0,)</version> <!-- Use latest stable version -->
-    <configuration>
-        <!-- Email Configuration -->
-        <notifications>
-            <enabled>true</enabled>
-            <smtp>
-                <host>smtp.company.com</host>
-                <port>587</port>
-                <username>${env.SMTP_USER}</username>
-                <password>${env.SMTP_PASS}</password>
-                <useStartTLS>true</useStartTLS>
-            </smtp>
-            
-            <!-- Distribution Lists -->
-            <recipients>
-                <securityTeam>security@company.com,ciso@company.com</securityTeam>
-                <developmentTeam>dev-leads@company.com</developmentTeam>
-                <management>vp-engineering@company.com</management>
-            </recipients>
-            
-            <!-- Alert Thresholds -->
-            <alertOn>
-                <critical>true</critical>       <!-- Always alert on critical -->
-                <high>true</high>              <!-- Alert on high severity -->
-                <medium>false</medium>         <!-- No alerts for medium -->
-                <vulnerabilityCount>5</vulnerabilityCount>  <!-- Alert if >5 total -->
-            </alertOn>
-            
-            <!-- Email Templates -->
-            <templates>
-                <criticalAlert>critical-vuln-template.ftl</criticalAlert>
-                <dailySummary>daily-security-summary.ftl</dailySummary>
-                <weeklyReport>weekly-security-report.ftl</weeklyReport>
-            </templates>
-            
-            <!-- Enterprise Features -->
-            <realTimeAlerts>true</realTimeAlerts>
-        </notifications>
-    </configuration>
-</plugin>
-```
-
-### Environment Variables for Email
-
-```bash
-# SMTP Configuration
-export SMTP_USER="security-scanner@company.com"
-export SMTP_PASS="secure_app_password"
-
-# Optional: Custom email settings
-export BASTION_FROM_EMAIL="Bastion Scanner <noreply@company.com>"
-export BASTION_REPLY_TO="security-team@company.com"
-
-
-## 🌐 API-Based Licensing
-
-```bash
-# LemonSqueezy API Configuration
-export BASTION_API_KEY="bsk_live_abc123..." # Your LemonSqueezy license key
-export BASTION_STORE_ID="12345"              # Your LemonSqueezy store ID
-```
-
-### LemonSqueezy License Troubleshooting
-
-**License validation failed:**
-```
-❌ LemonSqueezy license validation failed
-```
-**Solutions:**
-1. Verify your API key is correct
-2. Check internet connection for license validation
-3. Ensure subscription is active in LemonSqueezy dashboard
-4. Contact support if issues persist
-
-**Subscription expired:**
-```
-⚠️ LemonSqueezy subscription expired
-```
-**Solution:** Renew your subscription at https://bastion-plugin.lemonsqueezy.com
-
-**API rate limits:**
-```
-⏰ LemonSqueezy API rate limit reached
-```
-**Solution:** License validation is cached for 24 hours to minimize API calls
-
-## 🏗️ Enterprise Configuration
-
-### Multi-Module Projects
-
-For large enterprise applications with multiple modules:
-
-```xml
-<plugin>
-    <groupId>io.github.dodogeny</groupId>
-    <artifactId>bastion-maven-plugin-enterprise</artifactId>
-    <version>[1.1.0,)</version> <!-- Use latest stable version -->
-    <configuration>
-        <!-- Multi-module optimization -->
-        <multiModule>
-            <enabled>true</enabled>
-            <aggregateReports>true</aggregateReports>
-            <parallelScanning>true</parallelScanning>
-            <threadCount>4</threadCount>
-        </multiModule>
-        
-        <!-- Performance tuning -->
-        <performance>
-            <batchSize>100</batchSize>
-            <cacheEnabled>true</cacheEnabled>
-            <cacheDurationHours>24</cacheDurationHours>
-        </performance>
-        
-        <!-- Enterprise database -->
-        <database>
-            <type>postgresql</type>
-            <url>jdbc:postgresql://db-server:5432/bastion</url>
-            <username>${env.DB_USER}</username>
-            <password>${env.DB_PASS}</password>
-            <connectionPoolSize>10</connectionPoolSize>
-            <flyway>
-                <locations>classpath:db/migration</locations>
-                <validateOnMigrate>true</validateOnMigrate>
-            </flyway>
-        </database>
-        
-        <!-- Statistics and Performance Monitoring -->
-        <statistics>
-            <enabled>true</enabled>
-            <includePerformanceMetrics>true</includePerformanceMetrics>
-            <trackResourceUsage>true</trackResourceUsage>
-            <identifyBottlenecks>true</identifyBottlenecks>
-        </statistics>
-    </configuration>
-</plugin>
-```
-
-### Security Policies & Compliance
-
-Define organizational security policies:
-
-```xml
-<configuration>
-    <securityPolicies>
-        <!-- Fail build policies -->
-        <failOnCritical>true</failOnCritical>
-        <failOnHigh>true</failOnHigh>
-        <maxAllowedVulnerabilities>0</maxAllowedVulnerabilities>
-        
-        <!-- Grace periods for known issues -->
-        <gracePeriods>
-            <critical>0</critical>     <!-- No grace period for critical -->
-            <high>7</high>             <!-- 7 days for high severity -->
-            <medium>30</medium>        <!-- 30 days for medium -->
-        </gracePeriods>
-        
-        <!-- Compliance frameworks -->
-        <compliance>
-            <framework>PCI-DSS</framework>
-            <generateComplianceReport>true</generateComplianceReport>
-        </compliance>
-    </securityPolicies>
-</configuration>
-```
-
-## 🔍 Vulnerability Data Sources
-
-Bastion supports multiple vulnerability intelligence sources:
-
-### Open Source Edition (Free)
-- **OWASP Dependency-Check**: Comprehensive open-source vulnerability database
-- **NVD (National Vulnerability Database)**: Official US government CVE database
-- **Basic GitHub Integration**: Public vulnerability advisories
-
-### Commercial Edition (Enterprise)
-- **All Community Sources**: Plus enhanced capabilities
-- **Enhanced GitHub Integration**: Commercial API access with enhanced metadata
-- **Extended Intelligence**: Integration with additional vulnerability sources
-
-```xml
-<configuration>
-    <!-- Scanner Configuration -->
-    <scanners>
-        <scanner>owasp</scanner>           <!-- Always enabled (community) -->
-        <scanner>github</scanner>          <!-- GitHub Security Advisory -->
-    </scanners>
-    
-    <!-- API Keys (Commercial Edition) -->
-    <apiKeys>
-        <github>${env.GITHUB_TOKEN}</github>
-    </apiKeys>
-</configuration>
-```
-
-## 📊 Reports & Analytics
-
-### Enhanced Trend Analysis (v1.1.0+)
-
-Bastion features advanced trend analysis capabilities with interactive visualizations:
-
-#### 🚀 **Latest Features in v1.1.0**
-
-##### 📈 **Historical Trend Charts**
-- **Interactive Timeline**: Visual representation of vulnerable JARs and CVEs over time
-- **Multi-Metric Tracking**: Simultaneously track vulnerable JARs, total CVEs, and critical CVEs
-- **Smart Baseline Detection**: First scan establishes baseline for future trend comparisons
-- **Responsive Design**: Charts adapt to different screen sizes and data ranges
-
-```
-📊 JARs and CVEs Over Time
-┌────────────────────────────────────────────────────────────┐
-│ 100 ┤                                                        │
-│  80 ┤     ●━━━●━━━●  Vulnerable JARs                         │
-│  60 ┤       ○───○───○  Total CVEs                           │
-│  40 ┤         ◆───◆───◆  Critical CVEs                      │
-│   0 └────────────────────────────────────────────────────── │
-│     2 scans ago    Previous    Current                      │
-└────────────────────────────────────────────────────────────┘
-```
-
-##### 🎯 **Smart Conditional Display**
-- **Context-Aware Sections**: JAR distribution charts only appear when CVEs are detected
-- **Clean UI**: No clutter when all dependencies are secure
-- **Enhanced User Experience**: Focus on relevant security information
-
-##### 📊 **Enhanced JAR Impact Visualization**
-- **🔧 Fixed Data Mapping**: Resolved issue where JAR charts showed "0 CVEs" despite vulnerabilities
-- **Accurate CVE Counting**: Proper mapping between vulnerability IDs and dependency data
-- **Color-Coded Severity**: Visual severity indicators for each JAR's vulnerability profile
-- **Detailed Breakdowns**: Critical, High, Medium, Low severity counts per dependency
-
-#### 📋 **Trend Report Capabilities**
-
-```bash
-# Generate dedicated trend analysis report
-mvn bastion:trend-analysis -Dbastion.format=html
-
-# Output: target/security-reports/bastion-trend-report-{project-name}.html
-```
-
-**Trend Report Includes:**
-- 📈 **Historical Trend Chart**: JARs and CVEs evolution over multiple scans
-- 🏷️ **JAR Status Tracking**: Resolved, New, and Pending vulnerable JARs
-- 📊 **Conditional JAR Distribution**: Only shown when vulnerabilities exist
-- 🔍 **Vulnerability Breakdown**: Detailed CVE information per JAR
-- 💡 **Smart Recommendations**: Context-aware security guidance
-
-### Report Formats
-
-Bastion generates comprehensive reports with advanced visualizations:
-
-#### Community Edition Reports
-- **HTML**: Interactive reports with graphical dependency trees, CVE documentation tables, and trend analysis
-- **Trend Report**: Dedicated trend analysis report showing historical vulnerability patterns
-- **JSON**: Machine-readable format with detailed vulnerability descriptions for CI/CD integration
-
-#### Commercial Edition Reports
-- **All Community Formats**: Plus enhanced features with persistent historical data
-- **PDF**: Executive-ready reports with comprehensive graphics and charts
-- **SARIF**: Security Analysis Results Interchange Format for enterprise security tools
-- **Enhanced Trend Analysis**: Advanced historical tracking with multi-project correlation
-
-### HTML Report Features
-
-The enhanced HTML reports include:
-
-#### 🌳 **Graphical Dependency Tree**
-- **Visual Tree Structure**: ASCII-based dependency hierarchy similar to `mvn dependency:tree`
-- **Vulnerability Indicators**: Color-coded vulnerability counts and severity badges  
-- **Direct vs Transitive**: Clear classification of dependency relationships
-- **Risk Assessment**: Smart analysis of direct vs transitive vulnerability impact
-- **File Paths**: Local Maven repository locations for each dependency
-
-```
-📦 My Spring Boot Project (com.example:my-app:1.0.0)
-├── org.springframework.boot:spring-boot-starter-web:2.5.0 [compile] [3] HIGH
-│   📁 ~/.m2/repository/org/springframework/boot/...
-├── org.apache.commons:commons-lang3:3.8.1 [compile] [1] MEDIUM  
-│   📁 ~/.m2/repository/org/apache/commons/...
-└── org.slf4j:slf4j-api:1.7.25 [compile] ✓ Clean
-```
-
-#### 📋 **CVE Documentation Table**  
-- **Comprehensive CVE Details**: Each vulnerability with full descriptions
-- **Official Links**: Clickable links to MITRE CVE database and NVD entries
-- **Limited References**: Maximum 3 additional reference links to prevent clutter
-- **Severity Indicators**: Color-coded severity badges and CVSS scores
-- **Affected Components**: Component and version information for each CVE
-
-#### 📊 **Enhanced Analytics & Trend Analysis**
-- **Dependency Statistics**: Total, vulnerable, and clean dependency counts
-- **Risk Coverage**: Percentage-based risk assessment
-- **Remediation Guidance**: Prioritized recommendations for vulnerability fixes
-- **🆕 Historical Trend Charts**: Interactive charts showing JARs and CVEs evolution over time
-- **🆕 Smart Conditional Display**: JAR distribution charts only appear when CVEs are present
-- **🆕 Enhanced JAR Impact Visualization**: Accurate vulnerability mapping with detailed breakdown
-
-```xml
-<configuration>
-    <reporting>
-        <formats>
-            <json>true</json>          <!-- API integration -->
-            <html>true</html>          <!-- Human readable -->
-            <pdf>true</pdf>            <!-- Executive summaries (Licensed) -->
-            <sarif>true</sarif>        <!-- Security tools integration (Licensed) -->
-        </formats>
-        
-        <!-- Basic report options -->
-        <includeTrends>true</includeTrends>
-        <includeStatistics>true</includeStatistics>
-        <includePerformanceMetrics>true</includePerformanceMetrics>
-    </reporting>
-</configuration>
-```
-
-### Sample Report Dashboard
-
-The HTML report includes:
-- 📈 **Vulnerability Trend Analysis**: Historical comparison with previous scans
-- 🎯 **Most Impacted Dependencies**: Risk-ranked component list  
-- 📊 **Detailed Scan Statistics**: JAR analysis, CVE breakdown, performance metrics
-- 🔧 **Performance Insights**: Resource usage, timing breakdown, optimization tips
-- 🚀 **Processing Speed**: Dependencies processed per second, cache efficiency
-
-### Performance Metrics Dashboard
-
-The enhanced statistics display shows:
-
-```
-📊 Comprehensive Scan Analysis
-────────────────────────────────────
-📦 JAR Analysis:
-   ├─ Total JARs Scanned: 127
-   ├─ Unique Components: 98
-   └─ Duplicate Dependencies: 29
-
-🔍 CVE Analysis:
-   ├─ Total CVEs Found: 23
-   ├─ Unique CVEs: 18
-   ├─ CVEs with Known Exploits: 5
-   ├─ Average CVSS Score: 6.7/10
-   └─ Most Vulnerable Component: jackson-core:2.9.8
-
-⚡ Performance Metrics:
-   ├─ Scan Duration: 19.5 seconds
-   ├─ Processing Speed: 6.5 JARs/second
-   ├─ Peak Memory Usage: 384 MB
-   ├─ Cache Hit Rate: 78% (234/300)
-   └─ Slowest Phase: Vulnerability Analysis (65% of time)
-
-🎯 Severity Breakdown:
-   ├─ 🔴 Critical: 3 vulnerabilities
-   ├─ 🟠 High: 7 vulnerabilities
-   ├─ 🟡 Medium: 10 vulnerabilities
-   └─ 🟢 Low: 3 vulnerabilities
-```
-
-## 🏢 How Bastion Helps Companies Track CVEs
-
-### 1. **Centralized Vulnerability Intelligence**
-
-**Challenge**: Companies struggle to track vulnerabilities across hundreds of applications and thousands of dependencies.
-
-**Bastion Solution**:
-- **Centralized Database**: All vulnerability data stored in enterprise PostgreSQL database
-- **Cross-Project Analytics**: Identify common vulnerable dependencies across all projects
-- **Executive Dashboards**: Real-time security posture visibility for management
-
-```sql
--- Example: Find most vulnerable dependencies across organization
-SELECT dependency_name, COUNT(*) as project_count, 
-       AVG(critical_count) as avg_critical_vulns
-FROM project_dependencies 
-GROUP BY dependency_name 
-ORDER BY avg_critical_vulns DESC;
-```
-
-### 2. **Automated Compliance Reporting**
-
-**Challenge**: Meeting regulatory requirements (PCI-DSS, SOX, HIPAA) requires continuous vulnerability monitoring and documentation.
-
-**Bastion Solution**:
-- **Compliance Templates**: Pre-built reports for major frameworks
-- **Audit Trails**: Complete history of vulnerability discovery and remediation
-- **Automated Evidence Collection**: Generate compliance artifacts automatically
-
-### 3. **Risk-Based Prioritization**
-
-**Challenge**: Not all CVEs pose equal risk to your specific environment and business.
-
-**Bastion Solution**:
-- **Business Context**: Consider actual usage and exposure of vulnerable components
-- **Exploitability Analysis**: Prioritize based on available exploits and attack vectors
-- **CVSS+ Scoring**: Enhanced scoring incorporating business impact factors
-
-### 4. **Team Collaboration & Accountability**
-
-**Challenge**: Coordinating vulnerability remediation across development, security, and operations teams.
-
-**Bastion Solution**:
-- **Role-Based Notifications**: Different alerts for developers, security teams, and management
-- **SLA Tracking**: Monitor time-to-resolution for different vulnerability severities
-- **Integration APIs**: Connect with JIRA, ServiceNow, and other workflow tools
-
-## 🔗 CI/CD Integration (Community Edition)
+## CI/CD Integration
 
 ### GitHub Actions
 
-#### Basic Security Scan
-
 ```yaml
-name: Bastion Security Scan
+name: Security Scan
 on: [push, pull_request]
 
 jobs:
@@ -2352,964 +301,251 @@ jobs:
       with:
         java-version: '11'
         distribution: 'temurin'
-    
+
     - name: Cache Maven dependencies
       uses: actions/cache@v3
       with:
         path: ~/.m2
         key: ${{ runner.os }}-m2-${{ hashFiles('**/pom.xml') }}
-        
-    - name: Run Bastion Security Scan
+
+    - name: Run Security Scan
       env:
         NVD_API_KEY: ${{ secrets.NVD_API_KEY }}
       run: |
-        mvn io.github.dodogeny:bastion-maven-community-plugin:1.1.0:scan \
+        mvn bastion:scan \
           -Dbastion.nvd.apiKey=${NVD_API_KEY} \
-          -Dbastion.failOnCritical=true \
-          -Dbastion.statistics.enabled=true
-    
-    - name: Upload Security Reports
+          -Dbastion.failOnCritical=true
+
+    - name: Upload Reports
       uses: actions/upload-artifact@v4
       if: always()
       with:
-        name: bastion-security-reports
+        name: security-reports
         path: target/security/
-        retention-days: 30
-```
-
-#### Advanced GitHub Actions with JSON Storage
-
-```yaml
-name: Advanced Bastion Security Scan
-on: 
-  push:
-    branches: [ main, develop ]
-  pull_request:
-    branches: [ main ]
-  schedule:
-    - cron: '0 2 * * 1'  # Weekly Monday 2 AM
-
-jobs:
-  security-scan:
-    runs-on: ubuntu-latest
-    permissions:
-      contents: read
-      security-events: write
-      
-    steps:
-    - uses: actions/checkout@v4
-      with:
-        fetch-depth: 0  # Full history for trend analysis
-        
-    - uses: actions/setup-java@v4
-      with:
-        java-version: '11'
-        distribution: 'temurin'
-        
-    - name: Cache Maven and Bastion data
-      uses: actions/cache@v3
-      with:
-        path: |
-          ~/.m2
-          ${{ github.workspace }}/.bastion
-        key: ${{ runner.os }}-bastion-${{ hashFiles('**/pom.xml') }}
-        
-    - name: Create Bastion cache directory
-      run: mkdir -p .bastion
-        
-    - name: Run Bastion Security Scan with Trend Analysis
-      env:
-        NVD_API_KEY: ${{ secrets.NVD_API_KEY }}
-      run: |
-        mvn io.github.dodogeny:bastion-maven-community-plugin:1.1.0:scan \
-          -Dbastion.nvd.apiKey=${NVD_API_KEY} \
-          -Dbastion.community.storageMode=JSON_FILE \
-          -Dbastion.storage.jsonFilePath=${GITHUB_WORKSPACE}/.bastion/vulnerabilities.json \
-          -Dbastion.failOnCritical=true \
-          -Dbastion.failOnHigh=false \
-          -Dbastion.multiModule.enabled=true \
-          -Dbastion.statistics.enabled=true \
-          -Dbastion.reporting.includeTrends=true
-          
-    - name: Verify Trend Analysis Report Generated
-      if: always()
-      run: |
-        echo "✅ Trend analysis report automatically generated during scan"
-        ls -la target/bastion-reports/bastion-trend-report-*.html || echo "Trend report will be available after second scan"
-    
-    - name: Upload Security Reports
-      uses: actions/upload-artifact@v4
-      if: always()
-      with:
-        name: bastion-security-reports-${{ github.run_number }}
-        path: |
-          target/security/
-          target/security-reports/
-        retention-days: 90
-        
-    - name: Comment PR with Security Summary
-      if: github.event_name == 'pull_request'
-      uses: actions/github-script@v6
-      with:
-        script: |
-          const fs = require('fs');
-          const path = 'target/security/vulnerability-report.json';
-          
-          if (fs.existsSync(path)) {
-            const report = JSON.parse(fs.readFileSync(path, 'utf8'));
-            const summary = `
-          ## 🛡️ Bastion Security Scan Results
-          
-          - **Total Vulnerabilities**: ${report.totalVulnerabilities || 0}
-          - **Critical**: ${report.criticalVulnerabilities || 0}
-          - **High**: ${report.highVulnerabilities || 0}
-          - **Medium**: ${report.mediumVulnerabilities || 0}
-          - **Low**: ${report.lowVulnerabilities || 0}
-          - **Dependencies Scanned**: ${report.totalDependencies || 0}
-          
-          📊 [View Detailed Report](${process.env.GITHUB_SERVER_URL}/${process.env.GITHUB_REPOSITORY}/actions/runs/${process.env.GITHUB_RUN_ID})
-          `;
-          
-            github.rest.issues.createComment({
-              issue_number: context.issue.number,
-              owner: context.repo.owner,
-              repo: context.repo.repo,
-              body: summary
-            });
-          }
 ```
 
 ### Jenkins Pipeline
 
-#### Basic Jenkins Pipeline
-
 ```groovy
 pipeline {
     agent any
-    
+
     environment {
         NVD_API_KEY = credentials('nvd-api-key')
     }
-    
+
     stages {
-        stage('Checkout') {
-            steps {
-                checkout scm
-            }
-        }
-        
         stage('Security Scan') {
             steps {
                 sh '''
-                    mvn io.github.dodogeny:bastion-maven-community-plugin:1.1.0:scan \
+                    mvn bastion:scan \
                       -Dbastion.nvd.apiKey=${NVD_API_KEY} \
-                      -Dbastion.failOnCritical=true \
-                      -Dbastion.statistics.enabled=true \
-                      -Dbastion.community.storageMode=JSON_FILE \
-                      -Dbastion.storage.jsonFilePath=${WORKSPACE}/bastion-vulnerabilities.json
+                      -Dbastion.failOnCritical=true
                 '''
             }
-            
-            post {
-                always {
-                    publishHTML([
-                        allowMissing: false,
-                        alwaysLinkToLastBuild: true,
-                        keepAll: true,
-                        reportDir: 'target/security',
-                        reportFiles: 'vulnerability-report.html',
-                        reportName: 'Bastion Security Report'
-                    ])
-                    
-                    archiveArtifacts artifacts: 'target/security/**/*', allowEmptyArchive: true
-                    archiveArtifacts artifacts: 'bastion-vulnerabilities.json', allowEmptyArchive: true
-                }
-                
-                failure {
-                    emailext (
-                        subject: "Security Scan Failed: ${env.JOB_NAME} - ${env.BUILD_NUMBER}",
-                        body: """
-                        Security scan failed for ${env.JOB_NAME} build ${env.BUILD_NUMBER}.
-                        
-                        Check the build log: ${env.BUILD_URL}
-                        View security report: ${env.BUILD_URL}Bastion_Security_Report/
-                        """,
-                        to: "${env.CHANGE_AUTHOR_EMAIL},security-team@company.com"
-                    )
-                }
-            }
         }
-        
-        stage('Archive Reports') {
-            when {
-                anyOf {
-                    branch 'main'
-                    branch 'develop'
-                }
-            }
-            steps {
-                script {
-                    // Trend analysis is automatically generated during scan
-                    def trendReportExists = fileExists 'target/bastion-reports/bastion-trend-report-*.html'
-                    if (trendReportExists) {
-                        publishHTML([
-                            allowMissing: false,
-                            alwaysLinkToLastBuild: true,
-                            keepAll: true,
-                            reportDir: 'target/bastion-reports',
-                            reportFiles: 'bastion-trend-report-*.html',
-                            reportName: 'Bastion Trend Analysis'
-                        ])
-                    } else {
-                        echo "Trend analysis will be available after at least 2 scans with JSON storage"
-                    }
-                }
-            }
+    }
+
+    post {
+        always {
+            publishHTML([
+                reportDir: 'target/security',
+                reportFiles: 'bastion-report.html',
+                reportName: 'Security Scan Report'
+            ])
         }
     }
 }
 ```
 
-### GitLab CI/CD
+### GitLab CI
 
 ```yaml
-# .gitlab-ci.yml
-stages:
-  - security-scan
-  - report
-
-variables:
-  MAVEN_OPTS: "-Dmaven.repo.local=${CI_PROJECT_DIR}/.m2/repository"
-
-cache:
-  paths:
-    - .m2/repository/
-    - .bastion/
-
-bastion-security-scan:
-  stage: security-scan
-  image: maven:3.8.6-openjdk-11
-  
-  variables:
-    NVD_API_KEY: $NVD_API_KEY
-    
-  before_script:
-    - mkdir -p .bastion
-    
+security_scan:
+  stage: test
+  image: maven:3.8-openjdk-11
   script:
-    - |
-      mvn io.github.dodogeny:bastion-maven-community-plugin:1.1.0:scan \
-        -Dbastion.nvd.apiKey=${NVD_API_KEY} \
-        -Dbastion.community.storageMode=JSON_FILE \
-        -Dbastion.storage.jsonFilePath=${CI_PROJECT_DIR}/.bastion/vulnerabilities.json \
-        -Dbastion.failOnCritical=false \
-        -Dbastion.statistics.enabled=true \
-        -Dbastion.reporting.includeTrends=true
-        
+    - mvn bastion:scan
+        -Dbastion.nvd.apiKey=${NVD_API_KEY}
+        -Dbastion.failOnCritical=true
   artifacts:
     when: always
-    expire_in: 30 days
     paths:
       - target/security/
-      - .bastion/
-    reports:
-      junit: target/security/vulnerability-report.xml
-      
-  allow_failure: false
-
-archive-reports:
-  stage: report
-  image: maven:3.8.6-openjdk-11
-  dependencies:
-    - bastion-security-scan
-    
-  script:
-    - |
-      echo "Trend analysis reports are automatically generated during scan"
-      find target/bastion-reports -name "bastion-trend-report-*.html" -ls || echo "No trend report found (needs 2+ scans)"
-        
-  artifacts:
-    when: always
-    expire_in: 90 days
-    paths:
-      - target/bastion-reports/
-      
-  only:
-    - main
-    - develop
+    expire_in: 30 days
 ```
 
-### Azure DevOps Pipeline
+## Configuration Reference
 
-```yaml
-# azure-pipelines.yml
-trigger:
-- main
-- develop
+### Core Parameters
 
-pool:
-  vmImage: 'ubuntu-latest'
+| Parameter | Type | Default | Description |
+|-----------|------|---------|-------------|
+| `skip` | boolean | `false` | Skip scan execution |
+| `failOnError` | boolean | `false` | Fail build on vulnerabilities |
+| `severityThreshold` | string | `MEDIUM` | Minimum severity to fail build (CRITICAL, HIGH, MEDIUM, LOW) |
+| `reportFormats` | string | `HTML,JSON` | Report formats to generate |
+| `outputDirectory` | string | `${project.build.directory}/security` | Report output directory |
 
-variables:
-  MAVEN_CACHE_FOLDER: $(Pipeline.Workspace)/.m2/repository
-  MAVEN_OPTS: '-Dmaven.repo.local=$(MAVEN_CACHE_FOLDER)'
+### Storage Configuration
 
-steps:
-- task: Cache@2
-  inputs:
-    key: 'maven | "$(Agent.OS)" | **/pom.xml'
-    restoreKeys: |
-      maven | "$(Agent.OS)"
-      maven
-    path: $(MAVEN_CACHE_FOLDER)
-  displayName: Cache Maven local repo
+| Parameter | Type | Default | Description |
+|-----------|------|---------|-------------|
+| `communityStorageMode` | string | `IN_MEMORY` | Storage mode (IN_MEMORY, JSON_FILE) |
+| `jsonFilePath` | string | `${project.build.directory}/security/vulnerabilities.json` | JSON file location |
+| `purgeBeforeScan` | boolean | `false` | Purge data before scanning |
 
-- task: JavaToolInstaller@0
-  inputs:
-    versionSpec: '11'
-    jdkArchitectureOption: 'x64'
-    jdkSourceOption: 'PreInstalled'
+### NVD Configuration
 
-- script: |
-    mvn io.github.dodogeny:bastion-maven-community-plugin:1.1.0:scan \
-      -Dbastion.nvd.apiKey=$(NVD_API_KEY) \
-      -Dbastion.community.storageMode=JSON_FILE \
-      -Dbastion.storage.jsonFilePath=$(Agent.TempDirectory)/bastion-vulnerabilities.json \
-      -Dbastion.failOnCritical=true \
-      -Dbastion.statistics.enabled=true
-  displayName: 'Run Bastion Security Scan'
-  env:
-    NVD_API_KEY: $(nvd-api-key)
+| Parameter | Type | Default | Description |
+|-----------|------|---------|-------------|
+| `nvdApiKey` | string | - | NVD API key |
+| `autoUpdate` | boolean | `true` | Auto-update NVD database |
+| `smartCachingEnabled` | boolean | `true` | Enable smart caching |
+| `cacheValidityHours` | int | `6` | Cache validity in hours |
+| `enableRemoteValidation` | boolean | `false` | Enable remote NVD validation |
 
-- task: PublishHtmlReport@1
-  condition: always()
-  inputs:
-    reportDir: 'target/security'
-    tabName: 'Bastion Security Report'
-    
-- task: PublishTestResults@2
-  condition: always()
-  inputs:
-    testResultsFormat: 'JUnit'
-    testResultsFiles: 'target/security/vulnerability-report.xml'
-    testRunTitle: 'Security Vulnerabilities'
-    
-- task: PublishBuildArtifacts@1
-  condition: always()
-  inputs:
-    pathToPublish: 'target/security'
-    artifactName: 'bastion-security-reports'
-```
+### Multi-Module Configuration
 
-### Docker Integration
+| Parameter | Type | Default | Description |
+|-----------|------|---------|-------------|
+| `enableMultiModule` | boolean | `false` | Enable multi-module scanning |
+| `scannerTimeout` | int | `300000` | Scanner timeout in milliseconds |
 
-```dockerfile
-# Dockerfile for security scanning
-FROM maven:3.8.6-openjdk-11 AS security-scanner
+### Purge Configuration
 
-WORKDIR /app
-COPY pom.xml .
-COPY src ./src
+| Parameter | Type | Default | Description |
+|-----------|------|---------|-------------|
+| `purge.force` | boolean | `false` | Force purge without confirmation |
+| `purge.projectOnly` | boolean | `false` | Purge only current project data |
+| `purge.olderThanDays` | int | `0` | Purge data older than N days |
+| `purge.dryRun` | boolean | `false` | Preview purge without executing |
 
-# Install and run Bastion security scan
-RUN mvn io.github.dodogeny:bastion-maven-community-plugin:1.1.0:scan \
-    -Dbastion.community.storageMode=JSON_FILE \
-    -Dbastion.storage.jsonFilePath=/app/vulnerabilities.json \
-    -Dbastion.statistics.enabled=true
+## Data Management
 
-# Export reports
-FROM nginx:alpine AS report-server
-COPY --from=security-scanner /app/target/security /usr/share/nginx/html/security
-COPY --from=security-scanner /app/vulnerabilities.json /usr/share/nginx/html/
-EXPOSE 80
-```
-
-## 📄 JSON File Storage
-
-### Overview
-
-Bastion supports JSON file-based storage as an alternative to database storage, perfect for simpler deployments or when database setup isn't feasible. JSON storage includes full trend analysis and historical tracking capabilities.
-
-### Benefits
-- **No Database Setup**: Zero configuration - just specify a file path
-- **Version Control Friendly**: JSON files can be committed to source control for audit trails
-- **Portable**: Easy to backup, move, and analyze vulnerability data
-- **Trend Analysis**: Full historical trend tracking across scan executions
-- **Human Readable**: Direct file access for manual analysis and reporting
-
-### Configuration
-
-#### Hybrid Scanning Mode (NEW in v1.1.0)
-
-```xml
-<plugin>
-    <groupId>io.github.dodogeny</groupId>
-    <artifactId>bastion-maven-community-plugin</artifactId>
-    <version>[1.1.0,)</version>
-    <configuration>
-        <!-- Hybrid mode configuration (default: enabled) -->
-        <useOwaspPlugin>true</useOwaspPlugin>           <!-- Enable hybrid mode (default) -->
-        <owaspVersion>12.1.3</owaspVersion>             <!-- OWASP plugin version (default: 12.1.3) -->
-
-        <!-- Optional: Override OWASP report path -->
-        <owaspReportPath>${project.build.directory}/dependency-check-report.json</owaspReportPath>
-    </configuration>
-</plugin>
-```
-
-**Hybrid Mode Parameters:**
-- `useOwaspPlugin` (default: `true`) - Enable/disable hybrid mode
-  - `true`: Use official OWASP plugin for scanning (recommended)
-  - `false`: Use legacy direct Engine API mode
-- `owaspVersion` (default: `12.1.3`) - OWASP plugin version to invoke
-- `owaspReportPath` (default: `${project.build.directory}/dependency-check-report.json`) - JSON report location
-
-**Command-line usage:**
-```bash
-# Use hybrid mode (default)
-mvn bastion:scan
-
-# Disable hybrid mode (use legacy Engine API)
-mvn bastion:scan -Dbastion.useOwaspPlugin=false
-
-# Use specific OWASP version
-mvn bastion:scan -Dbastion.owaspVersion=12.1.0
-```
-
-#### Storage Configuration
-
-```xml
-<plugin>
-    <groupId>io.github.dodogeny</groupId>
-    <artifactId>bastion-maven-plugin-enterprise</artifactId>
-    <version>[1.1.0,)</version> <!-- Use latest stable version -->
-    <configuration>
-        <!-- Enable JSON file storage -->
-        <storage>
-            <useJsonFile>true</useJsonFile>
-            <jsonFilePath>${project.build.directory}/bastion-vulnerabilities.json</jsonFilePath>
-        </storage>
-
-        <!-- Optional: Purge configuration -->
-        <purgeBeforeScan>false</purgeBeforeScan>
-        <purge>
-            <projectOnly>true</projectOnly>
-            <olderThanDays>30</olderThanDays>
-            <dryRun>false</dryRun>
-        </purge>
-    </configuration>
-</plugin>
-```
-
-### Usage Examples
+### Purge Operations
 
 ```bash
-# Enable JSON storage with default path
-mvn bastion:scan -Dbastion.storage.useJsonFile=true
-
-# Custom JSON file location
+# Preview what would be purged
 mvn bastion:scan \
-  -Dbastion.storage.useJsonFile=true \
-  -Dbastion.storage.jsonFilePath=/path/to/custom-vulnerabilities.json
-
-# JSON storage with purge before scan
-mvn bastion:scan \
-  -Dbastion.storage.useJsonFile=true \
-  -Dbastion.purgeBeforeScan=true
-
-# Preview what would be purged (dry run)
-mvn bastion:scan \
-  -Dbastion.storage.useJsonFile=true \
+  -Dbastion.community.storageMode=JSON_FILE \
   -Dbastion.purgeBeforeScan=true \
   -Dbastion.purge.dryRun=true
-```
 
-### JSON File Structure
-
-```json
-{
-  "created": "2024-01-01T10:00:00",
-  "lastUpdated": "2024-01-15T14:30:00",
-  "scanHistory": [
-    {
-      "timestamp": "2024-01-15T14:30:00",
-      "projectInfo": {
-        "groupId": "com.example",
-        "artifactId": "my-app",
-        "version": "1.0.0"
-      },
-      "scanResult": {
-        "totalVulnerabilities": 5,
-        "criticalVulnerabilities": 1,
-        "highVulnerabilities": 2,
-        "mediumVulnerabilities": 2,
-        "lowVulnerabilities": 0,
-        "totalDependencies": 127,
-        "scanDurationMs": 15420,
-        "vulnerabilities": [...]
-      }
-    }
-  ]
-}
-```
-
-### Trend Analysis
-
-When using JSON storage, Bastion automatically provides vulnerability trend analysis:
-
-```
-📈 Vulnerability Trend Analysis (vs Previous Scan)
-─────────────────────────────────────────────────
-📅 Previous Scan: 2024-01-14 09:15:30
-📊 Historical Scans: 12
-
-🔍 Total Vulnerabilities: ⬇️ -3
-🔴 Critical: ➡️ 0
-🟠 High: ⬇️ -2
-🟡 Medium: ⬇️ -1
-🟢 Low: ➡️ 0
-```
-
-## 🗑️ Data Purge Management
-
-### Overview
-
-Bastion includes comprehensive data purge functionality to manage historical vulnerability data, available for both database and JSON file storage modes.
-
-### Purge Options
-
-- **Complete Purge**: Remove all vulnerability data
-- **Project-Specific**: Purge only current project data
-- **Time-Based**: Remove records older than specified days
-- **Dry Run**: Preview operations without making changes
-
-### Configuration Examples
-
-```xml
-<configuration>
-    <purgeBeforeScan>true</purgeBeforeScan>
-    <purge>
-        <!-- Confirmation settings -->
-        <force>false</force>              <!-- Skip interactive confirmation -->
-        <confirm>false</confirm>          <!-- Auto-confirm operations -->
-        
-        <!-- Scope settings -->
-        <projectOnly>true</projectOnly>   <!-- Only purge current project -->
-        <olderThanDays>30</olderThanDays> <!-- Only purge records > 30 days -->
-        
-        <!-- Safety settings -->
-        <dryRun>false</dryRun>           <!-- Preview without executing -->
-    </purge>
-</configuration>
-```
-
-### Purge Commands
-
-```bash
-# Purge all data before scan (interactive confirmation)
-mvn bastion:scan -Dbastion.purgeBeforeScan=true
+# Purge with confirmation
+mvn bastion:scan \
+  -Dbastion.community.storageMode=JSON_FILE \
+  -Dbastion.purgeBeforeScan=true
 
 # Force purge without confirmation
 mvn bastion:scan \
+  -Dbastion.community.storageMode=JSON_FILE \
   -Dbastion.purgeBeforeScan=true \
   -Dbastion.purge.force=true
 
-# Purge only current project data
+# Purge data older than 30 days
 mvn bastion:scan \
-  -Dbastion.purgeBeforeScan=true \
-  -Dbastion.purge.projectOnly=true
-
-# Purge records older than 30 days
-mvn bastion:scan \
+  -Dbastion.community.storageMode=JSON_FILE \
   -Dbastion.purgeBeforeScan=true \
   -Dbastion.purge.olderThanDays=30
-
-# Dry run - preview what would be deleted
-mvn bastion:scan \
-  -Dbastion.purgeBeforeScan=true \
-  -Dbastion.purge.dryRun=true
-
-# JSON file: Delete entire file
-mvn bastion:scan \
-  -Dbastion.storage.useJsonFile=true \
-  -Dbastion.purgeBeforeScan=true
-
-# JSON file: Remove only project entries
-mvn bastion:scan \
-  -Dbastion.storage.useJsonFile=true \
-  -Dbastion.purgeBeforeScan=true \
-  -Dbastion.purge.projectOnly=true
 ```
 
-### Purge Safety Features
+## Troubleshooting
 
-- **Interactive Confirmation**: Type 'DELETE' to confirm destructive operations
-- **Impact Analysis**: Shows exactly what will be deleted before confirmation
-- **Dry Run Mode**: Preview operations without making changes
-- **Granular Control**: Project-only and time-based filtering options
-- **JSON File Backup**: Automatic backup before major operations
+### Upgrade Issues (v1.0.x to v1.1.0)
 
-### Sample Purge Output
+**"Unsupported major.minor version" Error**
 
-```
-🗑️ Bastion Database Purge Utility
-=====================================
+This indicates Java 8 is being used. v1.1.0 requires Java 11+:
 
-📊 Purge Scope Configuration:
-  • Scope: Current project only (my-app)
-  • Age Filter: ALL records (no age restriction)  
-  • Mode: DESTRUCTIVE (will permanently delete data)
-
-📊 Impact Analysis:
-  • JSON entries for this project: 8
-  • Action: Remove project entries from JSON file
-
-⚠️ WARNING: This operation will PERMANENTLY DELETE vulnerability data!
-⚠️ This action CANNOT be undone!
-
-Are you sure you want to continue? Type 'DELETE' to confirm: DELETE
-
-🗑️ Performing JSON file purge...
-✅ Deleted 8 entries for project: my-app
-
-🎉 JSON purge operation completed successfully!
-📊 Summary:
-  • Entries deleted: 8
-  • Remaining entries: 15
-  • Operation duration: 142ms
-```
-
-## 🔧 Advanced Configuration
-
-### Custom Vulnerability Exclusions
-
-```xml
-<configuration>
-    <exclusions>
-        <!-- Temporary exclusions with expiry -->
-        <exclusion>
-            <cveId>CVE-2021-44228</cveId>
-            <reason>Mitigated by firewall rules</reason>
-            <expiryDate>2024-06-01</expiryDate>
-            <approvedBy>security-team@company.com</approvedBy>
-        </exclusion>
-        
-        <!-- Scope-based exclusions -->
-        <scopeExclusions>
-            <scope>test</scope>           <!-- Exclude test dependencies -->
-            <scope>provided</scope>       <!-- Exclude provided deps -->
-        </scopeExclusions>
-        
-        <!-- Dependency exclusions -->
-        <dependencyExclusions>
-            <dependency>
-                <groupId>com.example</groupId>
-                <artifactId>legacy-lib</artifactId>
-                <reason>End-of-life, scheduled for removal</reason>
-            </dependency>
-        </dependencyExclusions>
-    </exclusions>
-</configuration>
-```
-
-### Performance Monitoring
-
-```xml
-<configuration>
-    <monitoring>
-        <performanceMetrics>true</performanceMetrics>
-        <slowQueryThreshold>5000</slowQueryThreshold>     <!-- 5 seconds -->
-        <memoryUsageTracking>true</memoryUsageTracking>
-        
-        <!-- Integration with monitoring systems -->
-        <metrics>
-            <prometheus>
-                <enabled>true</enabled>
-                <endpoint>/metrics</endpoint>
-            </prometheus>
-            <jmx>
-                <enabled>true</enabled>
-                <port>9999</port>
-            </jmx>
-        </metrics>
-    </monitoring>
-</configuration>
-```
-
-## 📚 API Reference
-
-### Maven Goals
-
-| Goal | Description | Phase | Edition |
-|------|-------------|-------|---------|
-| `scan` | Run complete vulnerability scan with integrated trend analysis | verify | 📦🏢 |
-| `predictive-analysis` | 🔮 **NEW**: Intelligent dependency update recommendations with CVE impact prediction | verify | 🏢 |
-
-**Note:** 
-- Trend analysis is automatically included in the scan goal when using JSON file storage mode.
-- 🔮 Predictive analysis requires an Enterprise Edition license and provides AI-powered update recommendations.
-
-### 📋 Complete Configuration Parameters Reference
-
-> **📦 Community Edition** | **🏢 Enterprise Edition** | **📦🏢 Both Editions**
-
-All parameters can be configured in your `pom.xml` `<configuration>` section or passed as Maven properties (`-Dproperty=value`).
-
----
-
-## Core Configuration
-
-| Parameter | Property Key | Type | Default | Description | Edition |
-|-----------|--------------|------|---------|-------------|---------|
-| `skip` | `bastion.skip` | boolean | `false` | Skip vulnerability scan entirely | 📦🏢 |
-| `failOnError` | `bastion.failOnError` | boolean | `true` | Fail build when vulnerabilities exceed threshold | 📦🏢 |
-| `severityThreshold` | `bastion.severityThreshold` | String | `MEDIUM` | Build failure threshold: `CRITICAL`, `HIGH`, `MEDIUM` | 📦🏢 |
-
-## Output & Reporting
-
-| Parameter | Property Key | Type | Default | Description | Edition |
-|-----------|--------------|------|---------|-------------|---------|
-| `outputDirectory` | `bastion.outputDirectory` | File | `${project.build.directory}/bastion-reports` | Directory for generated reports | 📦🏢 |
-| `reportFormats` | `bastion.reportFormats` | String | `HTML,JSON` | Report formats: HTML,JSON (📦) + PDF,SARIF (🏢) | 📦🏢 |
-
-## Scanner Configuration
-
-| Parameter | Property Key | Type | Default | Description | Edition |
-|-----------|--------------|------|---------|-------------|---------|
-| `nvdApiKey` | `bastion.nvd.apiKey` | String | `null` | NVD API key ([Get Free Key](https://nvd.nist.gov/developers/request-an-api-key)) | 📦🏢 |
-| `scannerTimeout` | `bastion.scanner.timeout` | int | `300000` | Scanner timeout in milliseconds (5 minutes) | 📦🏢 |
-| `enableMultiModule` | `bastion.enableMultiModule` | boolean | `true` | Enable multi-module project scanning | 📦🏢 |
-
-## NVD Caching Configuration
-
-| Parameter | Property Key | Type | Default | Description | Edition |
-|-----------|--------------|------|---------|-------------|---------|
-| `autoUpdate` | `bastion.autoUpdate` | boolean | `false` | Enable automatic NVD database updates | 📦🏢 |
-| `smartCachingEnabled` | `bastion.smart.caching.enabled` | boolean | `true` | Enable intelligent caching with remote change detection | 📦🏢 |
-| `cacheValidityHours` | `bastion.cache.validity.hours` | long | `6` | Cache validity period in hours | 📦🏢 |
-| `updateThresholdPercent` | `bastion.cache.update.threshold` | double | `5.0` | Record count change percentage that triggers update | 📦🏢 |
-| `cacheDirectory` | `bastion.cache.directory` | String | `${user.home}/.bastion/nvd-cache` | Directory for NVD database cache files | 📦🏢 |
-| `enableRemoteValidation` | `bastion.enableRemoteValidation` | boolean | `false` | Enable remote NVD server validation (local-only for unit tests) | 📦🏢 |
-| `updateThresholdPercent` | `bastion.updateThresholdPercent` | double | `5.0` | Percentage change in CVE records required to trigger update | 📦🏢 |
-| `enableRecordCountValidation` | `bastion.enableRecordCountValidation` | boolean | `true` | Enable CVE record count monitoring for smart updates | 📦🏢 |
-
-## Storage Configuration
-
-| Parameter | Property Key | Type | Default | Description | Edition |
-|-----------|--------------|------|---------|-------------|---------|
-| `communityStorageMode` | `bastion.community.storageMode` | String | `IN_MEMORY` | Storage mode: `IN_MEMORY` or `JSON_FILE` | 📦🏢 |
-| `useJsonFileStorage` | `bastion.storage.useJsonFile` | boolean | `false` | Alternative way to enable JSON file storage | 📦🏢 |
-| `jsonFilePath` | `bastion.storage.jsonFilePath` | String | `${project.build.directory}/bastion-vulnerabilities.json` | Path for JSON file storage | 📦🏢 |
-
-## Database Configuration (Enterprise Only)
-
-| Parameter | Property Key | Type | Default | Description | Edition |
-|-----------|--------------|------|---------|-------------|---------|
-| `databaseUrl` | `bastion.database.url` | String | `null` | Database URL (e.g., `jdbc:postgresql://localhost:5432/bastion`) | 🏢 |
-| `databaseUsername` | `bastion.database.username` | String | `null` | Database username | 🏢 |
-| `databasePassword` | `bastion.database.password` | String | `null` | Database password | 🏢 |
-
-## 🔮 Predictive Analysis Configuration (Enterprise Only)
-
-| Parameter | Property Key | Type | Default | Description | Edition |
-|-----------|--------------|------|---------|-------------|---------|
-| `predictive.skip` | `bastion.predictive.skip` | boolean | `false` | Skip predictive update analysis | 🏢 |
-| `predictive.analysisDepth` | `bastion.predictive.analysisDepth` | String | `COMPREHENSIVE` | Analysis depth: `QUICK`, `STANDARD`, `COMPREHENSIVE` | 🏢 |
-| `predictive.includePreReleases` | `bastion.predictive.includePreReleases` | boolean | `false` | Include pre-release versions in analysis | 🏢 |
-| `predictive.maxVersionsToAnalyze` | `bastion.predictive.maxVersionsToAnalyze` | int | `5` | Maximum number of newer versions to analyze per dependency | 🏢 |
-| `predictive.onlyVulnerableDependencies` | `bastion.predictive.onlyVulnerableDependencies` | boolean | `true` | Only analyze dependencies with known vulnerabilities | 🏢 |
-| `predictive.severityThreshold` | `bastion.predictive.severityThreshold` | String | `MEDIUM` | Minimum severity level to consider for analysis | 🏢 |
-| `predictive.timeoutMinutes` | `bastion.predictive.timeoutMinutes` | int | `10` | Analysis timeout in minutes | 🏢 |
-| `predictive.outputDirectory` | `bastion.predictive.outputDirectory` | String | `${project.build.directory}/bastion-predictive-reports` | Directory for predictive analysis reports | 🏢 |
-| `predictive.reportName` | `bastion.predictive.reportName` | String | `bastion-predictive-analysis` | Base name for generated reports | 🏢 |
-| `predictive.reportFormats` | `bastion.predictive.reportFormats` | String | `HTML,JSON` | Comma-separated report formats: `HTML`, `PDF`, `JSON` | 🏢 |
-| `predictive.htmlReportPath` | `bastion.predictive.htmlReportPath` | String | `null` | Custom path for HTML report (overrides default naming) | 🏢 |
-| `predictive.pdfReportPath` | `bastion.predictive.pdfReportPath` | String | `null` | Custom path for PDF report (overrides default naming) | 🏢 |
-| `predictive.jsonReportPath` | `bastion.predictive.jsonReportPath` | String | `null` | Custom path for JSON report (overrides default naming) | 🏢 |
-
-## Email Notifications (Enterprise Only)
-
-| Parameter | Property Key | Type | Default | Description | Edition |
-|-----------|--------------|------|---------|-------------|---------|
-| `emailEnabled` | `bastion.email.enabled` | boolean | `false` | Enable email notifications for vulnerabilities | 🏢 |
-| `smtpHost` | `bastion.email.smtp.host` | String | `null` | SMTP server hostname | 🏢 |
-| `smtpPort` | `bastion.email.smtp.port` | int | `587` | SMTP server port | 🏢 |
-| `smtpUsername` | `bastion.email.smtp.username` | String | `null` | SMTP authentication username | 🏢 |
-| `smtpPassword` | `bastion.email.smtp.password` | String | `null` | SMTP authentication password | 🏢 |
-| `smtpTls` | `bastion.email.smtp.tls` | boolean | `true` | Enable TLS encryption for SMTP | 🏢 |
-| `emailRecipients` | `bastion.email.recipients` | String | `null` | Comma-separated list of email recipients | 🏢 |
-| `emailSeverityThreshold` | `bastion.email.severityThreshold` | String | `HIGH` | Minimum severity level for email alerts | 🏢 |
-
-## Enterprise Licensing (Enterprise Only)
-
-| Parameter | Property Key | Type | Default | Description                                                                             | Edition |
-|-----------|--------------|------|---------|-----------------------------------------------------------------------------------------|---------|
-| `apiKey` | `bastion.apiKey` | String | `null` | Enterprise license API key from <a href="https://bastion-plugin.lemonsqueezy.com" target="_blank">LemonSqueezy</a> | 🏢 |
-
-## Data Management & Purge
-
-| Parameter | Property Key | Type | Default | Description | Edition |
-|-----------|--------------|------|---------|-------------|---------|
-| `purgeBeforeScan` | `bastion.purgeBeforeScan` | boolean | `false` | Purge existing data before scanning | 📦🏢 |
-| `force` | `bastion.purge.force` | boolean | `false` | Skip confirmation prompts for purge | 📦🏢 |
-| `confirmPurge` | `bastion.purge.confirm` | boolean | `false` | Auto-confirm purge operations | 📦🏢 |
-| `projectOnly` | `bastion.purge.projectOnly` | boolean | `false` | Purge only current project data | 📦🏢 |
-| `olderThanDays` | `bastion.purge.olderThanDays` | int | `0` | Purge records older than N days (0 = all) | 📦🏢 |
-| `dryRun` | `bastion.purge.dryRun` | boolean | `false` | Preview purge operations without execution | 📦🏢 |
-
----
-
-## 🚀 Quick Configuration Examples
-
-#### Usage Examples
-
-**Command Line:**
 ```bash
-# Basic scan
-mvn bastion:scan
-
-# With all common options
-mvn bastion:scan \
-  -Dbastion.nvd.apiKey=${NVD_API_KEY} \
-  -Dbastion.community.storageMode=JSON_FILE \
-  -Dbastion.storage.jsonFilePath=./vulnerabilities.json \
-  -Dbastion.severityThreshold=HIGH \
-  -Dbastion.enableMultiModule=true \
-  -Dbastion.scanner.timeout=600000
-
-# Skip scan
-mvn bastion:scan -Dbastion.skip=true
-
-# Purge before scan
-mvn bastion:scan \
-  -Dbastion.community.storageMode=JSON_FILE \
-  -Dbastion.purgeBeforeScan=true \
-  -Dbastion.purge.projectOnly=true \
-  -Dbastion.purge.dryRun=true
-```
-
-## 🔐 Security & Privacy
-
-Bastion is designed with security-first principles:
-
-- **No Data Exfiltration**: All vulnerability data stays within your infrastructure  
-- **Encrypted Communication**: TLS/SSL for all external API calls
-- **Secure Credential Storage**: Integration with Maven settings encryption
-- **Audit Logging**: Complete audit trail of all security scanning activities
-- **Role-Based Access**: Fine-grained permissions for different user roles
-
-## 🛠️ Troubleshooting v1.1.0 Upgrade
-
-### Common Upgrade Issues
-
-#### ❓ **"Unsupported major.minor version" Error**
-```
-Error: A JNI error has occurred, please check your installation and try again
-Exception in thread "main" java.lang.UnsupportedClassVersionError:
-org/owasp/dependencycheck/Main has been compiled by a more recent version of
-the Java Runtime (class file version 55.0), this version of the Java Runtime
-only recognizes class file versions up to 52.0
-```
-
-**Solution**: Upgrade to Java 21.
-```bash
-# Check current Java version
+# Check Java version
 java -version
 
-# Set JAVA_HOME to Java 21 installation
-export JAVA_HOME=/usr/lib/jvm/java-21-openjdk-amd64
-mvn clean verify
-```
-
-#### ❓ **"Unable to connect to the database" After Upgrade**
-```
-DatabaseException: Unable to connect to the database - if this error
-persists it may be due to a corrupt database
-```
-
-**Solution**: Clear old database files (they're not compatible between major versions):
-```bash
-# Clear old OWASP database files
-rm -rf ~/.m2/repository/org/owasp/dependency-check-utils/10.0.4
-rm -rf ~/.m2/repository/org/owasp/dependency-check-data/9.0
-
-# Run scan to download new database
+# Set JAVA_HOME to Java 11+
+export JAVA_HOME=/path/to/java11
 mvn bastion:scan
 ```
 
-#### ❓ **First Scan Takes Very Long (15+ minutes)**
-This is expected behavior after upgrading. Bastion needs to download the latest NVD database (~2-4GB) which is not compatible with the v1.0.x format.
+**Database Connection Errors After Upgrade**
 
-**Solution**: Be patient during the first scan. Subsequent scans will be much faster (2-5 minutes) due to smart caching.
+v1.1.0 uses a different H2 database format. Delete old database:
 
-#### ❓ **Maven Can't Find Java 21**
 ```bash
-# Set Java 21 for Maven specifically
-export JAVA_HOME=/usr/lib/jvm/java-21-openjdk-amd64
-export PATH=$JAVA_HOME/bin:$PATH
-
-# Verify
-mvn -version
+rm -rf ~/.bastion/nvd-cache
+mvn bastion:scan  # Will download fresh database
 ```
 
-### Performance Optimization Tips
+**First Scan Takes Very Long**
 
-- **Use NVD API Key**: Significantly speeds up database updates
-- **Configure Maven Memory**: `export MAVEN_OPTS="-Xmx2g"` for large projects
-- **Enable Parallel Builds**: `mvn -T 4 bastion:scan` for multi-module projects
+The first scan needs to download the NVD database (2-4GB). This is normal and takes 5-15 minutes depending on connection speed. Subsequent scans will be much faster with caching.
 
-## 🆘 Support & Community
+### Performance Optimization
+
+1. **Use NVD API key**: Get free key from https://nvd.nist.gov/developers/request-an-api-key
+2. **Enable smart caching**: Set `autoUpdate=true` and configure `cacheValidityHours`
+3. **Use JSON storage**: Enables trend analysis without sacrificing performance
+4. **Adjust cache validity**: Longer for CI/CD (12-24h), shorter for development (2-6h)
+5. **Monitor logs**: Watch for cache hit/miss messages to optimize settings
+
+## Scan Statistics
+
+Bastion provides detailed performance metrics:
+
+```
+📊 Bastion Scan Statistics
+📦 JARs Scanned: 127
+🔍 CVEs Found: 23 (8 unique)
+🎯 CVEs with Exploits: 5
+📈 Average CVSS Score: 6.7
+
+⏱️ Performance:
+├─ Initialization: 1.2s
+├─ Dependency Resolution: 3.4s
+├─ Vulnerability Analysis: 12.8s
+├─ Report Generation: 2.1s
+└─ Total: 19.5s
+
+💾 Resources:
+├─ Peak Memory: 384 MB
+├─ Processing Speed: 6.5 JARs/second
+└─ Cache Hit Rate: 78%
+```
+
+## Enterprise Edition
+
+An Enterprise Edition is in development with additional features including:
+- Persistent databases (PostgreSQL, MySQL, H2)
+- Email notifications for security teams
+- PDF and SARIF report formats
+- Predictive update analysis
+- Advanced threat intelligence integration
+- Enhanced performance with parallel processing
+
+For more information or to express interest, please contact the project maintainers.
+
+## Compatibility Matrix
+
+| Bastion Version | Java Requirement | OWASP Dependency-Check | Status |
+|-----------------|------------------|------------------------|--------|
+| 1.1.0+ | Java 11+ | 11.1.0 | Current |
+| 1.0.x | Java 8+ | 10.0.4 | Legacy (security patches only) |
+
+## Support
 
 ### Community Support
-- **GitHub Issues**: <a href="https://github.com/dodogeny/bastion-maven-plugin-community/issues" target="_blank">Report bugs and feature requests</a>
-- **Documentation**: Full documentation and examples in this README
+- GitHub Issues: https://github.com/dodogeny/bastion-maven-community-plugin/issues
+- Documentation: See this README and inline configuration comments
 
-### Enterprise Support
-- **Email**: it.dodogeny@gmail.com
-- **Priority Support**: Available for licensed customers only
+### Getting Help
+- Check the troubleshooting section above
+- Search existing GitHub issues
+- Create a new issue with scan logs and configuration
 
-## 📄 License
+## License
 
-This project is licensed under the GPL 3.0 - see the [LICENSE](LICENSE) file for details.
+This project is licensed under the Apache License 2.0 - see the LICENSE file for details.
 
----
+## Acknowledgments
 
-**Bastion Maven Plugin Community** - Your free, open-source fortress against security vulnerabilities.
-
-*Developed with ❤️ by [dodogeny](https://github.com/dodogeny/bastion-maven-plugin-community) in Mauritius* 🇲🇺
-
-**Ready for Enterprise Features?** Upgrade to <a href="https://bastion-plugin.lemonsqueezy.com" target="_blank">Bastion Enterprise Edition</a> for advanced security capabilities.
-
-## 📝 Changelog
-
-### v1.1.0 - Major Infrastructure Upgrade (2025-09-14)
-
-**🚨 BREAKING CHANGES:**
-- **Java 21 Required**: Minimum Java version upgraded from 8 to 21
-- **Database Compatibility**: H2 database files from v1.0.x are not compatible
-
-**✨ New Features:**
-- **OWASP Dependency-Check 11.1.0**: Latest vulnerability detection engine
-- **Enhanced CVSS v4.0 Support**: Better parsing of newer vulnerability data
-- **Dynamic Path Detection**: Future-proof version detection eliminates hardcoded paths
-- **Database Corruption Resolution**: Eliminated primary cause of scan failures
-
-**🛠️ Technical Improvements:**
-- Improved error handling with graceful fallbacks
-- Enhanced NVD 2.0 API integration with better rate limiting
-- Memory optimization for large enterprise projects
-- Faster Maven plugin initialization and execution
-
-**🔧 Bug Fixes:**
-- Fixed persistent H2 database corruption issues
-- Resolved incomplete vulnerability detection in some scenarios
-- Enhanced enum handling for CVSS v4.0 parsing errors
-
-### v1.0.x - Legacy Series
-- Java 8+ compatibility
-- OWASP Dependency-Check 10.0.4
-- Basic vulnerability scanning with smart caching
-- Community features with in-memory storage
-
----
-
+Built on [OWASP Dependency-Check](https://owasp.org/www-project-dependency-check/), the industry-standard open source vulnerability scanner.
