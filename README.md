@@ -8,7 +8,7 @@
 
 ## 🚀 Why Choose Bastion Over Standard Vulnerability Scanners?
 
-**Built on the trusted foundation of OWASP Dependency-Check 11.1.0**, Bastion transforms basic vulnerability scanning into an **enterprise-grade security intelligence platform**:
+**Built on the trusted foundation of OWASP Dependency-Check 12.1.3**, Bastion transforms basic vulnerability scanning into an **enterprise-grade security intelligence platform**:
 
 **⚡ Performance Excellence**
 - **5-10x faster scans** with intelligent NVD caching
@@ -46,9 +46,17 @@ Bastion is built as a sophisticated multi-module Maven project with clean separa
 **This release brings significant improvements to performance, reliability, and future-proofing:**
 
 ### ⚡ **Core Engine Upgrade**
-- **OWASP Dependency-Check 11.1.0**: Latest vulnerability detection engine with enhanced CVSS v4.0 support
+- **OWASP Dependency-Check 12.1.3**: Latest vulnerability detection engine with enhanced CVSS v4.0 support
+- **Hybrid Scanning Architecture**: Leverages official OWASP plugin for proven scanning + Bastion's enhanced reporting (default mode)
 - **Java 11+ Foundation**: Modern runtime for improved performance and security
 - **H2 Database Compatibility**: Resolved persistent database corruption issues that affected earlier versions
+
+### 🔀 **NEW: Hybrid Scanning Mode** (Default)
+- **Proven Vulnerability Detection**: Uses official OWASP 12.1.3 plugin for scanning (137 CVEs detected in test project)
+- **Enhanced Bastion Reporting**: Adds trend analysis, performance metrics, and custom formatting
+- **Backward Compatible**: Legacy direct Engine API mode available via `bastion.useOwaspPlugin=false`
+- **Resilient Design**: Continues scan even with non-critical OWASP errors (e.g., Sonatype OSS Index issues)
+- **Configurable OWASP Version**: Control which OWASP version to use via `bastion.owaspVersion` parameter
 
 ### 🛡️ **Enhanced Security & Reliability**
 - **Database Corruption Resolution**: Eliminated the primary cause of scan failures and incomplete vulnerability detection
@@ -64,10 +72,12 @@ Bastion is built as a sophisticated multi-module Maven project with clean separa
 
 ### 📊 **Breaking Changes & Migration**
 - **Java 11+ Required**: Upgraded from Java 8 minimum requirement
+- **OWASP 12.1.3**: Major version upgrade from 11.1.0 with enhanced CVSS v4.0 support
+- **Hybrid Mode Default**: Now uses official OWASP plugin by default (can revert with `bastion.useOwaspPlugin=false`)
 - **Database Format**: H2 database files from v1.0.x are not compatible (automatic migration on first run)
 - **Plugin Configuration**: Some advanced database settings have been simplified for better reliability
 
-> **Migration Note**: Existing users upgrading from v1.0.x will need to upgrade to Java 11+ and allow for a one-time NVD database re-download (typically 2-4GB, takes 5-15 minutes depending on connection speed).
+> **Migration Note**: Existing users upgrading from v1.0.x will need to upgrade to Java 11+ and allow for a one-time NVD database re-download (typically 2-4GB, takes 5-15 minutes depending on connection speed). The hybrid scanning mode is now the default and provides improved vulnerability detection.
 
 ## 🏢 Enterprise Security Management
 
@@ -140,7 +150,7 @@ mvn help:evaluate -Dexpression=latest.version -DgroupId=io.github.dodogeny -Dart
 - **Maven**: 3.6.0 or higher
 - **Memory**: 1GB+ RAM for large enterprise projects
 
-> **🚨 BREAKING CHANGE**: Starting with v1.1.0, Bastion requires **Java 11+** due to the upgrade to OWASP Dependency-Check 11.1.0. For Java 8 compatibility, use Bastion v1.0.x with OWASP 10.0.4.
+> **🚨 BREAKING CHANGE**: Starting with v1.1.0, Bastion requires **Java 11+** due to the upgrade to OWASP Dependency-Check 12.1.3. For Java 8 compatibility, use Bastion v1.0.x with OWASP 10.0.4.
 
 ### Basic Installation
 
@@ -2729,6 +2739,45 @@ Bastion supports JSON file-based storage as an alternative to database storage, 
 
 ### Configuration
 
+#### Hybrid Scanning Mode (NEW in v1.1.0)
+
+```xml
+<plugin>
+    <groupId>io.github.dodogeny</groupId>
+    <artifactId>bastion-maven-community-plugin</artifactId>
+    <version>[1.1.0,)</version>
+    <configuration>
+        <!-- Hybrid mode configuration (default: enabled) -->
+        <useOwaspPlugin>true</useOwaspPlugin>           <!-- Enable hybrid mode (default) -->
+        <owaspVersion>12.1.3</owaspVersion>             <!-- OWASP plugin version (default: 12.1.3) -->
+
+        <!-- Optional: Override OWASP report path -->
+        <owaspReportPath>${project.build.directory}/dependency-check-report.json</owaspReportPath>
+    </configuration>
+</plugin>
+```
+
+**Hybrid Mode Parameters:**
+- `useOwaspPlugin` (default: `true`) - Enable/disable hybrid mode
+  - `true`: Use official OWASP plugin for scanning (recommended)
+  - `false`: Use legacy direct Engine API mode
+- `owaspVersion` (default: `12.1.3`) - OWASP plugin version to invoke
+- `owaspReportPath` (default: `${project.build.directory}/dependency-check-report.json`) - JSON report location
+
+**Command-line usage:**
+```bash
+# Use hybrid mode (default)
+mvn bastion:scan
+
+# Disable hybrid mode (use legacy Engine API)
+mvn bastion:scan -Dbastion.useOwaspPlugin=false
+
+# Use specific OWASP version
+mvn bastion:scan -Dbastion.owaspVersion=12.1.0
+```
+
+#### Storage Configuration
+
 ```xml
 <plugin>
     <groupId>io.github.dodogeny</groupId>
@@ -2740,7 +2789,7 @@ Bastion supports JSON file-based storage as an alternative to database storage, 
             <useJsonFile>true</useJsonFile>
             <jsonFilePath>${project.build.directory}/bastion-vulnerabilities.json</jsonFilePath>
         </storage>
-        
+
         <!-- Optional: Purge configuration -->
         <purgeBeforeScan>false</purgeBeforeScan>
         <purge>
