@@ -72,8 +72,9 @@ public class ResilientNvdUpdater {
         settings.setBoolean("bastion.resilient.parsing", true);
         settings.setBoolean("bastion.skip.problematic.records", true);
 
-        // Reduce batch size to minimize impact of problematic records
-        settings.setInt("nvd.api.results.per.page", 500);  // Smaller batches
+        // Set optimal batch size for NVD 2.0 API (balance between speed and reliability)
+        // Note: With API key, NVD allows up to 2000 results per page
+        settings.setInt("nvd.api.results.per.page", 2000);  // Optimal batch size for API key users
 
         // Set aggressive caching to avoid re-downloading
         settings.setBoolean(Settings.KEYS.AUTO_UPDATE, true);

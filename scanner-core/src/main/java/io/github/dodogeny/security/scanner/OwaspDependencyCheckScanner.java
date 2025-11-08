@@ -1561,9 +1561,9 @@ public class OwaspDependencyCheckScanner implements VulnerabilityScanner {
             settings.setString(Settings.KEYS.NVD_API_KEY, effectiveNvdApiKey);
             
             // NVD 2.0 API specific settings to prevent "No documents exist" error
-            settings.setInt(Settings.KEYS.NVD_API_DELAY, 6000); // 6 second delay between requests (NVD requires 6 seconds without API key, safer with API key too)
-            settings.setInt(Settings.KEYS.NVD_API_MAX_RETRY_COUNT, 5); // Reduced retries to avoid prolonged CVSS v4.0 parsing failures
-            settings.setInt(Settings.KEYS.NVD_API_RESULTS_PER_PAGE, 1000); // Smaller page size to reduce impact of parsing failures
+            settings.setInt(Settings.KEYS.NVD_API_DELAY, 0); // No delay needed with API key (NVD allows 50 requests/30 seconds with key)
+            settings.setInt(Settings.KEYS.NVD_API_MAX_RETRY_COUNT, 10); // More retries for better reliability
+            settings.setInt(Settings.KEYS.NVD_API_RESULTS_PER_PAGE, 2000); // Optimal page size for faster downloads with API key
             
             // Additional settings to ensure proper database initialization
             // Note: Using standard OWASP settings for cache validity

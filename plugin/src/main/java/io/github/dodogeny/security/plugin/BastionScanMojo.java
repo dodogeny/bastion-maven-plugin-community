@@ -343,6 +343,8 @@ public class BastionScanMojo extends AbstractMojo {
      * Hybrid approach: Invoke OWASP plugin -> Parse JSON -> Convert to Bastion format
      */
     private ScanResult performHybridScan() throws Exception {
+        long scanStartTime = System.currentTimeMillis();
+
         // Pre-flight check: Ensure NVD database is initialized (first-time only)
         if (!isNvdDatabaseInitialized()) {
             getLog().info("🔧 First-time setup: Initializing NVD database...");
@@ -357,7 +359,8 @@ public class BastionScanMojo extends AbstractMojo {
         Map<String, Object> owaspData = parseOwaspJsonReport(owaspReport);
 
         // Step 3: Convert OWASP data to Bastion format
-        ScanResult result = convertOwaspToBastion(owaspData);
+        long scanDurationMs = System.currentTimeMillis() - scanStartTime;
+        ScanResult result = convertOwaspToBastion(owaspData, scanDurationMs);
 
         getLog().info("✅ Hybrid scan completed successfully!");
         getLog().info("📊 Total vulnerabilities found: " + result.getTotalVulnerabilities());
@@ -1683,7 +1686,7 @@ public class BastionScanMojo extends AbstractMojo {
      * Convert OWASP report data to Bastion ScanResult format
      */
     @SuppressWarnings("unchecked")
-    private ScanResult convertOwaspToBastion(Map<String, Object> owaspReport) throws MojoExecutionException {
+    private ScanResult convertOwaspToBastion(Map<String, Object> owaspReport, long scanDurationMs) throws MojoExecutionException {
         getLog().info("🔄 Converting OWASP data to Bastion format...");
 
         try {
@@ -1695,7 +1698,9 @@ public class BastionScanMojo extends AbstractMojo {
             result.setProjectGroupId(project.getGroupId());
             result.setProjectArtifactId(project.getArtifactId());
             result.setProjectVersion(project.getVersion());
-            result.setStartTime(LocalDateTime.now());
+            result.setStartTime(LocalDateTime.now().minusSeconds(scanDurationMs / 1000));
+            result.setEndTime(LocalDateTime.now());
+            result.setScanDurationMs(scanDurationMs);
 
             // Statistics
             int totalVulnerabilities = 0;
@@ -1747,6 +1752,18 @@ public class BastionScanMojo extends AbstractMojo {
                 bastionDep.setArtifactId(artifactId);
                 bastionDep.setVersion(version);
                 bastionDep.setFilePath(filePath);
+
+                // Try to get file size
+                if (filePath != null) {
+                    try {
+                        java.io.File depFile = new java.io.File(filePath);
+                        if (depFile.exists()) {
+                            bastionDep.setFileSize(depFile.length());
+                        }
+                    } catch (Exception e) {
+                        // Ignore file size errors
+                    }
+                }
 
                 List<Map<String, Object>> vulnerabilities = (List<Map<String, Object>>) owaspDep.get("vulnerabilities");
 
@@ -1816,15 +1833,103 @@ public class BastionScanMojo extends AbstractMojo {
             result.setMediumVulnerabilities(mediumCount);
             result.setLowVulnerabilities(lowCount);
 
-            // Set enhanced statistics
+            // Calculate processing speed
+            int depsPerSecond = scanDurationMs > 0 ?
+                (int) ((owaspDependencies.size() * 1000.0) / scanDurationMs) : 0;
+            result.setDependenciesProcessedPerSecond(depsPerSecond);
+
+            // Calculate comprehensive statistics
             ScanStatistics stats = new ScanStatistics();
+
+            // JAR/Dependency Analysis
             stats.setTotalJarsScanned(owaspDependencies.size());
+
+            // Calculate group IDs and duplicates
+            Set<String> uniqueGroupIds = new HashSet<>();
+            Set<String> seenArtifacts = new HashSet<>();
+            int duplicateJars = 0;
+            long totalJarSize = 0;
+
+            for (ScanResult.DependencyResult dep : bastionDependencies) {
+                if (dep.getGroupId() != null) {
+                    uniqueGroupIds.add(dep.getGroupId());
+                }
+
+                String artifactKey = dep.getGroupId() + ":" + dep.getArtifactId();
+                if (!seenArtifacts.add(artifactKey)) {
+                    duplicateJars++;
+                }
+
+                // Try to get file size
+                if (dep.getFilePath() != null) {
+                    try {
+                        java.io.File f = new java.io.File(dep.getFilePath());
+                        if (f.exists()) {
+                            totalJarSize += f.length();
+                        }
+                    } catch (Exception e) {
+                        // Ignore file size calculation errors
+                    }
+                }
+            }
+
+            stats.setUniqueGroupIds(uniqueGroupIds.size());
+            stats.setDuplicateJars(duplicateJars);
+            stats.setTotalJarsSizeBytes((int) totalJarSize);
+
+            // For direct vs transitive, we'll need to mark dependencies
+            // For now, set them as unknown since OWASP JSON doesn't always include this info
+            stats.setDirectDependencies(0);  // Not available in OWASP JSON
+            stats.setTransitiveDependencies(owaspDependencies.size());  // Assume all transitive for safety
+
+            // CVE/Vulnerability Analysis
             stats.setTotalCvesFound(totalVulnerabilities);
             stats.setUniqueCvesFound(allVulnerabilities.size());
+            stats.setDuplicateCvesFound(totalVulnerabilities - allVulnerabilities.size());
+
+            // Severity Distribution
             stats.setCriticalCves(criticalCount);
             stats.setHighCves(highCount);
             stats.setMediumCves(mediumCount);
             stats.setLowCves(lowCount);
+
+            // CVSS Score Analysis
+            double sumCvssScores = 0;
+            double maxCvssScore = 0;
+            double minCvssScore = 10.0;
+            int cvssCount = 0;
+            int cvesWithExploits = 0;  // Would need additional OWASP data
+            int cvesActivelyExploited = 0;  // Would need additional OWASP data
+
+            for (io.github.dodogeny.security.model.Vulnerability vuln : allVulnerabilities) {
+                if (vuln.getCvssV3Score() != null && vuln.getCvssV3Score() > 0) {
+                    double score = vuln.getCvssV3Score();
+                    sumCvssScores += score;
+                    cvssCount++;
+                    if (score > maxCvssScore) maxCvssScore = score;
+                    if (score < minCvssScore) minCvssScore = score;
+                }
+            }
+
+            stats.setAverageCvssScore(cvssCount > 0 ? sumCvssScores / cvssCount : 0.0);
+            stats.setHighestCvssScore(maxCvssScore);
+            stats.setLowestCvssScore(cvssCount > 0 ? minCvssScore : 0.0);
+            stats.setCvesWithExploits(cvesWithExploits);  // Not available in basic OWASP JSON
+            stats.setCvesActivelyExploited(cvesActivelyExploited);  // Not available in basic OWASP JSON
+
+            // Component Analysis - find most vulnerable
+            String mostVulnerableComponent = null;
+            int maxVulnCount = 0;
+            for (ScanResult.DependencyResult dep : bastionDependencies) {
+                int vulnCount = dep.getVulnerabilityIds().size();
+                if (vulnCount > maxVulnCount) {
+                    maxVulnCount = vulnCount;
+                    mostVulnerableComponent = dep.getGroupId() + ":" + dep.getArtifactId() + ":" + dep.getVersion();
+                }
+            }
+            stats.setMostVulnerableComponent(mostVulnerableComponent);
+            stats.setMostVulnerableComponentCveCount(maxVulnCount);
+
             result.setStatistics(stats);
 
             getLog().info("✅ Converted to Bastion format:");

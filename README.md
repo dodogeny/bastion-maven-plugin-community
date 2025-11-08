@@ -124,7 +124,7 @@ mvn bastion:scan -Dbastion.failOnError=true -Dbastion.severityThreshold=CRITICAL
 <plugin>
     <groupId>io.github.dodogeny</groupId>
     <artifactId>bastion-maven-community-plugin</artifactId>
-    <version>1.1.0</version>
+    <version>1.1.1</version>
     <configuration>
         <skip>false</skip>
         <failOnError>true</failOnError>
@@ -140,7 +140,7 @@ mvn bastion:scan -Dbastion.failOnError=true -Dbastion.severityThreshold=CRITICAL
 <plugin>
     <groupId>io.github.dodogeny</groupId>
     <artifactId>bastion-maven-community-plugin</artifactId>
-    <version>1.1.0</version>
+    <version>1.1.1</version>
     <configuration>
         <communityStorageMode>JSON_FILE</communityStorageMode>
         <jsonFilePath>${project.build.directory}/security/vulnerabilities.json</jsonFilePath>
@@ -156,7 +156,7 @@ mvn bastion:scan -Dbastion.failOnError=true -Dbastion.severityThreshold=CRITICAL
 <plugin>
     <groupId>io.github.dodogeny</groupId>
     <artifactId>bastion-maven-community-plugin</artifactId>
-    <version>1.1.0</version>
+    <version>1.1.1</version>
     <configuration>
         <enableMultiModule>true</enableMultiModule>
         <communityStorageMode>JSON_FILE</communityStorageMode>
@@ -172,13 +172,14 @@ mvn bastion:scan -Dbastion.failOnError=true -Dbastion.severityThreshold=CRITICAL
 <plugin>
     <groupId>io.github.dodogeny</groupId>
     <artifactId>bastion-maven-community-plugin</artifactId>
-    <version>1.1.0</version>
+    <version>1.1.1</version>
     <configuration>
         <!-- NVD API key for faster database downloads and updates -->
         <nvdApiKey>${env.NVD_API_KEY}</nvdApiKey>
 
         <!-- Auto-update is always enabled for latest CVE data -->
         <!-- Smart caching and incremental updates are automatic -->
+        <!-- Memory allocation is automatic - no MAVEN_OPTS needed -->
     </configuration>
 </plugin>
 ```
@@ -304,7 +305,7 @@ jobs:
     - uses: actions/checkout@v4
     - uses: actions/setup-java@v4
       with:
-        java-version: '11'
+        java-version: '21'
         distribution: 'temurin'
 
     - name: Cache Maven dependencies
@@ -320,6 +321,7 @@ jobs:
         mvn bastion:scan \
           -Dbastion.nvd.apiKey=${NVD_API_KEY} \
           -Dbastion.failOnCritical=true
+        # v1.1.1+ automatically manages memory - no MAVEN_OPTS needed
 
     - name: Upload Reports
       uses: actions/upload-artifact@v4
@@ -458,24 +460,24 @@ mvn bastion:scan \
 
 ## Troubleshooting
 
-### Upgrade Issues (v1.0.x to v1.1.0)
+### Upgrade Issues (v1.0.x to v1.1.x)
 
 **"Unsupported major.minor version" Error**
 
-This indicates Java 8 is being used. v1.1.0 requires Java 11+:
+This indicates Java 8 is being used. v1.1.x requires Java 21+:
 
 ```bash
 # Check Java version
 java -version
 
-# Set JAVA_HOME to Java 11+
-export JAVA_HOME=/path/to/java11
+# Set JAVA_HOME to Java 21+
+export JAVA_HOME=/path/to/java21
 mvn bastion:scan
 ```
 
 **Database Connection Errors After Upgrade**
 
-v1.1.0 uses OWASP Dependency-Check 12.1.3 with a new H2 database format. Delete old database:
+v1.1.x uses OWASP Dependency-Check 12.1.3 with a new H2 database format. Delete old database:
 
 ```bash
 # Remove old cache (if upgrading from v1.0.x)
@@ -488,6 +490,26 @@ rm -rf ~/.m2/repository/org/owasp/dependency-check-utils/
 mvn bastion:scan
 ```
 
+**Out of Memory Errors (Fixed in v1.1.1)**
+
+If you're using v1.1.0 and experiencing OOM errors (exit code 137) or scans hanging for hours:
+
+```bash
+# Upgrade to v1.1.1 which includes automatic memory management
+# Update your pom.xml to version 1.1.1
+```
+
+v1.1.1+ automatically configures memory allocation for OWASP subprocesses:
+- **NVD Database Downloads**: 3GB heap automatically allocated
+- **Vulnerability Scanning**: 2GB heap automatically allocated
+- **No manual MAVEN_OPTS configuration needed**
+
+The plugin logs will show:
+```
+[INFO] 💾 Setting MAVEN_OPTS=-Xmx3g for database initialization
+[INFO] 💾 Setting MAVEN_OPTS=-Xmx2g for OWASP subprocess
+```
+
 **First Scan Takes 20-30 Minutes**
 
 The first scan automatically downloads the complete NVD database (~317,000 CVE records). This is normal and expected behavior. The plugin will display:
@@ -496,6 +518,7 @@ The first scan automatically downloads the complete NVD database (~317,000 CVE r
 [INFO] 🔧 First-time setup: Initializing NVD database...
 [INFO] ⏱️  This will take 20-30 minutes (one-time only)
 [INFO] 🔄 Future scans will automatically check for incremental updates
+[INFO] 💾 Setting MAVEN_OPTS=-Xmx3g for database initialization
 ```
 
 **To speed this up:**
@@ -550,10 +573,11 @@ For more information or to express interest, please contact the project maintain
 
 ## Compatibility Matrix
 
-| Bastion Version | Java Requirement | OWASP Dependency-Check | Auto-Update | Status |
-|-----------------|------------------|------------------------|-------------|--------|
-| 1.1.0+ | Java 21+ | 12.1.3 | ✅ Automatic | Current |
-| 1.0.x | Java 8+ | 10.0.4 | ❌ Manual | Legacy (security patches only) |
+| Bastion Version | Java Requirement | OWASP Dependency-Check | Auto-Update | Memory Management | Status |
+|-----------------|------------------|------------------------|-------------|-------------------|--------|
+| 1.1.1+ | Java 21+ | 12.1.3 | ✅ Automatic | ✅ Automatic | **Recommended** |
+| 1.1.0 | Java 21+ | 12.1.3 | ✅ Automatic | ⚠️ Manual MAVEN_OPTS | Upgrade to 1.1.1+ |
+| 1.0.x | Java 8+ | 10.0.4 | ❌ Manual | ⚠️ Manual MAVEN_OPTS | Legacy (security patches only) |
 
 ## Support
 
