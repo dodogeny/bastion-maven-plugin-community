@@ -4,10 +4,12 @@
 [![Build Status](https://github.com/dodogeny/bastion-maven-community-plugin/workflows/CI/badge.svg)](https://github.com/dodogeny/bastion-maven-community-plugin/actions)
 [![License](https://img.shields.io/badge/License-Apache%202.0-blue.svg)](https://opensource.org/licenses/Apache-2.0)
 
-A Maven plugin for automated vulnerability scanning and CVE detection in your dependencies. Built on OWASP Dependency-Check 11.1.0 with enhanced performance, caching, and trend analysis capabilities.
+A Maven plugin for automated vulnerability scanning and CVE detection in your dependencies. Built on OWASP Dependency-Check 12.1.3 with enhanced performance, intelligent auto-update, and trend analysis capabilities.
 
 ## Features
 
+- **Zero-Configuration Setup**: Automatically downloads and updates the NVD database - no manual setup required
+- **Intelligent Auto-Update**: Always uses the latest CVE data with smart incremental updates
 - **Automated CVE Detection**: Scans project dependencies against the National Vulnerability Database (NVD)
 - **Smart NVD Caching**: Reduces scan times from 8-13 minutes to 2-3 minutes with intelligent cache management
 - **Historical Trend Analysis**: Track vulnerability trends over time with JSON file storage
@@ -20,9 +22,10 @@ A Maven plugin for automated vulnerability scanning and CVE detection in your de
 
 ### Prerequisites
 
-- **Java**: JDK 11 or higher (required for v1.1.0+)
+- **Java**: JDK 21 or higher (required for v1.1.0+)
 - **Maven**: 3.6.0 or higher
 - **Memory**: 1GB+ RAM for large projects
+- **Internet**: First-time NVD database download (~317,000 CVEs)
 
 ### Installation
 
@@ -32,7 +35,7 @@ Add the plugin to your `pom.xml`:
 <plugin>
     <groupId>io.github.dodogeny</groupId>
     <artifactId>bastion-maven-community-plugin</artifactId>
-    <version>1.1.0</version>
+    <version>1.1.1</version>
     <executions>
         <execution>
             <goals>
@@ -46,34 +49,51 @@ Add the plugin to your `pom.xml`:
 ### Run Your First Scan
 
 ```bash
-# Basic scan
+# Basic scan (automatically downloads NVD database on first run)
 mvn bastion:scan
 
-# With NVD API key (recommended for better performance)
+# With NVD API key (recommended for faster downloads - 20-30 min vs hours)
 mvn bastion:scan -Dbastion.nvd.apiKey=YOUR_NVD_API_KEY
 ```
 
-Reports will be generated in `target/security/` directory.
+**First Run**: The initial scan will automatically download the NVD database (~317,000 CVEs, 20-30 minutes with API key). This is a one-time setup.
 
-## What's New in v1.1.0
+**Subsequent Runs**: Future scans will automatically check for and download only new CVE data (typically seconds to minutes), ensuring you always have the latest vulnerability information.
+
+Reports will be generated in `target/bastion-reports/` directory.
+
+## What's New in v1.1.1
 
 ### Core Improvements
-- **OWASP Dependency-Check 11.1.0**: Latest vulnerability detection engine
-- **Java 11+ Required**: Modern runtime for improved performance (breaking change)
+- **💾 Automatic Memory Management**: Intelligent MAVEN_OPTS configuration for OWASP subprocesses
+  - Automatically allocates 3GB heap for NVD database downloads
+  - Automatically allocates 2GB heap for vulnerability scanning
+  - Eliminates Out of Memory errors during long-running scans
+  - No manual memory configuration required
+- **🎉 Zero-Configuration Setup**: Automatic NVD database initialization - no manual commands required!
+- **🔄 Intelligent Auto-Update**: Always uses the latest CVE data with automatic incremental updates
+- **OWASP Dependency-Check 12.1.3**: Latest vulnerability detection engine with improved accuracy
+- **Java 21 Required**: Modern runtime for improved performance (breaking change from v1.0.x)
 - **Database Corruption Fix**: Resolved H2 database issues affecting earlier versions
 - **CVSS v4.0 Support**: Enhanced parsing of newer vulnerability data
 - **Dynamic Path Detection**: Eliminates hardcoded version paths
 
 ### Performance Enhancements
+- **Automatic Memory Allocation**: Plugin intelligently configures heap size for OWASP processes
+- Automatic database initialization on first run (no manual setup needed)
+- Smart incremental updates - downloads only new CVE data, not the entire database
 - Smart NVD caching with sub-second validation for test environments
 - Improved concurrent processing for faster dependency analysis
 - Memory optimization for large enterprise projects
 - Enhanced NVD API 2.0 integration with better rate limiting
+- **Prevents OOM Kills**: No more exit code 137 errors during long scans
 
 ### Migration Notes
-- Upgrading from v1.0.x requires Java 11+
-- First scan will re-download NVD database (2-4GB, 5-15 minutes)
-- H2 database files from v1.0.x are not compatible
+- Upgrading from v1.0.x requires Java 21+ (breaking change)
+- First scan will automatically download NVD database (~317,000 CVEs, 20-30 minutes with API key)
+- H2 database files from v1.0.x are not compatible - delete `~/.bastion/nvd-cache` before upgrading
+- No manual `mvn dependency-check:update-only` commands needed anymore!
+- **Memory configuration is now automatic** - no need to set MAVEN_OPTS manually
 
 ## Usage
 
@@ -146,7 +166,7 @@ mvn bastion:scan -Dbastion.failOnError=true -Dbastion.severityThreshold=CRITICAL
 </plugin>
 ```
 
-#### Smart Caching Configuration
+#### NVD API Key Configuration (Recommended)
 
 ```xml
 <plugin>
@@ -154,12 +174,11 @@ mvn bastion:scan -Dbastion.failOnError=true -Dbastion.severityThreshold=CRITICAL
     <artifactId>bastion-maven-community-plugin</artifactId>
     <version>1.1.0</version>
     <configuration>
-        <autoUpdate>true</autoUpdate>
+        <!-- NVD API key for faster database downloads and updates -->
         <nvdApiKey>${env.NVD_API_KEY}</nvdApiKey>
-        <smartCachingEnabled>true</smartCachingEnabled>
-        <cacheValidityHours>6</cacheValidityHours>
-        <cacheDirectory>${user.home}/.bastion/nvd-cache</cacheDirectory>
-        <enableRemoteValidation>false</enableRemoteValidation>
+
+        <!-- Auto-update is always enabled for latest CVE data -->
+        <!-- Smart caching and incremental updates are automatic -->
     </configuration>
 </plugin>
 ```
@@ -226,62 +245,48 @@ mvn bastion:scan \
 **Pros:** Persistent storage, trend analysis, version control friendly, human readable
 **Cons:** Slightly slower than in-memory
 
-## Smart NVD Caching
+## Intelligent Auto-Update System
 
-Bastion uses intelligent caching to avoid unnecessary NVD database downloads:
+Bastion automatically manages the NVD database with zero configuration required:
 
 ### How It Works
 
-1. **Local Cache Validation**: Fast local-only checks for unit tests
-2. **Remote Change Detection**: Queries NVD servers only when enabled
-3. **Threshold-Based Updates**: Downloads only if record count changes by 5%+ (configurable)
+1. **First-Time Setup**: Automatically downloads the complete NVD database (~317,000 CVEs) on first scan
+2. **Smart Updates**: OWASP Dependency-Check intelligently checks for new CVE data on every scan
+3. **Incremental Downloads**: Only downloads new/updated CVEs, not the entire database
+4. **Always Current**: Ensures you're always scanning against the latest vulnerability data
 
-### Usage
+### What You See
 
-```bash
-# Enable smart caching
-mvn bastion:scan \
-  -Dbastion.nvd.apiKey=your-api-key \
-  -Dbastion.autoUpdate=true
-
-# Configure cache validity (default: 6 hours)
-mvn bastion:scan \
-  -Dbastion.nvd.apiKey=your-api-key \
-  -Dbastion.autoUpdate=true \
-  -Dbastion.cache.validity.hours=3
-
-# Enable remote validation for production
-mvn bastion:scan \
-  -Dbastion.nvd.apiKey=your-api-key \
-  -Dbastion.autoUpdate=true \
-  -Dbastion.enableRemoteValidation=true
+**First Run (no database exists):**
+```
+[INFO] 🔧 First-time setup: Initializing NVD database...
+[INFO] ⏱️  This will take 20-30 minutes (one-time only)
+[INFO] 🔄 Future scans will automatically check for incremental updates
+[INFO] Downloading 317,332 CVE records...
+[INFO] ✅ NVD database initialized successfully!
 ```
 
-### Performance Impact
-
-**Without caching:**
+**Subsequent Runs (database exists):**
 ```
-[INFO] Downloading NVD database... (5-10 minutes)
+[INFO] ✅ NVD database found (age: 2 days) - OWASP will check for updates automatically
+[INFO] 🔄 Auto-update enabled: OWASP will check for latest NVD data
+[INFO] 🔑 Using NVD API key for faster updates
+[INFO] Checking for new CVE data...
+[INFO] Downloaded 47 new CVE records
 [INFO] Analyzing dependencies... (2-3 minutes)
-[INFO] Total: 8-13 minutes
 ```
 
-**With caching (cache hit):**
-```
-[INFO] NVD cache is valid - skipping download
-[INFO] Analyzing dependencies... (2-3 minutes)
-[INFO] Total: 2-3 minutes
-```
+### NVD Database Location
 
-### Cache Management
+View/clear database cache:
+- Linux/Mac: `~/.m2/repository/org/owasp/dependency-check-utils/12.1.3/data/`
+- Windows: `%USERPROFILE%\.m2\repository\org\owasp\dependency-check-utils\12.1.3\data\`
 
-View cache location:
-- Linux/Mac: `~/.bastion/nvd-cache/`
-- Windows: `%USERPROFILE%\.bastion\nvd-cache\`
-
-Clear cache:
+Force fresh download (if needed):
 ```bash
-rm -rf ~/.bastion/nvd-cache
+rm -rf ~/.m2/repository/org/owasp/dependency-check-utils/
+mvn bastion:scan  # Will automatically re-download
 ```
 
 ## CI/CD Integration
@@ -399,11 +404,12 @@ security_scan:
 
 | Parameter | Type | Default | Description |
 |-----------|------|---------|-------------|
-| `nvdApiKey` | string | - | NVD API key |
-| `autoUpdate` | boolean | `true` | Auto-update NVD database |
-| `smartCachingEnabled` | boolean | `true` | Enable smart caching |
-| `cacheValidityHours` | int | `6` | Cache validity in hours |
-| `enableRemoteValidation` | boolean | `false` | Enable remote NVD validation |
+| `nvdApiKey` | string | - | NVD API key (highly recommended for faster downloads/updates) |
+
+**Note**: Auto-update is always enabled to ensure you're scanning against the latest CVE data. The plugin automatically:
+- Downloads the complete NVD database on first run
+- Checks for and downloads only new CVE data on subsequent runs
+- Uses OWASP Dependency-Check's built-in intelligence for update decisions
 
 ### Multi-Module Configuration
 
@@ -469,24 +475,42 @@ mvn bastion:scan
 
 **Database Connection Errors After Upgrade**
 
-v1.1.0 uses a different H2 database format. Delete old database:
+v1.1.0 uses OWASP Dependency-Check 12.1.3 with a new H2 database format. Delete old database:
 
 ```bash
+# Remove old cache (if upgrading from v1.0.x)
 rm -rf ~/.bastion/nvd-cache
-mvn bastion:scan  # Will download fresh database
+
+# Remove OWASP database (if experiencing connection issues)
+rm -rf ~/.m2/repository/org/owasp/dependency-check-utils/
+
+# Run scan - will automatically re-download
+mvn bastion:scan
 ```
 
-**First Scan Takes Very Long**
+**First Scan Takes 20-30 Minutes**
 
-The first scan needs to download the NVD database (2-4GB). This is normal and takes 5-15 minutes depending on connection speed. Subsequent scans will be much faster with caching.
+The first scan automatically downloads the complete NVD database (~317,000 CVE records). This is normal and expected behavior. The plugin will display:
+
+```
+[INFO] 🔧 First-time setup: Initializing NVD database...
+[INFO] ⏱️  This will take 20-30 minutes (one-time only)
+[INFO] 🔄 Future scans will automatically check for incremental updates
+```
+
+**To speed this up:**
+- Get a free NVD API key from https://nvd.nist.gov/developers/request-an-api-key
+- Add `-Dbastion.nvd.apiKey=YOUR_KEY` to reduce download time from hours to 20-30 minutes
+
+**Subsequent scans** will only download new CVE data (typically seconds to minutes), not the entire database.
 
 ### Performance Optimization
 
-1. **Use NVD API key**: Get free key from https://nvd.nist.gov/developers/request-an-api-key
-2. **Enable smart caching**: Set `autoUpdate=true` and configure `cacheValidityHours`
+1. **Use NVD API key**: Get free key from https://nvd.nist.gov/developers/request-an-api-key (reduces initial download from hours to 20-30 minutes)
+2. **Automatic updates**: Already enabled by default - no configuration needed
 3. **Use JSON storage**: Enables trend analysis without sacrificing performance
-4. **Adjust cache validity**: Longer for CI/CD (12-24h), shorter for development (2-6h)
-5. **Monitor logs**: Watch for cache hit/miss messages to optimize settings
+4. **Let it run once**: The first scan downloads the full database, subsequent scans only download new CVEs
+5. **Monitor logs**: Watch for "NVD database found (age: X days)" to see automatic update behavior
 
 ## Scan Statistics
 
@@ -526,10 +550,10 @@ For more information or to express interest, please contact the project maintain
 
 ## Compatibility Matrix
 
-| Bastion Version | Java Requirement | OWASP Dependency-Check | Status |
-|-----------------|------------------|------------------------|--------|
-| 1.1.0+ | Java 11+ | 11.1.0 | Current |
-| 1.0.x | Java 8+ | 10.0.4 | Legacy (security patches only) |
+| Bastion Version | Java Requirement | OWASP Dependency-Check | Auto-Update | Status |
+|-----------------|------------------|------------------------|-------------|--------|
+| 1.1.0+ | Java 21+ | 12.1.3 | ✅ Automatic | Current |
+| 1.0.x | Java 8+ | 10.0.4 | ❌ Manual | Legacy (security patches only) |
 
 ## Support
 

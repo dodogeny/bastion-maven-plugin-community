@@ -5,6 +5,50 @@ All notable changes to the Bastion Maven Plugin Enterprise will be documented in
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [1.1.1] - 2025-11-08
+
+### Added
+- **🎉 Zero-Configuration NVD Database Setup**: Complete automation of database initialization
+  - Automatic detection and initialization of NVD database on first run
+  - No manual `mvn dependency-check:update-only` commands required
+  - Intelligent pre-flight checks before OWASP plugin invocation
+  - Clear, actionable error messages with solution options
+- **🔄 Intelligent Auto-Update System**: Always-on CVE data synchronization
+  - Auto-update permanently enabled by default for latest vulnerability data
+  - Removed `bastion.autoUpdate` parameter (always true now)
+  - OWASP Dependency-Check intelligently determines when updates are needed
+  - Smart incremental updates - downloads only new CVE data, not entire database
+  - Database age tracking and logging for transparency
+
+### Improved
+- **⚡ First-Time User Experience**: Eliminated manual setup complexity
+  - Automatic full NVD database download on first scan (~317,000 CVEs, 20-30 min with API key)
+  - Subsequent scans only download new CVE data (typically seconds to minutes)
+  - Informative progress messages during database initialization
+  - Clear distinction between first-time setup and incremental updates
+- **📊 Enhanced Logging**: Better visibility into database status
+  - Database age display (e.g., "age: 2 days")
+  - NVD API key usage warnings and recommendations
+  - Auto-update confirmation messages
+  - First-time setup progress indicators
+- **🚀 OWASP Dependency-Check 12.1.3**: Updated to latest version
+  - Improved vulnerability detection accuracy
+  - Better NVD API 2.0 integration
+  - Enhanced performance and stability
+
+### Changed
+- **Breaking**: Java 21+ now required (upgraded from Java 11+)
+- **Breaking**: Removed `bastion.autoUpdate` parameter - always enabled
+- **Breaking**: Removed `bastion.nvd.updateThresholdDays` parameter - OWASP handles update logic
+- Database location changed to: `~/.m2/repository/org/owasp/dependency-check-utils/12.1.3/data/`
+
+### Technical
+- Added `isNvdDatabaseInitialized()` method for database existence checking
+- Added `getNvdDatabasePath()` method for multi-location database detection
+- Added `initializeNvdDatabase()` method for programmatic database initialization
+- Modified `performHybridScan()` with defensive pre-flight database checks
+- Updated `invokeOwaspPlugin()` to always pass `-DautoUpdate=true` to OWASP
+
 ## [1.1.0] - 2025-08-29
 
 ### Added

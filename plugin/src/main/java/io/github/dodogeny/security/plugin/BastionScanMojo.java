@@ -110,9 +110,6 @@ public class BastionScanMojo extends AbstractMojo {
     @Parameter(property = "bastion.nvd.apiKey")
     private String nvdApiKey;
 
-    @Parameter(property = "bastion.autoUpdate", defaultValue = "false")
-    private boolean autoUpdate;
-
     @Parameter(property = "bastion.community.storageMode", defaultValue = "IN_MEMORY")
     private String communityStorageMode;
 
@@ -316,8 +313,8 @@ public class BastionScanMojo extends AbstractMojo {
         config.setTimeoutMs(scannerTimeout);
         config.setSeverityThreshold(severityThreshold);
         config.setEnableCache(true);
-        config.setAutoUpdate(autoUpdate);
-        
+        config.setAutoUpdate(true); // Always enable auto-update for latest NVD data
+
         scanner.configure(config);
         getLog().info("Scanner initialized: " + scanner.getName());
     }
@@ -332,6 +329,7 @@ public class BastionScanMojo extends AbstractMojo {
         getLog().info("Scanning project dependencies...");
 
         // Check if hybrid mode is enabled (default: true)
+        getLog().info("🔧 useOwaspPlugin parameter value: " + useOwaspPlugin);
         if (useOwaspPlugin) {
             getLog().info("🔀 Hybrid mode ENABLED - using official OWASP plugin for scanning");
             return performHybridScan();
@@ -345,7 +343,14 @@ public class BastionScanMojo extends AbstractMojo {
      * Hybrid approach: Invoke OWASP plugin -> Parse JSON -> Convert to Bastion format
      */
     private ScanResult performHybridScan() throws Exception {
+        // Pre-flight check: Ensure NVD database is initialized (first-time only)
+        if (!isNvdDatabaseInitialized()) {
+            getLog().info("🔧 First-time setup: Initializing NVD database...");
+            initializeNvdDatabase();
+        }
+
         // Step 1: Invoke OWASP plugin to generate JSON report
+        // OWASP will automatically check for and download updates with autoUpdate=true
         File owaspReport = invokeOwaspPlugin();
 
         // Step 2: Parse OWASP JSON report
@@ -1415,22 +1420,101 @@ public class BastionScanMojo extends AbstractMojo {
     /**
      * Invoke official OWASP Dependency-Check plugin to generate JSON report
      */
-    private File invokeOwaspPlugin() throws MojoExecutionException {
-        getLog().info("🔄 Invoking official OWASP Dependency-Check plugin v" + owaspVersion + "...");
-        getLog().info("📋 Hybrid mode: OWASP for scanning + Bastion for enhanced reporting");
+    /**
+     * Get the NVD database file path if it exists
+     * @return Path to database file, or null if not found
+     */
+    private Path getNvdDatabasePath() {
+        String userHome = System.getProperty("user.home");
+
+        // Check common NVD database locations
+        List<Path> possiblePaths = Arrays.asList(
+            // H2 database file in Maven repository (OWASP 12.x format)
+            Paths.get(userHome, ".m2", "repository", "org", "owasp", "dependency-check-utils", owaspVersion, "data", "11.0", "odc.mv.db"),
+            // Alternative H2 database location
+            Paths.get(userHome, ".m2", "repository", "org", "owasp", "dependency-check-data", "odc.mv.db"),
+            // Legacy location
+            Paths.get(userHome, ".owasp-dependency-check", "data", "odc.mv.db")
+        );
+
+        for (Path path : possiblePaths) {
+            if (Files.exists(path)) {
+                getLog().debug("Found NVD database at: " + path);
+                return path;
+            }
+        }
+
+        // Check for any version pattern in utils directory
+        Path utilsDir = Paths.get(userHome, ".m2", "repository", "org", "owasp", "dependency-check-utils");
+        if (Files.exists(utilsDir)) {
+            try {
+                return Files.walk(utilsDir, 5)
+                    .filter(p -> p.toString().endsWith("odc.mv.db"))
+                    .findFirst()
+                    .orElse(null);
+            } catch (IOException e) {
+                getLog().debug("Error checking dependency-check-utils directory: " + e.getMessage());
+            }
+        }
+
+        return null;
+    }
+
+    /**
+     * Check if NVD database has been initialized
+     * @return true if database exists, false otherwise
+     */
+    private boolean isNvdDatabaseInitialized() {
+        getLog().debug("Checking if NVD database is initialized...");
+        Path dbPath = getNvdDatabasePath();
+
+        if (dbPath == null) {
+            getLog().info("📥 NVD database not found - initialization required");
+            return false;
+        }
 
         try {
-            // Build Maven command
+            long lastModifiedMs = Files.getLastModifiedTime(dbPath).toMillis();
+            long currentMs = System.currentTimeMillis();
+            long ageInDays = (currentMs - lastModifiedMs) / (1000 * 60 * 60 * 24);
+
+            getLog().info("✅ NVD database found (age: " + ageInDays + " days) - OWASP will check for updates automatically");
+            return true;
+        } catch (IOException e) {
+            getLog().debug("Could not read database timestamp: " + e.getMessage());
+            return true; // Database exists, just can't read timestamp
+        }
+    }
+
+    /**
+     * Initialize NVD database by running update-only goal (first-time setup)
+     * @throws MojoExecutionException if initialization fails
+     */
+    private void initializeNvdDatabase() throws MojoExecutionException {
+        getLog().info("════════════════════════════════════════════════════════════════");
+        getLog().info("📥 First-Time Setup: Downloading NVD Database");
+        getLog().info("════════════════════════════════════════════════════════════════");
+        getLog().info("⏱️  This will take 20-30 minutes (one-time only)");
+        getLog().info("🔄 Future scans will automatically check for incremental updates");
+
+        if (nvdApiKey != null && !nvdApiKey.isEmpty()) {
+            getLog().info("🔑 Using NVD API key for faster downloads");
+        } else {
+            getLog().warn("⚠️  No NVD API key - download will be slower");
+            getLog().warn("💡 Get a free API key: https://nvd.nist.gov/developers/request-an-api-key");
+        }
+
+        getLog().info("════════════════════════════════════════════════════════════════");
+
+        try {
+            // Build Maven command for update-only
             List<String> command = new ArrayList<>();
             command.add("mvn");
-            command.add("org.owasp:dependency-check-maven:" + owaspVersion + ":check");
-            command.add("-DautoUpdate=" + autoUpdate);
-            command.add("-Dformat=JSON");
-            command.add("-Dformat=HTML"); // Keep HTML for OWASP native report
+            command.add("org.owasp:dependency-check-maven:" + owaspVersion + ":update-only");
 
             // Pass through NVD API key if available
             if (nvdApiKey != null && !nvdApiKey.isEmpty()) {
-                command.add("-DnvdApiKey=" + nvdApiKey);
+                command.add("-Dnvd.api.key=" + nvdApiKey);
             }
 
             getLog().debug("Executing: " + String.join(" ", command));
@@ -1439,6 +1523,97 @@ public class BastionScanMojo extends AbstractMojo {
             ProcessBuilder pb = new ProcessBuilder(command);
             pb.directory(project.getBasedir());
             pb.redirectErrorStream(true);
+
+            // Pass MAVEN_OPTS to subprocess to prevent OOM during database download
+            Map<String, String> env = pb.environment();
+            String mavenOpts = env.get("MAVEN_OPTS");
+            if (mavenOpts == null || !mavenOpts.contains("-Xmx")) {
+                // Set reasonable heap size for database initialization
+                env.put("MAVEN_OPTS", "-Xmx3g");
+                getLog().info("💾 Setting MAVEN_OPTS=-Xmx3g for database initialization");
+            } else {
+                getLog().info("💾 Using existing MAVEN_OPTS: " + mavenOpts);
+            }
+
+            Process process = pb.start();
+
+            // Capture and display output
+            StringBuilder output = new StringBuilder();
+            int lineCount = 0;
+            try (BufferedReader reader = new BufferedReader(new InputStreamReader(process.getInputStream()))) {
+                String line;
+                while ((line = reader.readLine()) != null) {
+                    output.append(line).append("\n");
+                    lineCount++;
+
+                    // Log important progress lines
+                    if (line.contains("Processing") || line.contains("Downloaded") ||
+                        line.contains("ERROR") || line.contains("WARNING") ||
+                        line.contains("CVE") || lineCount % 50 == 0) {
+                        getLog().info("  " + line);
+                    }
+                }
+            }
+
+            int exitCode = process.waitFor();
+
+            if (exitCode != 0) {
+                getLog().error("NVD database initialization failed with exit code " + exitCode);
+                getLog().debug("Full output:\n" + output);
+                throw new MojoExecutionException(
+                    "Failed to initialize NVD database. Exit code: " + exitCode + "\n" +
+                    "Please run manually: mvn org.owasp:dependency-check-maven:" + owaspVersion + ":update-only" +
+                    (nvdApiKey != null && !nvdApiKey.isEmpty() ? " -Dnvd.api.key=" + nvdApiKey : "")
+                );
+            }
+
+            getLog().info("✅ NVD database initialized successfully!");
+
+        } catch (IOException | InterruptedException e) {
+            throw new MojoExecutionException("Failed to initialize NVD database", e);
+        }
+    }
+
+    private File invokeOwaspPlugin() throws MojoExecutionException {
+        getLog().info("🔄 Invoking official OWASP Dependency-Check plugin v" + owaspVersion + "...");
+        getLog().info("📋 Hybrid mode: OWASP for scanning + Bastion for enhanced reporting");
+        getLog().info("🔄 Auto-update enabled: OWASP will check for latest NVD data");
+
+        try {
+            // Build Maven command
+            List<String> command = new ArrayList<>();
+            command.add("mvn");
+            command.add("org.owasp:dependency-check-maven:" + owaspVersion + ":check");
+            command.add("-DautoUpdate=true"); // Always enable auto-update for latest NVD data
+            command.add("-Dformat=JSON");
+            command.add("-Dformat=HTML"); // Keep HTML for OWASP native report
+
+            // Pass through NVD API key if available
+            if (nvdApiKey != null && !nvdApiKey.isEmpty()) {
+                command.add("-DnvdApiKey=" + nvdApiKey);
+                getLog().info("🔑 Using NVD API key for faster updates");
+            } else {
+                getLog().warn("⚠️  No NVD API key provided - updates may be slower");
+                getLog().warn("💡 Get a free API key: https://nvd.nist.gov/developers/request-an-api-key");
+            }
+
+            getLog().debug("Executing: " + String.join(" ", command));
+
+            // Execute Maven command
+            ProcessBuilder pb = new ProcessBuilder(command);
+            pb.directory(project.getBasedir());
+            pb.redirectErrorStream(true);
+
+            // Pass MAVEN_OPTS to subprocess to prevent OOM
+            Map<String, String> env = pb.environment();
+            String mavenOpts = env.get("MAVEN_OPTS");
+            if (mavenOpts == null || !mavenOpts.contains("-Xmx")) {
+                // If MAVEN_OPTS not set or doesn't specify heap, set a reasonable default
+                env.put("MAVEN_OPTS", "-Xmx2g");
+                getLog().info("💾 Setting MAVEN_OPTS=-Xmx2g for OWASP subprocess");
+            } else {
+                getLog().info("💾 Using existing MAVEN_OPTS: " + mavenOpts);
+            }
 
             Process process = pb.start();
 
