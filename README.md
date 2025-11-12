@@ -6,6 +6,8 @@
 
 A Maven plugin for automated vulnerability scanning and CVE detection in your dependencies. Built on OWASP Dependency-Check 12.1.3 with enhanced performance, intelligent auto-update, and trend analysis capabilities.
 
+📖 **[Quick Start Guide](QUICKSTART.md)** - Get up and running in 5 minutes!
+
 ## Features
 
 - **Zero-Configuration Setup**: Automatically downloads and updates the NVD database - no manual setup required
@@ -35,7 +37,7 @@ Add the plugin to your `pom.xml`:
 <plugin>
     <groupId>io.github.dodogeny</groupId>
     <artifactId>bastion-maven-community-plugin</artifactId>
-    <version>1.1.1</version>
+    <version>1.1.0</version>
     <executions>
         <execution>
             <goals>
@@ -48,21 +50,35 @@ Add the plugin to your `pom.xml`:
 
 ### Run Your First Scan
 
+**Option 1: Via Build Lifecycle (Recommended)**
 ```bash
-# Basic scan (automatically downloads NVD database on first run)
-mvn bastion:scan
-
-# With NVD API key (recommended for faster downloads - 20-30 min vs hours)
-mvn bastion:scan -Dbastion.nvd.apiKey=YOUR_NVD_API_KEY
+# Run as part of Maven verify phase
+mvn clean verify
 ```
 
-**First Run**: The initial scan will automatically download the NVD database (~317,000 CVEs, 20-30 minutes with API key). This is a one-time setup.
+**Option 2: Direct Plugin Execution**
+```bash
+# Basic scan
+mvn io.github.dodogeny:bastion-maven-community-plugin:1.1.0:scan
 
-**Subsequent Runs**: Future scans will automatically check for and download only new CVE data (typically seconds to minutes), ensuring you always have the latest vulnerability information.
+# With NVD API key (recommended for faster downloads)
+mvn io.github.dodogeny:bastion-maven-community-plugin:1.1.0:scan \
+  -Dbastion.nvd.apiKey=YOUR_NVD_API_KEY
 
-Reports will be generated in `target/bastion-reports/` directory.
+# Short form (after first use)
+mvn bastion-maven-community-plugin:scan
+```
 
-## What's New in v1.1.1
+**Option 3: IDE Integration**
+- **IntelliJ IDEA**: Right-click on `pom.xml` → Run Maven → `clean verify`
+- **Eclipse**: Right-click project → Run As → Maven build → Goals: `clean verify`
+- **VS Code**: Maven sidebar → Lifecycle → verify
+
+**⏱️ First Run**: Downloads NVD database (~318,000 CVEs, 5-10 min with API key)
+**🚀 Subsequent Runs**: Uses cached database (30-60 seconds)
+**📊 Reports**: Generated in `target/bastion-reports/`
+
+## What's New in v1.1.0
 
 ### Core Improvements
 - **💾 Automatic Memory Management**: Intelligent MAVEN_OPTS configuration for OWASP subprocesses
@@ -124,7 +140,7 @@ mvn bastion:scan -Dbastion.failOnError=true -Dbastion.severityThreshold=CRITICAL
 <plugin>
     <groupId>io.github.dodogeny</groupId>
     <artifactId>bastion-maven-community-plugin</artifactId>
-    <version>1.1.1</version>
+    <version>1.1.0</version>
     <configuration>
         <skip>false</skip>
         <failOnError>true</failOnError>
@@ -140,7 +156,7 @@ mvn bastion:scan -Dbastion.failOnError=true -Dbastion.severityThreshold=CRITICAL
 <plugin>
     <groupId>io.github.dodogeny</groupId>
     <artifactId>bastion-maven-community-plugin</artifactId>
-    <version>1.1.1</version>
+    <version>1.1.0</version>
     <configuration>
         <communityStorageMode>JSON_FILE</communityStorageMode>
         <jsonFilePath>${project.build.directory}/security/vulnerabilities.json</jsonFilePath>
@@ -156,7 +172,7 @@ mvn bastion:scan -Dbastion.failOnError=true -Dbastion.severityThreshold=CRITICAL
 <plugin>
     <groupId>io.github.dodogeny</groupId>
     <artifactId>bastion-maven-community-plugin</artifactId>
-    <version>1.1.1</version>
+    <version>1.1.0</version>
     <configuration>
         <enableMultiModule>true</enableMultiModule>
         <communityStorageMode>JSON_FILE</communityStorageMode>
@@ -172,7 +188,7 @@ mvn bastion:scan -Dbastion.failOnError=true -Dbastion.severityThreshold=CRITICAL
 <plugin>
     <groupId>io.github.dodogeny</groupId>
     <artifactId>bastion-maven-community-plugin</artifactId>
-    <version>1.1.1</version>
+    <version>1.1.0</version>
     <configuration>
         <!-- NVD API key for faster database downloads and updates -->
         <nvdApiKey>${env.NVD_API_KEY}</nvdApiKey>
@@ -490,16 +506,16 @@ rm -rf ~/.m2/repository/org/owasp/dependency-check-utils/
 mvn bastion:scan
 ```
 
-**Out of Memory Errors (Fixed in v1.1.1)**
+**Out of Memory Errors (Fixed in v1.1.0)**
 
-If you're using v1.1.0 and experiencing OOM errors (exit code 137) or scans hanging for hours:
+If you're using an older version and experiencing OOM errors (exit code 137) or scans hanging for hours:
 
 ```bash
-# Upgrade to v1.1.1 which includes automatic memory management
-# Update your pom.xml to version 1.1.1
+# Upgrade to v1.1.0 which includes automatic memory management
+# Update your pom.xml to version 1.1.0
 ```
 
-v1.1.1+ automatically configures memory allocation for OWASP subprocesses:
+v1.1.0+ automatically configures memory allocation for OWASP subprocesses:
 - **NVD Database Downloads**: 3GB heap automatically allocated
 - **Vulnerability Scanning**: 2GB heap automatically allocated
 - **No manual MAVEN_OPTS configuration needed**
@@ -575,8 +591,7 @@ For more information or to express interest, please contact the project maintain
 
 | Bastion Version | Java Requirement | OWASP Dependency-Check | Auto-Update | Memory Management | Status |
 |-----------------|------------------|------------------------|-------------|-------------------|--------|
-| 1.1.1+ | Java 21+ | 12.1.3 | ✅ Automatic | ✅ Automatic | **Recommended** |
-| 1.1.0 | Java 21+ | 12.1.3 | ✅ Automatic | ⚠️ Manual MAVEN_OPTS | Upgrade to 1.1.1+ |
+| 1.1.0 | Java 21+ | 12.1.3 | ✅ Automatic | ✅ Automatic | **Recommended** |
 | 1.0.x | Java 8+ | 10.0.4 | ❌ Manual | ⚠️ Manual MAVEN_OPTS | Legacy (security patches only) |
 
 ## Support
