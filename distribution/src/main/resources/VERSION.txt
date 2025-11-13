@@ -23,6 +23,6 @@ Support:
 - Website: https://bastion.dodogeny.mu
 - Documentation: https://docs.dodogeny.mu/bastion
 - Community Support: https://github.com/dodogeny/bastion-maven-plugin/issues
-- Enterprise Support: enterprise@dodogeny.mu
+- Email Support: it.dodogeny@gmail.com
 
 © 2024 Dodogeny. All rights reserved.

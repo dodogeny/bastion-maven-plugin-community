@@ -355,10 +355,11 @@ mvn verify -Dbastion.failOnError=false
 
 ## 📚 Additional Resources
 
-- Full Documentation: See `README.md`
-- GitHub Issues: https://github.com/dodogeny/bastion-maven-plugin-community/issues
-- NVD API Key: https://nvd.nist.gov/developers/request-an-api-key
-- OWASP Dependency-Check: https://jeremylong.github.io/DependencyCheck/
+- **Support Email**: it.dodogeny@gmail.com
+- **Full Documentation**: See `README.md`
+- **GitHub Issues**: https://github.com/dodogeny/bastion-maven-plugin-community/issues
+- **NVD API Key**: https://nvd.nist.gov/developers/request-an-api-key
+- **OWASP Dependency-Check**: https://jeremylong.github.io/DependencyCheck/
 
 ---
 

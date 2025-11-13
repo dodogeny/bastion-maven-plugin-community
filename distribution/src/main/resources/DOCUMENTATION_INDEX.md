@@ -117,12 +117,13 @@ Check `target/bastion-reports/` for generated security reports.
 ## 📞 Support & Resources
 
 ### Community Support (Open Source)
+- **Email**: it.dodogeny@gmail.com
 - **GitHub Issues**: [https://github.com/dodogeny/bastion-maven-plugin/issues](https://github.com/dodogeny/bastion-maven-plugin/issues)
 - **Stack Overflow**: Use tag `bastion-maven-plugin`
 - **Documentation**: [https://docs.dodogeny.mu/bastion](https://docs.dodogeny.mu/bastion)
 
 ### Enterprise Support (Commercial)
-- **Email**: enterprise@dodogeny.mu
+- **Email**: it.dodogeny@gmail.com
 - **Priority Queue**: Guaranteed response within business hours
 - **Professional Services**: Custom integrations and training
 - **Phone Support**: Available with Premium plans

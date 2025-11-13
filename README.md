@@ -766,7 +766,7 @@ Check that enterprise features are working:
 ### Enterprise Support
 
 Need help with integration or have questions?
-- **Email**: support@dodogeny.mu
+- **Email**: it.dodogeny@gmail.com
 - **Response Time**: 4-hour SLA
 - **Documentation**: Enterprise-specific guides included with subscription
 - **Custom Integration**: Available for enterprise customers
@@ -781,12 +781,14 @@ Need help with integration or have questions?
 ## Support
 
 ### Community Support
-- GitHub Issues: https://github.com/dodogeny/bastion-maven-community-plugin/issues
-- Documentation: See this README and inline configuration comments
+- **Email**: it.dodogeny@gmail.com
+- **GitHub Issues**: https://github.com/dodogeny/bastion-maven-plugin-community/issues
+- **Documentation**: See this README and inline configuration comments
 
 ### Getting Help
 - Check the troubleshooting section above
 - Search existing GitHub issues
+- Email us at it.dodogeny@gmail.com with questions
 - Create a new issue with scan logs and configuration
 
 ## License

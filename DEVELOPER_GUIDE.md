@@ -590,4 +590,4 @@ Closes #123
 
 **Happy coding!** 🚀
 
-*For questions or support, reach out to the development team at dev@dodogeny.mu*
+*For questions or support, reach out to the development team at it.dodogeny@gmail.com*

@@ -420,9 +420,9 @@ After purchase, you can manage your subscription through the LemonSqueezy custom
 
 ### Getting Help
 
+- **Email Support**: it.dodogeny@gmail.com
 - **Documentation**: [https://docs.dodogeny.mu/bastion](https://docs.dodogeny.mu/bastion)
 - **Community Support**: [GitHub Issues](https://github.com/dodogeny/bastion-maven-plugin/issues)
-- **Enterprise Support**: enterprise@dodogeny.mu
 - **LemonSqueezy Support**: [https://help.lemonsqueezy.com](https://help.lemonsqueezy.com)
 
 ## Uninstallation
