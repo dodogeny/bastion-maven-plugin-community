@@ -1466,6 +1466,85 @@
             </section>
         </#if>
 
+        <!-- Enterprise Edition Upgrade Banner -->
+        <div style="background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); border: 3px solid #5a67d8; border-radius: 12px; padding: 30px; margin: 40px 20px 30px 20px; box-shadow: 0 10px 25px rgba(0,0,0,0.15);">
+            <div style="text-align: center; color: white;">
+                <h2 style="margin: 0 0 10px 0; font-size: 28px; font-weight: 700;">
+                    🚀 Using Community Edition
+                </h2>
+                <p style="font-size: 16px; margin: 0 0 25px 0; opacity: 0.95;">
+                    You're seeing <strong>vulnerability detection</strong>. Enterprise Edition adds powerful team features:
+                </p>
+            </div>
+
+            <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(250px, 1fr)); gap: 20px; margin: 25px 0;">
+                <div style="background: rgba(255, 255, 255, 0.15); border-radius: 8px; padding: 20px; backdrop-filter: blur(10px);">
+                    <div style="color: #ffd700; font-size: 24px; margin-bottom: 10px;">📧</div>
+                    <h3 style="color: white; margin: 0 0 8px 0; font-size: 18px;">Email Alerts</h3>
+                    <p style="color: rgba(255,255,255,0.9); margin: 0; font-size: 14px; line-height: 1.5;">
+                        Notify security@yourcompany.com on new CRITICAL findings
+                    </p>
+                </div>
+
+                <div style="background: rgba(255, 255, 255, 0.15); border-radius: 8px; padding: 20px; backdrop-filter: blur(10px);">
+                    <div style="color: #ffd700; font-size: 24px; margin-bottom: 10px;">📄</div>
+                    <h3 style="color: white; margin: 0 0 8px 0; font-size: 18px;">Compliance Reports</h3>
+                    <p style="color: rgba(255,255,255,0.9); margin: 0; font-size: 14px; line-height: 1.5;">
+                        PDF exports for auditors, SARIF for GitHub Security tab
+                    </p>
+                </div>
+
+                <div style="background: rgba(255, 255, 255, 0.15); border-radius: 8px; padding: 20px; backdrop-filter: blur(10px);">
+                    <div style="color: #ffd700; font-size: 24px; margin-bottom: 10px;">📊</div>
+                    <h3 style="color: white; margin: 0 0 8px 0; font-size: 18px;">Trend Analysis</h3>
+                    <p style="color: rgba(255,255,255,0.9); margin: 0; font-size: 14px; line-height: 1.5;">
+                        Track your security posture over time with unlimited history
+                    </p>
+                </div>
+
+                <div style="background: rgba(255, 255, 255, 0.15); border-radius: 8px; padding: 20px; backdrop-filter: blur(10px);">
+                    <div style="color: #ffd700; font-size: 24px; margin-bottom: 10px;">💾</div>
+                    <h3 style="color: white; margin: 0 0 8px 0; font-size: 18px;">Database Storage</h3>
+                    <p style="color: rgba(255,255,255,0.9); margin: 0; font-size: 14px; line-height: 1.5;">
+                        Unlimited projects with PostgreSQL/MySQL persistence
+                    </p>
+                </div>
+
+                <div style="background: rgba(255, 255, 255, 0.15); border-radius: 8px; padding: 20px; backdrop-filter: blur(10px);">
+                    <div style="color: #ffd700; font-size: 24px; margin-bottom: 10px;">🔍</div>
+                    <h3 style="color: white; margin: 0 0 8px 0; font-size: 18px;">Advanced Filtering</h3>
+                    <p style="color: rgba(255,255,255,0.9); margin: 0; font-size: 14px; line-height: 1.5;">
+                        Suppress false positives, custom severity thresholds
+                    </p>
+                </div>
+
+                <div style="background: rgba(255, 255, 255, 0.15); border-radius: 8px; padding: 20px; backdrop-filter: blur(10px);">
+                    <div style="color: #ffd700; font-size: 24px; margin-bottom: 10px;">⚡</div>
+                    <h3 style="color: white; margin: 0 0 8px 0; font-size: 18px;">Priority Support</h3>
+                    <p style="color: rgba(255,255,255,0.9); margin: 0; font-size: 14px; line-height: 1.5;">
+                        4-hour SLA with direct access to security experts
+                    </p>
+                </div>
+            </div>
+
+            <div style="text-align: center; margin-top: 30px;">
+                <div style="background: rgba(255, 255, 255, 0.2); border-radius: 8px; padding: 15px; margin-bottom: 20px;">
+                    <p style="color: white; margin: 0; font-size: 20px; font-weight: 700;">
+                        💰 <strong>$89/month</strong> • Save 12+ hours/month on security workflows
+                    </p>
+                </div>
+                <a href="https://bastion-plugin.lemonsqueezy.com/checkout"
+                   style="display: inline-block; background: #ffd700; color: #1a202c; padding: 15px 40px; text-decoration: none; font-weight: 700; font-size: 18px; border-radius: 8px; box-shadow: 0 4px 15px rgba(255, 215, 0, 0.4); transition: transform 0.2s, box-shadow 0.2s;"
+                   onmouseover="this.style.transform='translateY(-2px)'; this.style.boxShadow='0 6px 20px rgba(255, 215, 0, 0.6)';"
+                   onmouseout="this.style.transform='translateY(0)'; this.style.boxShadow='0 4px 15px rgba(255, 215, 0, 0.4)';">
+                    🚀 Start 14-Day Free Trial →
+                </a>
+                <p style="color: rgba(255,255,255,0.8); margin: 15px 0 0 0; font-size: 14px;">
+                    No credit card required • Full feature access • Cancel anytime
+                </p>
+            </div>
+        </div>
+
         <footer class="footer">
             <div class="powered-by">
                 <strong>Powered by Bastion Maven Plugin v${bastionVersion!"1.0.0"}</strong><br>

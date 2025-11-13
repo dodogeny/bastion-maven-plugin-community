@@ -414,7 +414,38 @@ public class BastionScanMojo extends AbstractMojo {
                 
                 // Check if advanced formats require enterprise version
                 if (isAdvancedReportFormat(reportFormat)) {
-                    getLog().warn("⚠️  " + cleanFormat + " reports require bastion-maven-plugin-enterprise - skipping (Community Edition supports HTML/JSON only)");
+                    getLog().warn("");
+                    getLog().warn("⚠️  " + cleanFormat + " reports require Enterprise Edition");
+                    getLog().warn("");
+                    getLog().warn("🚀 Upgrade to unlock:");
+
+                    switch (reportFormat) {
+                        case PDF:
+                            getLog().warn("   ✓ PDF reports for stakeholder presentations");
+                            getLog().warn("   ✓ Professional layouts for auditors & management");
+                            getLog().warn("   ✓ One-click exports for compliance documentation");
+                            break;
+                        case SARIF:
+                            getLog().warn("   ✓ SARIF for GitHub Security tab integration");
+                            getLog().warn("   ✓ Automated security alerts in pull requests");
+                            getLog().warn("   ✓ Standard format for DevSecOps workflows");
+                            break;
+                        case CSV:
+                            getLog().warn("   ✓ CSV exports for spreadsheet analysis");
+                            getLog().warn("   ✓ Easy data processing and custom reporting");
+                            getLog().warn("   ✓ Integration with data analytics tools");
+                            break;
+                        default:
+                            getLog().warn("   ✓ Advanced report formats for enterprise workflows");
+                            getLog().warn("   ✓ Email notifications to security teams");
+                            getLog().warn("   ✓ Integration with SIEM/compliance tools");
+                            break;
+                    }
+
+                    getLog().warn("");
+                    getLog().warn("📊 Enterprise teams save 10+ hours/month on security workflows");
+                    getLog().warn("   → Start 14-day trial: https://bastion-plugin.lemonsqueezy.com/checkout");
+                    getLog().warn("");
                     continue;
                 }
                 
@@ -977,10 +1008,140 @@ public class BastionScanMojo extends AbstractMojo {
             getLog().info(String.format("│    🟢 Low: %-40d │", lowCount));
             
             getLog().info("╰─────────────────────────────────────────────────────────────╯");
+
+            // Show contextual enterprise upgrade messaging
+            showEnterpriseUpgradeMessage(result);
+
             getLog().info("");
-            
+
         } catch (Exception e) {
             getLog().warn("Failed to display scan statistics", e);
+        }
+    }
+
+    /**
+     * Display contextual enterprise upgrade messaging based on scan results
+     */
+    private void showEnterpriseUpgradeMessage(ScanResult result) {
+        int totalVulns = result.getTotalVulnerabilities();
+        int totalDeps = result.getTotalDependencies();
+        int criticalCount = result.getCriticalVulnerabilities();
+        int highCount = result.getHighVulnerabilities();
+
+        // Get usage statistics for frequency control
+        int scanCount = 0;
+        try {
+            if (inMemoryDatabase != null) {
+                scanCount = inMemoryDatabase.getScanCountForProject(
+                    project.getGroupId(), project.getArtifactId());
+            }
+        } catch (Exception e) {
+            // Ignore if we can't get scan count
+        }
+
+        // Frequency control: Show detailed upgrade messages strategically
+        // - Always show for high vulnerability counts (50+)
+        // - Show at milestones: 5th, 10th, 20th scan
+        // - Show for enterprise-scale projects every 5 scans
+        boolean shouldShowDetailedMessage = totalVulns >= 50 ||
+                                            scanCount == 5 ||
+                                            scanCount == 10 ||
+                                            scanCount == 20 ||
+                                            (scanCount % 5 == 0 && scanCount > 0);
+
+        // Detect enterprise-scale project
+        boolean isEnterpriseScale = totalDeps > 100 ||
+                                    totalVulns > 50 ||
+                                    isMultiModuleProject() ||
+                                    (project.getName() != null &&
+                                     (project.getName().toLowerCase().contains("prod") ||
+                                      project.getName().toLowerCase().contains("production")));
+
+        // Usage-based milestone messages
+        if (scanCount == 5 && totalVulns < 50) {
+            getLog().info("");
+            getLog().info("════════════════════════════════════════════════════════════");
+            getLog().info("  🎉 You've completed 5 scans! You're getting value from Bastion.");
+            getLog().info("");
+            getLog().info("  💼 Teams using Enterprise Edition also get:");
+            getLog().info("     • Persistent scan history (currently limited to 24 hours)");
+            getLog().info("     • Multi-project dashboard");
+            getLog().info("     • Priority support with 4-hour SLA");
+            getLog().info("");
+            getLog().info("  → $89/month • 14-day free trial: https://bastion-plugin.lemonsqueezy.com/checkout");
+            getLog().info("════════════════════════════════════════════════════════════");
+            return;
+        }
+
+        if (scanCount == 20 && totalVulns < 50) {
+            getLog().info("");
+            getLog().info("════════════════════════════════════════════════════════════");
+            getLog().info("  ⭐ Power user alert! You've run 20 scans.");
+            getLog().info("");
+            getLog().info("  Consider Enterprise Edition ($89/month):");
+            getLog().info("     • Unlimited history + advanced analytics");
+            getLog().info("     • Email/Slack notifications");
+            getLog().info("     • PDF/SARIF export for compliance");
+            getLog().info("");
+            getLog().info("  → Start 14-day free trial: https://bastion-plugin.lemonsqueezy.com/checkout");
+            getLog().info("════════════════════════════════════════════════════════════");
+            return;
+        }
+
+        // Contextual upgrade messages (with frequency control)
+        if (!shouldShowDetailedMessage) {
+            // Subtle message for non-milestone scans
+            if (totalVulns > 0 && (criticalCount + highCount) > 10) {
+                getLog().info("");
+                getLog().info("  💼 " + (criticalCount + highCount) + " HIGH/CRITICAL vulnerabilities need attention");
+                getLog().info("  → Enterprise Edition: Automated alerts + compliance reports");
+                getLog().info("  → Learn more: https://bastion-plugin.lemonsqueezy.com/checkout");
+            }
+            return;
+        }
+
+        // Show upgrade message based on context (for high-priority scans)
+        if (totalVulns >= 50) {
+            // Significant vulnerabilities found - highlight alerting features
+            getLog().info("");
+            getLog().info("════════════════════════════════════════════════════════════");
+            getLog().info("  💡 Found " + totalVulns + " vulnerabilities - Enterprise features can help:");
+            getLog().info("");
+            getLog().info("  ✅ Automated Email Alerts");
+            getLog().info("     → Notify security@yourcompany.com on CRITICAL findings");
+            getLog().info("");
+            getLog().info("  ✅ SARIF Reports for GitHub Security Tab");
+            getLog().info("     → Integrate directly with your CI/CD pipeline");
+            getLog().info("");
+            getLog().info("  ✅ PDF Reports for Stakeholders");
+            getLog().info("     → Professional reports for management & auditors");
+            getLog().info("");
+            getLog().info("  ✅ Historical Trend Analysis");
+            getLog().info("     → Track your security posture over time");
+            getLog().info("");
+            getLog().info("  📊 $89/month • Save 10+ hours on security workflows");
+            getLog().info("  → Start 14-day free trial: https://bastion-plugin.lemonsqueezy.com/checkout");
+            getLog().info("════════════════════════════════════════════════════════════");
+        } else if (isEnterpriseScale) {
+            // Enterprise-scale project detected
+            getLog().info("");
+            getLog().info("════════════════════════════════════════════════════════════");
+            getLog().info("  🏢 Enterprise-scale project detected");
+            getLog().info("");
+            getLog().info("  Your project would benefit from:");
+            getLog().info("  ✓ Database persistence (your " + totalDeps + " dependencies generate lots of data)");
+            getLog().info("  ✓ Email notifications (coordinate across your team)");
+            getLog().info("  ✓ Advanced reporting (PDF for management, SARIF for CI/CD)");
+            getLog().info("  ✓ Unlimited scan history (Community: 10 scans/project)");
+            getLog().info("");
+            getLog().info("  → Built for teams: https://bastion-plugin.lemonsqueezy.com/checkout");
+            getLog().info("════════════════════════════════════════════════════════════");
+        } else if ((criticalCount + highCount) > 10) {
+            // Moderate vulnerabilities with high severity
+            getLog().info("");
+            getLog().info("  💼 " + (criticalCount + highCount) + " HIGH/CRITICAL vulnerabilities need attention");
+            getLog().info("  → Enterprise Edition: Automated alerts + compliance reports");
+            getLog().info("  → Learn more: https://bastion-plugin.lemonsqueezy.com/checkout");
         }
     }
     

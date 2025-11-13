@@ -104,6 +104,15 @@ mvn bastion-maven-community-plugin:scan
 - Enhanced NVD API 2.0 integration with better rate limiting
 - **Prevents OOM Kills**: No more exit code 137 errors during long scans
 
+### User Experience Improvements
+- **🎯 Contextual Enterprise Suggestions**: Intelligent upgrade prompts at key moments
+  - Appears when approaching storage limits or at usage milestones
+  - Shows relevant features based on your project scale and findings
+  - Non-intrusive with built-in frequency control
+- **📊 Enhanced HTML Reports**: Visual comparison banner showcasing Enterprise features
+- **💡 Smart Feature Discovery**: Learn about advanced capabilities when you need them
+- **📈 Usage Tracking**: Milestone messages at 5th, 10th, and 20th scans
+
 ### Migration Notes
 - Upgrading from v1.0.x requires Java 21+ (breaking change)
 - First scan will automatically download NVD database (~317,000 CVEs, 20-30 minutes with API key)
@@ -577,15 +586,190 @@ Bastion provides detailed performance metrics:
 
 ## Enterprise Edition
 
-An Enterprise Edition is in development with additional features including:
-- Persistent databases (PostgreSQL, MySQL, H2)
-- Email notifications for security teams
-- PDF and SARIF report formats
-- Predictive update analysis
-- Advanced threat intelligence integration
-- Enhanced performance with parallel processing
+Bastion Maven Plugin offers an Enterprise Edition with advanced features for teams and organizations.
 
-For more information or to express interest, please contact the project maintainers.
+### Key Enterprise Features
+
+**📊 Advanced Reporting**
+- PDF exports for stakeholders and auditors
+- SARIF format for GitHub Security tab integration
+- CycloneDX SBOM for supply chain compliance
+- Custom report templates
+
+**📧 Team Collaboration**
+- Email/Slack notifications on CRITICAL findings
+- Multi-user dashboard
+- Role-based access control
+- Centralized vulnerability management
+
+**💾 Enterprise Storage**
+- Persistent databases (PostgreSQL, MySQL, H2)
+- Unlimited scan history
+- Cross-project analytics
+- Unlimited projects (Community: 50 max)
+
+**🔍 Advanced Features**
+- False positive suppression
+- Custom severity thresholds
+- Vulnerability trend analysis
+- Predictive update analysis
+
+**⚡ Enterprise Support**
+- Priority support (4-hour SLA)
+- Direct access to security experts
+- Custom integrations
+- Training and onboarding
+
+### Community vs Enterprise
+
+| Feature | Community Edition | Enterprise Edition |
+|---------|-------------------|-------------------|
+| Vulnerability Detection | ✅ Full | ✅ Full |
+| HTML/JSON Reports | ✅ Yes | ✅ Yes |
+| PDF/SARIF/SBOM Reports | ❌ No | ✅ Yes |
+| Email/Slack Notifications | ❌ No | ✅ Yes |
+| Scan History | ✅ 10 per project | ✅ Unlimited |
+| Maximum Projects | ✅ 50 projects | ✅ Unlimited |
+| Data Retention | ⏰ 24 hours | ✅ Permanent |
+| Database Storage | 💾 In-Memory | ✅ PostgreSQL/MySQL |
+| Support | 📖 Community | ⚡ Priority (4h SLA) |
+| Price | 🆓 Free Forever | 💰 $89/month |
+
+### Upgrade Messaging
+
+The Community Edition may display contextual upgrade suggestions at key moments:
+- When approaching storage limits (45+ projects, 8+ scans per project)
+- After detecting significant vulnerabilities (50+ findings)
+- When requesting enterprise features (PDF/SARIF reports)
+- At usage milestones (5th, 10th, 20th scan)
+
+These messages are **non-intrusive** and designed to inform users about features that could benefit their workflow. You can safely ignore them and continue using the full vulnerability detection capabilities of the Community Edition.
+
+### Enterprise Pricing & Trial
+
+**Monthly Subscription**: $89/month
+- ✅ Full feature access
+- ✅ Unlimited projects and scan history
+- ✅ PostgreSQL/MySQL database support
+- ✅ PDF/SARIF/SBOM exports
+- ✅ Email/Slack notifications
+- ✅ Priority support (4-hour SLA)
+
+**14-Day Free Trial**:
+- No credit card required
+- Full enterprise feature access
+- Cancel anytime
+- → **[Start Trial](https://bastion-plugin.lemonsqueezy.com/checkout)**
+
+### How to Integrate Enterprise Edition
+
+After subscribing, you'll receive a license key. Here's how to configure it:
+
+#### Step 1: Add Enterprise Plugin to pom.xml
+
+```xml
+<plugin>
+    <groupId>io.github.dodogeny</groupId>
+    <artifactId>bastion-maven-enterprise-plugin</artifactId>
+    <version>1.1.0</version>
+    <executions>
+        <execution>
+            <goals>
+                <goal>scan</goal>
+            </goals>
+            <phase>verify</phase>
+        </execution>
+    </executions>
+    <configuration>
+        <!-- License Configuration -->
+        <licenseKey>${env.BASTION_LICENSE_KEY}</licenseKey>
+
+        <!-- NVD API Key -->
+        <nvdApiKey>${env.NVD_API_KEY}</nvdApiKey>
+
+        <!-- Database Configuration (PostgreSQL/MySQL) -->
+        <databaseUrl>jdbc:postgresql://localhost:5432/bastion</databaseUrl>
+        <databaseUsername>${env.DB_USERNAME}</databaseUsername>
+        <databasePassword>${env.DB_PASSWORD}</databasePassword>
+
+        <!-- Report Configuration -->
+        <reportFormats>HTML,JSON,PDF,SARIF</reportFormats>
+        <outputDirectory>${project.build.directory}/bastion-reports</outputDirectory>
+
+        <!-- Email Notifications -->
+        <emailEnabled>true</emailEnabled>
+        <emailRecipients>security@yourcompany.com</emailRecipients>
+        <emailOnlyForCritical>true</emailOnlyForCritical>
+
+        <!-- Slack Notifications (Optional) -->
+        <slackWebhook>${env.SLACK_WEBHOOK_URL}</slackWebhook>
+        <slackEnabled>true</slackEnabled>
+    </configuration>
+</plugin>
+```
+
+#### Step 2: Set Environment Variables
+
+```bash
+# License Key (provided after subscription)
+export BASTION_LICENSE_KEY=your-license-key-here
+
+# NVD API Key (optional but recommended)
+export NVD_API_KEY=your-nvd-api-key
+
+# Database Credentials
+export DB_USERNAME=bastion_user
+export DB_PASSWORD=secure_password
+
+# Slack Webhook (optional)
+export SLACK_WEBHOOK_URL=https://hooks.slack.com/services/YOUR/WEBHOOK/URL
+```
+
+#### Step 3: Initialize Database
+
+Enterprise Edition requires a PostgreSQL or MySQL database:
+
+**PostgreSQL**:
+```sql
+CREATE DATABASE bastion;
+CREATE USER bastion_user WITH PASSWORD 'secure_password';
+GRANT ALL PRIVILEGES ON DATABASE bastion TO bastion_user;
+```
+
+**MySQL**:
+```sql
+CREATE DATABASE bastion;
+CREATE USER 'bastion_user'@'localhost' IDENTIFIED BY 'secure_password';
+GRANT ALL PRIVILEGES ON bastion.* TO 'bastion_user'@'localhost';
+FLUSH PRIVILEGES;
+```
+
+#### Step 4: Run Your First Enterprise Scan
+
+```bash
+# Run security scan with enterprise features
+mvn clean verify
+
+# Or run directly
+mvn bastion-maven-enterprise-plugin:scan
+```
+
+#### Step 5: Verify Enterprise Features
+
+Check that enterprise features are working:
+
+1. **Database**: Verify scan results are persisted in your database
+2. **PDF Reports**: Check `target/bastion-reports/` for PDF exports
+3. **Email Notifications**: Verify emails are received for CRITICAL vulnerabilities
+4. **Slack Notifications**: Check your Slack channel for alerts
+
+### Enterprise Support
+
+Need help with integration or have questions?
+- **Email**: support@dodogeny.mu
+- **Response Time**: 4-hour SLA
+- **Documentation**: Enterprise-specific guides included with subscription
+- **Custom Integration**: Available for enterprise customers
 
 ## Compatibility Matrix
 
