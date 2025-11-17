@@ -668,7 +668,7 @@ These messages are **non-intrusive** and designed to inform users about features
 - No credit card required
 - Full enterprise feature access
 - Cancel anytime
-- → **[Start Trial](https://bastion-plugin.lemonsqueezy.com/checkout)**
+- → **[Start Trial](https://bastion-plugin.lemonsqueezy.com/)**
 
 ### How to Integrate Enterprise Edition
 
