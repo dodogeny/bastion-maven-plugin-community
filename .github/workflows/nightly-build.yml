@@ -1,0 +1,65 @@
+name: Nightly Build and Test
+
+on:
+  schedule:
+    # Run every night at midnight UTC
+    - cron: '0 0 * * *'
+  workflow_dispatch:  # Allow manual triggering
+
+jobs:
+  build-and-test:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Set up JDK 21
+        uses: actions/setup-java@v4
+        with:
+          java-version: '21'
+          distribution: 'temurin'
+          cache: 'maven'
+
+      - name: Compile project
+        run: mvn clean compile -Dgpg.skip=true
+        continue-on-error: false
+
+      - name: Run tests
+        run: mvn test -Dgpg.skip=true
+        continue-on-error: false
+
+      - name: Send failure notification email
+        if: failure()
+        uses: dawidd6/action-send-mail@v3
+        with:
+          server_address: smtp.gmail.com
+          server_port: 587
+          username: ${{ secrets.MAIL_USERNAME }}
+          password: ${{ secrets.MAIL_PASSWORD }}
+          subject: "❌ Nightly Build Failed - Bastion Maven Plugin"
+          to: dil.neemuth@gmail.com
+          from: GitHub Actions <${{ secrets.MAIL_USERNAME }}>
+          body: |
+            The nightly build for bastion-maven-plugin-community has failed.
+
+            Repository: ${{ github.repository }}
+            Branch: ${{ github.ref }}
+            Commit: ${{ github.sha }}
+            Workflow: ${{ github.workflow }}
+            Run: ${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}
+
+            Please check the logs for more details:
+            ${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}
+
+            Time: ${{ github.event.repository.updated_at }}
+
+      - name: Upload test reports on failure
+        if: failure()
+        uses: actions/upload-artifact@v4
+        with:
+          name: test-reports
+          path: |
+            **/target/surefire-reports/
+            **/target/site/jacoco/
+          retention-days: 30
