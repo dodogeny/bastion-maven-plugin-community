@@ -620,7 +620,6 @@ Bastion Maven Plugin offers an Enterprise Edition with advanced features for tea
 - License compatibility matrix (150+ license pairs)
 - Risk scoring and compliance reporting (Text, HTML, JSON, CSV)
 - Support for 20+ common licenses (Apache, MIT, GPL, LGPL, BSD, etc.)
-- **[📖 Full Documentation](../bastion-maven-plugin-enterprise/LICENSE_COMPLIANCE_GUIDE.md)**
 
 **⚡ Enterprise Support**
 - Priority support (4-hour SLA)
