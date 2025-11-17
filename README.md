@@ -586,7 +586,7 @@ Bastion provides detailed performance metrics:
 
 ## Enterprise Edition
 
-Bastion Maven Plugin offers an Enterprise Edition with advanced features for teams and organizations.
+Bastion Maven Plugin offers an Enterprise Edition with advanced features for teams and organizations, including **License Compliance & Risk Analysis** to prevent legal issues and ensure regulatory compliance.
 
 ### Key Enterprise Features
 
@@ -614,6 +614,14 @@ Bastion Maven Plugin offers an Enterprise Edition with advanced features for tea
 - Vulnerability trend analysis
 - Predictive update analysis
 
+**⚖️ License Compliance & Risk Analysis**
+- Automatic license detection from dependencies
+- License policy enforcement (approve/block lists)
+- License compatibility matrix (150+ license pairs)
+- Risk scoring and compliance reporting (Text, HTML, JSON, CSV)
+- Support for 20+ common licenses (Apache, MIT, GPL, LGPL, BSD, etc.)
+- **[📖 Full Documentation](../bastion-maven-plugin-enterprise/LICENSE_COMPLIANCE_GUIDE.md)**
+
 **⚡ Enterprise Support**
 - Priority support (4-hour SLA)
 - Direct access to security experts
@@ -627,6 +635,7 @@ Bastion Maven Plugin offers an Enterprise Edition with advanced features for tea
 | Vulnerability Detection | ✅ Full | ✅ Full |
 | HTML/JSON Reports | ✅ Yes | ✅ Yes |
 | PDF/SARIF/SBOM Reports | ❌ No | ✅ Yes |
+| License Compliance Analysis | ❌ No | ✅ Yes |
 | Email/Slack Notifications | ❌ No | ✅ Yes |
 | Scan History | ✅ 10 per project | ✅ Unlimited |
 | Maximum Projects | ✅ 50 projects | ✅ Unlimited |
@@ -652,6 +661,7 @@ These messages are **non-intrusive** and designed to inform users about features
 - ✅ Unlimited projects and scan history
 - ✅ PostgreSQL/MySQL database support
 - ✅ PDF/SARIF/SBOM exports
+- ✅ License compliance & risk analysis
 - ✅ Email/Slack notifications
 - ✅ Priority support (4-hour SLA)
 
@@ -752,6 +762,9 @@ mvn clean verify
 
 # Or run directly
 mvn bastion-maven-enterprise-plugin:scan
+
+# Run license compliance check
+mvn bastion-maven-enterprise-plugin:license-check
 ```
 
 #### Step 5: Verify Enterprise Features
@@ -760,8 +773,47 @@ Check that enterprise features are working:
 
 1. **Database**: Verify scan results are persisted in your database
 2. **PDF Reports**: Check `target/bastion-reports/` for PDF exports
-3. **Email Notifications**: Verify emails are received for CRITICAL vulnerabilities
-4. **Slack Notifications**: Check your Slack channel for alerts
+3. **License Compliance**: Run `mvn bastion:license-check` and review reports in `target/bastion-reports/`
+4. **Email Notifications**: Verify emails are received for CRITICAL vulnerabilities
+5. **Slack Notifications**: Check your Slack channel for alerts
+
+#### Step 6: Configure License Compliance (Optional)
+
+Add license checking to your build lifecycle:
+
+```xml
+<plugin>
+    <groupId>io.github.dodogeny</groupId>
+    <artifactId>bastion-maven-enterprise-plugin</artifactId>
+    <version>1.1.0</version>
+    <executions>
+        <!-- Vulnerability Scanning -->
+        <execution>
+            <id>vulnerability-scan</id>
+            <goals>
+                <goal>scan</goal>
+            </goals>
+            <phase>verify</phase>
+        </execution>
+
+        <!-- License Compliance Check -->
+        <execution>
+            <id>license-check</id>
+            <goals>
+                <goal>license-check</goal>
+            </goals>
+            <phase>verify</phase>
+            <configuration>
+                <policyPreset>DEFAULT</policyPreset>
+                <failOnViolation>true</failOnViolation>
+                <reportFormat>TEXT,HTML,JSON</reportFormat>
+            </configuration>
+        </execution>
+    </executions>
+</plugin>
+```
+
+**📖 License Compliance Documentation**: [Full Guide](../bastion-maven-plugin-enterprise/LICENSE_COMPLIANCE_GUIDE.md)
 
 ### Enterprise Support
 
