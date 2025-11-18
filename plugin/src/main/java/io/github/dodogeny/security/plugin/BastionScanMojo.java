@@ -2120,4 +2120,155 @@ public class BastionScanMojo extends AbstractMojo {
             getLog().warn("Error during cleanup", e);
         }
     }
+
+    // ============================================================================
+    // Test Support - Package-private methods for testing without reflection
+    // ============================================================================
+
+    /**
+     * Builder for configuring BastionScanMojo in tests without using reflection.
+     * This provides a type-safe, refactoring-friendly way to set up test instances.
+     */
+    static class TestConfigBuilder {
+        private final BastionScanMojo mojo;
+
+        TestConfigBuilder(BastionScanMojo mojo) {
+            this.mojo = mojo;
+        }
+
+        TestConfigBuilder withProject(MavenProject project) {
+            mojo.project = project;
+            return this;
+        }
+
+        TestConfigBuilder withSession(MavenSession session) {
+            mojo.session = session;
+            return this;
+        }
+
+        TestConfigBuilder withSkip(boolean skip) {
+            mojo.skip = skip;
+            return this;
+        }
+
+        TestConfigBuilder withFailOnError(boolean failOnError) {
+            mojo.failOnError = failOnError;
+            return this;
+        }
+
+        TestConfigBuilder withOutputDirectory(File outputDirectory) {
+            mojo.outputDirectory = outputDirectory;
+            return this;
+        }
+
+        TestConfigBuilder withReportFormats(String reportFormats) {
+            mojo.reportFormats = reportFormats;
+            return this;
+        }
+
+        TestConfigBuilder withSeverityThreshold(String severityThreshold) {
+            mojo.severityThreshold = severityThreshold;
+            return this;
+        }
+
+        TestConfigBuilder withScannerTimeout(int scannerTimeout) {
+            mojo.scannerTimeout = scannerTimeout;
+            return this;
+        }
+
+        TestConfigBuilder withEnableMultiModule(boolean enableMultiModule) {
+            mojo.enableMultiModule = enableMultiModule;
+            return this;
+        }
+
+        TestConfigBuilder withCommunityStorageMode(String communityStorageMode) {
+            mojo.communityStorageMode = communityStorageMode;
+            return this;
+        }
+
+        TestConfigBuilder withUseJsonFileStorage(boolean useJsonFileStorage) {
+            mojo.useJsonFileStorage = useJsonFileStorage;
+            return this;
+        }
+
+        TestConfigBuilder withJsonFilePath(String jsonFilePath) {
+            mojo.jsonFilePath = jsonFilePath;
+            return this;
+        }
+
+        TestConfigBuilder withNvdApiKey(String nvdApiKey) {
+            mojo.nvdApiKey = nvdApiKey;
+            return this;
+        }
+
+        TestConfigBuilder withUseOwaspPlugin(boolean useOwaspPlugin) {
+            mojo.useOwaspPlugin = useOwaspPlugin;
+            return this;
+        }
+
+        TestConfigBuilder withOwaspVersion(String owaspVersion) {
+            mojo.owaspVersion = owaspVersion;
+            return this;
+        }
+
+        TestConfigBuilder withOwaspReportPath(String owaspReportPath) {
+            mojo.owaspReportPath = owaspReportPath;
+            return this;
+        }
+
+        TestConfigBuilder withDatabaseUrl(String databaseUrl) {
+            mojo.databaseUrl = databaseUrl;
+            return this;
+        }
+
+        TestConfigBuilder withDatabaseUsername(String databaseUsername) {
+            mojo.databaseUsername = databaseUsername;
+            return this;
+        }
+
+        TestConfigBuilder withDatabasePassword(String databasePassword) {
+            mojo.databasePassword = databasePassword;
+            return this;
+        }
+
+        BastionScanMojo build() {
+            return mojo;
+        }
+    }
+
+    /**
+     * Creates a test configuration builder for this mojo instance.
+     * Package-private to allow access from test classes in the same package.
+     */
+    TestConfigBuilder testConfig() {
+        return new TestConfigBuilder(this);
+    }
+
+    /**
+     * Gets the current severity threshold. Package-private for testing.
+     */
+    String getSeverityThreshold() {
+        return severityThreshold;
+    }
+
+    /**
+     * Gets the current community storage mode. Package-private for testing.
+     */
+    String getCommunityStorageMode() {
+        return communityStorageMode;
+    }
+
+    /**
+     * Checks if the mojo is configured to fail on error. Package-private for testing.
+     */
+    boolean isFailOnError() {
+        return failOnError;
+    }
+
+    /**
+     * Gets the output directory. Package-private for testing.
+     */
+    File getOutputDirectory() {
+        return outputDirectory;
+    }
 }

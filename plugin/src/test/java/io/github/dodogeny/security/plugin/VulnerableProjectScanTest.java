@@ -14,15 +14,14 @@ import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 
 import java.io.File;
-import java.lang.reflect.Field;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.time.LocalDateTime;
+import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 
 import static org.junit.jupiter.api.Assertions.*;
-import static org.mockito.ArgumentMatchers.*;
 import static org.mockito.Mockito.*;
 
 /**
@@ -57,132 +56,150 @@ class VulnerableProjectScanTest {
 
     private Path vulnerableProjectDir;
 
+    // ============================================================================
+    // Setup and Helper Methods
+    // ============================================================================
+
     @BeforeEach
     void setUp() throws Exception {
-        // Setup mock logging
+        setupMockLogging();
+        vulnerableProjectDir = createVulnerableProject();
+        scanMojo = createDefaultScanMojo();
+        setupMockProject();
+        setupMockSession();
+        reset(mockLog);
+    }
+
+    /**
+     * Creates a scan mojo with default test configuration using the builder pattern.
+     * This eliminates brittle reflection-based field setting.
+     */
+    private BastionScanMojo createDefaultScanMojo() {
+        BastionScanMojo mojo = new BastionScanMojo();
+        mojo.testConfig()
+            .withProject(mockProject)
+            .withSession(mockSession)
+            .withSkip(false)
+            .withFailOnError(true)
+            .withOutputDirectory(tempDir.resolve("reports").toFile())
+            .withReportFormats("HTML,JSON")
+            .withSeverityThreshold("MEDIUM")
+            .withEnableMultiModule(false)
+            .withCommunityStorageMode("IN_MEMORY")
+            .withUseJsonFileStorage(false)
+            .withJsonFilePath(tempDir.resolve("test.json").toString())
+            .withScannerTimeout(300000)
+            .withNvdApiKey("")
+            .build();
+        mojo.setLog(mockLog);
+        return mojo;
+    }
+
+    /**
+     * Configures the scan mojo for a specific test scenario.
+     * Reduces code duplication across tests.
+     */
+    private void configureForScan(String severityThreshold) {
+        scanMojo.testConfig()
+            .withSeverityThreshold(severityThreshold)
+            .withFailOnError(false)
+            .build();
+    }
+
+    /**
+     * Configures the scan mojo with custom report settings.
+     */
+    private void configureWithReports(String formats, File outputDir) {
+        scanMojo.testConfig()
+            .withReportFormats(formats)
+            .withOutputDirectory(outputDir)
+            .withFailOnError(false)
+            .build();
+    }
+
+    private void setupMockLogging() {
         lenient().when(mockLog.isInfoEnabled()).thenReturn(true);
         lenient().when(mockLog.isWarnEnabled()).thenReturn(true);
         lenient().when(mockLog.isErrorEnabled()).thenReturn(true);
         lenient().when(mockLog.isDebugEnabled()).thenReturn(true);
-
-        // Create vulnerable project structure
-        vulnerableProjectDir = createVulnerableProject();
-
-        // Setup Bastion scan mojo
-        scanMojo = new BastionScanMojo();
-        setupScanMojo();
-
-        // Setup mock project and session
-        setupMockProject();
-        setupMockSession();
-
-        // Reset mock interactions
-        reset(mockLog);
     }
+
+    private void setupMockProject() {
+        lenient().when(mockProject.getName()).thenReturn("Vulnerable Test Project");
+        lenient().when(mockProject.getGroupId()).thenReturn("com.example");
+        lenient().when(mockProject.getArtifactId()).thenReturn("vulnerable-test-project");
+        lenient().when(mockProject.getVersion()).thenReturn("1.0.0-SNAPSHOT");
+        lenient().when(mockProject.getBasedir()).thenReturn(vulnerableProjectDir.toFile());
+        lenient().when(mockProject.getArtifacts()).thenReturn(Collections.emptySet());
+
+        File buildDir = vulnerableProjectDir.resolve("target").toFile();
+        buildDir.mkdirs();
+        org.apache.maven.model.Build mockBuild = mock(org.apache.maven.model.Build.class);
+        lenient().when(mockProject.getBuild()).thenReturn(mockBuild);
+        lenient().when(mockBuild.getDirectory()).thenReturn(buildDir.getAbsolutePath());
+        lenient().when(mockBuild.getFinalName()).thenReturn("vulnerable-test-project-1.0.0-SNAPSHOT");
+    }
+
+    private void setupMockSession() {
+        lenient().when(mockSession.getTopLevelProject()).thenReturn(mockProject);
+        lenient().when(mockSession.getProjects()).thenReturn(Collections.singletonList(mockProject));
+    }
+
+    // ============================================================================
+    // Positive Test Cases
+    // ============================================================================
 
     @Test
     @DisplayName("Should detect Log4Shell vulnerability (CVE-2021-44228)")
     void testDetectsLog4ShellVulnerability() throws Exception {
-        // Configure scan for HIGH severity to catch Log4Shell
-        setPrivateField("severityThreshold", "HIGH");
-        setPrivateField("failOnError", false); // Don't fail build for this test
+        configureForScan("HIGH");
 
-        // Execute scan
         ScanResult result = executeScanAndGetResult();
 
-        // Verify Log4Shell detection
         assertNotNull(result, "Scan result should not be null");
         assertTrue(result.getTotalVulnerabilities() > 0, "Should detect vulnerabilities in log4j-core 2.14.1");
 
-        // Look for Log4j related vulnerabilities
         List<Vulnerability> vulnerabilities = result.getVulnerabilities();
         boolean foundLog4jVuln = vulnerabilities.stream()
-            .anyMatch(v -> v.getAffectedComponent() != null && v.getAffectedComponent().toLowerCase().contains("log4j") ||
-                          v.getCveId().equals("CVE-2021-44228") ||
-                          v.getDescription().toLowerCase().contains("log4j"));
+            .anyMatch(v -> isLog4jVulnerability(v));
 
         assertTrue(foundLog4jVuln, "Should detect Log4j vulnerability (CVE-2021-44228)");
-
-        // Verify scan completed with expected components
         assertTrue(result.getTotalDependencies() > 0, "Should scan multiple dependencies");
 
-        // Log results for debugging
-        System.out.println("=== VULNERABLE PROJECT SCAN RESULTS ===");
-        System.out.println("Total Dependencies Scanned: " + result.getTotalDependencies());
-        System.out.println("Total Vulnerabilities Found: " + result.getTotalVulnerabilities());
-        System.out.println("Scan Duration: " + result.getScanDurationMs() + "ms");
-
-        if (!vulnerabilities.isEmpty()) {
-            System.out.println("\n=== TOP 5 VULNERABILITIES DETECTED ===");
-            vulnerabilities.stream()
-                .limit(5)
-                .forEach(v -> System.out.println(
-                    String.format("- %s in %s (Severity: %s)",
-                        v.getCveId(), v.getAffectedComponent(), v.getSeverity())
-                ));
-        }
+        logScanResults(result);
     }
 
     @Test
     @DisplayName("Should detect multiple high-severity vulnerabilities")
     void testDetectsMultipleHighSeverityVulnerabilities() throws Exception {
-        setPrivateField("severityThreshold", "HIGH");
-        setPrivateField("failOnError", false);
+        configureForScan("HIGH");
 
         ScanResult result = executeScanAndGetResult();
 
         assertNotNull(result);
         assertTrue(result.getTotalVulnerabilities() > 0, "Should detect multiple vulnerabilities");
 
-        // Count high/critical severity vulnerabilities
         List<Vulnerability> highSeverityVulns = result.getVulnerabilities().stream()
             .filter(v -> "HIGH".equals(v.getSeverity()) || "CRITICAL".equals(v.getSeverity()))
             .collect(java.util.stream.Collectors.toList());
 
         assertTrue(highSeverityVulns.size() > 0, "Should find at least one high/critical vulnerability");
 
-        // Verify expected vulnerable components are detected
-        List<String> expectedVulnerableComponents = java.util.Arrays.asList(
-            "log4j-core", "jackson-core", "jackson-databind", "spring-core",
-            "commons-collections", "netty-all", "commons-io", "gson",
-            "hibernate-core", "tomcat-embed-core", "snakeyaml"
-        );
-
-        List<String> detectedComponents = result.getVulnerabilities().stream()
-            .map(v -> v.getAffectedComponent() != null ? v.getAffectedComponent().toLowerCase() : "")
-            .distinct()
-            .collect(java.util.stream.Collectors.toList());
-
-        // Should detect at least some of the vulnerable components
-        boolean foundExpectedComponents = expectedVulnerableComponents.stream()
-            .anyMatch(expected -> detectedComponents.stream()
-                .anyMatch(detected -> detected.contains(expected)));
-
-        assertTrue(foundExpectedComponents,
-            "Should detect vulnerabilities in expected components. " +
-            "Expected: " + expectedVulnerableComponents + ", " +
-            "Detected: " + detectedComponents);
+        verifyExpectedComponentsDetected(result);
     }
 
     @Test
     @DisplayName("Should generate HTML and JSON reports for vulnerable project")
     void testGeneratesReportsForVulnerableProject() throws Exception {
-        setPrivateField("reportFormats", "HTML,JSON");
-        setPrivateField("severityThreshold", "MEDIUM");
-        setPrivateField("failOnError", false);
-
         File reportsDir = tempDir.resolve("vulnerable-reports").toFile();
-        setPrivateField("outputDirectory", reportsDir);
+        configureWithReports("HTML,JSON", reportsDir);
+        scanMojo.testConfig().withSeverityThreshold("MEDIUM").build();
 
         ScanResult result = executeScanAndGetResult();
 
         assertNotNull(result);
-
-        // Verify reports directory was created
         assertTrue(reportsDir.exists(), "Reports directory should be created");
 
-        // Check for expected report files (implementation may vary)
-        // This is a basic structure test - actual file generation depends on implementation
         if (reportsDir.listFiles() != null && reportsDir.listFiles().length > 0) {
             System.out.println("Reports generated in: " + reportsDir.getAbsolutePath());
             for (File file : reportsDir.listFiles()) {
@@ -195,22 +212,25 @@ class VulnerableProjectScanTest {
     @DisplayName("Should handle different storage modes correctly")
     void testDifferentStorageModes() throws Exception {
         // Test IN_MEMORY storage mode
-        setPrivateField("communityStorageMode", "IN_MEMORY");
-        setPrivateField("useJsonFileStorage", false);
-        setPrivateField("failOnError", false);
+        scanMojo.testConfig()
+            .withCommunityStorageMode("IN_MEMORY")
+            .withUseJsonFileStorage(false)
+            .withFailOnError(false)
+            .build();
 
         ScanResult memoryResult = executeScanAndGetResult();
         assertNotNull(memoryResult, "IN_MEMORY storage should work");
 
         // Test JSON_FILE storage mode
-        setPrivateField("communityStorageMode", "JSON_FILE");
-        setPrivateField("useJsonFileStorage", true);
-        setPrivateField("jsonFilePath", tempDir.resolve("scan-results.json").toString());
+        scanMojo.testConfig()
+            .withCommunityStorageMode("JSON_FILE")
+            .withUseJsonFileStorage(true)
+            .withJsonFilePath(tempDir.resolve("scan-results.json").toString())
+            .build();
 
         ScanResult jsonResult = executeScanAndGetResult();
         assertNotNull(jsonResult, "JSON_FILE storage should work");
 
-        // Both should detect vulnerabilities
         assertTrue(memoryResult.getTotalVulnerabilities() >= 0, "Memory storage should detect vulnerabilities");
         assertTrue(jsonResult.getTotalVulnerabilities() >= 0, "JSON storage should detect vulnerabilities");
     }
@@ -218,31 +238,28 @@ class VulnerableProjectScanTest {
     @Test
     @DisplayName("Should respect severity threshold filtering")
     void testSeverityThresholdFiltering() throws Exception {
-        setPrivateField("failOnError", false);
-
-        // Test CRITICAL threshold - should find fewer vulnerabilities
-        setPrivateField("severityThreshold", "CRITICAL");
+        // Test CRITICAL threshold
+        configureForScan("CRITICAL");
         ScanResult criticalResult = executeScanAndGetResult();
 
-        // Test MEDIUM threshold - should find more vulnerabilities
-        setPrivateField("severityThreshold", "MEDIUM");
+        // Test MEDIUM threshold
+        configureForScan("MEDIUM");
         ScanResult mediumResult = executeScanAndGetResult();
 
-        // Test LOW threshold - should find the most vulnerabilities
-        setPrivateField("severityThreshold", "LOW");
+        // Test LOW threshold
+        configureForScan("LOW");
         ScanResult lowResult = executeScanAndGetResult();
 
         assertNotNull(criticalResult);
         assertNotNull(mediumResult);
         assertNotNull(lowResult);
 
-        // Generally, lower thresholds should include more vulnerabilities
-        // (though this depends on the actual vulnerabilities found)
-        assertTrue(lowResult.getTotalVulnerabilities() >= mediumResult.getTotalVulnerabilities(),
-            "LOW threshold should find at least as many vulnerabilities as MEDIUM");
-        assertTrue(mediumResult.getTotalVulnerabilities() >= criticalResult.getTotalVulnerabilities(),
-            "MEDIUM threshold should find at least as many vulnerabilities as CRITICAL");
+        // Verify that the configuration was applied correctly
+        assertEquals("LOW", scanMojo.getSeverityThreshold(), "Severity threshold should be set to LOW");
 
+        // Note: In a real integration test, we would verify that lower thresholds
+        // return more vulnerabilities. With mock results, we verify the configuration
+        // is correctly applied.
         System.out.println("Vulnerability counts by severity threshold:");
         System.out.println("  CRITICAL: " + criticalResult.getTotalVulnerabilities());
         System.out.println("  MEDIUM: " + mediumResult.getTotalVulnerabilities());
@@ -252,8 +269,7 @@ class VulnerableProjectScanTest {
     @Test
     @DisplayName("Should provide detailed performance metrics")
     void testPerformanceMetrics() throws Exception {
-        setPrivateField("severityThreshold", "MEDIUM");
-        setPrivateField("failOnError", false);
+        configureForScan("MEDIUM");
 
         long startTime = System.currentTimeMillis();
         ScanResult result = executeScanAndGetResult();
@@ -264,28 +280,24 @@ class VulnerableProjectScanTest {
         assertTrue(result.getScanDurationMs() > 0, "Scan should record duration");
         assertTrue(result.getScanDurationMs() <= totalTime + 1000, "Scan duration should be reasonable");
 
-        // Check performance metrics if available
         if (result.getPerformanceMetrics() != null) {
             ScanResult.PerformanceMetrics metrics = result.getPerformanceMetrics();
             assertTrue(metrics.getInitializationTimeMs() >= 0, "Initialization time should be recorded");
             assertTrue(metrics.getVulnerabilityCheckTimeMs() >= 0, "Vulnerability check time should be recorded");
             assertTrue(metrics.getReportGenerationTimeMs() >= 0, "Report generation time should be recorded");
 
-            System.out.println("=== PERFORMANCE METRICS ===");
-            System.out.println("Initialization: " + metrics.getInitializationTimeMs() + "ms");
-            System.out.println("Vulnerability Check: " + metrics.getVulnerabilityCheckTimeMs() + "ms");
-            System.out.println("Report Generation: " + metrics.getReportGenerationTimeMs() + "ms");
-            System.out.println("Total Scan Duration: " + result.getScanDurationMs() + "ms");
+            logPerformanceMetrics(metrics, result.getScanDurationMs());
         }
     }
 
     @Test
     @DisplayName("Should handle timeout configuration appropriately")
     void testTimeoutConfiguration() throws Exception {
-        // Set a reasonable timeout for vulnerable project scanning
-        setPrivateField("scannerTimeout", 300000); // 5 minutes
-        setPrivateField("severityThreshold", "MEDIUM");
-        setPrivateField("failOnError", false);
+        scanMojo.testConfig()
+            .withScannerTimeout(300000) // 5 minutes
+            .withSeverityThreshold("MEDIUM")
+            .withFailOnError(false)
+            .build();
 
         long startTime = System.currentTimeMillis();
 
@@ -298,35 +310,130 @@ class VulnerableProjectScanTest {
         }, "Scan should complete within configured timeout");
     }
 
-    // Helper Methods
+    // ============================================================================
+    // Negative Test Cases
+    // ============================================================================
+
+    @Test
+    @DisplayName("Should throw exception for invalid storage mode")
+    void testInvalidStorageModeThrowsException() {
+        scanMojo.testConfig()
+            .withCommunityStorageMode("INVALID_MODE")
+            .withFailOnError(true)
+            .build();
+
+        assertThrows(MojoExecutionException.class, () -> {
+            scanMojo.execute();
+        }, "Should throw exception for invalid storage mode");
+    }
+
+    @Test
+    @DisplayName("Should throw exception when JSON storage enabled without path")
+    void testJsonStorageWithoutPathThrowsException() {
+        scanMojo.testConfig()
+            .withUseJsonFileStorage(true)
+            .withJsonFilePath("")
+            .withFailOnError(true)
+            .build();
+
+        assertThrows(MojoExecutionException.class, () -> {
+            scanMojo.execute();
+        }, "Should throw exception when JSON storage is enabled without a path");
+    }
+
+    @Test
+    @DisplayName("Should skip scan when skip flag is true")
+    void testSkipScanWhenFlagIsTrue() throws Exception {
+        scanMojo.testConfig()
+            .withSkip(true)
+            .build();
+
+        // Should not throw and should log skip message
+        assertDoesNotThrow(() -> scanMojo.execute());
+        verify(mockLog).info("Bastion scan skipped by configuration");
+    }
+
+    @Test
+    @DisplayName("Should handle missing project gracefully")
+    void testHandlesMissingProjectGracefully() {
+        scanMojo.testConfig()
+            .withProject(null)
+            .withFailOnError(true)
+            .build();
+
+        // Should throw an appropriate exception
+        assertThrows(Exception.class, () -> {
+            scanMojo.execute();
+        }, "Should throw exception when project is null");
+    }
+
+    @Test
+    @DisplayName("Should not fail build when failOnError is false")
+    void testDoesNotFailBuildWhenFailOnErrorIsFalse() {
+        scanMojo.testConfig()
+            .withCommunityStorageMode("INVALID_MODE")
+            .withFailOnError(false)
+            .build();
+
+        // Should not throw even with invalid configuration
+        assertDoesNotThrow(() -> {
+            scanMojo.execute();
+        }, "Should not throw when failOnError is false");
+    }
+
+    @Test
+    @DisplayName("Should handle empty severity threshold")
+    void testHandlesEmptySeverityThreshold() {
+        scanMojo.testConfig()
+            .withSeverityThreshold("")
+            .withFailOnError(false)
+            .build();
+
+        // Should handle gracefully
+        assertDoesNotThrow(() -> {
+            executeScanAndGetResult();
+        }, "Should handle empty severity threshold gracefully");
+    }
+
+    @Test
+    @DisplayName("Should validate configuration before scan")
+    void testValidatesConfigurationBeforeScan() {
+        // Verify that getters return expected values
+        scanMojo.testConfig()
+            .withSeverityThreshold("HIGH")
+            .withCommunityStorageMode("JSON_FILE")
+            .withFailOnError(true)
+            .build();
+
+        assertEquals("HIGH", scanMojo.getSeverityThreshold());
+        assertEquals("JSON_FILE", scanMojo.getCommunityStorageMode());
+        assertTrue(scanMojo.isFailOnError());
+    }
+
+    // ============================================================================
+    // Helper Methods for Test Execution
+    // ============================================================================
 
     private ScanResult executeScanAndGetResult() throws Exception {
         try {
             scanMojo.execute();
-
-            // In a real implementation, we would extract the ScanResult from the mojo
-            // For this test, we create a mock result with expected structure
+            // Return mock result representing expected scan output
             return createMockScanResult();
-
         } catch (MojoExecutionException | MojoFailureException e) {
-            // If the scan fails, we can still create a basic result for testing
             System.out.println("Scan execution failed (expected in test environment): " + e.getMessage());
             return createMockScanResult();
         }
     }
 
     private ScanResult createMockScanResult() {
-        // Create a mock scan result that represents what we expect from scanning the vulnerable project
         ScanResult result = new ScanResult();
         result.setProjectName("vulnerable-test-project");
         result.setStartTime(LocalDateTime.now());
-        result.setScanDurationMs(100); // Fixed reasonable mock duration
-        result.setTotalDependencies(12); // Number of vulnerable dependencies in our test project
-        result.setTotalVulnerabilities(25); // Expected high number of vulnerabilities
+        result.setScanDurationMs(100);
+        result.setTotalDependencies(12);
+        result.setTotalVulnerabilities(25);
 
-        // Add some example vulnerabilities that we expect to find
-        // Create vulnerabilities list and add to result
-        java.util.List<Vulnerability> vulnerabilities = new java.util.ArrayList<>();
+        List<Vulnerability> vulnerabilities = new ArrayList<>();
         vulnerabilities.add(createMockVulnerability("CVE-2021-44228", "log4j-core", "CRITICAL",
             "Apache Log4j2 JNDI features do not protect against attacker controlled LDAP and other JNDI related endpoints"));
         vulnerabilities.add(createMockVulnerability("CVE-2020-36518", "jackson-core", "HIGH",
@@ -350,52 +457,63 @@ class VulnerableProjectScanTest {
         return vuln;
     }
 
-    private void setupScanMojo() throws Exception {
-        setPrivateField("project", mockProject);
-        setPrivateField("session", mockSession);
-        setPrivateField("skip", false);
-        setPrivateField("failOnError", true);
-        setPrivateField("outputDirectory", tempDir.resolve("reports").toFile());
-        setPrivateField("reportFormats", "HTML,JSON");
-        setPrivateField("severityThreshold", "MEDIUM");
-        setPrivateField("enableMultiModule", false);
-        setPrivateField("communityStorageMode", "IN_MEMORY");
-        setPrivateField("useJsonFileStorage", false);
-        setPrivateField("jsonFilePath", tempDir.resolve("test.json").toString());
-        setPrivateField("scannerTimeout", 300000); // 5 minutes for vulnerable project
-        setPrivateField("autoUpdate", false); // Disable auto-update for test
-        setPrivateField("nvdApiKey", ""); // Empty for offline mode
-
-        scanMojo.setLog(mockLog);
+    private boolean isLog4jVulnerability(Vulnerability v) {
+        return (v.getAffectedComponent() != null && v.getAffectedComponent().toLowerCase().contains("log4j")) ||
+               "CVE-2021-44228".equals(v.getCveId()) ||
+               (v.getDescription() != null && v.getDescription().toLowerCase().contains("log4j"));
     }
 
-    private void setupMockProject() {
-        lenient().when(mockProject.getName()).thenReturn("Vulnerable Test Project");
-        lenient().when(mockProject.getGroupId()).thenReturn("com.example");
-        lenient().when(mockProject.getArtifactId()).thenReturn("vulnerable-test-project");
-        lenient().when(mockProject.getVersion()).thenReturn("1.0.0-SNAPSHOT");
-        lenient().when(mockProject.getBasedir()).thenReturn(vulnerableProjectDir.toFile());
-        lenient().when(mockProject.getArtifacts()).thenReturn(Collections.emptySet());
+    private void verifyExpectedComponentsDetected(ScanResult result) {
+        List<String> expectedVulnerableComponents = java.util.Arrays.asList(
+            "log4j-core", "jackson-core", "jackson-databind", "spring-core",
+            "commons-collections", "netty-all", "commons-io", "gson",
+            "hibernate-core", "tomcat-embed-core", "snakeyaml"
+        );
 
-        // Setup build directory
-        File buildDir = vulnerableProjectDir.resolve("target").toFile();
-        buildDir.mkdirs();
-        org.apache.maven.model.Build mockBuild = mock(org.apache.maven.model.Build.class);
-        lenient().when(mockProject.getBuild()).thenReturn(mockBuild);
-        lenient().when(mockBuild.getDirectory()).thenReturn(buildDir.getAbsolutePath());
-        lenient().when(mockBuild.getFinalName()).thenReturn("vulnerable-test-project-1.0.0-SNAPSHOT");
+        List<String> detectedComponents = result.getVulnerabilities().stream()
+            .map(v -> v.getAffectedComponent() != null ? v.getAffectedComponent().toLowerCase() : "")
+            .distinct()
+            .collect(java.util.stream.Collectors.toList());
+
+        boolean foundExpectedComponents = expectedVulnerableComponents.stream()
+            .anyMatch(expected -> detectedComponents.stream()
+                .anyMatch(detected -> detected.contains(expected)));
+
+        assertTrue(foundExpectedComponents,
+            "Should detect vulnerabilities in expected components. " +
+            "Expected: " + expectedVulnerableComponents + ", " +
+            "Detected: " + detectedComponents);
     }
 
-    private void setupMockSession() {
-        lenient().when(mockSession.getTopLevelProject()).thenReturn(mockProject);
-        lenient().when(mockSession.getProjects()).thenReturn(Collections.singletonList(mockProject));
+    private void logScanResults(ScanResult result) {
+        System.out.println("=== VULNERABLE PROJECT SCAN RESULTS ===");
+        System.out.println("Total Dependencies Scanned: " + result.getTotalDependencies());
+        System.out.println("Total Vulnerabilities Found: " + result.getTotalVulnerabilities());
+        System.out.println("Scan Duration: " + result.getScanDurationMs() + "ms");
+
+        List<Vulnerability> vulnerabilities = result.getVulnerabilities();
+        if (!vulnerabilities.isEmpty()) {
+            System.out.println("\n=== TOP 5 VULNERABILITIES DETECTED ===");
+            vulnerabilities.stream()
+                .limit(5)
+                .forEach(v -> System.out.println(
+                    String.format("- %s in %s (Severity: %s)",
+                        v.getCveId(), v.getAffectedComponent(), v.getSeverity())
+                ));
+        }
     }
 
-    private void setPrivateField(String fieldName, Object value) throws Exception {
-        Field field = BastionScanMojo.class.getDeclaredField(fieldName);
-        field.setAccessible(true);
-        field.set(scanMojo, value);
+    private void logPerformanceMetrics(ScanResult.PerformanceMetrics metrics, long totalDuration) {
+        System.out.println("=== PERFORMANCE METRICS ===");
+        System.out.println("Initialization: " + metrics.getInitializationTimeMs() + "ms");
+        System.out.println("Vulnerability Check: " + metrics.getVulnerabilityCheckTimeMs() + "ms");
+        System.out.println("Report Generation: " + metrics.getReportGenerationTimeMs() + "ms");
+        System.out.println("Total Scan Duration: " + totalDuration + "ms");
     }
+
+    // ============================================================================
+    // Test Project Creation
+    // ============================================================================
 
     /**
      * Creates a complete vulnerable Maven project with the exact POM structure provided.
@@ -405,13 +523,21 @@ class VulnerableProjectScanTest {
         Path projectDir = tempDir.resolve("vulnerable-test-project");
         Files.createDirectories(projectDir);
 
-        // Create Maven project structure
         Files.createDirectories(projectDir.resolve("src/main/java"));
         Files.createDirectories(projectDir.resolve("src/test/java"));
         Files.createDirectories(projectDir.resolve("target"));
 
-        // Create the complete vulnerable POM file
-        String pomContent = "<?xml version=\"1.0\" encoding=\"UTF-8\"?>\n" +
+        Files.write(projectDir.resolve("pom.xml"), createVulnerablePomContent().getBytes());
+
+        Files.createDirectories(projectDir.resolve("src/main/java/com/example/vulnerable"));
+        Files.write(projectDir.resolve("src/main/java/com/example/vulnerable/VulnerableApp.java"),
+                   createVulnerableAppContent().getBytes());
+
+        return projectDir;
+    }
+
+    private String createVulnerablePomContent() {
+        return "<?xml version=\"1.0\" encoding=\"UTF-8\"?>\n" +
                 "<project xmlns=\"http://maven.apache.org/POM/4.0.0\"\n" +
                 "         xmlns:xsi=\"http://www.w3.org/2001/XMLSchema-instance\"\n" +
                 "         xsi:schemaLocation=\"http://maven.apache.org/POM/4.0.0\n" +
@@ -541,11 +667,10 @@ class VulnerableProjectScanTest {
                 "        </plugins>\n" +
                 "    </build>\n" +
                 "</project>";
+    }
 
-        Files.write(projectDir.resolve("pom.xml"), pomContent.getBytes());
-
-        // Create a simple Java class to make it a valid project
-        String javaClass = "package com.example.vulnerable;\n" +
+    private String createVulnerableAppContent() {
+        return "package com.example.vulnerable;\n" +
                 "\n" +
                 "import org.apache.logging.log4j.LogManager;\n" +
                 "import org.apache.logging.log4j.Logger;\n" +
@@ -571,11 +696,5 @@ class VulnerableProjectScanTest {
                 "        logger.info(\"Application initialized with vulnerable dependencies\");\n" +
                 "    }\n" +
                 "}";
-
-        Files.createDirectories(projectDir.resolve("src/main/java/com/example/vulnerable"));
-        Files.write(projectDir.resolve("src/main/java/com/example/vulnerable/VulnerableApp.java"),
-                   javaClass.getBytes());
-
-        return projectDir;
     }
 }
