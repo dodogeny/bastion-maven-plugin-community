@@ -2,42 +2,37 @@
 
 ## Nightly Build Configuration
 
-The nightly build workflow (`nightly-build.yml`) requires email notification credentials to be configured as GitHub Secrets.
+The nightly build workflow (`nightly-build.yml`) uses GitHub's built-in notification system - **no secrets required!**
 
-### Required GitHub Secrets
+### How Notifications Work
 
-To enable email notifications, you need to add the following secrets to your GitHub repository:
+When the nightly build fails, the workflow automatically:
+1. **Creates a GitHub Issue** with build failure details
+2. **GitHub sends email notifications** to:
+   - Repository watchers
+   - Users mentioned in the issue (@dodogeny)
+   - Anyone subscribed to repository notifications
 
-1. **MAIL_USERNAME**: Your email address (e.g., your Gmail address)
-2. **MAIL_PASSWORD**: An app-specific password for your email account
+### Enable Email Notifications
 
-### Setting up Gmail for Notifications
+To receive email notifications when builds fail:
 
-If using Gmail, you'll need to create an **App Password**:
+1. **Watch the Repository**:
+   - Go to your repository on GitHub
+   - Click the **Watch** button (top right)
+   - Select **All Activity** or **Custom** → Check **Issues**
 
-1. Go to your Google Account settings: https://myaccount.google.com/
-2. Navigate to **Security** → **2-Step Verification** (enable if not already enabled)
-3. Scroll down to **App passwords**
-4. Create a new app password for "Mail"
-5. Copy the generated 16-character password
+2. **Configure Notification Settings**:
+   - Go to https://github.com/settings/notifications
+   - Under "Email notification preferences":
+     - Ensure "Issues" is enabled
+     - Set your preferred email address
+   - Under "Subscriptions":
+     - Choose "Email" for participating or watching
 
-### Adding Secrets to GitHub
-
-1. Go to your GitHub repository
-2. Navigate to **Settings** → **Secrets and variables** → **Actions**
-3. Click **New repository secret**
-4. Add the following secrets:
-   - Name: `MAIL_USERNAME`, Value: your email address
-   - Name: `MAIL_PASSWORD`, Value: your app-specific password
-
-### Alternative Email Providers
-
-If not using Gmail, modify the `server_address` and `server_port` in the workflow file:
-
-- **Gmail**: `smtp.gmail.com:587`
-- **Outlook/Hotmail**: `smtp-mail.outlook.com:587`
-- **Yahoo**: `smtp.mail.yahoo.com:587`
-- **Custom SMTP**: Update with your provider's SMTP settings
+3. **Verify Email Address**:
+   - Ensure `dil.neemuth@gmail.com` is verified in your GitHub account
+   - Go to https://github.com/settings/emails to check
 
 ### Testing the Workflow
 
@@ -56,5 +51,18 @@ The workflow runs automatically every night at **00:00 UTC (midnight)**.
 
 1. **Compilation**: `mvn clean compile` - Compiles all modules
 2. **Tests**: `mvn test` - Runs all unit tests across all modules
-3. **Email on Failure**: Sends notification to `dil.neemuth@gmail.com` if any step fails
+3. **Issue Creation on Failure**: Creates a GitHub issue with failure details and mentions @dodogeny
 4. **Test Reports**: Uploads test reports as artifacts for 30 days if tests fail
+
+### Issue Labels
+
+Failed builds create issues with these labels:
+- `bug` - Marks the issue as a bug
+- `nightly-build-failure` - Identifies it as a nightly build failure
+- `automated` - Shows it was created automatically
+
+### Cleaning Up
+
+After fixing a build failure:
+1. Verify the next nightly build succeeds
+2. Close the issue manually or reference it in your commit message with "Fixes #X"

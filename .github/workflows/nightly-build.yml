@@ -29,30 +29,42 @@ jobs:
         run: mvn test -Dgpg.skip=true
         continue-on-error: false
 
-      - name: Send failure notification email
+      - name: Create issue on failure
         if: failure()
-        uses: dawidd6/action-send-mail@v3
+        uses: actions/github-script@v7
         with:
-          server_address: smtp.gmail.com
-          server_port: 587
-          username: ${{ secrets.MAIL_USERNAME }}
-          password: ${{ secrets.MAIL_PASSWORD }}
-          subject: "❌ Nightly Build Failed - Bastion Maven Plugin"
-          to: dil.neemuth@gmail.com
-          from: GitHub Actions <${{ secrets.MAIL_USERNAME }}>
-          body: |
-            The nightly build for bastion-maven-plugin-community has failed.
+          script: |
+            const issue = await github.rest.issues.create({
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              title: '🔴 Nightly Build Failed - ' + new Date().toISOString().split('T')[0],
+              body: `## Nightly Build Failure
 
-            Repository: ${{ github.repository }}
-            Branch: ${{ github.ref }}
-            Commit: ${{ github.sha }}
-            Workflow: ${{ github.workflow }}
-            Run: ${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}
+              The nightly build has failed. Please investigate and fix the issues.
 
-            Please check the logs for more details:
-            ${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}
+              **Build Details:**
+              - **Repository:** ${context.repo.owner}/${context.repo.repo}
+              - **Branch:** ${context.ref}
+              - **Commit:** ${context.sha}
+              - **Workflow:** ${context.workflow}
+              - **Run ID:** ${context.runId}
+              - **Triggered:** ${new Date().toISOString()}
 
-            Time: ${{ github.event.repository.updated_at }}
+              **Links:**
+              - [View Workflow Run](${context.serverUrl}/${context.repo.owner}/${context.repo.repo}/actions/runs/${context.runId})
+              - [View Commit](${context.serverUrl}/${context.repo.owner}/${context.repo.repo}/commit/${context.sha})
+
+              **Next Steps:**
+              1. Check the [workflow logs](${context.serverUrl}/${context.repo.owner}/${context.repo.repo}/actions/runs/${context.runId})
+              2. Review the test reports in the artifacts
+              3. Fix the failing tests or compilation errors
+              4. Close this issue once resolved
+
+              cc: @dodogeny`,
+              labels: ['bug', 'nightly-build-failure', 'automated']
+            });
+
+            console.log('Created issue:', issue.data.html_url);
 
       - name: Upload test reports on failure
         if: failure()
