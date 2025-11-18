@@ -363,7 +363,6 @@ class VulnerableProjectScanTest {
         setPrivateField("useJsonFileStorage", false);
         setPrivateField("jsonFilePath", tempDir.resolve("test.json").toString());
         setPrivateField("scannerTimeout", 300000); // 5 minutes for vulnerable project
-        setPrivateField("autoUpdate", false); // Disable auto-update for test
         setPrivateField("nvdApiKey", ""); // Empty for offline mode
 
         scanMojo.setLog(mockLog);
