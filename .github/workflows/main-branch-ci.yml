@@ -1,0 +1,82 @@
+name: Main Branch CI
+
+on:
+  push:
+    branches:
+      - main
+  workflow_dispatch:  # Allow manual triggering
+
+jobs:
+  build-and-test:
+    runs-on: ubuntu-latest
+    permissions:
+      issues: write
+      contents: read
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Set up JDK 21
+        uses: actions/setup-java@v4
+        with:
+          java-version: '21'
+          distribution: 'temurin'
+          cache: 'maven'
+
+      - name: Compile project
+        run: mvn clean compile -Dgpg.skip=true
+        continue-on-error: false
+
+      - name: Run tests
+        run: mvn test -Dgpg.skip=true
+        continue-on-error: false
+
+      - name: Create issue on failure
+        if: failure()
+        uses: actions/github-script@v7
+        with:
+          script: |
+            const issue = await github.rest.issues.create({
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              title: '🔴 Main Branch Build Failed - ' + new Date().toISOString().split('T')[0],
+              body: `## Main Branch Build Failure
+
+            The build on the main branch has failed. Please investigate and fix the issues immediately.
+
+            **Build Details:**
+            - **Repository:** ${context.repo.owner}/${context.repo.repo}
+            - **Branch:** main
+            - **Commit:** ${context.sha}
+            - **Commit Message:** ${context.payload.head_commit?.message || 'N/A'}
+            - **Author:** ${context.payload.head_commit?.author?.name || 'N/A'} (${context.payload.head_commit?.author?.email || 'N/A'})
+            - **Workflow:** ${context.workflow}
+            - **Run ID:** ${context.runId}
+            - **Triggered:** ${new Date().toISOString()}
+
+            **Links:**
+            - [View Workflow Run](${context.serverUrl}/${context.repo.owner}/${context.repo.repo}/actions/runs/${context.runId})
+            - [View Commit](${context.serverUrl}/${context.repo.owner}/${context.repo.repo}/commit/${context.sha})
+
+            **Next Steps:**
+            1. Check the [workflow logs](${context.serverUrl}/${context.repo.owner}/${context.repo.repo}/actions/runs/${context.runId})
+            2. Review the test reports in the artifacts
+            3. Fix the failing tests or compilation errors
+            4. Close this issue once resolved
+
+            cc: @dodogeny`,
+              labels: ['bug', 'ci-failure', 'main-branch', 'automated']
+            });
+
+            console.log('Created issue:', issue.data.html_url);
+
+      - name: Upload test reports on failure
+        if: failure()
+        uses: actions/upload-artifact@v4
+        with:
+          name: test-reports
+          path: |
+            **/target/surefire-reports/
+            **/target/site/jacoco/
+          retention-days: 30
