@@ -46,6 +46,7 @@ public class OwaspDependencyCheckScanner implements VulnerabilityScanner {
     private final AtomicLong lastSuccessfulScanMs = new AtomicLong(0);
     private String nvdApiKey;
     private NvdCacheManager cacheManager;
+    private NvdDatabaseInitializer databaseInitializer;
     
     public OwaspDependencyCheckScanner() {
         this.configuration = new ScannerConfiguration();
@@ -64,17 +65,85 @@ public class OwaspDependencyCheckScanner implements VulnerabilityScanner {
         long cacheValidityHours = configuration.getCacheValidityHours();
         int connectionTimeoutMs = 10000; // 10 seconds for cache checks
         double updateThresholdPercent = configuration.getUpdateThresholdPercent();
-        
+
         // Explicitly load H2 database driver to resolve classpath issues in Maven plugin environment
         ensureH2DriverLoaded();
-        
+
         this.cacheManager = new NvdCacheManager(
-            configuration.getCacheDirectory(), 
-            cacheValidityHours, 
+            configuration.getCacheDirectory(),
+            cacheValidityHours,
             connectionTimeoutMs,
             updateThresholdPercent,
             configuration
         );
+
+        // Initialize database initializer for first-time setup and integrity checks
+        String effectiveApiKey = getEffectiveApiKey();
+        this.databaseInitializer = new NvdDatabaseInitializer(
+            configuration.getCacheDirectory(),
+            effectiveApiKey
+        );
+    }
+
+    /**
+     * Ensures complete NVD database for first-time users.
+     * This method checks if initialization is needed and performs it if required.
+     */
+    private void ensureCompleteDatabaseForFirstTimeUser() {
+        if (databaseInitializer == null) {
+            return;
+        }
+
+        try {
+            if (databaseInitializer.isFirstTimeSetup()) {
+                logger.info("");
+                logger.info("=========================================================");
+                logger.info("  FIRST-TIME SETUP DETECTED");
+                logger.info("=========================================================");
+                logger.info("  Welcome to Bastion Security Scanner!");
+                logger.info("  ");
+                logger.info("  We need to download the NVD vulnerability database.");
+                logger.info("  This is a one-time setup that takes a few minutes.");
+                logger.info("=========================================================");
+                logger.info("");
+
+                NvdDatabaseInitializer.InitializationResult result = databaseInitializer.initializeDatabase();
+
+                if (!result.isSuccess()) {
+                    logger.warn("Database initialization had issues: {}", result.getErrorMessage());
+                    logger.info("Will attempt to continue with OWASP's built-in download");
+                }
+            } else if (!databaseInitializer.hasValidDatabase()) {
+                logger.warn("NVD database validation failed - may need re-download");
+                logger.info("OWASP Dependency-Check will attempt to repair the database");
+            }
+        } catch (Exception e) {
+            logger.warn("Error during first-time setup check: {}", e.getMessage());
+            logger.info("Will proceed with standard OWASP database initialization");
+        }
+    }
+
+    /**
+     * Validates database after OWASP download and stores integrity information.
+     */
+    private void validateAndStoreDatabaseIntegrity() {
+        if (databaseInitializer == null) {
+            return;
+        }
+
+        try {
+            NvdDatabaseInitializer.ValidationResult result = databaseInitializer.validateAfterDownload();
+
+            if (result.isValid()) {
+                logger.info("NVD database integrity verified: {}MB, checksum stored",
+                           result.getDatabaseSizeBytes() / (1024 * 1024));
+            } else {
+                logger.warn("Database validation issue: {}", result.getErrorMessage());
+                logger.info("The scan will continue but database may be incomplete");
+            }
+        } catch (Exception e) {
+            logger.debug("Could not validate database integrity: {}", e.getMessage());
+        }
     }
     
     @Override
@@ -134,7 +203,10 @@ public class OwaspDependencyCheckScanner implements VulnerabilityScanner {
                 
                 try {
                     logger.info("🔍 Starting OWASP dependency analysis...");
-                    
+
+                    // Check for first-time setup and ensure complete database
+                    ensureCompleteDatabaseForFirstTimeUser();
+
                     // Initialize engine and handle database connectivity issues more gracefully
                     logger.info("🔄 Initializing OWASP engine with NVD database...");
                     try {
@@ -143,6 +215,9 @@ public class OwaspDependencyCheckScanner implements VulnerabilityScanner {
                             logger.info("🔄 Performing NVD database updates...");
                             engine.doUpdates();
                             logger.info("✅ NVD database updates completed successfully");
+
+                            // Validate and store database integrity after successful update
+                            validateAndStoreDatabaseIntegrity();
                         } else {
                             logger.info("🚫 Auto-update disabled - using existing NVD database");
                         }

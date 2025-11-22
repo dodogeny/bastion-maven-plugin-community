@@ -829,7 +829,7 @@
             background: #f8f9fa;
             border-radius: 8px;
         }
-        
+
         .stat-card {
             text-align: center;
             background: white;
@@ -837,20 +837,375 @@
             border-radius: 6px;
             box-shadow: 0 2px 4px rgba(0,0,0,0.1);
         }
-        
+
         .stat-value {
             font-size: 2.2em;
             font-weight: 700;
             color: #2c3e50;
             margin-bottom: 8px;
         }
-        
+
         .stat-label {
             font-size: 0.9em;
             color: #7f8c8d;
             font-weight: 500;
             text-transform: uppercase;
             letter-spacing: 0.5px;
+        }
+
+        /* Enhanced Affected Dependencies Compact Styles */
+        .affected-deps-compact {
+            width: 100%;
+            border-collapse: collapse;
+            font-size: 0.85em;
+        }
+
+        .affected-deps-compact th {
+            background: linear-gradient(135deg, #2c3e50 0%, #34495e 100%);
+            color: white;
+            padding: 12px 10px;
+            text-align: left;
+            font-weight: 600;
+            font-size: 0.9em;
+            position: sticky;
+            top: 0;
+            z-index: 10;
+        }
+
+        .affected-deps-compact td {
+            padding: 10px;
+            border-bottom: 1px solid #e3e6f0;
+            vertical-align: middle;
+        }
+
+        .affected-deps-compact tr:hover {
+            background-color: #f8f9fc;
+        }
+
+        .affected-deps-compact tr:nth-child(even) {
+            background-color: #fbfcfd;
+        }
+
+        .dep-name-cell {
+            display: flex;
+            flex-direction: column;
+            gap: 4px;
+        }
+
+        .dep-artifact {
+            font-weight: 600;
+            color: #2c3e50;
+            font-size: 0.95em;
+        }
+
+        .dep-version {
+            font-size: 0.85em;
+            color: #667eea;
+            font-weight: 500;
+        }
+
+        .dep-links {
+            display: flex;
+            gap: 6px;
+            margin-top: 4px;
+        }
+
+        .dep-link {
+            display: inline-flex;
+            align-items: center;
+            padding: 2px 6px;
+            border-radius: 3px;
+            text-decoration: none;
+            font-size: 0.75em;
+            font-weight: 500;
+            transition: all 0.2s ease;
+        }
+
+        .dep-link.maven {
+            background: #e74c3c;
+            color: white;
+        }
+
+        .dep-link.maven:hover {
+            background: #c0392b;
+        }
+
+        .dep-link.github {
+            background: #333;
+            color: white;
+        }
+
+        .dep-link.github:hover {
+            background: #555;
+        }
+
+        .cve-chips {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 4px;
+            max-width: 280px;
+        }
+
+        .cve-chip {
+            display: inline-block;
+            padding: 3px 8px;
+            background: #34495e;
+            color: white;
+            border-radius: 4px;
+            font-size: 0.8em;
+            font-family: 'Monaco', 'Menlo', monospace;
+            text-decoration: none;
+            transition: all 0.2s ease;
+        }
+
+        .cve-chip:hover {
+            background: #667eea;
+            transform: translateY(-1px);
+            box-shadow: 0 2px 4px rgba(0,0,0,0.2);
+        }
+
+        .cve-chip.critical {
+            background: #dc3545;
+        }
+
+        .cve-chip.high {
+            background: #fd7e14;
+        }
+
+        .cve-chip.medium {
+            background: #ffc107;
+            color: #212529;
+        }
+
+        .cve-chip.low {
+            background: #28a745;
+        }
+
+        .dep-type-badge {
+            display: inline-block;
+            padding: 3px 8px;
+            border-radius: 12px;
+            font-size: 0.7em;
+            font-weight: 600;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+
+        .dep-type-badge.direct {
+            background: #fee2e2;
+            color: #dc2626;
+        }
+
+        .dep-type-badge.transitive {
+            background: #fef3c7;
+            color: #d97706;
+        }
+
+        .quick-actions {
+            display: flex;
+            gap: 4px;
+        }
+
+        .action-btn {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            width: 28px;
+            height: 28px;
+            border-radius: 4px;
+            text-decoration: none;
+            font-size: 0.9em;
+            transition: all 0.2s ease;
+        }
+
+        .action-btn.nvd {
+            background: #e67e22;
+            color: white;
+        }
+
+        .action-btn.nvd:hover {
+            background: #d35400;
+        }
+
+        .action-btn.mitre {
+            background: #27ae60;
+            color: white;
+        }
+
+        .action-btn.mitre:hover {
+            background: #229954;
+        }
+
+        .severity-indicator {
+            display: flex;
+            align-items: center;
+            gap: 6px;
+        }
+
+        .severity-dot {
+            width: 10px;
+            height: 10px;
+            border-radius: 50%;
+        }
+
+        .severity-dot.critical { background: #dc3545; }
+        .severity-dot.high { background: #fd7e14; }
+        .severity-dot.medium { background: #ffc107; }
+        .severity-dot.low { background: #28a745; }
+
+        .vuln-count-badge {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            min-width: 24px;
+            height: 24px;
+            padding: 0 6px;
+            border-radius: 12px;
+            font-weight: 700;
+            font-size: 0.85em;
+        }
+
+        .vuln-count-badge.critical { background: #dc3545; color: white; }
+        .vuln-count-badge.high { background: #fd7e14; color: white; }
+        .vuln-count-badge.medium { background: #ffc107; color: #212529; }
+        .vuln-count-badge.low { background: #28a745; color: white; }
+
+        /* Print/PDF Styles */
+        @media print {
+            body {
+                background: white;
+                font-size: 10pt;
+            }
+
+            .container {
+                max-width: 100%;
+                padding: 0;
+            }
+
+            .header {
+                background: #667eea !important;
+                -webkit-print-color-adjust: exact;
+                print-color-adjust: exact;
+                padding: 20px;
+                margin-bottom: 15px;
+            }
+
+            .header h1 {
+                font-size: 1.8em;
+            }
+
+            .summary-cards {
+                display: grid;
+                grid-template-columns: repeat(3, 1fr);
+                gap: 10px;
+                margin-bottom: 15px;
+            }
+
+            .summary-card {
+                padding: 15px;
+                box-shadow: none;
+                border: 1px solid #dee2e6;
+                page-break-inside: avoid;
+            }
+
+            .summary-card h3 {
+                font-size: 1.5em;
+            }
+
+            .section {
+                padding: 15px;
+                margin-bottom: 15px;
+                box-shadow: none;
+                border: 1px solid #dee2e6;
+                page-break-inside: avoid;
+            }
+
+            .section h2 {
+                font-size: 1.2em;
+                margin-bottom: 10px;
+            }
+
+            .affected-deps-compact {
+                font-size: 8pt;
+            }
+
+            .affected-deps-compact th,
+            .affected-deps-compact td {
+                padding: 6px 4px;
+            }
+
+            .cve-chip {
+                padding: 2px 4px;
+                font-size: 7pt;
+                background: #333 !important;
+                color: white !important;
+                -webkit-print-color-adjust: exact;
+                print-color-adjust: exact;
+            }
+
+            .dep-link, .action-btn {
+                padding: 1px 3px;
+                font-size: 7pt;
+            }
+
+            .severity-badge {
+                padding: 2px 6px;
+                font-size: 7pt;
+            }
+
+            /* Hide non-essential elements in print */
+            .tree-legend,
+            .dependency-tree,
+            .footer .powered-by {
+                display: none;
+            }
+
+            /* Enterprise banner - simplified for print */
+            div[style*="linear-gradient(135deg, #667eea"] {
+                display: none;
+            }
+
+            .footer {
+                padding: 10px;
+                margin-top: 15px;
+            }
+
+            /* Force colors to print */
+            .severity-critical,
+            .severity-high,
+            .severity-medium,
+            .severity-low {
+                -webkit-print-color-adjust: exact;
+                print-color-adjust: exact;
+            }
+
+            /* Ensure tables don't break across pages */
+            table {
+                page-break-inside: auto;
+            }
+
+            tr {
+                page-break-inside: avoid;
+                page-break-after: auto;
+            }
+
+            thead {
+                display: table-header-group;
+            }
+
+            /* Links show URLs in print */
+            a[href^="http"]::after {
+                content: " (" attr(href) ")";
+                font-size: 7pt;
+                color: #666;
+                word-break: break-all;
+            }
+
+            .cve-chip::after,
+            .dep-link::after,
+            .action-btn::after {
+                content: none;
+            }
         }
 
         @media (max-width: 768px) {
@@ -973,71 +1328,128 @@
         <#if summary.hasVulnerabilities!false>
             <div class="section">
                 <h2>🎯 Affected Dependencies</h2>
+                <p style="color: #666; margin-bottom: 15px; font-size: 0.9em;">
+                    Click on CVE IDs to view details on NVD. Click dependency names to view on Maven Central.
+                </p>
                 <#if summary.affectedJars?has_content>
-                    <table class="vulnerability-table">
-                        <thead>
-                            <tr>
-                                <th>Dependency</th>
-                                <th>Coordinates</th>
-                                <th>Type</th>
-                                <th>CVE Count</th>
-                                <th>Max Severity</th>
-                                <th>CVE IDs</th>
-                                <th>File Path</th>
-                            </tr>
-                        </thead>
-                        <tbody>
-                            <#list summary.affectedJars as jar>
+                    <div class="table-container">
+                        <table class="affected-deps-compact">
+                            <thead>
                                 <tr>
-                                    <td>
-                                        <div class="component-cell">
-                                            <strong>${jar.groupId}:${jar.artifactId}</strong><br>
-                                            <small>v${jar.version}</small>
-                                        </div>
-                                    </td>
-                                    <td>
-                                        <div class="component-cell">
-                                            ${jar.coordinates}
-                                        </div>
-                                    </td>
-                                    <td>
-                                        <#assign jarIsDirect = jar.direct!false>
-                                        <#if jarIsDirect>
-                                            <span class="severity-badge severity-high">DIRECT</span>
-                                        <#else>
-                                            <span class="severity-badge severity-medium">TRANSITIVE</span>
-                                        </#if>
-                                    </td>
-                                    <td>
-                                        <span class="cvss-score">${jar.vulnerabilityCount!0}</span>
-                                    </td>
-                                    <td>
-                                        <span class="severity-badge severity-${jar.maxSeverity?lower_case}">
-                                            ${jar.maxSeverity!"UNKNOWN"}
-                                        </span>
-                                    </td>
-                                    <td>
-                                        <div class="description-cell">
-                                            <#list jar.vulnerabilityIds as cveId>
-                                                <span style="display: inline-block; margin: 2px; padding: 2px 6px; background-color: #f8f9fa; border-radius: 3px; font-size: 0.8em;">
-                                                    ${cveId}
-                                                </span>
-                                            </#list>
-                                        </div>
-                                    </td>
-                                    <td>
-                                        <div class="component-cell" style="font-size: 0.75em;">
-                                            <#if jar.filePath?has_content>
-                                                ${jar.filePath?replace("/.m2/repository/", "/...m2/.../")?replace(userHome, "~")}
-                                            <#else>
-                                                N/A
-                                            </#if>
-                                        </div>
-                                    </td>
+                                    <th>Dependency</th>
+                                    <th>Type</th>
+                                    <th>Severity</th>
+                                    <th>CVEs</th>
+                                    <th>Actions</th>
                                 </tr>
+                            </thead>
+                            <tbody>
+                                <#list summary.affectedJars as jar>
+                                    <tr>
+                                        <td>
+                                            <div class="dep-name-cell">
+                                                <span class="dep-artifact">${jar.artifactId}</span>
+                                                <span class="dep-version">${jar.groupId}:${jar.version}</span>
+                                                <div class="dep-links">
+                                                    <a href="https://mvnrepository.com/artifact/${jar.groupId}/${jar.artifactId}/${jar.version}"
+                                                       target="_blank"
+                                                       class="dep-link maven"
+                                                       title="View on Maven Repository">
+                                                        📦 Maven
+                                                    </a>
+                                                    <a href="https://central.sonatype.com/artifact/${jar.groupId}/${jar.artifactId}/${jar.version}"
+                                                       target="_blank"
+                                                       class="dep-link github"
+                                                       title="View on Sonatype Central">
+                                                        🔍 Central
+                                                    </a>
+                                                </div>
+                                            </div>
+                                        </td>
+                                        <td>
+                                            <#assign jarIsDirect = jar.direct!false>
+                                            <span class="dep-type-badge <#if jarIsDirect>direct<#else>transitive</#if>">
+                                                <#if jarIsDirect>Direct<#else>Transitive</#if>
+                                            </span>
+                                        </td>
+                                        <td>
+                                            <div class="severity-indicator">
+                                                <span class="severity-dot ${jar.maxSeverity?lower_case}"></span>
+                                                <span class="vuln-count-badge ${jar.maxSeverity?lower_case}">
+                                                    ${jar.vulnerabilityCount!0}
+                                                </span>
+                                            </div>
+                                        </td>
+                                        <td>
+                                            <div class="cve-chips">
+                                                <#list jar.vulnerabilityIds as cveId>
+                                                    <#if cveId?starts_with("CVE-")>
+                                                        <a href="https://nvd.nist.gov/vuln/detail/${cveId}"
+                                                           target="_blank"
+                                                           class="cve-chip"
+                                                           title="View ${cveId} on NVD">
+                                                            ${cveId}
+                                                        </a>
+                                                    <#else>
+                                                        <span class="cve-chip" title="${cveId}">
+                                                            ${cveId}
+                                                        </span>
+                                                    </#if>
+                                                </#list>
+                                            </div>
+                                        </td>
+                                        <td>
+                                            <div class="quick-actions">
+                                                <#if jar.vulnerabilityIds?has_content>
+                                                    <#assign firstCve = jar.vulnerabilityIds[0]>
+                                                    <#if firstCve?starts_with("CVE-")>
+                                                        <a href="https://nvd.nist.gov/vuln/detail/${firstCve}"
+                                                           target="_blank"
+                                                           class="action-btn nvd"
+                                                           title="View on NVD Database">
+                                                            🔗
+                                                        </a>
+                                                        <a href="https://cve.mitre.org/cgi-bin/cvename.cgi?name=${firstCve}"
+                                                           target="_blank"
+                                                           class="action-btn mitre"
+                                                           title="View Official CVE">
+                                                            📋
+                                                        </a>
+                                                    </#if>
+                                                </#if>
+                                            </div>
+                                        </td>
+                                    </tr>
+                                </#list>
+                            </tbody>
+                        </table>
+                    </div>
+
+                    <!-- Quick Summary Stats -->
+                    <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(150px, 1fr)); gap: 10px; margin-top: 15px; padding: 15px; background: #f8f9fa; border-radius: 8px;">
+                        <div style="text-align: center;">
+                            <div style="font-size: 1.5em; font-weight: 700; color: #dc3545;">${summary.affectedJars?size}</div>
+                            <div style="font-size: 0.8em; color: #666; text-transform: uppercase;">Affected Deps</div>
+                        </div>
+                        <div style="text-align: center;">
+                            <div style="font-size: 1.5em; font-weight: 700; color: #2c3e50;">${summary.totalVulnerabilities!0}</div>
+                            <div style="font-size: 0.8em; color: #666; text-transform: uppercase;">Total CVEs</div>
+                        </div>
+                        <div style="text-align: center;">
+                            <#assign directCount = 0>
+                            <#list summary.affectedJars as jar>
+                                <#if jar.direct!false>
+                                    <#assign directCount = directCount + 1>
+                                </#if>
                             </#list>
-                        </tbody>
-                    </table>
+                            <div style="font-size: 1.5em; font-weight: 700; color: #e74c3c;">${directCount}</div>
+                            <div style="font-size: 0.8em; color: #666; text-transform: uppercase;">Direct</div>
+                        </div>
+                        <div style="text-align: center;">
+                            <div style="font-size: 1.5em; font-weight: 700; color: #f39c12;">${summary.affectedJars?size - directCount}</div>
+                            <div style="font-size: 0.8em; color: #666; text-transform: uppercase;">Transitive</div>
+                        </div>
+                    </div>
                 <#else>
                     <p style="color: #666; font-style: italic;">No vulnerable dependencies detected in the scan results.</p>
                 </#if>
@@ -1533,7 +1945,9 @@
                         💰 <strong>$89/month</strong> • Save 12+ hours/month on security workflows
                     </p>
                 </div>
-                <a href="https://bastion-plugin.lemonsqueezy.com/checkout"
+                <a href="https://bastion-plugin.lemonsqueezy.com/"
+                   target="_blank"
+                   rel="noopener noreferrer"
                    style="display: inline-block; background: #ffd700; color: #1a202c; padding: 15px 40px; text-decoration: none; font-weight: 700; font-size: 18px; border-radius: 8px; box-shadow: 0 4px 15px rgba(255, 215, 0, 0.4); transition: transform 0.2s, box-shadow 0.2s;"
                    onmouseover="this.style.transform='translateY(-2px)'; this.style.boxShadow='0 6px 20px rgba(255, 215, 0, 0.6)';"
                    onmouseout="this.style.transform='translateY(0)'; this.style.boxShadow='0 4px 15px rgba(255, 215, 0, 0.4)';">

@@ -1083,7 +1083,7 @@ public class BastionScanMojo extends AbstractMojo {
             getLog().info("     • Email/Slack notifications");
             getLog().info("     • PDF/SARIF export for compliance");
             getLog().info("");
-            getLog().info("  → Start 14-day free trial: https://bastion-plugin.lemonsqueezy.com/checkout");
+            getLog().info("  → Start 14-day free trial: https://bastion-plugin.lemonsqueezy.com/");
             getLog().info("════════════════════════════════════════════════════════════");
             return;
         }
@@ -1095,7 +1095,7 @@ public class BastionScanMojo extends AbstractMojo {
                 getLog().info("");
                 getLog().info("  💼 " + (criticalCount + highCount) + " HIGH/CRITICAL vulnerabilities need attention");
                 getLog().info("  → Enterprise Edition: Automated alerts + compliance reports");
-                getLog().info("  → Learn more: https://bastion-plugin.lemonsqueezy.com/checkout");
+                getLog().info("  → Learn more: https://bastion-plugin.lemonsqueezy.com/");
             }
             return;
         }
@@ -1120,7 +1120,7 @@ public class BastionScanMojo extends AbstractMojo {
             getLog().info("     → Track your security posture over time");
             getLog().info("");
             getLog().info("  📊 $89/month • Save 10+ hours on security workflows");
-            getLog().info("  → Start 14-day free trial: https://bastion-plugin.lemonsqueezy.com/checkout");
+            getLog().info("  → Start 14-day free trial: https://bastion-plugin.lemonsqueezy.com/");
             getLog().info("════════════════════════════════════════════════════════════");
         } else if (isEnterpriseScale) {
             // Enterprise-scale project detected
@@ -1134,7 +1134,7 @@ public class BastionScanMojo extends AbstractMojo {
             getLog().info("  ✓ Advanced reporting (PDF for management, SARIF for CI/CD)");
             getLog().info("  ✓ Unlimited scan history (Community: 10 scans/project)");
             getLog().info("");
-            getLog().info("  → Built for teams: https://bastion-plugin.lemonsqueezy.com/checkout");
+            getLog().info("  → Built for teams: https://bastion-plugin.lemonsqueezy.com/");
             getLog().info("════════════════════════════════════════════════════════════");
         } else if ((criticalCount + highCount) > 10) {
             // Moderate vulnerabilities with high severity
