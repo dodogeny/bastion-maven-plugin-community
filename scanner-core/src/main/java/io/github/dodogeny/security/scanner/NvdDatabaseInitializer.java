@@ -95,73 +95,81 @@ public class NvdDatabaseInitializer {
      * Performs complete first-time database initialization with integrity checks.
      */
     public InitializationResult initializeDatabase() {
-        logger.info("========================================");
-        logger.info("  NVD DATABASE INITIALIZATION");
-        logger.info("========================================");
+        ConsoleLogger.printHeader("NVD DATABASE INITIALIZATION");
 
         InitializationResult result = new InitializationResult();
         result.setStartTime(Instant.now());
 
         try {
             // Step 1: Validate environment
-            logger.info("Step 1/5: Validating environment...");
+            ConsoleLogger.step(1, 5, "Validating environment...");
             validateEnvironment();
             result.setEnvironmentValid(true);
+            ConsoleLogger.success("Environment validated (disk space, permissions)");
 
             // Step 2: Check API key
-            logger.info("Step 2/5: Checking NVD API configuration...");
+            ConsoleLogger.step(2, 5, "Checking NVD API configuration...");
             boolean hasApiKey = apiKey != null && !apiKey.trim().isEmpty();
             if (hasApiKey) {
-                logger.info("  NVD API key configured - high-speed download enabled");
+                ConsoleLogger.success("NVD API key configured - high-speed download enabled");
                 result.setApiKeyConfigured(true);
             } else {
-                logger.warn("  No NVD API key - download will be rate-limited (6 requests/minute)");
-                logger.info("  Get your free API key: https://nvd.nist.gov/developers/request-an-api-key");
+                ConsoleLogger.warning("No NVD API key - download will be rate-limited");
+                ConsoleLogger.bullet("Rate limit: 6 requests/minute without API key");
+                ConsoleLogger.bullet("Get your free API key:");
+                ConsoleLogger.indent("https://nvd.nist.gov/developers/request-an-api-key");
                 result.setApiKeyConfigured(false);
             }
 
-            // Step 3: Check for existing partial download
-            logger.info("Step 3/5: Checking for existing database...");
+            // Step 3: Check for existing database
+            ConsoleLogger.step(3, 5, "Checking for existing database...");
             File existingDb = findExistingDatabase();
             if (existingDb != null) {
-                logger.info("  Found existing database: {}", existingDb.getAbsolutePath());
+                ConsoleLogger.info("Found existing database: {}", existingDb.getName());
                 if (validateDatabaseIntegrity(existingDb)) {
-                    logger.info("  Existing database is valid - skipping download");
+                    ConsoleLogger.success("Existing database is valid - skipping download");
                     result.setDatabaseValid(true);
                     result.setSkippedDownload(true);
                     markInitializationComplete(result);
+                    logInitializationSummary(result);
                     return result;
                 } else {
-                    logger.warn("  Existing database is corrupted or incomplete - will re-download");
+                    ConsoleLogger.warning("Existing database is corrupted or incomplete");
+                    ConsoleLogger.info("Will backup and re-download");
                     backupCorruptedDatabase(existingDb);
                 }
+            } else {
+                ConsoleLogger.info("No existing database found - will download");
             }
 
-            // Step 4: Estimate download size and time
-            logger.info("Step 4/5: Preparing download...");
+            // Step 4: Estimate download
+            ConsoleLogger.step(4, 5, "Preparing download...");
             long estimatedCveCount = getEstimatedCveCount();
             result.setEstimatedCveCount(estimatedCveCount);
 
-            int estimatedMinutes = hasApiKey ? 5 : 45; // API key = ~5 min, no key = ~45 min
-            logger.info("  Estimated CVE records: {}", estimatedCveCount);
-            logger.info("  Estimated download time: {} minutes", estimatedMinutes);
+            int estimatedMinutes = hasApiKey ? 5 : 45;
 
-            // Step 5: Signal OWASP to perform download with our optimizations
-            logger.info("Step 5/5: Initiating NVD database download...");
-            logger.info("  This may take several minutes. Progress will be displayed.");
+            String[][] downloadStats = {
+                {"CVE Records", ConsoleLogger.formatNumber(estimatedCveCount), ConsoleLogger.BRIGHT_CYAN},
+                {"Estimated Time", estimatedMinutes + " minutes", ConsoleLogger.BRIGHT_YELLOW},
+                {"Download Mode", hasApiKey ? "High-Speed API" : "Rate-Limited", hasApiKey ? ConsoleLogger.BRIGHT_GREEN : ConsoleLogger.BRIGHT_YELLOW}
+            };
+            ConsoleLogger.printStatBox("Download Estimate", downloadStats);
+
+            // Step 5: Initiate download
+            ConsoleLogger.step(5, 5, "Initiating NVD database download...");
+            logger.info("");
+            ConsoleLogger.info("OWASP Dependency-Check will now download the NVD database");
+            ConsoleLogger.bullet("This is a one-time setup");
+            ConsoleLogger.bullet("Progress will be displayed below");
             logger.info("");
 
             downloadStartTime = Instant.now();
             result.setDownloadStarted(true);
 
-            // The actual download is performed by OWASP Dependency-Check
-            // We prepare the environment and validate afterward
             prepareForOwaspDownload();
-
-            // After OWASP downloads, validate the result
             result.setDownloadCompleted(true);
 
-            // Mark initialization complete
             markInitializationComplete(result);
 
             result.setEndTime(Instant.now());
@@ -172,10 +180,11 @@ public class NvdDatabaseInitializer {
             return result;
 
         } catch (Exception e) {
-            logger.error("Database initialization failed: {}", e.getMessage());
+            ConsoleLogger.error("Database initialization failed: {}", e.getMessage());
             result.setSuccess(false);
             result.setErrorMessage(e.getMessage());
             result.setEndTime(Instant.now());
+            logInitializationSummary(result);
             return result;
         }
     }
@@ -643,27 +652,52 @@ public class NvdDatabaseInitializer {
     }
 
     private void logInitializationSummary(InitializationResult result) {
-        logger.info("");
-        logger.info("========================================");
-        logger.info("  INITIALIZATION COMPLETE");
-        logger.info("========================================");
-
         Duration duration = Duration.between(result.getStartTime(), result.getEndTime());
-        logger.info("  Status: {}", result.isSuccess() ? "SUCCESS" : "FAILED");
-        logger.info("  Duration: {} seconds", duration.getSeconds());
-        logger.info("  API Key: {}", result.isApiKeyConfigured() ? "Configured" : "Not configured");
 
+        String status = result.isSuccess() ? "SUCCESS" : "FAILED";
+        String statusColor = result.isSuccess() ? ConsoleLogger.BRIGHT_GREEN : ConsoleLogger.BRIGHT_RED;
+
+        String downloadStatus;
+        String downloadColor;
         if (result.isSkippedDownload()) {
-            logger.info("  Download: Skipped (valid database exists)");
+            downloadStatus = "Skipped (valid DB exists)";
+            downloadColor = ConsoleLogger.BRIGHT_BLUE;
+        } else if (result.isDownloadCompleted()) {
+            downloadStatus = "Completed";
+            downloadColor = ConsoleLogger.BRIGHT_GREEN;
         } else {
-            logger.info("  Download: {}", result.isDownloadCompleted() ? "Completed" : "In progress");
+            downloadStatus = "In Progress";
+            downloadColor = ConsoleLogger.BRIGHT_YELLOW;
         }
+
+        String[][] stats = {
+            {"Status", status, statusColor},
+            {"Duration", ConsoleLogger.formatDuration(duration.toMillis()), ConsoleLogger.BRIGHT_WHITE},
+            {"API Key", result.isApiKeyConfigured() ? "Configured" : "Not configured",
+                result.isApiKeyConfigured() ? ConsoleLogger.BRIGHT_GREEN : ConsoleLogger.BRIGHT_YELLOW},
+            {"Download", downloadStatus, downloadColor},
+            {"CVE Records", result.getEstimatedCveCount() > 0 ?
+                ConsoleLogger.formatNumber(result.getEstimatedCveCount()) : "N/A", ConsoleLogger.BRIGHT_CYAN}
+        };
+
+        if (result.isSuccess()) {
+            ConsoleLogger.printHeader("INITIALIZATION COMPLETE");
+        } else {
+            logger.info("");
+            ConsoleLogger.error("INITIALIZATION FAILED");
+        }
+
+        ConsoleLogger.printStatBox("Summary", stats);
 
         if (!result.isSuccess() && result.getErrorMessage() != null) {
-            logger.error("  Error: {}", result.getErrorMessage());
+            logger.info("");
+            ConsoleLogger.error("Error: {}", result.getErrorMessage());
+            ConsoleLogger.bullet("Check network connectivity");
+            ConsoleLogger.bullet("Verify NVD API key is valid");
+            ConsoleLogger.bullet("Ensure sufficient disk space");
         }
 
-        logger.info("========================================");
+        logger.info("");
     }
 
     /**

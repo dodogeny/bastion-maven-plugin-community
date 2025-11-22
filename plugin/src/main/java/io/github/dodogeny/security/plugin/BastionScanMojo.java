@@ -7,6 +7,8 @@ import io.github.dodogeny.security.model.ScanResult.ScanStatistics;
 import io.github.dodogeny.security.model.ScanResult.PerformanceMetrics;
 import io.github.dodogeny.security.report.ReportGenerator;
 import io.github.dodogeny.security.scanner.OwaspDependencyCheckScanner;
+import io.github.dodogeny.security.scanner.OwaspOutputProcessor;
+import io.github.dodogeny.security.scanner.ConsoleLogger;
 import io.github.dodogeny.security.scanner.VulnerabilityScanner;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.maven.execution.MavenSession;
@@ -1701,23 +1703,33 @@ public class BastionScanMojo extends AbstractMojo {
 
             Process process = pb.start();
 
-            // Capture and display output
+            // Capture and display output with single-line progress
             StringBuilder output = new StringBuilder();
-            int lineCount = 0;
+            OwaspOutputProcessor outputProcessor = new OwaspOutputProcessor();
+
             try (BufferedReader reader = new BufferedReader(new InputStreamReader(process.getInputStream()))) {
                 String line;
                 while ((line = reader.readLine()) != null) {
                     output.append(line).append("\n");
-                    lineCount++;
 
-                    // Log important progress lines
-                    if (line.contains("Processing") || line.contains("Downloaded") ||
-                        line.contains("ERROR") || line.contains("WARNING") ||
-                        line.contains("CVE") || lineCount % 50 == 0) {
-                        getLog().info("  " + line);
+                    // Process line - returns true if it was a progress message (suppressed)
+                    boolean isProgress = outputProcessor.processLine(line);
+
+                    if (!isProgress) {
+                        // Only log non-progress important lines
+                        if (line.contains("ERROR") || line.contains("FATAL")) {
+                            getLog().error("  " + line);
+                        } else if (line.contains("WARNING") || line.contains("WARN")) {
+                            getLog().warn("  " + line);
+                        } else if (line.contains("update complete") || line.contains("Analysis complete")) {
+                            getLog().info("  " + line);
+                        }
                     }
                 }
             }
+
+            // Finalize any active progress display
+            outputProcessor.finalize();
 
             int exitCode = process.waitFor();
 
@@ -1781,18 +1793,33 @@ public class BastionScanMojo extends AbstractMojo {
 
             Process process = pb.start();
 
-            // Capture output
+            // Capture output with single-line progress display
             StringBuilder output = new StringBuilder();
+            OwaspOutputProcessor outputProcessor = new OwaspOutputProcessor();
+
             try (BufferedReader reader = new BufferedReader(new InputStreamReader(process.getInputStream()))) {
                 String line;
                 while ((line = reader.readLine()) != null) {
                     output.append(line).append("\n");
-                    // Log important lines
-                    if (line.contains("ERROR") || line.contains("WARNING") || line.contains("vulnerabilities found")) {
-                        getLog().info("  " + line);
+
+                    // Process line for progress display
+                    boolean isProgress = outputProcessor.processLine(line);
+
+                    if (!isProgress) {
+                        // Log important non-progress lines
+                        if (line.contains("ERROR") || line.contains("FATAL")) {
+                            getLog().error("  " + line);
+                        } else if (line.contains("WARNING") || line.contains("WARN")) {
+                            getLog().warn("  " + line);
+                        } else if (line.contains("vulnerabilities found") || line.contains("Analysis complete")) {
+                            getLog().info("  " + line);
+                        }
                     }
                 }
             }
+
+            // Finalize progress display
+            outputProcessor.finalize();
 
             int exitCode = process.waitFor();
 

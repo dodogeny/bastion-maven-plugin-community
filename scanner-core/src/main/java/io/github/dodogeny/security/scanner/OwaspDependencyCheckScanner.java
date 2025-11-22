@@ -96,30 +96,28 @@ public class OwaspDependencyCheckScanner implements VulnerabilityScanner {
 
         try {
             if (databaseInitializer.isFirstTimeSetup()) {
+                ConsoleLogger.printWelcome("Security Scanner", "2.0");
+                ConsoleLogger.printSubHeader("FIRST-TIME SETUP");
                 logger.info("");
-                logger.info("=========================================================");
-                logger.info("  FIRST-TIME SETUP DETECTED");
-                logger.info("=========================================================");
-                logger.info("  Welcome to Bastion Security Scanner!");
-                logger.info("  ");
-                logger.info("  We need to download the NVD vulnerability database.");
-                logger.info("  This is a one-time setup that takes a few minutes.");
-                logger.info("=========================================================");
+                ConsoleLogger.info("Welcome to Bastion Security Scanner!");
+                ConsoleLogger.bullet("We need to download the NVD vulnerability database");
+                ConsoleLogger.bullet("This is a one-time setup that takes a few minutes");
+                ConsoleLogger.bullet("Subsequent scans will be much faster");
                 logger.info("");
 
                 NvdDatabaseInitializer.InitializationResult result = databaseInitializer.initializeDatabase();
 
                 if (!result.isSuccess()) {
-                    logger.warn("Database initialization had issues: {}", result.getErrorMessage());
-                    logger.info("Will attempt to continue with OWASP's built-in download");
+                    ConsoleLogger.warning("Database initialization had issues: {}", result.getErrorMessage());
+                    ConsoleLogger.info("Will attempt to continue with OWASP's built-in download");
                 }
             } else if (!databaseInitializer.hasValidDatabase()) {
-                logger.warn("NVD database validation failed - may need re-download");
-                logger.info("OWASP Dependency-Check will attempt to repair the database");
+                ConsoleLogger.warning("NVD database validation failed - may need re-download");
+                ConsoleLogger.info("OWASP Dependency-Check will attempt to repair the database");
             }
         } catch (Exception e) {
-            logger.warn("Error during first-time setup check: {}", e.getMessage());
-            logger.info("Will proceed with standard OWASP database initialization");
+            ConsoleLogger.warning("Error during first-time setup check: {}", e.getMessage());
+            ConsoleLogger.info("Will proceed with standard OWASP database initialization");
         }
     }
 
@@ -135,11 +133,12 @@ public class OwaspDependencyCheckScanner implements VulnerabilityScanner {
             NvdDatabaseInitializer.ValidationResult result = databaseInitializer.validateAfterDownload();
 
             if (result.isValid()) {
-                logger.info("NVD database integrity verified: {}MB, checksum stored",
-                           result.getDatabaseSizeBytes() / (1024 * 1024));
+                ConsoleLogger.success("NVD database integrity verified");
+                ConsoleLogger.printKeyValue("Database Size", ConsoleLogger.formatBytes(result.getDatabaseSizeBytes()));
+                ConsoleLogger.printKeyValue("Checksum", result.getChecksum().substring(0, 16) + "...");
             } else {
-                logger.warn("Database validation issue: {}", result.getErrorMessage());
-                logger.info("The scan will continue but database may be incomplete");
+                ConsoleLogger.warning("Database validation issue: {}", result.getErrorMessage());
+                ConsoleLogger.info("The scan will continue but database may be incomplete");
             }
         } catch (Exception e) {
             logger.debug("Could not validate database integrity: {}", e.getMessage());
