@@ -508,7 +508,21 @@ public class OwaspDependencyCheckScanner implements VulnerabilityScanner {
         vuln.setSeverity(mapSeverity(owaspVuln.getCvssV3()));
         vuln.setCvssV3Score(owaspVuln.getCvssV3() != null && owaspVuln.getCvssV3().getCvssData() != null ?
                 owaspVuln.getCvssV3().getCvssData().getBaseScore() : null);
-        vuln.setAffectedComponent(dependency.getActualFilePath());
+        // Get the component name - try multiple sources
+        String componentName = dependency.getFileName();
+        if (componentName == null || componentName.isEmpty()) {
+            String filePath = dependency.getActualFilePath();
+            if (filePath != null && !filePath.isEmpty()) {
+                // Extract filename from path
+                int lastSep = Math.max(filePath.lastIndexOf('/'), filePath.lastIndexOf('\\'));
+                componentName = (lastSep >= 0) ? filePath.substring(lastSep + 1) : filePath;
+            } else {
+                // Fallback to dependency name or display name
+                componentName = dependency.getName() != null ? dependency.getName() : dependency.getDisplayFileName();
+            }
+        }
+        vuln.setAffectedComponent(componentName);
+        logger.debug("Set affectedComponent for {}: {}", owaspVuln.getName(), componentName);
         vuln.setSource("OWASP Dependency-Check");
         vuln.setDiscoveredDate(LocalDateTime.now());
         vuln.setLastVerified(LocalDateTime.now());

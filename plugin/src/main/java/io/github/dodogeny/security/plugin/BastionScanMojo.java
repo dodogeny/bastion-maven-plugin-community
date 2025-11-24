@@ -2,6 +2,7 @@ package io.github.dodogeny.security.plugin;
 
 import io.github.dodogeny.security.database.VulnerabilityDatabase;
 import io.github.dodogeny.security.database.InMemoryVulnerabilityDatabase;
+import io.github.dodogeny.security.model.Vulnerability;
 import io.github.dodogeny.security.model.ScanResult;
 import io.github.dodogeny.security.model.ScanResult.ScanStatistics;
 import io.github.dodogeny.security.model.ScanResult.PerformanceMetrics;
@@ -501,15 +502,15 @@ public class BastionScanMojo extends AbstractMojo {
                 .sorted((e1, e2) -> e1.getTimestamp().compareTo(e2.getTimestamp()))
                 .collect(java.util.stream.Collectors.toList());
             
-            if (projectHistory.size() < 2) {
-                getLog().info("📊 Insufficient historical data for trend analysis (need at least 2 scans)");
+            if (projectHistory.isEmpty()) {
+                getLog().info("📊 No historical data available for trend analysis");
                 return;
             }
-            
+
             getLog().info("📈 Generating trend analysis from " + projectHistory.size() + " historical scans");
-            
-            // Calculate trends
-            JsonScanEntry previousScan = projectHistory.get(projectHistory.size() - 2);
+
+            // Calculate trends - compare current scan to the most recent previous scan
+            JsonScanEntry previousScan = projectHistory.get(projectHistory.size() - 1);
             ScanResult previousResult = previousScan.getScanResult();
             
             int vulnerabilityTrend = result.getTotalVulnerabilities() - previousResult.getTotalVulnerabilities();
@@ -526,7 +527,10 @@ public class BastionScanMojo extends AbstractMojo {
             result.addTrendData("lowTrend", lowTrend);
             result.addTrendData("previousScanDate", previousScan.getTimestamp().toString());
             result.addTrendData("historicalScansCount", projectHistory.size());
-            
+
+            // Calculate detailed CVE changes
+            calculateDetailedCveChanges(result, previousResult);
+
             // Generate JAR analysis
             generateJarAnalysis(result, previousResult);
             
@@ -583,6 +587,123 @@ public class BastionScanMojo extends AbstractMojo {
         } catch (Exception e) {
             getLog().warn("Failed to generate trend analysis from in-memory data", e);
         }
+    }
+
+    private void calculateDetailedCveChanges(ScanResult currentResult, ScanResult previousResult) {
+        try {
+            // Build maps of CVE -> affected JAR for current and previous scans
+            Map<String, String> currentCveToJar = new HashMap<>();
+            Map<String, String> previousCveToJar = new HashMap<>();
+            Map<String, String> currentCveToSeverity = new HashMap<>();
+            Map<String, String> previousCveToSeverity = new HashMap<>();
+
+            // Extract CVEs from current scan
+            if (currentResult.getVulnerabilities() != null) {
+                for (Vulnerability vuln : currentResult.getVulnerabilities()) {
+                    String cveId = vuln.getCveId() != null ? vuln.getCveId() : vuln.getId();
+                    if (cveId != null) {
+                        String component = vuln.getAffectedComponent();
+                        String jarName = extractJarName(component);
+                        getLog().debug("CVE " + cveId + " - affectedComponent: " + component + " -> jarName: " + jarName);
+                        currentCveToJar.put(cveId, jarName);
+                        currentCveToSeverity.put(cveId, vuln.getSeverity() != null ? vuln.getSeverity() : "UNKNOWN");
+                    }
+                }
+            }
+
+            // Extract CVEs from previous scan
+            if (previousResult.getVulnerabilities() != null) {
+                for (Vulnerability vuln : previousResult.getVulnerabilities()) {
+                    String cveId = vuln.getCveId() != null ? vuln.getCveId() : vuln.getId();
+                    if (cveId != null) {
+                        previousCveToJar.put(cveId, extractJarName(vuln.getAffectedComponent()));
+                        previousCveToSeverity.put(cveId, vuln.getSeverity() != null ? vuln.getSeverity() : "UNKNOWN");
+                    }
+                }
+            }
+
+            // Calculate new, resolved, and pending CVEs
+            List<Map<String, String>> newCves = new ArrayList<>();
+            List<Map<String, String>> resolvedCves = new ArrayList<>();
+            List<Map<String, String>> pendingCves = new ArrayList<>();
+
+            // New CVEs (in current but not in previous)
+            for (String cveId : currentCveToJar.keySet()) {
+                if (!previousCveToJar.containsKey(cveId)) {
+                    Map<String, String> cveInfo = new HashMap<>();
+                    cveInfo.put("cveId", cveId);
+                    cveInfo.put("jar", currentCveToJar.get(cveId));
+                    cveInfo.put("severity", currentCveToSeverity.get(cveId));
+                    newCves.add(cveInfo);
+                }
+            }
+
+            // Resolved CVEs (in previous but not in current)
+            for (String cveId : previousCveToJar.keySet()) {
+                if (!currentCveToJar.containsKey(cveId)) {
+                    Map<String, String> cveInfo = new HashMap<>();
+                    cveInfo.put("cveId", cveId);
+                    cveInfo.put("jar", previousCveToJar.get(cveId));
+                    cveInfo.put("severity", previousCveToSeverity.get(cveId));
+                    resolvedCves.add(cveInfo);
+                }
+            }
+
+            // Pending CVEs (in both)
+            for (String cveId : currentCveToJar.keySet()) {
+                if (previousCveToJar.containsKey(cveId)) {
+                    Map<String, String> cveInfo = new HashMap<>();
+                    cveInfo.put("cveId", cveId);
+                    cveInfo.put("jar", currentCveToJar.get(cveId));
+                    cveInfo.put("severity", currentCveToSeverity.get(cveId));
+                    pendingCves.add(cveInfo);
+                }
+            }
+
+            // Sort by severity (CRITICAL first)
+            Comparator<Map<String, String>> severityComparator = (a, b) -> {
+                String[] order = {"CRITICAL", "HIGH", "MEDIUM", "LOW", "UNKNOWN"};
+                int aIdx = Arrays.asList(order).indexOf(a.get("severity"));
+                int bIdx = Arrays.asList(order).indexOf(b.get("severity"));
+                return Integer.compare(aIdx, bIdx);
+            };
+            newCves.sort(severityComparator);
+            resolvedCves.sort(severityComparator);
+            pendingCves.sort(severityComparator);
+
+            // Add to trend data
+            currentResult.addTrendData("newCves", newCves);
+            currentResult.addTrendData("resolvedCves", resolvedCves);
+            currentResult.addTrendData("pendingCves", pendingCves);
+            currentResult.addTrendData("newCvesCount", newCves.size());
+            currentResult.addTrendData("resolvedCvesCount", resolvedCves.size());
+            currentResult.addTrendData("pendingCvesCount", pendingCves.size());
+
+            // Log summary
+            getLog().info("📊 Detailed CVE Analysis:");
+            getLog().info("  🆕 New CVEs: " + newCves.size());
+            getLog().info("  ✅ Resolved CVEs: " + resolvedCves.size());
+            getLog().info("  ⏳ Pending CVEs: " + pendingCves.size());
+
+        } catch (Exception e) {
+            getLog().warn("Failed to calculate detailed CVE changes", e);
+        }
+    }
+
+    /**
+     * Extracts just the JAR filename from a full path.
+     * e.g., "/home/user/.m2/.../log4j-core-2.14.1.jar" -> "log4j-core-2.14.1.jar"
+     */
+    private String extractJarName(String component) {
+        if (component == null || component.isEmpty()) {
+            return "Unknown";
+        }
+        // Extract just the filename from the path
+        int lastSeparator = Math.max(component.lastIndexOf('/'), component.lastIndexOf('\\'));
+        if (lastSeparator >= 0 && lastSeparator < component.length() - 1) {
+            return component.substring(lastSeparator + 1);
+        }
+        return component;
     }
 
     private void generateInMemoryJarAnalysis(ScanResult currentResult, InMemoryVulnerabilityDatabase.ScanSummary previousScan) {

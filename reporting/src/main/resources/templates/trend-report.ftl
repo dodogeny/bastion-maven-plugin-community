@@ -1450,7 +1450,99 @@
                             </div>
                         </div>
                     </div>
-                    
+
+                    <!-- Detailed CVE Changes Section -->
+                    <#if trendData?? && ((trendData.newCvesCount!0) gt 0 || (trendData.resolvedCvesCount!0) gt 0)>
+                    <div class="section">
+                        <h2><span class="icon">🔍</span>Detailed CVE Changes</h2>
+
+                        <#-- Resolved CVEs -->
+                        <#if trendData.resolvedCves?? && trendData.resolvedCves?size gt 0>
+                        <div style="margin-bottom: 25px;">
+                            <h3 style="color: #28a745; margin-bottom: 15px;">
+                                <span style="font-size: 1.2em;">✅</span> Resolved CVEs (${trendData.resolvedCves?size})
+                            </h3>
+                            <div style="background: #f8fff8; border: 1px solid #28a745; border-radius: 8px; padding: 15px;">
+                                <table style="width: 100%; border-collapse: collapse;">
+                                    <thead>
+                                        <tr style="border-bottom: 2px solid #28a745;">
+                                            <th style="text-align: left; padding: 8px; color: #28a745;">CVE ID</th>
+                                            <th style="text-align: left; padding: 8px; color: #28a745;">Severity</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        <#list trendData.resolvedCves as cve>
+                                        <tr style="border-bottom: 1px solid #e0e0e0;">
+                                            <td style="padding: 8px;">
+                                                <a href="https://nvd.nist.gov/vuln/detail/${cve.cveId}" target="_blank" rel="noopener noreferrer" style="color: #28a745; text-decoration: none;">
+                                                    ${cve.cveId}
+                                                </a>
+                                            </td>
+                                            <td style="padding: 8px;">
+                                                <span style="padding: 2px 8px; border-radius: 4px; font-size: 0.85em; background: <#if cve.severity == 'CRITICAL'>#dc3545<#elseif cve.severity == 'HIGH'>#fd7e14<#elseif cve.severity == 'MEDIUM'>#ffc107<#else>#28a745</#if>; color: <#if cve.severity == 'MEDIUM'>#000<#else>#fff</#if>;">
+                                                    ${cve.severity}
+                                                </span>
+                                            </td>
+                                        </tr>
+                                        </#list>
+                                    </tbody>
+                                </table>
+                            </div>
+                        </div>
+                        </#if>
+
+                        <#-- New CVEs -->
+                        <#if trendData.newCves?? && trendData.newCves?size gt 0>
+                        <div style="margin-bottom: 25px;">
+                            <h3 style="color: #dc3545; margin-bottom: 15px;">
+                                <span style="font-size: 1.2em;">🆕</span> New CVEs Introduced (${trendData.newCves?size})
+                            </h3>
+                            <div style="background: #fff8f8; border: 1px solid #dc3545; border-radius: 8px; padding: 15px;">
+                                <table style="width: 100%; border-collapse: collapse;">
+                                    <thead>
+                                        <tr style="border-bottom: 2px solid #dc3545;">
+                                            <th style="text-align: left; padding: 8px; color: #dc3545;">CVE ID</th>
+                                            <th style="text-align: left; padding: 8px; color: #dc3545;">Severity</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        <#list trendData.newCves as cve>
+                                        <tr style="border-bottom: 1px solid #e0e0e0;">
+                                            <td style="padding: 8px;">
+                                                <a href="https://nvd.nist.gov/vuln/detail/${cve.cveId}" target="_blank" rel="noopener noreferrer" style="color: #dc3545; text-decoration: none;">
+                                                    ${cve.cveId}
+                                                </a>
+                                            </td>
+                                            <td style="padding: 8px;">
+                                                <span style="padding: 2px 8px; border-radius: 4px; font-size: 0.85em; background: <#if cve.severity == 'CRITICAL'>#dc3545<#elseif cve.severity == 'HIGH'>#fd7e14<#elseif cve.severity == 'MEDIUM'>#ffc107<#else>#28a745</#if>; color: <#if cve.severity == 'MEDIUM'>#000<#else>#fff</#if>;">
+                                                    ${cve.severity}
+                                                </span>
+                                            </td>
+                                        </tr>
+                                        </#list>
+                                    </tbody>
+                                </table>
+                            </div>
+                        </div>
+                        </#if>
+
+                        <#-- Pending CVEs Summary -->
+                        <#if trendData.pendingCvesCount?? && trendData.pendingCvesCount gt 0>
+                        <div style="margin-bottom: 25px;">
+                            <h3 style="color: #fd7e14; margin-bottom: 15px;">
+                                <span style="font-size: 1.2em;">⏳</span> Pending CVEs (${trendData.pendingCvesCount})
+                            </h3>
+                            <div style="background: #fff8f0; border: 1px solid #fd7e14; border-radius: 8px; padding: 15px;">
+                                <p style="margin: 0; color: #666;">
+                                    These ${trendData.pendingCvesCount} CVEs remain unresolved from the previous scan.
+                                    Review the main vulnerability report for details and remediation guidance.
+                                </p>
+                            </div>
+                        </div>
+                        </#if>
+                    </div>
+                    </#if>
+
                     <!-- Historical Trend Chart -->
                     <div class="section">
                         <h2><span class="icon">📈</span>Historical Trend Chart</h2>
@@ -1461,7 +1553,7 @@
                             </div>
                             
                             <#-- Check if we have historical data to display a meaningful chart -->
-                            <#if trendData?? && trendData?size gt 0>
+                            <#if trendData?? && (trendData.historicalScansCount!0) gt 1>
                                 <div class="trend-timeline-chart">
                                     <div class="chart-legend">
                                         <div class="legend-item">

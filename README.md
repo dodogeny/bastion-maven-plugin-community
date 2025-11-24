@@ -15,6 +15,7 @@ A Maven plugin for automated vulnerability scanning and CVE detection in your de
 - **Automated CVE Detection**: Scans project dependencies against the National Vulnerability Database (NVD)
 - **Smart NVD Caching**: Reduces scan times from 8-13 minutes to 2-3 minutes with intelligent cache management
 - **Historical Trend Analysis**: Track vulnerability trends over time with JSON file storage
+- **Detailed CVE Tracking**: See exactly which CVEs were resolved, introduced, or remain pending between scans
 - **Multi-Module Support**: Scan complex Maven projects with multiple modules
 - **Multiple Report Formats**: HTML and JSON reports with graphical dependency trees
 - **CI/CD Integration**: Compatible with GitHub Actions, Jenkins, GitLab CI, and Azure DevOps
@@ -112,6 +113,24 @@ mvn bastion-maven-community-plugin:scan
 - **📊 Enhanced HTML Reports**: Visual comparison banner showcasing Enterprise features
 - **💡 Smart Feature Discovery**: Learn about advanced capabilities when you need them
 - **📈 Usage Tracking**: Milestone messages at 5th, 10th, and 20th scans
+
+### Trend Analysis Enhancements
+- **📈 Detailed CVE Changes**: Track exactly which vulnerabilities changed between scans
+  - ✅ **Resolved CVEs**: Shows CVEs that were fixed since the last scan
+  - 🆕 **New CVEs Introduced**: Highlights newly detected vulnerabilities
+  - ⏳ **Pending CVEs**: Count of unresolved vulnerabilities
+- **📊 Overall Vulnerability Trends**: Visual trend indicators showing changes in total, critical, high, medium, and low severity counts
+- **🔗 NVD Links**: Direct links to NIST NVD for each CVE with severity badges
+
+### Architecture Improvements
+- **🏗️ ScanEngine Architecture**: New orchestration layer for scanning workflow
+  - `ScanEngine` interface for unified scanning API
+  - `DefaultScanEngine` implementation with processor chains
+  - `ScanEngineFactory` with preset configurations (default, lightweight, CI/CD, development)
+- **🔧 Design Patterns**: Improved code quality with enterprise patterns
+  - `ProcessorChain` for vulnerability processing pipeline
+  - `ScanEventPublisher` for event-driven notifications
+  - Builder pattern for flexible engine configuration
 
 ### Migration Notes
 - Upgrading from v1.0.x requires Java 21+ (breaking change)
