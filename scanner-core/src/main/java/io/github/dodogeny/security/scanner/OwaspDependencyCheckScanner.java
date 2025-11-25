@@ -1720,10 +1720,23 @@ public class OwaspDependencyCheckScanner implements VulnerabilityScanner {
                 // Don't override DB_DRIVER_NAME as it breaks resource loading
             }
             
+            // Disable experimental and retired analyzers that may cause issues
+            settings.setBoolean(Settings.KEYS.ANALYZER_EXPERIMENTAL_ENABLED, false);
+            settings.setBoolean(Settings.KEYS.ANALYZER_RETIRED_ENABLED, false);
+
             // CRITICAL FOR OWASP 12.x: Enable JAR analyzer explicitly - MUST BE SET BEFORE Engine creation!
             // Without this, engine.scan() returns empty lists because no analyzer processes the JARs
             // This must be set unconditionally, regardless of cache directory configuration
             settings.setBoolean(Settings.KEYS.ANALYZER_JAR_ENABLED, true);
+            settings.setBoolean(Settings.KEYS.ANALYZER_ARCHIVE_ENABLED, true);
+            settings.setBoolean(Settings.KEYS.ANALYZER_ASSEMBLY_ENABLED, true);
+            settings.setBoolean(Settings.KEYS.ANALYZER_FILE_NAME_ENABLED, true);
+
+            // Disable online analyzers that may interfere with JAR scanning
+            settings.setBoolean(Settings.KEYS.ANALYZER_OSSINDEX_ENABLED, false);
+            settings.setBoolean(Settings.KEYS.ANALYZER_CENTRAL_ENABLED, false);
+            settings.setBoolean(Settings.KEYS.ANALYZER_NEXUS_ENABLED, false);
+            settings.setBoolean(Settings.KEYS.ANALYZER_ARTIFACTORY_ENABLED, false);
             logger.info("🔧 JAR Analyzer explicitly enabled for OWASP 12.x compatibility");
 
             // Configure cache directory for optimal performance
@@ -1778,8 +1791,21 @@ public class OwaspDependencyCheckScanner implements VulnerabilityScanner {
             settings.setBoolean(Settings.KEYS.UPDATE_NVDCVE_ENABLED, false);
             settings.setBoolean(Settings.KEYS.ANALYZER_NVD_CVE_ENABLED, true); // KEEP CVE ANALYSIS ENABLED!
 
+            // Disable experimental and retired analyzers
+            settings.setBoolean(Settings.KEYS.ANALYZER_EXPERIMENTAL_ENABLED, false);
+            settings.setBoolean(Settings.KEYS.ANALYZER_RETIRED_ENABLED, false);
+
             // CRITICAL FOR OWASP 12.x: Enable JAR analyzer explicitly in offline mode too
             settings.setBoolean(Settings.KEYS.ANALYZER_JAR_ENABLED, true);
+            settings.setBoolean(Settings.KEYS.ANALYZER_ARCHIVE_ENABLED, true);
+            settings.setBoolean(Settings.KEYS.ANALYZER_ASSEMBLY_ENABLED, true);
+            settings.setBoolean(Settings.KEYS.ANALYZER_FILE_NAME_ENABLED, true);
+
+            // Disable online analyzers in offline mode
+            settings.setBoolean(Settings.KEYS.ANALYZER_OSSINDEX_ENABLED, false);
+            settings.setBoolean(Settings.KEYS.ANALYZER_CENTRAL_ENABLED, false);
+            settings.setBoolean(Settings.KEYS.ANALYZER_NEXUS_ENABLED, false);
+            settings.setBoolean(Settings.KEYS.ANALYZER_ARTIFACTORY_ENABLED, false);
 
             logger.info("🔍 No NVD API key provided - using offline mode with existing database");
             logger.info("📊 CVE analysis will use cached vulnerability data from previous downloads");
