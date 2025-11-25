@@ -181,16 +181,65 @@ public class OwaspDependencyCheckScanner implements VulnerabilityScanner {
                 settings.setBoolean(Settings.KEYS.ANALYZER_NEXUS_ENABLED, false);
                 settings.setBoolean(Settings.KEYS.ANALYZER_ARTIFACTORY_ENABLED, false);
 
+                // CRITICAL FIX: Enable JAR analyzer for OWASP 12.x compatibility
+                // Without these, engine.scan() cannot process JAR files
+                settings.setBoolean(Settings.KEYS.ANALYZER_JAR_ENABLED, true);
+                settings.setBoolean(Settings.KEYS.ANALYZER_ARCHIVE_ENABLED, true);
+                settings.setBoolean(Settings.KEYS.ANALYZER_ASSEMBLY_ENABLED, true);
+                settings.setBoolean(Settings.KEYS.ANALYZER_FILE_NAME_ENABLED, true);
+                logger.info("🔧 JAR Analyzer explicitly enabled for OWASP 12.x compatibility");
+
                 Downloader.getInstance().configure(settings);  // REQUIRED: Configure downloader before Engine creation (OWASP 12.x requirement, confirmed via bytecode analysis)
                 Engine engine = new Engine(settings);
                 List<Vulnerability> vulnerabilities = new ArrayList<>();
-                
+
+                // CRITICAL FIX: Initialize NVD database BEFORE scanning dependencies
+                // OWASP DC requires doUpdates() to be called before scan() to properly initialize the engine
+                try {
+                    logger.info("🔄 Initializing OWASP engine with NVD database...");
+
+                    // Check for first-time setup and ensure complete database
+                    ensureCompleteDatabaseForFirstTimeUser();
+
+                    // Skip database updates when using offline mode with autoUpdate=false
+                    if (configuration.isAutoUpdate()) {
+                        logger.info("🔄 Performing NVD database updates...");
+                        engine.doUpdates();
+                        logger.info("✅ NVD database updates completed successfully");
+
+                        // Validate and store database integrity after successful update
+                        validateAndStoreDatabaseIntegrity();
+                    } else {
+                        logger.info("🚫 Auto-update disabled - using existing NVD database");
+                    }
+                } catch (Exception updateException) {
+                    logger.warn("⚠️ NVD database update encountered issues: {}", updateException.getMessage());
+                    // Continue with analysis even if update had issues - the scan can still succeed
+                    logger.info("📊 Attempting to proceed with existing database for vulnerability analysis");
+                }
+
+                // OWASP 12.x API change: scan() returns List<Dependency> instead of accumulating internally
+                // We must capture and collect these returned dependencies
+                List<org.owasp.dependencycheck.dependency.Dependency> allScannedDependencies = new ArrayList<>();
+                int scannedCount = 0;
+                String projectName = "dependencies";  // Project name for scan reference
+
                 for (String dependencyPath : dependencies) {
                     try {
                         File depFile = new File(dependencyPath);
                         if (depFile.exists()) {
                             if (shouldScanFile(depFile)) {
-                                engine.scan(depFile, "dependencies");  // Use two-parameter scan() for OWASP 12.x
+                                logger.info("Scanning dependency: {} (size: {} bytes)", dependencyPath, depFile.length());
+                                // OWASP 12.x API: scan() returns List<Dependency> instead of accumulating internally
+                                List<org.owasp.dependencycheck.dependency.Dependency> scannedDeps = engine.scan(depFile, projectName);
+                                if (scannedDeps != null && !scannedDeps.isEmpty()) {
+                                    allScannedDependencies.addAll(scannedDeps);
+                                    scannedCount++;
+                                    logger.info("✅ Successfully scanned {} - found {} dependencies (total accumulated: {})",
+                                        depFile.getName(), scannedDeps.size(), allScannedDependencies.size());
+                                } else {
+                                    logger.warn("⚠️ Scanned {} but no dependencies returned", depFile.getName());
+                                }
                             } else {
                                 logger.debug("Skipping non-JAR dependency: {}", dependencyPath);
                             }
@@ -199,34 +248,15 @@ public class OwaspDependencyCheckScanner implements VulnerabilityScanner {
                         logger.warn("Failed to scan dependency: {}", dependencyPath, e);
                     }
                 }
-                
+
+                logger.info("Successfully scanned {} dependency files, accumulated {} total dependencies",
+                    scannedCount, allScannedDependencies.size());
+
                 try {
                     logger.info("🔍 Starting OWASP dependency analysis...");
 
-                    // Check for first-time setup and ensure complete database
-                    ensureCompleteDatabaseForFirstTimeUser();
-
-                    // Initialize engine and handle database connectivity issues more gracefully
-                    logger.info("🔄 Initializing OWASP engine with NVD database...");
-                    try {
-                        // Skip database updates when using offline mode with autoUpdate=false
-                        if (configuration.isAutoUpdate()) {
-                            logger.info("🔄 Performing NVD database updates...");
-                            engine.doUpdates();
-                            logger.info("✅ NVD database updates completed successfully");
-
-                            // Validate and store database integrity after successful update
-                            validateAndStoreDatabaseIntegrity();
-                        } else {
-                            logger.info("🚫 Auto-update disabled - using existing NVD database");
-                        }
-
-                    } catch (Exception updateException) {
-                        logger.warn("⚠️ NVD database update encountered issues: {}", updateException.getMessage());
-                        // Continue with analysis even if update had issues - the scan can still succeed
-                        logger.info("📊 Attempting to proceed with existing database for vulnerability analysis");
-                    }
-                    
+                    // Engine and database already initialized before scanning (lines 188-211)
+                    // Now analyze the scanned dependencies for vulnerabilities
                     engine.analyzeDependencies();
                     logger.info("✅ OWASP dependency analysis completed");
                 } catch (DatabaseException de) {
@@ -253,7 +283,7 @@ public class OwaspDependencyCheckScanner implements VulnerabilityScanner {
                         .anyMatch(this::isCvssV4ParsingException);
                     boolean hasNoDataException = ec.getExceptions().stream()
                         .anyMatch(this::isNoDataException);
-                        
+
                     if (hasLockException) {
                         logger.warn("Database lock detected in exception collection. Some dependencies may not be fully analyzed.");
                     }
@@ -267,12 +297,23 @@ public class OwaspDependencyCheckScanner implements VulnerabilityScanner {
                     }
                     // Continue with analysis even if there are some exceptions
                 }
-                
-                for (Dependency dependency : engine.getDependencies()) {
-                    for (org.owasp.dependencycheck.dependency.Vulnerability owaspVuln : dependency.getVulnerabilities()) {
-                        Vulnerability vuln = convertOwaspVulnerability(owaspVuln, dependency);
-                        vulnerabilities.add(vuln);
+
+                // CRITICAL FIX: In OWASP 12.x, engine.scan() doesn't return dependencies properly
+                // Instead, we must use engine.getDependencies() AFTER analyzeDependencies() completes
+                // The scanned files are tracked internally by the engine
+                Dependency[] analyzedDependenciesArray = engine.getDependencies();
+                logger.info("📊 Retrieved {} analyzed dependencies from engine",
+                    analyzedDependenciesArray != null ? analyzedDependenciesArray.length : 0);
+
+                if (analyzedDependenciesArray != null && analyzedDependenciesArray.length > 0) {
+                    for (Dependency dependency : analyzedDependenciesArray) {
+                        for (org.owasp.dependencycheck.dependency.Vulnerability owaspVuln : dependency.getVulnerabilities()) {
+                            Vulnerability vuln = convertOwaspVulnerability(owaspVuln, dependency);
+                            vulnerabilities.add(vuln);
+                        }
                     }
+                } else {
+                    logger.warn("⚠️ No dependencies returned from engine.getDependencies() - this indicates a scanning issue");
                 }
                 
                 engine.close();
@@ -1659,10 +1700,11 @@ public class OwaspDependencyCheckScanner implements VulnerabilityScanner {
             // Let OWASP handle database configuration automatically
             // Removed explicit H2 driver settings to avoid ClassNotFoundException
             
-            // Configure settings to prevent database corruption issues
-            boolean safeAutoUpdate = shouldUpdate && cacheValid; // Only update if cache is actually valid
-            settings.setBoolean(Settings.KEYS.AUTO_UPDATE, safeAutoUpdate);
-            settings.setBoolean(Settings.KEYS.UPDATE_NVDCVE_ENABLED, safeAutoUpdate);
+            // Configure settings for database access and updates
+            // CRITICAL FIX: AUTO_UPDATE must be true to enable database access, not just for updates
+            // Setting it to false prevents the engine from accessing the existing database during analysis
+            settings.setBoolean(Settings.KEYS.AUTO_UPDATE, shouldUpdate);
+            settings.setBoolean(Settings.KEYS.UPDATE_NVDCVE_ENABLED, shouldUpdate);
             settings.setBoolean(Settings.KEYS.ANALYZER_NVD_CVE_ENABLED, true);
 
             // Let OWASP 11.x use its default H2 database configuration
