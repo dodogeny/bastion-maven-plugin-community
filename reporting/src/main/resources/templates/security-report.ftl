@@ -1670,7 +1670,7 @@
             <#if scanResult.vulnerabilities?has_content>
                 <!-- CVE Documentation Table -->
                 <div class="section">
-                    <h2>📋 CVE Documentation & References</h2>
+                    <h2>📋 CVE Documentation &amp; References</h2>
                     <div class="table-container">
                         <table class="cve-documentation-table">
                             <thead>
