@@ -1961,7 +1961,7 @@
 
         <footer class="footer">
             <div class="powered-by">
-                <strong>Powered by Bastion Maven Plugin v${bastionVersion!"1.0.0"}</strong><br>
+                <strong>Powered by Bastion Maven Plugin v${bastionVersion!"1.1.0"}</strong><br/>
                 Enterprise-grade vulnerability scanning for Maven projects
             </div>
             <div class="timestamp">
