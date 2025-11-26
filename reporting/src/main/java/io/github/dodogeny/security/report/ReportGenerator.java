@@ -12,6 +12,7 @@ import io.github.dodogeny.security.model.Vulnerability;
 import org.apache.commons.io.IOUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.xhtmlrenderer.pdf.ITextRenderer;
 
 import java.io.*;
 import java.nio.charset.StandardCharsets;
@@ -281,20 +282,25 @@ public class ReportGenerator {
     }
     
     private void generatePdfReport(ScanResult scanResult, String outputPath) throws IOException, TemplateException {
-        String htmlContent = generateHtmlContent(scanResult);
-        
+        logger.info("Generating PDF report: {}", outputPath);
+
         try {
-            File htmlFile = File.createTempFile("bastion-report", ".html");
-            try (OutputStreamWriter writer = new OutputStreamWriter(new FileOutputStream(htmlFile), StandardCharsets.UTF_8)) {
-                writer.write(htmlContent);
+            // First generate HTML content
+            String htmlContent = generateHtmlContent(scanResult);
+
+            // Convert HTML to PDF using Flying Saucer (iText)
+            try (FileOutputStream outputStream = new FileOutputStream(outputPath)) {
+                ITextRenderer renderer = new ITextRenderer();
+                renderer.setDocumentFromString(htmlContent);
+                renderer.layout();
+                renderer.createPDF(outputStream);
             }
-            
-            logger.warn("PDF generation requires additional setup - HTML content written to: {}", htmlFile.getAbsolutePath());
-            logger.info("For PDF generation, consider using external tools or libraries like wkhtmltopdf");
-            
-        } catch (IOException e) {
-            logger.error("Failed to create PDF report", e);
-            throw e;
+
+            logger.info("PDF report generated successfully: {}", outputPath);
+
+        } catch (Exception e) {
+            logger.error("Failed to generate PDF report", e);
+            throw new IOException("PDF report generation failed: " + e.getMessage(), e);
         }
     }
     

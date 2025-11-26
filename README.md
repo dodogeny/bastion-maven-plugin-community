@@ -4,7 +4,7 @@
 [![Build Status](https://github.com/dodogeny/bastion-maven-community-plugin/workflows/CI/badge.svg)](https://github.com/dodogeny/bastion-maven-community-plugin/actions)
 [![License](https://img.shields.io/badge/License-Apache%202.0-blue.svg)](https://opensource.org/licenses/Apache-2.0)
 
-A Maven plugin for automated vulnerability scanning and CVE detection in your dependencies. Built on OWASP Dependency-Check 12.1.3 with enhanced performance, intelligent auto-update, and trend analysis capabilities.
+A comprehensive Maven security plugin for automated vulnerability scanning, CVE detection, and software supply chain security. The **Community Edition** provides powerful open-source vulnerability scanning built on OWASP Dependency-Check 12.1.3 with intelligent auto-update and trend analysis. The **Commercial Edition** extends this with advanced features including predictive update analysis, license compliance checks, risk scoring, and enterprise-grade reporting.
 
 📖 **[Quick Start Guide](QUICKSTART.md)** - Get up and running in 5 minutes!
 
@@ -605,62 +605,148 @@ Bastion provides detailed performance metrics:
 
 ## Enterprise Edition
 
-Bastion Maven Plugin offers an Enterprise Edition with advanced features for teams and organizations, including **License Compliance & Risk Analysis** to prevent legal issues and ensure regulatory compliance.
+Bastion Maven Plugin offers an **Enterprise Edition** designed for teams and organizations that need advanced security capabilities, predictive intelligence, and comprehensive license compliance management. Built for production environments where security, compliance, and governance are critical.
 
 ### Key Enterprise Features
 
-**📊 Advanced Reporting**
-- PDF exports for stakeholders and auditors
-- SARIF format for GitHub Security tab integration
-- CycloneDX SBOM for supply chain compliance
-- Custom report templates
+**🔮 Predictive Update Analysis** *(Enterprise Exclusive)*
+Intelligent dependency update recommendations powered by real-time Maven Central analysis:
+- **Smart Version Analysis**: Automatically analyzes 5+ newer versions of vulnerable dependencies
+- **CVE Impact Forecasting**: Predicts which CVEs would be resolved vs. introduced by each update
+- **Risk-Based Recommendations**: Categorizes updates as "Safe" (reduces CVEs, no new issues) vs "Risky" (may introduce new vulnerabilities)
+- **Comprehensive Reporting**: HTML, PDF, and JSON reports with detailed upgrade paths
+- **Zero Configuration**: Works out-of-the-box with your existing dependencies
+- **Maven Central Integration**: Real-time version availability and metadata lookup
+- **Configurable Analysis Depth**: COMPREHENSIVE, STANDARD, or QUICK scanning modes
+- **Pre-release Handling**: Option to include/exclude beta versions in analysis
 
-**📧 Team Collaboration**
-- Email/Slack notifications on CRITICAL findings
-- Multi-user dashboard
-- Role-based access control
-- Centralized vulnerability management
+*Example Output:*
+```
+🔮 Predictive Update Analysis Summary
+├─ Dependencies Analyzed: 127
+├─ Safe Updates Available: 23 (will resolve 47 CVEs)
+├─ Updates with Risks: 8 (require manual review)
+└─ No Safe Updates: 12 (wait for patches)
 
-**💾 Enterprise Storage**
-- Persistent databases (PostgreSQL, MySQL, H2)
-- Unlimited scan history
-- Cross-project analytics
-- Unlimited projects (Community: 50 max)
+🏆 Top Recommendations:
+  • spring-security-core: 5.7.1 → 6.2.1 (resolves 8 CVEs)
+  • jackson-databind: 2.13.3 → 2.16.1 (resolves 12 CVEs)
+  • commons-fileupload: 1.4 → 1.5 (resolves 2 CVEs)
+```
 
-**🔍 Advanced Features**
-- False positive suppression
-- Custom severity thresholds
-- Vulnerability trend analysis
-- Predictive update analysis
+**⚖️ License Compliance & Risk Analysis** *(Enterprise Exclusive)*
+Comprehensive license management to prevent legal issues and ensure regulatory compliance:
+- **Automatic License Detection**: Scans all project dependencies and detects licenses from manifests, POMs, and metadata
+- **Policy Enforcement Engine**:
+  - Define approved licenses (allowlist)
+  - Block prohibited licenses (blocklist)
+  - Require OSI-approved licenses only
+  - Custom policy presets (DEFAULT, PERMISSIVE, STRICT)
+- **License Compatibility Matrix**: Validates compatibility between 150+ license pairs (e.g., GPL + Apache, MIT + BSD)
+- **Risk Scoring System**: Automated risk assessment (0-100 scale) with compliance percentage
+- **Comprehensive Reporting**: TEXT, HTML, JSON, CSV, and PDF formats for audits and stakeholders
+- **20+ License Support**: Apache-2.0, MIT, GPL-2.0/3.0, LGPL-2.1/3.0, BSD-2/3-Clause, MPL-2.0, ISC, EPL-1.0/2.0, CDDL-1.0, AGPL-3.0, and more
+- **Violation Management**: CRITICAL and HIGH severity violations with configurable build failure policies
+- **Unknown License Handling**: Flag or block dependencies with unclear licensing
 
-**⚖️ License Compliance & Risk Analysis**
-- Automatic license detection from dependencies
-- License policy enforcement (approve/block lists)
-- License compatibility matrix (150+ license pairs)
-- Risk scoring and compliance reporting (Text, HTML, JSON, CSV)
-- Support for 20+ common licenses (Apache, MIT, GPL, LGPL, BSD, etc.)
+*Policy Examples:*
+```xml
+<!-- Strict GPL-incompatible policy -->
+<configuration>
+    <policyPreset>STRICT</policyPreset>
+    <blockedLicenses>
+        <license>GPL-3.0</license>
+        <license>AGPL-3.0</license>
+    </blockedLicenses>
+    <requireOsiApproved>true</requireOsiApproved>
+    <failOnViolation>true</failOnViolation>
+</configuration>
+```
 
-**⚡ Enterprise Support**
-- Priority support (4-hour SLA)
-- Direct access to security experts
-- Custom integrations
-- Training and onboarding
+**📊 Advanced Reporting & Export Formats**
+- **PDF Reports**: Executive-ready documents for stakeholders, auditors, and compliance teams
+- **SARIF Format**: GitHub Security tab integration for automated security alerts
+- **CycloneDX SBOM**: Software Bill of Materials for supply chain compliance (NTIA, EO 14028)
+- **Custom Templates**: Branded reports with company logos and styling
+- **Trend Graphs**: Visual charts showing vulnerability trends over time
+- **Comparison Reports**: Side-by-side current vs. predictive analysis
+
+**💾 Enterprise Storage & Scalability**
+- **Persistent Databases**: PostgreSQL, MySQL, H2 support with automatic schema management
+- **Unlimited Scan History**: Store years of scan data for trend analysis and compliance audits
+- **Unlimited Projects**: No 50-project limit (Community restriction removed)
+- **Cross-Project Analytics**: Organization-wide security dashboards
+- **Data Retention Policies**: Configurable retention with automatic archival
+- **Multi-Tenant Support**: Separate data isolation for different teams/departments
+
+**📧 Team Collaboration & Notifications**
+- **Email Notifications**: Automatic alerts on CRITICAL/HIGH findings with detailed CVE information
+- **Slack Integration**: Real-time notifications to security channels with actionable summaries
+- **Configurable Triggers**: Set thresholds for when to notify (e.g., only CRITICAL vulnerabilities)
+- **Multi-User Dashboards**: Centralized vulnerability management for security teams
+- **Role-Based Access Control (RBAC)**: Separate permissions for developers, security, and management
+
+**🔍 Advanced Analysis Features**
+- **False Positive Suppression**: Mark and track false positives with justifications (audit trail)
+- **Custom Severity Thresholds**: Override default CVSS scores based on your environment
+- **Exploitability Analysis**: Identify CVEs with known exploits in the wild
+- **Dependency Tree Visualization**: Interactive graphs showing vulnerability propagation paths
+- **Transitive Dependency Analysis**: Identify which top-level dependencies introduce vulnerabilities
+
+**⚡ Enterprise Support & SLA**
+- **4-Hour Response SLA**: Priority email support with guaranteed response times
+- **Direct Access to Security Experts**: Consult with security professionals on vulnerability remediation
+- **Custom Integration Support**: Help with CI/CD pipelines, custom workflows, and automation
+- **Training & Onboarding**: Team training sessions and best practices documentation
+- **Dedicated Account Manager**: For enterprise customers (50+ licenses)
+- **Security Advisory Updates**: Early notification of critical vulnerabilities
 
 ### Community vs Enterprise
 
 | Feature | Community Edition | Enterprise Edition |
 |---------|-------------------|-------------------|
-| Vulnerability Detection | ✅ Full | ✅ Full |
+| **Core Scanning** | | |
+| Vulnerability Detection | ✅ Full (OWASP 12.1.3) | ✅ Full (OWASP 12.1.3) |
+| CVE Database Auto-Update | ✅ Automatic | ✅ Automatic |
+| Multi-Module Support | ✅ Yes | ✅ Yes |
 | HTML/JSON Reports | ✅ Yes | ✅ Yes |
-| PDF/SARIF/SBOM Reports | ❌ No | ✅ Yes |
-| License Compliance Analysis | ❌ No | ✅ Yes |
-| Email/Slack Notifications | ❌ No | ✅ Yes |
+| Trend Analysis (CVE Changes) | ✅ Basic | ✅ Advanced |
+| **Predictive Intelligence** | | |
+| Predictive Update Analysis | ❌ No | ✅ Yes |
+| Safe Update Recommendations | ❌ No | ✅ Yes |
+| CVE Impact Forecasting | ❌ No | ✅ Yes |
+| Maven Central Integration | ❌ No | ✅ Real-time |
+| **License Compliance** | | |
+| License Detection | ❌ No | ✅ Automatic |
+| Policy Enforcement | ❌ No | ✅ Approve/Block Lists |
+| License Compatibility Matrix | ❌ No | ✅ 150+ Pairs |
+| Risk Scoring | ❌ No | ✅ 0-100 Scale |
+| Compliance Reporting | ❌ No | ✅ TEXT/HTML/JSON/CSV/PDF |
+| **Advanced Reporting** | | |
+| PDF Reports | ❌ No | ✅ Yes |
+| SARIF (GitHub Security) | ❌ No | ✅ Yes |
+| CycloneDX SBOM | ❌ No | ✅ Yes |
+| Custom Templates | ❌ No | ✅ Yes |
+| **Collaboration** | | |
+| Email Notifications | ❌ No | ✅ CRITICAL/HIGH Alerts |
+| Slack Integration | ❌ No | ✅ Real-time |
+| Multi-User Dashboards | ❌ No | ✅ Yes |
+| Role-Based Access | ❌ No | ✅ RBAC |
+| **Storage & Scale** | | |
+| Storage Mode | 💾 In-Memory/JSON | ✅ PostgreSQL/MySQL/H2 |
 | Scan History | ✅ 10 per project | ✅ Unlimited |
 | Maximum Projects | ✅ 50 projects | ✅ Unlimited |
-| Data Retention | ⏰ 24 hours | ✅ Permanent |
-| Database Storage | 💾 In-Memory | ✅ PostgreSQL/MySQL |
-| Support | 📖 Community | ⚡ Priority (4h SLA) |
-| Price | 🆓 Free Forever | 💰 $89/month |
+| Data Retention | ⏰ Temporary | ✅ Permanent |
+| Cross-Project Analytics | ❌ No | ✅ Yes |
+| **Support & SLA** | | |
+| Support Channel | 📖 Community/GitHub | ⚡ Priority Email |
+| Response Time | ⏰ Best Effort | ✅ 4-Hour SLA |
+| Security Experts | ❌ No | ✅ Direct Access |
+| Custom Integrations | ❌ No | ✅ Yes |
+| Training & Onboarding | ❌ No | ✅ Included |
+| **Pricing** | | |
+| Cost | 🆓 **Free Forever** | 💰 **$89/month** |
+| 14-Day Trial | N/A | ✅ No Credit Card |
 
 ### Upgrade Messaging
 
@@ -781,9 +867,17 @@ mvn clean verify
 # Or run directly
 mvn bastion-maven-enterprise-plugin:scan
 
+# Run predictive update analysis
+mvn bastion-maven-enterprise-plugin:predictive-analysis
+
 # Run license compliance check
 mvn bastion-maven-enterprise-plugin:license-check
 ```
+
+**Enterprise Goals Available:**
+- `scan` - Full vulnerability scanning with PDF/SARIF/SBOM exports
+- `predictive-analysis` - Analyze dependency updates and CVE impact
+- `license-check` - License compliance and risk analysis
 
 #### Step 5: Verify Enterprise Features
 
@@ -791,13 +885,14 @@ Check that enterprise features are working:
 
 1. **Database**: Verify scan results are persisted in your database
 2. **PDF Reports**: Check `target/bastion-reports/` for PDF exports
-3. **License Compliance**: Run `mvn bastion:license-check` and review reports in `target/bastion-reports/`
-4. **Email Notifications**: Verify emails are received for CRITICAL vulnerabilities
-5. **Slack Notifications**: Check your Slack channel for alerts
+3. **Predictive Analysis**: Run `mvn bastion-maven-enterprise-plugin:predictive-analysis` and review recommendations in `target/bastion-predictive-reports/`
+4. **License Compliance**: Run `mvn bastion-maven-enterprise-plugin:license-check` and review reports in `target/bastion-reports/`
+5. **Email Notifications**: Verify emails are received for CRITICAL vulnerabilities
+6. **Slack Notifications**: Check your Slack channel for alerts
 
-#### Step 6: Configure License Compliance (Optional)
+#### Step 6: Configure Advanced Features (Optional)
 
-Add license checking to your build lifecycle:
+Add predictive analysis and license checking to your build lifecycle:
 
 ```xml
 <plugin>
@@ -814,6 +909,21 @@ Add license checking to your build lifecycle:
             <phase>verify</phase>
         </execution>
 
+        <!-- Predictive Update Analysis -->
+        <execution>
+            <id>predictive-analysis</id>
+            <goals>
+                <goal>predictive-analysis</goal>
+            </goals>
+            <phase>verify</phase>
+            <configuration>
+                <analysisDepth>COMPREHENSIVE</analysisDepth>
+                <maxVersionsToAnalyze>5</maxVersionsToAnalyze>
+                <onlyVulnerableDependencies>true</onlyVulnerableDependencies>
+                <reportFormats>HTML,PDF,JSON</reportFormats>
+            </configuration>
+        </execution>
+
         <!-- License Compliance Check -->
         <execution>
             <id>license-check</id>
@@ -824,14 +934,16 @@ Add license checking to your build lifecycle:
             <configuration>
                 <policyPreset>DEFAULT</policyPreset>
                 <failOnViolation>true</failOnViolation>
-                <reportFormat>TEXT,HTML,JSON</reportFormat>
+                <reportFormat>TEXT,HTML,JSON,PDF</reportFormat>
             </configuration>
         </execution>
     </executions>
 </plugin>
 ```
 
-**📖 License Compliance Documentation**: [Full Guide](../bastion-maven-plugin-enterprise/LICENSE_COMPLIANCE_GUIDE.md)
+**📖 Enterprise Documentation**:
+- Predictive Analysis: [Configuration Guide](../bastion-maven-plugin-enterprise/PREDICTIVE_ANALYSIS_GUIDE.md)
+- License Compliance: [Full Guide](../bastion-maven-plugin-enterprise/LICENSE_COMPLIANCE_GUIDE.md)
 
 ### Enterprise Support
 
