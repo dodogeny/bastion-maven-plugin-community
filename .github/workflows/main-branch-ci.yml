@@ -16,6 +16,9 @@ jobs:
     steps:
       - name: Checkout code
         uses: actions/checkout@v4
+        with:
+          clean: true
+          fetch-depth: 0
 
       - name: Set up JDK 21
         uses: actions/setup-java@v4
@@ -23,6 +26,11 @@ jobs:
           java-version: '21'
           distribution: 'temurin'
           cache: 'maven'
+
+      - name: Clean Maven cache
+        run: |
+          rm -rf ~/.m2/repository/io/github/dodogeny
+          echo "Cleaned local build artifacts from cache"
 
       - name: Compile project
         run: mvn clean compile -Dgpg.skip=true
