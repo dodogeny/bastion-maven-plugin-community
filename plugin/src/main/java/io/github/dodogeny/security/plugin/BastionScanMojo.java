@@ -447,7 +447,7 @@ public class BastionScanMojo extends AbstractMojo {
 
                     getLog().warn("");
                     getLog().warn("📊 Enterprise teams save 10+ hours/month on security workflows");
-                    getLog().warn("   → Start 14-day trial: https://bastion-plugin.lemonsqueezy.com/checkout");
+                    getLog().warn("   → Start 14-day trial: https://bastion-plugin.lemonsqueezy.com/");
                     getLog().warn("");
                     continue;
                 }

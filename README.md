@@ -677,7 +677,6 @@ Comprehensive license management to prevent legal issues and ensure regulatory c
 - **Unlimited Projects**: No 50-project limit (Community restriction removed)
 - **Cross-Project Analytics**: Organization-wide security dashboards
 - **Data Retention Policies**: Configurable retention with automatic archival
-- **Multi-Tenant Support**: Separate data isolation for different teams/departments
 
 **📧 Team Collaboration & Notifications**
 - **Email Notifications**: Automatic alerts on CRITICAL/HIGH findings with detailed CVE information
@@ -736,7 +735,7 @@ Comprehensive license management to prevent legal issues and ensure regulatory c
 | Custom Integrations          | ❌ No                  | ✅ Yes                    |
 | **Pricing**                  |                       |                          |
 | Cost                         | 🆓 **Free Forever**   | 💰 **$89/month**         |
-| 14-Day Trial                 | N/A                   | ✅ No Credit Card         |
+| 14-Day Trial                 | N/A                   | ✅ Available               |
 
 ### Upgrade Messaging
 
