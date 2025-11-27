@@ -681,10 +681,7 @@ Comprehensive license management to prevent legal issues and ensure regulatory c
 
 **📧 Team Collaboration & Notifications**
 - **Email Notifications**: Automatic alerts on CRITICAL/HIGH findings with detailed CVE information
-- **Slack Integration**: Real-time notifications to security channels with actionable summaries
 - **Configurable Triggers**: Set thresholds for when to notify (e.g., only CRITICAL vulnerabilities)
-- **Multi-User Dashboards**: Centralized vulnerability management for security teams
-- **Role-Based Access Control (RBAC)**: Separate permissions for developers, security, and management
 
 **🔍 Advanced Analysis Features**
 - **False Positive Suppression**: Mark and track false positives with justifications (audit trail)
@@ -694,59 +691,52 @@ Comprehensive license management to prevent legal issues and ensure regulatory c
 - **Transitive Dependency Analysis**: Identify which top-level dependencies introduce vulnerabilities
 
 **⚡ Enterprise Support & SLA**
-- **4-Hour Response SLA**: Priority email support with guaranteed response times
+- **24-Hour Response SLA**: Priority email support with guaranteed response times
 - **Direct Access to Security Experts**: Consult with security professionals on vulnerability remediation
 - **Custom Integration Support**: Help with CI/CD pipelines, custom workflows, and automation
-- **Training & Onboarding**: Team training sessions and best practices documentation
-- **Dedicated Account Manager**: For enterprise customers (50+ licenses)
 - **Security Advisory Updates**: Early notification of critical vulnerabilities
 
 ### Community vs Enterprise
 
-| Feature | Community Edition | Enterprise Edition |
-|---------|-------------------|-------------------|
-| **Core Scanning** | | |
-| Vulnerability Detection | ✅ Full (OWASP 12.1.3) | ✅ Full (OWASP 12.1.3) |
-| CVE Database Auto-Update | ✅ Automatic | ✅ Automatic |
-| Multi-Module Support | ✅ Yes | ✅ Yes |
-| HTML/JSON Reports | ✅ Yes | ✅ Yes |
-| Trend Analysis (CVE Changes) | ✅ Basic | ✅ Advanced |
-| **Predictive Intelligence** | | |
-| Predictive Update Analysis | ❌ No | ✅ Yes |
-| Safe Update Recommendations | ❌ No | ✅ Yes |
-| CVE Impact Forecasting | ❌ No | ✅ Yes |
-| Maven Central Integration | ❌ No | ✅ Real-time |
-| **License Compliance** | | |
-| License Detection | ❌ No | ✅ Automatic |
-| Policy Enforcement | ❌ No | ✅ Approve/Block Lists |
-| License Compatibility Matrix | ❌ No | ✅ 150+ Pairs |
-| Risk Scoring | ❌ No | ✅ 0-100 Scale |
-| Compliance Reporting | ❌ No | ✅ TEXT/HTML/JSON/CSV/PDF |
-| **Advanced Reporting** | | |
-| PDF Reports | ❌ No | ✅ Yes |
-| SARIF (GitHub Security) | ❌ No | ✅ Yes |
-| CycloneDX SBOM | ❌ No | ✅ Yes |
-| Custom Templates | ❌ No | ✅ Yes |
-| **Collaboration** | | |
-| Email Notifications | ❌ No | ✅ CRITICAL/HIGH Alerts |
-| Slack Integration | ❌ No | ✅ Real-time |
-| Multi-User Dashboards | ❌ No | ✅ Yes |
-| Role-Based Access | ❌ No | ✅ RBAC |
-| **Storage & Scale** | | |
-| Storage Mode | 💾 In-Memory/JSON | ✅ PostgreSQL/MySQL/H2 |
-| Scan History | ✅ 10 per project | ✅ Unlimited |
-| Maximum Projects | ✅ 50 projects | ✅ Unlimited |
-| Data Retention | ⏰ Temporary | ✅ Permanent |
-| Cross-Project Analytics | ❌ No | ✅ Yes |
-| **Support & SLA** | | |
-| Support Channel | 📖 Community/GitHub | ⚡ Priority Email |
-| Response Time | ⏰ Best Effort | ✅ 4-Hour SLA |
-| Security Experts | ❌ No | ✅ Direct Access |
-| Custom Integrations | ❌ No | ✅ Yes |
-| Training & Onboarding | ❌ No | ✅ Included |
-| **Pricing** | | |
-| Cost | 🆓 **Free Forever** | 💰 **$89/month** |
-| 14-Day Trial | N/A | ✅ No Credit Card |
+| Feature                      | Community Edition     | Enterprise Edition       |
+|------------------------------|-----------------------|--------------------------|
+| **Core Scanning**            |                       |                          |
+| Vulnerability Detection      | ✅ Full (OWASP 12.1.3) | ✅ Full (OWASP 12.1.3)    |
+| CVE Database Auto-Update     | ✅ Automatic           | ✅ Automatic              |
+| Multi-Module Support         | ✅ Yes                 | ✅ Yes                    |
+| HTML/JSON Reports            | ✅ Yes                 | ✅ Yes                    |
+| Trend Analysis (CVE Changes) | ✅ Basic               | ✅ Advanced               |
+| **Predictive Intelligence**  |                       |                          |
+| Predictive Update Analysis   | ❌ No                  | ✅ Yes                    |
+| Safe Update Recommendations  | ❌ No                  | ✅ Yes                    |
+| CVE Impact Forecasting       | ❌ No                  | ✅ Yes                    |
+| Maven Central Integration    | ❌ No                  | ✅ Real-time              |
+| **License Compliance**       |                       |                          |
+| License Detection            | ❌ No                  | ✅ Automatic              |
+| Policy Enforcement           | ❌ No                  | ✅ Approve/Block Lists    |
+| License Compatibility Matrix | ❌ No                  | ✅ 150+ Pairs             |
+| Risk Scoring                 | ❌ No                  | ✅ 0-100 Scale            |
+| Compliance Reporting         | ❌ No                  | ✅ TEXT/HTML/JSON/CSV/PDF |
+| **Advanced Reporting**       |                       |                          |
+| PDF Reports                  | ❌ No                  | ✅ Yes                    |
+| SARIF (GitHub Security)      | ❌ No                  | ✅ Yes                    |
+| CycloneDX SBOM               | ❌ No                  | ✅ Yes                    |
+| Custom Templates             | ❌ No                  | ✅ Yes                    |
+| **Collaboration**            |                       |                          |
+| Email Notifications          | ❌ No                  | ✅ CRITICAL/HIGH Alerts   |
+| **Storage & Scale**          |                       |                          |
+| Storage Mode                 | 💾 In-Memory/JSON     | ✅ PostgreSQL/MySQL/H2    |
+| Scan History                 | ✅ 10 per project      | ✅ Unlimited              |
+| Maximum Projects             | ✅ 50 projects         | ✅ Unlimited              |
+| Data Retention               | ⏰ Temporary           | ✅ Permanent              |
+| Cross-Project Analytics      | ❌ No                  | ✅ Yes                    |
+| **Support & SLA**            |                       |                          |
+| Support Channel              | 📖 Community/GitHub   | ⚡ Priority Email         |
+| Response Time                | ⏰ Best Effort         | ✅ 24-Hour SLA            |
+| Custom Integrations          | ❌ No                  | ✅ Yes                    |
+| **Pricing**                  |                       |                          |
+| Cost                         | 🆓 **Free Forever**   | 💰 **$89/month**         |
+| 14-Day Trial                 | N/A                   | ✅ No Credit Card         |
 
 ### Upgrade Messaging
 
@@ -766,8 +756,7 @@ These messages are **non-intrusive** and designed to inform users about features
 - ✅ PostgreSQL/MySQL database support
 - ✅ PDF/SARIF/SBOM exports
 - ✅ License compliance & risk analysis
-- ✅ Email/Slack notifications
-- ✅ Priority support (4-hour SLA)
+- ✅ Priority support (24-hour SLA)
 
 **14-Day Free Trial**:
 - No credit card required
@@ -814,10 +803,7 @@ After subscribing, you'll receive a license key. Here's how to configure it:
         <emailEnabled>true</emailEnabled>
         <emailRecipients>security@yourcompany.com</emailRecipients>
         <emailOnlyForCritical>true</emailOnlyForCritical>
-
-        <!-- Slack Notifications (Optional) -->
-        <slackWebhook>${env.SLACK_WEBHOOK_URL}</slackWebhook>
-        <slackEnabled>true</slackEnabled>
+        
     </configuration>
 </plugin>
 ```
@@ -835,8 +821,6 @@ export NVD_API_KEY=your-nvd-api-key
 export DB_USERNAME=bastion_user
 export DB_PASSWORD=secure_password
 
-# Slack Webhook (optional)
-export SLACK_WEBHOOK_URL=https://hooks.slack.com/services/YOUR/WEBHOOK/URL
 ```
 
 #### Step 3: Initialize Database
@@ -888,7 +872,6 @@ Check that enterprise features are working:
 3. **Predictive Analysis**: Run `mvn bastion-maven-enterprise-plugin:predictive-analysis` and review recommendations in `target/bastion-predictive-reports/`
 4. **License Compliance**: Run `mvn bastion-maven-enterprise-plugin:license-check` and review reports in `target/bastion-reports/`
 5. **Email Notifications**: Verify emails are received for CRITICAL vulnerabilities
-6. **Slack Notifications**: Check your Slack channel for alerts
 
 #### Step 6: Configure Advanced Features (Optional)
 

@@ -1203,7 +1203,7 @@ public class BastionScanMojo extends AbstractMojo {
             getLog().info("");
             getLog().info("  Consider Enterprise Edition ($89/month):");
             getLog().info("     • Unlimited history + advanced analytics");
-            getLog().info("     • Email/Slack notifications");
+            getLog().info("     • Email notifications");
             getLog().info("     • PDF/SARIF export for compliance");
             getLog().info("");
             getLog().info("  → Start 14-day free trial: https://bastion-plugin.lemonsqueezy.com/");
