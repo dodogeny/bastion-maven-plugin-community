@@ -25,7 +25,7 @@ A comprehensive Maven security plugin for automated vulnerability scanning, CVE 
 
 ### Prerequisites
 
-- **Java**: JDK 21 or higher (required for v1.1.0+)
+- **Java**: JDK 21 or higher (required for v1.1.0+, v1.2.0 recommended)
 - **Maven**: 3.6.0 or higher
 - **Memory**: 1GB+ RAM for large projects
 - **Internet**: First-time NVD database download (~317,000 CVEs)
@@ -38,7 +38,7 @@ Add the plugin to your `pom.xml`:
 <plugin>
     <groupId>io.github.dodogeny</groupId>
     <artifactId>bastion-maven-community-plugin</artifactId>
-    <version>1.1.0</version>
+    <version>1.2.0</version>
     <executions>
         <execution>
             <goals>
@@ -60,10 +60,10 @@ mvn clean verify
 **Option 2: Direct Plugin Execution**
 ```bash
 # Basic scan
-mvn io.github.dodogeny:bastion-maven-community-plugin:1.1.0:scan
+mvn io.github.dodogeny:bastion-maven-community-plugin:1.2.0:scan
 
 # With NVD API key (recommended for faster downloads)
-mvn io.github.dodogeny:bastion-maven-community-plugin:1.1.0:scan \
+mvn io.github.dodogeny:bastion-maven-community-plugin:1.2.0:scan \
   -Dbastion.nvd.apiKey=YOUR_NVD_API_KEY
 
 # Short form (after first use)
@@ -78,6 +78,35 @@ mvn bastion-maven-community-plugin:scan
 **⏱️ First Run**: Downloads NVD database (~318,000 CVEs, 5-10 min with API key)
 **🚀 Subsequent Runs**: Uses cached database (30-60 seconds)
 **📊 Reports**: Generated in `target/bastion-reports/`
+
+## What's New in v1.2.0
+
+### Enhanced JAR-Level Vulnerability Analysis
+- **📦 Detailed Dependency Tracking**: Comprehensive tracking of vulnerable JAR dependencies across scans
+  - **✅ Resolved JARs**: See exactly which JARs are no longer vulnerable with all fixed CVEs
+  - **🆕 New Vulnerable JARs**: Identify newly introduced dependencies with complete CVE details
+  - **⏳ Pending Vulnerable JARs**: Track ongoing vulnerabilities with partial resolution detection
+    - Know which CVEs were fixed within still-vulnerable JARs
+    - Identify new CVEs discovered in previously vulnerable dependencies
+    - Severity breakdown (Critical, High, Medium, Low) for each JAR
+
+### Improved Console Output
+- **📊 Enhanced Logging**: Beautiful formatted output boxes with detailed JAR analysis
+- **🎯 Prioritized Display**: Top vulnerable JARs sorted by severity (Critical → High → Medium → Low)
+- **📈 Trend Insights**: Actionable insights about dependency and vulnerability changes
+- **💡 Smart Analysis**: Detailed trend interpretation for in-memory database mode
+
+### Comprehensive Test Coverage
+- **🧪 New Test Suites**: 14 new test cases ensuring reliability
+- **✅ 100% Coverage**: All new JAR analysis features thoroughly tested
+- **🔍 Complex Scenarios**: Tests for partial resolutions and multi-JAR states
+
+### Version History
+- **📚 CHANGELOG.md**: Comprehensive version history with detailed change tracking
+- **🔗 Clickable Navigation**: Easy access to specific version details
+- **📖 Upgrade Guides**: Clear instructions for migrating between versions
+
+[See the complete CHANGELOG](CHANGELOG.md#120---2025-12-08)
 
 ## What's New in v1.1.0
 
@@ -168,7 +197,7 @@ mvn bastion:scan -Dbastion.failOnError=true -Dbastion.severityThreshold=CRITICAL
 <plugin>
     <groupId>io.github.dodogeny</groupId>
     <artifactId>bastion-maven-community-plugin</artifactId>
-    <version>1.1.0</version>
+    <version>1.2.0</version>
     <configuration>
         <skip>false</skip>
         <failOnError>true</failOnError>
@@ -184,7 +213,7 @@ mvn bastion:scan -Dbastion.failOnError=true -Dbastion.severityThreshold=CRITICAL
 <plugin>
     <groupId>io.github.dodogeny</groupId>
     <artifactId>bastion-maven-community-plugin</artifactId>
-    <version>1.1.0</version>
+    <version>1.2.0</version>
     <configuration>
         <communityStorageMode>JSON_FILE</communityStorageMode>
         <jsonFilePath>${project.build.directory}/security/vulnerabilities.json</jsonFilePath>
@@ -200,7 +229,7 @@ mvn bastion:scan -Dbastion.failOnError=true -Dbastion.severityThreshold=CRITICAL
 <plugin>
     <groupId>io.github.dodogeny</groupId>
     <artifactId>bastion-maven-community-plugin</artifactId>
-    <version>1.1.0</version>
+    <version>1.2.0</version>
     <configuration>
         <enableMultiModule>true</enableMultiModule>
         <communityStorageMode>JSON_FILE</communityStorageMode>
@@ -216,7 +245,7 @@ mvn bastion:scan -Dbastion.failOnError=true -Dbastion.severityThreshold=CRITICAL
 <plugin>
     <groupId>io.github.dodogeny</groupId>
     <artifactId>bastion-maven-community-plugin</artifactId>
-    <version>1.1.0</version>
+    <version>1.2.0</version>
     <configuration>
         <!-- NVD API key for faster database downloads and updates -->
         <nvdApiKey>${env.NVD_API_KEY}</nvdApiKey>
@@ -534,16 +563,16 @@ rm -rf ~/.m2/repository/org/owasp/dependency-check-utils/
 mvn bastion:scan
 ```
 
-**Out of Memory Errors (Fixed in v1.1.0)**
+**Out of Memory Errors (Fixed in v1.1.0+)**
 
 If you're using an older version and experiencing OOM errors (exit code 137) or scans hanging for hours:
 
 ```bash
-# Upgrade to v1.1.0 which includes automatic memory management
-# Update your pom.xml to version 1.1.0
+# Upgrade to v1.2.0 (or v1.1.0+) which includes automatic memory management
+# Update your pom.xml to version 1.2.0
 ```
 
-v1.1.0+ automatically configures memory allocation for OWASP subprocesses:
+v1.1.0+ and v1.2.0 automatically configure memory allocation for OWASP subprocesses:
 - **NVD Database Downloads**: 3GB heap automatically allocated
 - **Vulnerability Scanning**: 2GB heap automatically allocated
 - **No manual MAVEN_OPTS configuration needed**
@@ -937,10 +966,11 @@ Need help with integration or have questions?
 
 ## Compatibility Matrix
 
-| Bastion Version | Java Requirement | OWASP Dependency-Check | Auto-Update | Memory Management | Status |
-|-----------------|------------------|------------------------|-------------|-------------------|--------|
-| 1.1.0 | Java 21+ | 12.1.3 | ✅ Automatic | ✅ Automatic | **Recommended** |
-| 1.0.x | Java 8+ | 10.0.4 | ❌ Manual | ⚠️ Manual MAVEN_OPTS | Legacy (security patches only) |
+| Bastion Version | Java Requirement | OWASP Dependency-Check | Auto-Update | Memory Management | JAR Analysis | Status |
+|-----------------|------------------|------------------------|-------------|-------------------|--------------|--------|
+| 1.2.0 | Java 21+ | 12.1.3 | ✅ Automatic | ✅ Automatic | ✅ Enhanced | **Recommended** |
+| 1.1.0 | Java 21+ | 12.1.3 | ✅ Automatic | ✅ Automatic | ✅ Basic | Stable |
+| 1.0.x | Java 8+ | 10.0.4 | ❌ Manual | ⚠️ Manual MAVEN_OPTS | ❌ None | Legacy (security patches only) |
 
 ## Support
 
