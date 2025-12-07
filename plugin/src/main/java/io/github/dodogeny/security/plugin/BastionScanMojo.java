@@ -708,44 +708,106 @@ public class BastionScanMojo extends AbstractMojo {
 
     private void generateInMemoryJarAnalysis(ScanResult currentResult, InMemoryVulnerabilityDatabase.ScanSummary previousScan) {
         try {
-            getLog().info("📦 Generating JAR-level vulnerability analysis from in-memory data...");
-            
+            getLog().info("📦 Generating detailed JAR-level vulnerability analysis from in-memory data...");
+
             // Since the in-memory database doesn't store detailed JAR information per scan,
             // we'll do a simplified analysis based on overall vulnerability counts
             ScanResult.JarAnalysis jarAnalysis = new ScanResult.JarAnalysis();
             jarAnalysis.setTotalJarsAnalyzed(currentResult.getTotalDependencies());
-            
+
             // For in-memory analysis, we'll estimate based on vulnerability changes
             // This is simplified since we don't have detailed JAR-level historical data
             int vulnerabilityChange = currentResult.getTotalVulnerabilities() - previousScan.totalVulnerabilities;
             int dependencyChange = currentResult.getTotalDependencies() - previousScan.totalDependencies;
-            
+
+            // Get all current vulnerable JARs
+            List<ScanResult.VulnerableJar> allCurrentVulnerableJars = currentResult.getVulnerableJars();
+
             // Create simplified analysis
             List<ScanResult.VulnerableJar> newVulnerableJars = new ArrayList<>();
             List<ScanResult.VulnerableJar> resolvedJars = new ArrayList<>();
-            List<ScanResult.VulnerableJar> pendingVulnerableJars = currentResult.getVulnerableJars();
-            
-            // Estimate new and resolved JARs based on trend data
-            if (vulnerabilityChange > 0 && dependencyChange >= 0) {
-                // More vulnerabilities, likely new vulnerable JARs
-                getLog().info("📈 Trend indicates new vulnerable dependencies detected");
-            } else if (vulnerabilityChange < 0) {
-                // Fewer vulnerabilities, likely some JARs were fixed or removed
-                getLog().info("📉 Trend indicates vulnerabilities were resolved");
+            List<ScanResult.VulnerableJar> pendingVulnerableJars = new ArrayList<>();
+
+            // Since we don't have historical JAR data, all current vulnerable JARs are considered pending
+            pendingVulnerableJars.addAll(allCurrentVulnerableJars);
+
+            // Estimate based on trends
+            String trendAnalysis = "";
+            if (vulnerabilityChange > 0 && dependencyChange > 0) {
+                trendAnalysis = "New dependencies with vulnerabilities detected";
+            } else if (vulnerabilityChange > 0 && dependencyChange <= 0) {
+                trendAnalysis = "Existing dependencies have new vulnerabilities";
+            } else if (vulnerabilityChange < 0 && dependencyChange < 0) {
+                trendAnalysis = "Vulnerable dependencies removed";
+            } else if (vulnerabilityChange < 0 && dependencyChange >= 0) {
+                trendAnalysis = "Vulnerabilities resolved in existing dependencies";
+            } else if (vulnerabilityChange == 0 && dependencyChange > 0) {
+                trendAnalysis = "New dependencies added (no new vulnerabilities)";
+            } else if (vulnerabilityChange == 0 && dependencyChange < 0) {
+                trendAnalysis = "Dependencies removed (vulnerability count stable)";
+            } else {
+                trendAnalysis = "No change in vulnerabilities or dependencies";
             }
-            
+
             jarAnalysis.setResolvedJars(resolvedJars);
             jarAnalysis.setNewVulnerableJars(newVulnerableJars);
             jarAnalysis.setPendingVulnerableJars(pendingVulnerableJars);
-            
+
             currentResult.setJarAnalysis(jarAnalysis);
-            
-            // Log the analysis results
-            getLog().info("📊 In-Memory JAR Analysis Results:");
+
+            // Enhanced logging with detailed statistics
+            getLog().info("╭─────────────────────────────────────────────────────────╮");
+            getLog().info("│   📦 IN-MEMORY JAR VULNERABILITY ANALYSIS RESULTS       │");
+            getLog().info("╰─────────────────────────────────────────────────────────╯");
+            getLog().info("");
+            getLog().info("  ⏳ Currently Vulnerable JARs: " + pendingVulnerableJars.size());
+            int totalCritical = pendingVulnerableJars.stream().mapToInt(ScanResult.VulnerableJar::getCriticalCount).sum();
+            int totalHigh = pendingVulnerableJars.stream().mapToInt(ScanResult.VulnerableJar::getHighCount).sum();
+            int totalMedium = pendingVulnerableJars.stream().mapToInt(ScanResult.VulnerableJar::getMediumCount).sum();
+            int totalLow = pendingVulnerableJars.stream().mapToInt(ScanResult.VulnerableJar::getLowCount).sum();
+            getLog().info("     └─ Critical CVEs: " + totalCritical);
+            getLog().info("     └─ High CVEs: " + totalHigh);
+            getLog().info("     └─ Medium CVEs: " + totalMedium);
+            getLog().info("     └─ Low CVEs: " + totalLow);
+            getLog().info("");
+            if (pendingVulnerableJars.size() > 0 && pendingVulnerableJars.size() <= 5) {
+                getLog().info("  Top Vulnerable JARs:");
+                for (ScanResult.VulnerableJar jar : pendingVulnerableJars) {
+                    getLog().info("     • " + jar.getName() + ":" + jar.getVersion() +
+                                  " (Critical: " + jar.getCriticalCount() +
+                                  ", High: " + jar.getHighCount() +
+                                  ", Medium: " + jar.getMediumCount() +
+                                  ", Low: " + jar.getLowCount() + ")");
+                }
+                getLog().info("");
+            } else if (pendingVulnerableJars.size() > 5) {
+                getLog().info("  Top 5 Vulnerable JARs (of " + pendingVulnerableJars.size() + " total):");
+                // Sort by critical count, then high count for better prioritization
+                List<ScanResult.VulnerableJar> sortedJars = new ArrayList<>(pendingVulnerableJars);
+                sortedJars.sort((a, b) -> {
+                    int cmpCritical = Integer.compare(b.getCriticalCount(), a.getCriticalCount());
+                    if (cmpCritical != 0) return cmpCritical;
+                    return Integer.compare(b.getHighCount(), a.getHighCount());
+                });
+                for (int i = 0; i < Math.min(5, sortedJars.size()); i++) {
+                    ScanResult.VulnerableJar jar = sortedJars.get(i);
+                    getLog().info("     • " + jar.getName() + ":" + jar.getVersion() +
+                                  " (Critical: " + jar.getCriticalCount() +
+                                  ", High: " + jar.getHighCount() +
+                                  ", Medium: " + jar.getMediumCount() +
+                                  ", Low: " + jar.getLowCount() + ")");
+                }
+                getLog().info("");
+            }
             getLog().info("  📦 Total JARs analyzed: " + jarAnalysis.getTotalJarsAnalyzed());
             getLog().info("  📈 Vulnerability trend: " + (vulnerabilityChange >= 0 ? "+" : "") + vulnerabilityChange);
             getLog().info("  📦 Dependency count change: " + (dependencyChange >= 0 ? "+" : "") + dependencyChange);
-            
+            getLog().info("  💡 Trend: " + trendAnalysis);
+            getLog().info("");
+            getLog().info("  ℹ️  Note: For detailed JAR-level tracking of resolved/new JARs,");
+            getLog().info("     use JSON storage or Enterprise Edition with database persistence.");
+            getLog().info("");
+
         } catch (Exception e) {
             getLog().warn("Failed to generate in-memory JAR analysis", e);
         }
@@ -784,24 +846,25 @@ public class BastionScanMojo extends AbstractMojo {
     
     private void generateJarAnalysis(ScanResult currentResult, ScanResult previousResult) {
         try {
-            getLog().info("📦 Generating JAR-level vulnerability analysis...");
-            
+            getLog().info("📦 Generating detailed JAR-level vulnerability analysis...");
+
             // Get current and previous vulnerable JARs
             List<ScanResult.VulnerableJar> currentVulnerableJars = currentResult.getVulnerableJars();
             List<ScanResult.VulnerableJar> previousVulnerableJars = previousResult.getVulnerableJars();
-            
+
             // Create JAR analysis
             ScanResult.JarAnalysis jarAnalysis = new ScanResult.JarAnalysis();
             jarAnalysis.setTotalJarsAnalyzed(currentResult.getTotalDependencies());
-            
+
             // Create maps for easier comparison
             Map<String, ScanResult.VulnerableJar> currentJarMap = currentVulnerableJars.stream()
                 .collect(java.util.stream.Collectors.toMap(jar -> jar.getName(), jar -> jar));
             Map<String, ScanResult.VulnerableJar> previousJarMap = previousVulnerableJars.stream()
                 .collect(java.util.stream.Collectors.toMap(jar -> jar.getName(), jar -> jar));
-            
+
             // Find resolved JARs (were vulnerable, now clean)
             List<ScanResult.VulnerableJar> resolvedJars = new ArrayList<>();
+            int totalResolvedCves = 0;
             for (ScanResult.VulnerableJar prevJar : previousVulnerableJars) {
                 if (!currentJarMap.containsKey(prevJar.getName())) {
                     // This JAR was vulnerable before but is clean now
@@ -809,7 +872,7 @@ public class BastionScanMojo extends AbstractMojo {
                     resolvedJar.setName(prevJar.getName());
                     resolvedJar.setVersion(prevJar.getVersion());
                     resolvedJar.setResolvedCveCount(prevJar.getVulnerabilities().size());
-                    
+
                     // Convert vulnerabilities to resolved CVEs
                     List<ScanResult.ResolvedCve> resolvedCves = new ArrayList<>();
                     for (ScanResult.VulnerabilityInfo vuln : prevJar.getVulnerabilities()) {
@@ -820,41 +883,127 @@ public class BastionScanMojo extends AbstractMojo {
                     }
                     resolvedJar.setResolvedCves(resolvedCves);
                     resolvedJars.add(resolvedJar);
+                    totalResolvedCves += resolvedCves.size();
                 }
             }
-            
+
             // Find new vulnerable JARs (were clean, now vulnerable)
             List<ScanResult.VulnerableJar> newVulnerableJars = new ArrayList<>();
+            int totalNewCves = 0;
             for (ScanResult.VulnerableJar currentJar : currentVulnerableJars) {
                 if (!previousJarMap.containsKey(currentJar.getName())) {
                     // This is a newly vulnerable JAR
                     newVulnerableJars.add(currentJar);
+                    totalNewCves += currentJar.getVulnerabilities().size();
                 }
             }
-            
+
             // Find pending vulnerable JARs (were vulnerable, still vulnerable)
             List<ScanResult.VulnerableJar> pendingVulnerableJars = new ArrayList<>();
+            int totalPendingCves = 0;
+            int totalPendingResolvedCves = 0;
+            int totalPendingNewCves = 0;
+
             for (ScanResult.VulnerableJar currentJar : currentVulnerableJars) {
                 if (previousJarMap.containsKey(currentJar.getName())) {
                     // This JAR was vulnerable before and is still vulnerable
+                    ScanResult.VulnerableJar previousJar = previousJarMap.get(currentJar.getName());
+
+                    // Create maps of CVEs for comparison
+                    Set<String> currentCveIds = currentJar.getVulnerabilities().stream()
+                        .map(ScanResult.VulnerabilityInfo::getCveId)
+                        .collect(java.util.stream.Collectors.toSet());
+                    Set<String> previousCveIds = previousJar.getVulnerabilities().stream()
+                        .map(ScanResult.VulnerabilityInfo::getCveId)
+                        .collect(java.util.stream.Collectors.toSet());
+
+                    // Find resolved CVEs in this pending JAR
+                    List<ScanResult.ResolvedCve> resolvedCvesInPendingJar = new ArrayList<>();
+                    for (ScanResult.VulnerabilityInfo prevVuln : previousJar.getVulnerabilities()) {
+                        if (!currentCveIds.contains(prevVuln.getCveId())) {
+                            ScanResult.ResolvedCve resolvedCve = new ScanResult.ResolvedCve();
+                            resolvedCve.setId(prevVuln.getCveId());
+                            resolvedCve.setSeverity(prevVuln.getSeverity());
+                            resolvedCvesInPendingJar.add(resolvedCve);
+                            totalPendingResolvedCves++;
+                        }
+                    }
+                    currentJar.setResolvedCves(resolvedCvesInPendingJar);
+                    currentJar.setResolvedCveCount(resolvedCvesInPendingJar.size());
+
+                    // Count new CVEs in this pending JAR
+                    int newCvesInPendingJar = 0;
+                    for (ScanResult.VulnerabilityInfo currentVuln : currentJar.getVulnerabilities()) {
+                        if (!previousCveIds.contains(currentVuln.getCveId())) {
+                            newCvesInPendingJar++;
+                            totalPendingNewCves++;
+                        }
+                    }
+
                     pendingVulnerableJars.add(currentJar);
+                    totalPendingCves += currentJar.getVulnerabilities().size();
                 }
             }
-            
+
             // Set the analysis data
             jarAnalysis.setResolvedJars(resolvedJars);
             jarAnalysis.setNewVulnerableJars(newVulnerableJars);
             jarAnalysis.setPendingVulnerableJars(pendingVulnerableJars);
-            
+
             currentResult.setJarAnalysis(jarAnalysis);
-            
-            // Log the analysis results
-            getLog().info("📊 JAR Analysis Results:");
-            getLog().info("  ✅ Resolved JARs (CVEs fixed): " + resolvedJars.size());
-            getLog().info("  🆕 New vulnerable JARs: " + newVulnerableJars.size());
-            getLog().info("  ⏳ Pending vulnerable JARs: " + pendingVulnerableJars.size());
+
+            // Enhanced logging with detailed statistics
+            getLog().info("╭─────────────────────────────────────────────────────────╮");
+            getLog().info("│       📦 JAR VULNERABILITY ANALYSIS RESULTS            │");
+            getLog().info("╰─────────────────────────────────────────────────────────╯");
+            getLog().info("");
+            getLog().info("  ✅ Resolved JARs (no longer vulnerable):");
+            getLog().info("     └─ JARs: " + resolvedJars.size());
+            getLog().info("     └─ Total CVEs fixed: " + totalResolvedCves);
+            if (resolvedJars.size() > 0) {
+                for (ScanResult.VulnerableJar jar : resolvedJars) {
+                    getLog().info("        • " + jar.getName() + ":" + jar.getVersion() +
+                                  " (" + jar.getResolvedCveCount() + " CVEs fixed)");
+                }
+            }
+            getLog().info("");
+            getLog().info("  🆕 New Vulnerable JARs:");
+            getLog().info("     └─ JARs: " + newVulnerableJars.size());
+            getLog().info("     └─ Total new CVEs: " + totalNewCves);
+            if (newVulnerableJars.size() > 0) {
+                for (ScanResult.VulnerableJar jar : newVulnerableJars) {
+                    getLog().info("        • " + jar.getName() + ":" + jar.getVersion() +
+                                  " (Critical: " + jar.getCriticalCount() +
+                                  ", High: " + jar.getHighCount() +
+                                  ", Medium: " + jar.getMediumCount() +
+                                  ", Low: " + jar.getLowCount() + ")");
+                }
+            }
+            getLog().info("");
+            getLog().info("  ⏳ Pending Vulnerable JARs:");
+            getLog().info("     └─ JARs: " + pendingVulnerableJars.size());
+            getLog().info("     └─ Ongoing CVEs: " + totalPendingCves);
+            getLog().info("     └─ CVEs fixed in pending JARs: " + totalPendingResolvedCves);
+            getLog().info("     └─ New CVEs in pending JARs: " + totalPendingNewCves);
+            if (pendingVulnerableJars.size() > 0 && pendingVulnerableJars.size() <= 5) {
+                for (ScanResult.VulnerableJar jar : pendingVulnerableJars) {
+                    getLog().info("        • " + jar.getName() + ":" + jar.getVersion() +
+                                  " (" + jar.getVulnerabilities().size() + " CVEs" +
+                                  (jar.getResolvedCveCount() > 0 ? ", " + jar.getResolvedCveCount() + " resolved" : "") +
+                                  ")");
+                }
+            } else if (pendingVulnerableJars.size() > 5) {
+                getLog().info("        (Showing first 5 of " + pendingVulnerableJars.size() + " pending JARs)");
+                for (int i = 0; i < 5; i++) {
+                    ScanResult.VulnerableJar jar = pendingVulnerableJars.get(i);
+                    getLog().info("        • " + jar.getName() + ":" + jar.getVersion() +
+                                  " (" + jar.getVulnerabilities().size() + " CVEs)");
+                }
+            }
+            getLog().info("");
             getLog().info("  📦 Total JARs analyzed: " + jarAnalysis.getTotalJarsAnalyzed());
-            
+            getLog().info("");
+
         } catch (Exception e) {
             getLog().warn("Failed to generate JAR analysis", e);
         }

@@ -5,6 +5,95 @@ All notable changes to the Bastion Maven Plugin Enterprise will be documented in
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [1.2.0] - 2025-12-08
+
+### Added
+- **📦 Enhanced JAR-Level Vulnerability Analysis**: Comprehensive tracking of vulnerable JAR dependencies across scans
+  - **✅ Resolved JARs**: Detailed tracking of JARs that are no longer vulnerable, including all fixed CVEs with severity levels
+  - **🆕 New Vulnerable JARs**: Identification of newly introduced vulnerable dependencies with complete CVE details
+  - **⏳ Pending Vulnerable JARs**: Enhanced tracking of ongoing vulnerable JARs with partial resolution detection
+    - Tracks which CVEs were fixed within pending JARs
+    - Identifies new CVEs discovered in previously vulnerable JARs
+    - Shows severity breakdown (Critical, High, Medium, Low) for each JAR
+
+- **📊 Improved Console Logging**: Enhanced console output for JAR analysis
+  - Detailed breakdown of resolved, new, and pending vulnerable JARs
+  - Total CVE counts per category (resolved, new, pending)
+  - Top vulnerable JARs sorted by severity (prioritizing Critical, then High)
+  - Severity distribution across all vulnerable JARs
+  - Trend analysis with actionable insights
+
+- **💾 Enhanced In-Memory Analysis**: Better trend analysis for in-memory database mode
+  - Detailed vulnerability trend interpretation
+  - Severity breakdown for currently vulnerable JARs
+  - Top vulnerable JARs display (up to 5) sorted by criticality
+  - Comprehensive trend messages based on dependency and vulnerability changes
+  - Smart analysis of dependency addition/removal impacts
+
+- **🧪 Comprehensive Test Coverage**: New test suites for enhanced functionality
+  - `EnhancedJarAnalysisTest`: Tests for resolved, new, and pending JAR tracking
+  - `EnhancedInMemoryJarAnalysisTest`: Tests for in-memory database JAR analysis
+  - Tests for partial CVE resolution within pending JARs
+  - Tests for complex multi-JAR scenarios
+  - Tests for enhanced logging and reporting
+  - 100% test coverage for new JAR analysis features
+
+### Enhanced
+- **📈 Trend Analysis Reports**: The HTML trend reports now include more detailed JAR dependency information
+  - Resolved JARs section shows all fixed CVEs with their IDs and severity levels
+  - New vulnerable JARs section displays all detected CVEs with severity breakdown
+  - Pending vulnerable JARs section shows ongoing vulnerabilities with detailed CVE lists
+  - Interactive charts and visualizations for better trend understanding
+  - Visual indicators for dependency state changes
+
+- **🔍 JAR Analysis Algorithm**: Improved accuracy in tracking dependency state changes
+  - Better detection of version upgrades that resolve vulnerabilities
+  - Accurate tracking of CVEs resolved within still-vulnerable dependencies
+  - Enhanced comparison logic for identifying new vs ongoing vulnerabilities
+  - Handles complex scenarios with mixed resolution states
+
+- **📝 Detailed Console Output**: Enhanced visibility into JAR-level changes
+  - Formatted output boxes for better readability
+  - Clear categorization of JAR states (resolved/new/pending)
+  - Individual JAR details with version and CVE information
+  - Summary statistics for quick assessment
+
+### Technical Details
+- **Version**: Bumped to 1.2.0
+- **Core Changes**:
+  - Enhanced `generateJarAnalysis()` method with detailed CVE tracking
+  - Enhanced `generateInMemoryJarAnalysis()` method with better trend analysis
+  - Improved logging with formatted output boxes and better readability
+  - Added comprehensive assertions in test suites
+- **Test Coverage**: 14 new test cases across 2 new test classes
+- **Backward Compatibility**: Fully compatible with version 1.1.x configurations
+
+### Documentation
+- **CHANGELOG.md**: Created comprehensive version history with detailed change tracking
+- **Test Documentation**: Inline documentation for all new test cases
+- **Code Comments**: Enhanced comments explaining JAR analysis algorithms
+
+### Upgrade Guide
+```xml
+<!-- Update your pom.xml -->
+<plugin>
+    <groupId>io.github.dodogeny</groupId>
+    <artifactId>bastion-maven-plugin-parent</artifactId>
+    <version>1.2.0</version>
+</plugin>
+```
+
+No configuration changes required. The enhanced JAR analysis will automatically be available in your next scan.
+
+### Benefits of Upgrading to 1.2.0
+1. **Better Visibility**: See exactly which JARs had vulnerabilities fixed
+2. **Improved Prioritization**: Enhanced severity breakdown helps focus on critical issues first
+3. **Partial Progress Tracking**: Know when some CVEs in a JAR are fixed even if others remain
+4. **Enhanced Reports**: Trend reports now show detailed dependency-level changes
+5. **Better Logging**: Console output provides actionable insights about vulnerability trends
+
+---
+
 ## [1.1.1] - 2025-11-08
 
 ### Added
@@ -262,8 +351,12 @@ mvn bastion:scan \
 
 ## Version History
 
-- **v1.0.0** (2024-01-15): Initial release with core scanning and reporting
-- **v1.1.0** (Unreleased): JSON storage, integrated purge management, enhanced trends
+| Version | Release Date | Key Features |
+|---------|-------------|--------------|
+| 1.2.0   | 2025-12-08  | Enhanced JAR analysis, improved logging, comprehensive test coverage |
+| 1.1.1   | 2025-11-08  | Zero-config NVD database, intelligent auto-update, Java 21+ |
+| 1.1.0   | 2025-08-29  | Smart NVD caching, performance optimization |
+| 1.0.0   | 2024-01-15  | Initial release with core scanning and reporting |
 
 ---
 
