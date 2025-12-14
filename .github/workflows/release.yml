@@ -71,6 +71,42 @@ jobs:
           rm -rf ~/.m2/repository/org/apache/maven/plugins/maven-gpg-plugin
           echo "Cleaned local build artifacts and GPG plugin from cache"
 
+      - name: Step 5.5 - Create Maven settings.xml
+        run: |
+          mkdir -p ~/.m2
+          cat > ~/.m2/settings.xml <<'EOF'
+          <?xml version="1.0" encoding="UTF-8"?>
+          <settings xmlns="http://maven.apache.org/SETTINGS/1.2.0"
+                    xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+                    xsi:schemaLocation="http://maven.apache.org/SETTINGS/1.2.0 https://maven.apache.org/xsd/settings-1.2.0.xsd">
+            <servers>
+              <server>
+                <id>central</id>
+                <username>${{ secrets.OSSRH_USERNAME }}</username>
+                <password>${{ secrets.OSSRH_TOKEN }}</password>
+              </server>
+            </servers>
+
+            <profiles>
+              <profile>
+                <id>central</id>
+                <activation>
+                  <activeByDefault>true</activeByDefault>
+                </activation>
+                <properties>
+                  <gpg.executable>gpg</gpg.executable>
+                  <gpg.passphrase>${{ secrets.GPG_PASSPHRASE }}</gpg.passphrase>
+                </properties>
+              </profile>
+            </profiles>
+
+            <activeProfiles>
+              <activeProfile>central</activeProfile>
+            </activeProfiles>
+          </settings>
+          EOF
+          echo "Created settings.xml with Central Publishing credentials"
+
       - name: Step 6 - Prepare and perform release to Maven Central
         run: |
           export GPG_TTY=$(tty)
