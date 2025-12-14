@@ -32,7 +32,7 @@ jobs:
         run: mvn -v
 
       - name: Build with Maven
-        run: mvn -B package --file pom.xml -Drevision=${{ github.sha }}
+        run: mvn -B package --file pom.xml -Drevision=${{ github.sha }} -Dmaven.toolchain.skip=true
 
   release:
     name: Create release
@@ -72,7 +72,7 @@ jobs:
           echo "Cleaned local build artifacts from cache"
 
       - name: Step 6 - Prepare and perform release to Maven Central
-        run: mvn -B deploy --no-transfer-progress -e -Drevision=${{ steps.version.outputs.version }}
+        run: mvn -B deploy --no-transfer-progress -e -Drevision=${{ steps.version.outputs.version }} -Dmaven.toolchain.skip=true
         env:
           MAVEN_USERNAME: ${{ secrets.OSSRH_USERNAME }}
           MAVEN_CENTRAL_TOKEN: ${{ secrets.OSSRH_TOKEN }}
