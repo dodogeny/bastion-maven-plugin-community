@@ -71,7 +71,23 @@ jobs:
           rm -rf ~/.m2/repository/org/apache/maven/plugins/maven-gpg-plugin
           echo "Cleaned local build artifacts and GPG plugin from cache"
 
-      - name: Step 5.5 - Create Maven settings.xml
+      - name: Step 5.5 - Verify secrets are set
+        run: |
+          if [ -z "${{ secrets.OSSRH_USERNAME }}" ]; then
+            echo "ERROR: OSSRH_USERNAME secret is not set!"
+            exit 1
+          fi
+          if [ -z "${{ secrets.OSSRH_TOKEN }}" ]; then
+            echo "ERROR: OSSRH_TOKEN secret is not set!"
+            exit 1
+          fi
+          echo "OSSRH_USERNAME is set (length: ${#OSSRH_USERNAME})"
+          echo "OSSRH_TOKEN is set (length: ${#OSSRH_TOKEN})"
+        env:
+          OSSRH_USERNAME: ${{ secrets.OSSRH_USERNAME }}
+          OSSRH_TOKEN: ${{ secrets.OSSRH_TOKEN }}
+
+      - name: Step 5.6 - Create Maven settings.xml
         run: |
           mkdir -p ~/.m2
           cat > ~/.m2/settings.xml <<'EOF'
