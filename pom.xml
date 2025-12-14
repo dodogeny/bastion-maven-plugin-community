@@ -7,7 +7,7 @@
 
     <groupId>io.github.dodogeny</groupId>
     <artifactId>bastion-maven-plugin-parent</artifactId>
-    <version>1.2.0</version>
+    <version>${revision}</version>
     <packaging>pom</packaging>
 
     <name>Bastion Maven Plugin - Community Edition</name>
@@ -42,6 +42,7 @@
     </scm>
 
     <properties>
+        <revision>1.2.1</revision>
         <maven.compiler.source>21</maven.compiler.source>
         <maven.compiler.target>21</maven.compiler.target>
         <maven.compiler.release>21</maven.compiler.release>
@@ -303,9 +304,13 @@
                 <plugin>
                     <groupId>org.apache.maven.plugins</groupId>
                     <artifactId>maven-gpg-plugin</artifactId>
-                    <version>1.5</version>
+                    <version>3.0.1</version>
                     <configuration>
                         <skip>${gpg.skip}</skip>
+                        <gpgArguments>
+                            <arg>--pinentry-mode</arg>
+                            <arg>loopback</arg>
+                        </gpgArguments>
                     </configuration>
                     <executions>
                         <execution>
@@ -316,6 +321,12 @@
                             </goals>
                         </execution>
                     </executions>
+                </plugin>
+
+                <plugin>
+                    <groupId>org.codehaus.mojo</groupId>
+                    <artifactId>flatten-maven-plugin</artifactId>
+                    <version>1.6.0</version>
                 </plugin>
                 
                 <plugin>
@@ -419,12 +430,39 @@
             </plugin>
 
             <plugin>
+                <groupId>org.codehaus.mojo</groupId>
+                <artifactId>flatten-maven-plugin</artifactId>
+                <configuration>
+                    <updatePomFile>true</updatePomFile>
+                    <flattenMode>ossrh</flattenMode>
+                </configuration>
+                <executions>
+                    <execution>
+                        <id>flatten</id>
+                        <phase>process-resources</phase>
+                        <goals>
+                            <goal>flatten</goal>
+                        </goals>
+                    </execution>
+                    <execution>
+                        <id>flatten.clean</id>
+                        <phase>clean</phase>
+                        <goals>
+                            <goal>clean</goal>
+                        </goals>
+                    </execution>
+                </executions>
+            </plugin>
+
+            <plugin>
                 <groupId>org.sonatype.central</groupId>
                 <artifactId>central-publishing-maven-plugin</artifactId>
                 <version>0.6.0</version>
                 <extensions>true</extensions>
                 <configuration>
                     <publishingServerId>central</publishingServerId>
+                    <autoPublish>true</autoPublish>
+                    <tokenAuth>true</tokenAuth>
                 </configuration>
             </plugin>
 

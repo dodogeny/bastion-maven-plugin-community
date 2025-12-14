@@ -10,7 +10,7 @@
         <plugin>
             <groupId>io.github.dodogeny</groupId>
             <artifactId>bastion-maven-community-plugin</artifactId>
-            <version>1.1.0</version>
+            <version>1.2.1</version>
             <executions>
                 <execution>
                     <id>security-scan</id>
@@ -51,7 +51,7 @@
 mvn clean verify
 
 # Or run scan directly
-mvn io.github.dodogeny:bastion-maven-community-plugin:1.1.0:scan \
+mvn io.github.dodogeny:bastion-maven-community-plugin:1.2.1:scan \
   -Dbastion.nvd.apiKey=YOUR_API_KEY
 ```
 
@@ -71,7 +71,7 @@ Reports are generated in `target/bastion-reports/`:
 <plugin>
     <groupId>io.github.dodogeny</groupId>
     <artifactId>bastion-maven-community-plugin</artifactId>
-    <version>1.1.0</version>
+    <version>1.2.1</version>
     <executions>
         <execution>
             <goals>
@@ -100,7 +100,7 @@ mvn clean verify
 <plugin>
     <groupId>io.github.dodogeny</groupId>
     <artifactId>bastion-maven-community-plugin</artifactId>
-    <version>1.1.0</version>
+    <version>1.2.1</version>
     <!-- No executions - only run when explicitly called -->
     <configuration>
         <nvdApiKey>${env.NVD_API_KEY}</nvdApiKey>
@@ -115,7 +115,7 @@ mvn clean verify
 mvn bastion-maven-community-plugin:scan
 
 # Or with full coordinates
-mvn io.github.dodogeny:bastion-maven-community-plugin:1.1.0:scan
+mvn io.github.dodogeny:bastion-maven-community-plugin:1.2.1:scan
 ```
 
 ### Pattern 3: Multi-Module Projects
@@ -128,7 +128,7 @@ mvn io.github.dodogeny:bastion-maven-community-plugin:1.1.0:scan
             <plugin>
                 <groupId>io.github.dodogeny</groupId>
                 <artifactId>bastion-maven-community-plugin</artifactId>
-                <version>1.1.0</version>
+                <version>1.2.1</version>
                 <configuration>
                     <nvdApiKey>${env.NVD_API_KEY}</nvdApiKey>
                     <enableMultiModule>true</enableMultiModule>
@@ -227,7 +227,7 @@ mvn bastion-maven-community-plugin:scan \
 
 **Option B: Direct Plugin Goal**
 1. Add plugin to `pom.xml` (no execution block needed)
-2. Run Maven goal: `io.github.dodogeny:bastion-maven-community-plugin:1.1.0:scan -Dbastion.nvd.apiKey=YOUR_API_KEY`
+2. Run Maven goal: `io.github.dodogeny:bastion-maven-community-plugin:1.2.1:scan -Dbastion.nvd.apiKey=YOUR_API_KEY`
 
 **Option C: Maven Run Configuration**
 1. Create new Maven run configuration
@@ -280,7 +280,7 @@ mvn bastion-maven-community-plugin:scan \
 **Solution:** Ensure you're using the correct version:
 ```bash
 # Check installed version
-mvn io.github.dodogeny:bastion-maven-community-plugin:1.1.0:help
+mvn io.github.dodogeny:bastion-maven-community-plugin:1.2.1:help
 
 # Force update
 mvn clean install -U
@@ -365,7 +365,7 @@ mvn verify -Dbastion.failOnError=false
 
 ## Version Information
 
-- **Plugin Version**: 1.1.0
+- **Plugin Version**: 1.2.1
 - **OWASP Dependency-Check**: 12.1.3
 - **Java Version**: 11+ (21 recommended)
 - **Maven Version**: 3.6.0+

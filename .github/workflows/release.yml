@@ -1,0 +1,106 @@
+name: Continuous Delivery Release
+
+on:
+  workflow_dispatch:
+  push:
+    branches:
+      - main
+    paths-ignore:
+      - "**.md"
+      - ".github/**"
+      - "!.github/workflows/release.yml"
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        java: ['11', '17', '21']
+    if: github.repository_owner == 'dodogeny'
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Set up JDK ${{matrix.java}}
+        uses: actions/setup-java@v4
+        with:
+          distribution: temurin
+          java-version: ${{matrix.java}}
+          cache: maven
+
+      - name: Maven version check
+        run: mvn -v
+
+      - name: Build with Maven
+        run: mvn -B package --file pom.xml -Drevision=${{ github.sha }}
+
+  release:
+    name: Create release
+    needs: build
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+      packages: write
+    steps:
+      - name: Step 1 - Checkout code
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Step 2 - Import GPG key
+        run: |
+          echo "${{ secrets.GPG_PUBLIC_KEY }}" | gpg --import
+          echo "${{ secrets.GPG_SECRET_KEY }}" | gpg --import --no-tty --batch --yes
+
+      - name: Step 3 - Setup Java
+        uses: actions/setup-java@v4
+        with:
+          distribution: temurin
+          java-version: 21
+          cache: maven
+
+      - name: Step 4 - Get next version
+        uses: reecetech/version-increment@2023.9.3
+        id: version
+        with:
+          scheme: semver
+          increment: patch
+
+      - name: Step 5 - Clean Maven cache
+        run: |
+          rm -rf ~/.m2/repository/io/github/dodogeny
+          echo "Cleaned local build artifacts from cache"
+
+      - name: Step 6 - Prepare and perform release to Maven Central
+        run: mvn -B deploy --no-transfer-progress -e -Drevision=${{ steps.version.outputs.version }}
+        env:
+          MAVEN_USERNAME: ${{ secrets.OSSRH_USERNAME }}
+          MAVEN_CENTRAL_TOKEN: ${{ secrets.OSSRH_TOKEN }}
+          MAVEN_GPG_PASSPHRASE: ${{ secrets.GPG_PASSPHRASE }}
+          GPG_PASSPHRASE: ${{ secrets.GPG_PASSPHRASE }}
+
+      - name: Step 7 - Push Git tag for the new release
+        uses: rickstaa/action-create-tag@v1
+        id: tag_create
+        with:
+          tag: v${{ steps.version.outputs.version }}
+          tag_exists_error: false
+
+      - name: Step 8 - Create GitHub release
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: |
+          gh release create 'v${{ steps.version.outputs.version }}' \
+            -t "Bastion Maven Plugin v${{ steps.version.outputs.version }}" \
+            --generate-notes \
+            --notes "## Installation
+
+          \`\`\`xml
+          <plugin>
+              <groupId>io.github.dodogeny</groupId>
+              <artifactId>bastion-maven-community-plugin</artifactId>
+              <version>${{ steps.version.outputs.version }}</version>
+          </plugin>
+          \`\`\`
+
+          Published to Maven Central."
