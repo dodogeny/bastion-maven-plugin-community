@@ -48,6 +48,7 @@
         <maven.compiler.release>21</maven.compiler.release>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
         <gpg.skip>false</gpg.skip>
+        <skipToolchain>false</skipToolchain>
 
         <!-- Dependency versions (JDK 21+ compatible) -->
         <maven.version>3.8.6</maven.version>
@@ -377,6 +378,7 @@
                     </execution>
                 </executions>
                 <configuration>
+                    <skip>${skipToolchain}</skip>
                     <toolchains>
                         <jdk>
                             <version>21</version>

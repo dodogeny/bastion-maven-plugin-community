@@ -44,14 +44,14 @@ jobs:
           echo "Cleaned local build artifacts from cache"
 
       - name: Build and verify
-        run: mvn clean verify -DskipTests -Dmaven.toolchain.skip=true
+        run: mvn clean verify -DskipTests -DskipToolchain=true
 
       - name: Publish to Maven Central
         env:
           MAVEN_USERNAME: ${{ secrets.OSSRH_USERNAME }}
           MAVEN_PASSWORD: ${{ secrets.OSSRH_TOKEN }}
           GPG_PASSPHRASE: ${{ secrets.GPG_PASSPHRASE }}
-        run: mvn deploy -P release -DskipTests -Dmaven.toolchain.skip=true
+        run: mvn deploy -P release -DskipTests -DskipToolchain=true
 
       - name: Create GitHub Release
         if: success()

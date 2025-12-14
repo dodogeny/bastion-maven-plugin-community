@@ -33,11 +33,11 @@ jobs:
           echo "Cleaned local build artifacts from cache"
 
       - name: Compile project
-        run: mvn clean compile -Dgpg.skip=true -Dmaven.toolchain.skip=true
+        run: mvn clean compile -Dgpg.skip=true -DskipToolchain=true
         continue-on-error: false
 
       - name: Run tests
-        run: mvn test -Dgpg.skip=true -Dmaven.toolchain.skip=true
+        run: mvn test -Dgpg.skip=true -DskipToolchain=true
         continue-on-error: false
 
       - name: Create issue on failure
