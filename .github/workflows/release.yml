@@ -48,6 +48,8 @@ jobs:
         run: |
           echo "${{ secrets.GPG_PUBLIC_KEY }}" | gpg --import
           echo "${{ secrets.GPG_SECRET_KEY }}" | gpg --import --no-tty --batch --yes
+          gpg --list-secret-keys --keyid-format=long
+          echo "GPG keys imported successfully"
 
       - name: Step 3 - Setup Java
         uses: actions/setup-java@v4
@@ -66,7 +68,8 @@ jobs:
       - name: Step 5 - Clean Maven cache
         run: |
           rm -rf ~/.m2/repository/io/github/dodogeny
-          echo "Cleaned local build artifacts from cache"
+          rm -rf ~/.m2/repository/org/apache/maven/plugins/maven-gpg-plugin
+          echo "Cleaned local build artifacts and GPG plugin from cache"
 
       - name: Step 6 - Prepare and perform release to Maven Central
         run: |
