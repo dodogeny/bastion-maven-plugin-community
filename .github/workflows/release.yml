@@ -69,7 +69,9 @@ jobs:
           echo "Cleaned local build artifacts from cache"
 
       - name: Step 6 - Prepare and perform release to Maven Central
-        run: mvn -B deploy --no-transfer-progress -e -Drevision=${{ steps.version.outputs.version }} -DskipToolchain=true
+        run: |
+          export GPG_TTY=$(tty)
+          mvn -B deploy --no-transfer-progress -e -Drevision=${{ steps.version.outputs.version }} -DskipToolchain=true
         env:
           MAVEN_USERNAME: ${{ secrets.OSSRH_USERNAME }}
           MAVEN_CENTRAL_TOKEN: ${{ secrets.OSSRH_TOKEN }}
