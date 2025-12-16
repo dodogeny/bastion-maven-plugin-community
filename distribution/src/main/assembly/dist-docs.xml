@@ -18,6 +18,9 @@
             <outputDirectory>/</outputDirectory>
             <includes>
                 <include>README.md</include>
+                <include>CHANGELOG.md</include>
+                <include>DEVELOPER_GUIDE.md</include>
+                <include>LICENSE_COMPLIANCE_GUIDE.md</include>
             </includes>
         </fileSet>
 
