@@ -149,7 +149,7 @@ Check `target/bastion-reports/` for generated security reports.
 - **License**: Proprietary License
 - **Pricing**: One-time fee per organization
 - **Features**: Premium scanning, reporting, and support
-- **Purchase**: [https://bastion.dodogeny.mu/pricing](https://bastion.dodogeny.mu/pricing)
+- **Purchase**: [https://bastion-plugin.lemonsqueezy.com/](https://bastion.dodogeny.mu/pricing)
 
 ---
 

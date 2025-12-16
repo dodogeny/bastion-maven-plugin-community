@@ -140,13 +140,23 @@ jobs:
           tag: v${{ steps.version.outputs.version }}
           tag_exists_error: false
 
-      - name: Step 8 - Create GitHub release
+      - name: Step 8 - Create GitHub release with artifacts
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         run: |
           gh release create 'v${{ steps.version.outputs.version }}' \
             -t "Bastion Maven Plugin v${{ steps.version.outputs.version }}" \
             --generate-notes \
+            distribution/target/bastion-maven-plugin-${{ steps.version.outputs.version }}-bin.zip \
+            distribution/target/bastion-maven-plugin-${{ steps.version.outputs.version }}-bin.zip.asc \
+            distribution/target/bastion-maven-plugin-${{ steps.version.outputs.version }}-bin-unix.tar.gz \
+            distribution/target/bastion-maven-plugin-${{ steps.version.outputs.version }}-bin-unix.tar.gz.asc \
+            distribution/target/bastion-maven-plugin-${{ steps.version.outputs.version }}-docs.zip \
+            distribution/target/bastion-maven-plugin-${{ steps.version.outputs.version }}-docs.zip.asc \
+            distribution/target/bastion-maven-plugin-${{ steps.version.outputs.version }}-src.zip \
+            distribution/target/bastion-maven-plugin-${{ steps.version.outputs.version }}-src.zip.asc \
+            distribution/target/bastion-maven-plugin-${{ steps.version.outputs.version }}-src.tar.gz \
+            distribution/target/bastion-maven-plugin-${{ steps.version.outputs.version }}-src.tar.gz.asc \
             --notes "## Installation
 
           \`\`\`xml
@@ -157,4 +167,33 @@ jobs:
           </plugin>
           \`\`\`
 
-          Published to Maven Central."
+          ## Release Artifacts
+
+          ### Binary Distributions
+          - **bastion-maven-plugin-${{ steps.version.outputs.version }}-bin.zip** - Windows/cross-platform distribution with all libraries and scripts
+          - **bastion-maven-plugin-${{ steps.version.outputs.version }}-bin-unix.tar.gz** - Unix/Linux/macOS distribution with proper file permissions
+
+          ### Documentation
+          - **bastion-maven-plugin-${{ steps.version.outputs.version }}-docs.zip** - Complete documentation package including API docs, examples, and guides
+
+          ### Source Code
+          - **bastion-maven-plugin-${{ steps.version.outputs.version }}-src.zip** - Full source code archive (Windows/cross-platform)
+          - **bastion-maven-plugin-${{ steps.version.outputs.version }}-src.tar.gz** - Full source code archive (Unix/Linux/macOS)
+
+          ### GPG Signatures
+          All artifacts include corresponding \`.asc\` signature files for verification. Verify signatures using:
+          \`\`\`bash
+          gpg --verify bastion-maven-plugin-${{ steps.version.outputs.version }}-bin.zip.asc bastion-maven-plugin-${{ steps.version.outputs.version }}-bin.zip
+          \`\`\`
+
+          ## Maven Central Deployment
+
+          Artifacts have been uploaded to Maven Central staging repository.
+
+          **Next Steps:**
+          1. Review the staged artifacts at [Central Portal](https://central.sonatype.com/publishing/deployments)
+          2. Verify all artifacts, signatures, and checksums are correct
+          3. Click **Publish** to release to Maven Central (artifacts will be available within 30 minutes)
+          4. Or click **Drop** to discard this deployment if issues are found
+
+          Once published, artifacts will sync to Maven Central within 30 minutes and appear in search within 2 hours."

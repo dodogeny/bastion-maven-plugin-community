@@ -471,7 +471,8 @@
                 <extensions>true</extensions>
                 <configuration>
                     <publishingServerId>central</publishingServerId>
-                    <autoPublish>true</autoPublish>
+                    <autoPublish>false</autoPublish>
+                    <waitUntil>uploaded</waitUntil>
                 </configuration>
             </plugin>
 
