@@ -19,10 +19,9 @@ This documentation package contains comprehensive information about Bastion Mave
 
 ### Module Documentation
 - **[vulnerability-db/](modules/vulnerability-db/)** - Database layer documentation
-- **[scanner-core/](modules/scanner-core/)** - Scanning engine documentation  
+- **[scanner-core/](modules/scanner-core/)** - Scanning engine documentation
 - **[reporting/](modules/reporting/)** - Report generation documentation
 - **[plugin/](modules/plugin/)** - Maven plugin documentation
-- **[enterprise/](modules/enterprise/)** - Commercial features documentation
 
 ### Configuration & Examples
 - **[examples/](examples/)** - Real-world usage examples and templates
@@ -43,9 +42,8 @@ This documentation package contains comprehensive information about Bastion Mave
 
 ### 🛡️ For Security Teams
 1. [Security Features](site/security-features.html) - Security scanning capabilities
-2. [examples/enterprise-setup/](examples/enterprise-setup/) - Enterprise configuration
-3. [modules/enterprise/](modules/enterprise/) - Commercial security features
-4. [SIEM Integration Guide](examples/siem-integration/) - Security toolchain integration
+2. [examples/enterprise-setup/](examples/enterprise-setup/) - Advanced configuration with commercial features
+3. [Commercial Features](site/commercial-features.html) - Premium security capabilities
 
 ### 🔧 For Operations Teams
 1. [INSTALLATION.md](INSTALLATION.md) - Deployment and installation

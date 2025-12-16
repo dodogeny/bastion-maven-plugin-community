@@ -1,9 +1,10 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!--
   Example: Enterprise Bastion Maven Plugin Setup
-  
-  This example shows advanced configuration for Commercial Edition
-  with email notifications, database integration, and premium features.
+
+  This example shows advanced configuration options available in the plugin.
+  Note: Some features shown here (PDF/SARIF reports, email notifications, SIEM integration)
+  require the Commercial Edition license.
 -->
 <project xmlns="http://maven.apache.org/POM/4.0.0"
          xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
@@ -85,7 +86,7 @@
             <!-- Bastion Maven Plugin - Enterprise Configuration -->
             <plugin>
                 <groupId>io.github.dodogeny</groupId>
-                <artifactId>bastion-maven-plugin-enterprise</artifactId>
+                <artifactId>bastion-maven-community-plugin</artifactId>
                 <version>${bastion.version}</version>
                 <executions>
                     <execution>
@@ -98,14 +99,15 @@
                 </executions>
                 <configuration>
                     <!-- Enterprise Edition Configuration -->
-                    <licensePath>${env.BASTION_LICENSE_PATH}</licensePath>
-                    
+                    <!-- Note: Set API key for commercial features -->
+                    <apiKey>${env.BASTION_API_KEY}</apiKey>
+
                     <!-- Advanced Scanning Configuration -->
                     <severityThreshold>HIGH</severityThreshold>
                     <failOnError>true</failOnError>
                     <maxAllowedVulnerabilities>5</maxAllowedVulnerabilities>
                     
-                    <!-- Premium Report Formats -->
+                    <!-- Premium Report Formats (PDF and SARIF require Commercial Edition) -->
                     <reportFormats>HTML,JSON,CSV,PDF,SARIF</reportFormats>
                     <outputDirectory>${project.build.directory}/enterprise-security-reports</outputDirectory>
                     
@@ -114,7 +116,7 @@
                     <databaseUsername>${env.BASTION_DB_USER}</databaseUsername>
                     <databasePassword>${env.BASTION_DB_PASS}</databasePassword>
                     
-                    <!-- Email Notifications -->
+                    <!-- Email Notifications (Commercial Edition feature) -->
                     <emailEnabled>true</emailEnabled>
                     <smtpHost>smtp.company.com</smtpHost>
                     <smtpPort>587</smtpPort>
@@ -161,7 +163,7 @@
                         </exclusion>
                     </exclusions>
                     
-                    <!-- SIEM Integration -->
+                    <!-- SIEM Integration (Commercial Edition feature) -->
                     <siemIntegration>
                         <splunk>
                             <enabled>true</enabled>
@@ -187,7 +189,7 @@
                 <plugins>
                     <plugin>
                         <groupId>io.github.dodogeny</groupId>
-                        <artifactId>bastion-maven-plugin-enterprise</artifactId>
+                        <artifactId>bastion-maven-community-plugin</artifactId>
                         <executions>
                             <execution>
                                 <id>production-security-scan</id>
@@ -214,7 +216,7 @@
                 <plugins>
                     <plugin>
                         <groupId>io.github.dodogeny</groupId>
-                        <artifactId>bastion-maven-plugin-enterprise</artifactId>
+                        <artifactId>bastion-maven-community-plugin</artifactId>
                         <executions>
                             <execution>
                                 <id>compliance-scan</id>

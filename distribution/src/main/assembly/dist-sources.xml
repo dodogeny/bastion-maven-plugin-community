@@ -86,21 +86,6 @@
         </fileSet>
 
         <fileSet>
-            <directory>${project.basedir}/../enterprise</directory>
-            <outputDirectory>enterprise/</outputDirectory>
-            <includes>
-                <include>pom.xml</include>
-                <include>src/**/*</include>
-                <include>README.md</include>
-            </includes>
-            <excludes>
-                <exclude>target/**/*</exclude>
-                <exclude>*.iml</exclude>
-                <exclude>.DS_Store</exclude>
-            </excludes>
-        </fileSet>
-
-        <fileSet>
             <directory>${project.basedir}</directory>
             <outputDirectory>distribution/</outputDirectory>
             <includes>

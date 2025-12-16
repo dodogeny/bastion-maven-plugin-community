@@ -58,15 +58,6 @@
             </includes>
         </fileSet>
 
-        <fileSet>
-            <directory>${project.basedir}/../enterprise</directory>
-            <outputDirectory>modules/enterprise/</outputDirectory>
-            <includes>
-                <include>README.md</include>
-                <include>src/main/resources/**/*</include>
-            </includes>
-        </fileSet>
-
         <!-- Generated JavaDoc -->
         <fileSet>
             <directory>${project.basedir}/../target/site/apidocs</directory>
@@ -91,16 +82,6 @@
             <outputDirectory>examples/</outputDirectory>
             <includes>
                 <include>**/*</include>
-            </includes>
-        </fileSet>
-
-        <!-- Schema definitions -->
-        <fileSet>
-            <directory>${project.basedir}/src/main/resources/schemas</directory>
-            <outputDirectory>schemas/</outputDirectory>
-            <includes>
-                <include>**/*.xsd</include>
-                <include>**/*.json</include>
             </includes>
         </fileSet>
     </fileSets>

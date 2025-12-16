@@ -42,12 +42,12 @@
     </scm>
 
     <properties>
-        <revision>1.2.1</revision>
+        <revision>1.2.2</revision>
         <maven.compiler.source>21</maven.compiler.source>
         <maven.compiler.target>21</maven.compiler.target>
         <maven.compiler.release>21</maven.compiler.release>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
-        <gpg.skip>false</gpg.skip>
+        <gpg.skip>true</gpg.skip>
         <skipToolchain>false</skipToolchain>
 
         <!-- Dependency versions (JDK 21+ compatible) -->
@@ -386,7 +386,6 @@
                     </execution>
                 </executions>
                 <configuration>
-                    <skip>${skipToolchain}</skip>
                     <toolchains>
                         <jdk>
                             <version>21</version>

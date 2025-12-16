@@ -126,7 +126,7 @@ jobs:
       - name: Step 6 - Prepare and perform release to Maven Central
         run: |
           export GPG_TTY=$(tty)
-          mvn -B deploy --no-transfer-progress -e -Drevision=${{ steps.version.outputs.version }} -DskipToolchain=true
+          mvn -B deploy --no-transfer-progress -e -Drevision=${{ steps.version.outputs.version }} -DskipToolchain=true -Dgpg.skip=false
         env:
           MAVEN_USERNAME: ${{ secrets.OSSRH_USERNAME }}
           MAVEN_CENTRAL_TOKEN: ${{ secrets.OSSRH_TOKEN }}

@@ -21,6 +21,7 @@
                 <include>LICENSE</include>
                 <include>NOTICE</include>
                 <include>CHANGELOG.md</include>
+                <include>QUICKSTART.md</include>
             </includes>
             <fileMode>0644</fileMode>
         </fileSet>
@@ -30,22 +31,9 @@
             <directory>${project.basedir}/src/main/resources</directory>
             <outputDirectory>/</outputDirectory>
             <includes>
-                <include>DISTRIBUTION_GUIDE.md</include>
                 <include>INSTALLATION.md</include>
-                <include>QUICK_START.md</include>
-            </includes>
-            <fileMode>0644</fileMode>
-        </fileSet>
-
-        <!-- Documentation -->
-        <fileSet>
-            <directory>${project.basedir}/../</directory>
-            <outputDirectory>docs/</outputDirectory>
-            <includes>
-                <include>*.pdf</include>
-                <include>*.html</include>
-                <include>EXECUTIVE_SUMMARY.md</include>
-                <include>DISTRIBUTION_GUIDE.md</include>
+                <include>DOCUMENTATION_INDEX.md</include>
+                <include>VERSION.txt</include>
             </includes>
             <fileMode>0644</fileMode>
         </fileSet>
@@ -72,16 +60,6 @@
                 <include>**/*.sh</include>
             </includes>
             <fileMode>0755</fileMode>
-        </fileSet>
-
-        <!-- Configuration templates -->
-        <fileSet>
-            <directory>${project.basedir}/src/main/config</directory>
-            <outputDirectory>config/</outputDirectory>
-            <includes>
-                <include>**/*</include>
-            </includes>
-            <fileMode>0644</fileMode>
         </fileSet>
 
         <!-- Scripts -->
@@ -114,7 +92,6 @@
                 <include>io.github.dodogeny:bastion-scanner-community-core</include>
                 <include>io.github.dodogeny:bastion-reporting-community</include>
                 <include>io.github.dodogeny:bastion-maven-community-plugin</include>
-                <include>io.github.dodogeny:bastion-enterprise</include>
             </includes>
             <binaries>
                 <outputDirectory>lib/</outputDirectory>

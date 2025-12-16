@@ -30,8 +30,8 @@ Add the plugin to your `pom.xml`:
 
 ```xml
 <plugin>
-    <groupId>mu.dodogeny</groupId>
-    <artifactId>bastion-maven-plugin</artifactId>
+    <groupId>io.github.dodogeny</groupId>
+    <artifactId>bastion-maven-community-plugin</artifactId>
     <version>LATEST</version> <!-- Check Maven Central for latest stable version -->
     <configuration>
         <!-- Community Edition settings (default) -->
@@ -68,10 +68,10 @@ Add the plugin to your `pom.xml`:
 
 ```bash
 # Community Edition (default)
-mvn bastion:scan
+mvn io.github.dodogeny:bastion-maven-community-plugin:scan
 
 # With detailed output
-mvn bastion:scan -X
+mvn io.github.dodogeny:bastion-maven-community-plugin:scan -X
 ```
 
 ### Verify Installation
@@ -93,8 +93,8 @@ Check that reports are generated in `target/security-reports/`:
 
 ```xml
 <plugin>
-    <groupId>mu.dodogeny</groupId>
-    <artifactId>bastion-maven-plugin</artifactId>
+    <groupId>io.github.dodogeny</groupId>
+    <artifactId>bastion-maven-community-plugin</artifactId>
     <version>LATEST</version> <!-- Check Maven Central for latest stable version -->
     <configuration>
         <!-- Commercial Edition configuration -->
@@ -200,7 +200,7 @@ If you prefer manual installation:
 1. **Copy JARs to Local Repository**
 
    ```bash
-   cp lib/*.jar ~/.m2/repository/mu/dodogeny/bastion-maven-plugin/${project.version}/
+   cp lib/*.jar ~/.m2/repository/io/github/dodogeny/bastion-maven-community-plugin/${project.version}/
    ```
 
 2. **Update Your Project POM**
@@ -234,9 +234,9 @@ If you prefer manual installation:
 
    ```bash
    mvn install:install-file \
-     -Dfile=plugin/target/bastion-maven-plugin-${project.version}.jar \
-     -DgroupId=mu.dodogeny \
-     -DartifactId=bastion-maven-plugin \
+     -Dfile=plugin/target/bastion-maven-community-plugin-${project.version}.jar \
+     -DgroupId=io.github.dodogeny \
+     -DartifactId=bastion-maven-community-plugin \
      -Dversion=${project.version} \
      -Dpackaging=maven-plugin
    ```
@@ -273,7 +273,7 @@ If you prefer manual installation:
 4. **Verify Commercial Features**
 
    ```bash
-   mvn bastion:scan -Dbastion.apiKey=bsk_live_abc123...
+   mvn io.github.dodogeny:bastion-maven-community-plugin:scan -Dbastion.apiKey=bsk_live_abc123...
    ```
 
    Look for confirmation message:
@@ -307,18 +307,18 @@ export MAVEN_OPTS="-Xmx4g -XX:MaxMetaspaceSize=512m"
 
 ```bash
 # Common system properties
-mvn bastion:scan \
+mvn io.github.dodogeny:bastion-maven-community-plugin:scan \
   -Dbastion.outputDirectory=./security-reports \
   -Dbastion.reportFormats=HTML,JSON,PDF \
   -Dbastion.severityThreshold=HIGH
 
 # JSON file storage (alternative to database)
-mvn bastion:scan \
+mvn io.github.dodogeny:bastion-maven-community-plugin:scan \
   -Dbastion.storage.useJsonFile=true \
   -Dbastion.storage.jsonFilePath=./vulnerability-data.json
 
 # Data purge operations
-mvn bastion:scan \
+mvn io.github.dodogeny:bastion-maven-community-plugin:scan \
   -Dbastion.purgeBeforeScan=true \
   -Dbastion.purge.projectOnly=true \
   -Dbastion.purge.dryRun=true
@@ -331,25 +331,25 @@ mvn bastion:scan \
 1. **Check Plugin Recognition**
 
    ```bash
-   mvn help:describe -Dplugin=mu.dodogeny:bastion-maven-plugin
+   mvn help:describe -Dplugin=io.github.dodogeny:bastion-maven-community-plugin
    ```
 
 2. **Run Help Goal**
 
    ```bash
-   mvn bastion:help
+   mvn io.github.dodogeny:bastion-maven-community-plugin:help
    ```
 
 3. **Run Test Scan**
 
    ```bash
-   mvn bastion:scan -Dbastion.skip=false
+   mvn io.github.dodogeny:bastion-maven-community-plugin:scan -Dbastion.skip=false
    ```
 
 ### Expected Output
 
 ```
-[INFO] --- bastion-maven-plugin:${project.version}:scan (default-cli) ---
+[INFO] --- bastion-maven-community-plugin:${project.version}:scan (default-cli) ---
 [INFO] 🛡️  Starting Bastion vulnerability scan (Open Source Edition)...
 [INFO] Project: test-project
 [INFO] Multi-module enabled: false
@@ -365,7 +365,7 @@ mvn bastion:scan \
 
 **Plugin not found:**
 ```
-[ERROR] Plugin mu.dodogeny:bastion-maven-plugin:${project.version} not found
+[ERROR] Plugin io.github.dodogeny:bastion-maven-community-plugin:${project.version} not found
 ```
 **Solution:** Ensure the plugin is available in Maven Central or your local repository.
 
@@ -435,7 +435,7 @@ After purchase, you can manage your subscription through the LemonSqueezy custom
 ### Remove from Local Repository
 
 ```bash
-rm -rf ~/.m2/repository/mu/dodogeny/bastion-maven-plugin
+rm -rf ~/.m2/repository/io/github/dodogeny/bastion-maven-community-plugin
 ```
 
 ### Using Uninstall Script
