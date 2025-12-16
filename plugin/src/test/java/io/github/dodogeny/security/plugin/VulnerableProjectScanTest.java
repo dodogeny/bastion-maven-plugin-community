@@ -660,8 +660,8 @@ class VulnerableProjectScanTest {
                 "                <artifactId>maven-compiler-plugin</artifactId>\n" +
                 "                <version>3.11.0</version>\n" +
                 "                <configuration>\n" +
-                "                    <source>1.8</source>\n" +
-                "                    <target>1.8</target>\n" +
+                "                    <source>21</source>\n" +
+                "                    <target>21</target>\n" +
                 "                </configuration>\n" +
                 "            </plugin>\n" +
                 "        </plugins>\n" +
