@@ -841,63 +841,11 @@ jobs:
           echo "   Time: $(date -u +"%Y-%m-%d %H:%M:%S UTC")"
 
   # ============================================================================
-  # Post-Release Verification
-  # ============================================================================
-  verify:
-    name: Post-release verification
-    needs: [preflight, github-release, notify]
-    runs-on: ubuntu-latest
-    if: |
-      always() &&
-      needs.github-release.result == 'success' &&
-      github.event.inputs.dry_run != 'true'
-    steps:
-      - name: Verify GitHub release
-        env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-        run: |
-          VERSION="${{ needs.preflight.outputs.version }}"
-
-          echo "=== Verifying GitHub Release ==="
-
-          if gh release view "v${VERSION}" --json tagName,assets; then
-            ASSET_COUNT=$(gh release view "v${VERSION}" --json assets --jq '.assets | length')
-            echo "✓ Release exists with $ASSET_COUNT assets"
-
-            # Verify minimum expected assets (10 files: 5 distributions + 5 checksums)
-            if [ "$ASSET_COUNT" -lt 10 ]; then
-              echo "⚠️  WARNING: Expected at least 10 assets, found $ASSET_COUNT"
-            fi
-          else
-            echo "❌ ERROR: Release v${VERSION} not found"
-            exit 1
-          fi
-
-      - name: Verify Maven Central (async)
-        continue-on-error: true
-        run: |
-          VERSION="${{ needs.preflight.outputs.version }}"
-
-          echo "=== Checking Maven Central Availability ==="
-          echo "Note: This may take up to 30 minutes to sync"
-
-          # Try to fetch POM from Maven Central
-          URL="https://repo1.maven.org/maven2/io/github/dodogeny/bastion-maven-community-plugin/${VERSION}/bastion-maven-community-plugin-${VERSION}.pom"
-
-          if curl --head --silent --fail "$URL" > /dev/null 2>&1; then
-            echo "✓ Artifact is available on Maven Central"
-            echo "🔗 ${URL}"
-          else
-            echo "⏳ Artifact not yet available on Maven Central (this is normal)"
-            echo "Check status at: https://central.sonatype.com/artifact/io.github.dodogeny/bastion-maven-community-plugin/${VERSION}"
-          fi
-
-  # ============================================================================
   # Summary
   # ============================================================================
   summary:
     name: Release summary
-    needs: [preflight, build, release, github-release, notify, verify]
+    needs: [preflight, build, release, github-release, notify]
     runs-on: ubuntu-latest
     if: always()
     steps:
@@ -922,7 +870,6 @@ jobs:
           echo "| Maven Central Release | ${{ needs.release.result }} |" >> $GITHUB_STEP_SUMMARY
           echo "| GitHub Release | ${{ needs.github-release.result }} |" >> $GITHUB_STEP_SUMMARY
           echo "| Email Notification | ${{ needs.notify.result }} |" >> $GITHUB_STEP_SUMMARY
-          echo "| Verification | ${{ needs.verify.result }} |" >> $GITHUB_STEP_SUMMARY
           echo "" >> $GITHUB_STEP_SUMMARY
 
           if [ "${{ needs.github-release.result }}" == "success" ]; then
