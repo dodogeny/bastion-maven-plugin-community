@@ -379,8 +379,8 @@ Update the SMTP configuration:
   uses: dawidd6/action-send-mail@v3
   with:
     server_address: your-smtp-server.com
-    server_port: 587
-    secure: true
+    server_port: 587  # Use 587 for STARTTLS (don't set secure: true)
+    # For SSL/TLS (port 465), add: secure: true
     username: ${{ secrets.SMTP_USERNAME }}
     password: ${{ secrets.SMTP_PASSWORD }}
 ```
@@ -560,9 +560,11 @@ Rotate SMTP passwords every 90 days for security.
 
 Check SMTP provider logs for unusual activity.
 
-### 5. Use HTTPS
+### 5. Use TLS/SSL
 
-Always use TLS/SSL for SMTP connections (`secure: true`).
+Always use encrypted SMTP connections:
+- **Port 587 (STARTTLS)**: Don't set `secure: true` - encryption is handled via STARTTLS upgrade
+- **Port 465 (SSL/TLS)**: Set `secure: true` for direct SSL/TLS connection
 
 ## Advanced Configuration
 

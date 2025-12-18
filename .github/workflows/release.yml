@@ -820,7 +820,7 @@ jobs:
         with:
           server_address: smtp.gmail.com
           server_port: 587
-          secure: true
+          # Port 587 uses STARTTLS (not direct SSL) - do not set secure: true
           username: ${{ secrets.SMTP_USERNAME }}
           password: ${{ secrets.SMTP_PASSWORD }}
           subject: "✅ Bastion Maven Plugin v${{ needs.preflight.outputs.version }} Released to Maven Central"
