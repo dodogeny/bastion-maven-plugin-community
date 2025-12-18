@@ -249,6 +249,13 @@
 
     <build>
         <resources>
+            <!-- Default resources for child modules - preserves src/main/resources copying -->
+            <resource>
+                <directory>src/main/resources</directory>
+                <filtering>false</filtering>
+            </resource>
+
+            <!-- Filtered markdown docs (parent POM only) -->
             <resource>
                 <directory>${project.basedir}</directory>
                 <includes>

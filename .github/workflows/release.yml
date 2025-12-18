@@ -151,7 +151,7 @@ jobs:
       - name: Run tests
         run: |
           echo "Running tests for version ${{ needs.preflight.outputs.version }}"
-          mvn -B test \
+          mvn -B clean test \
             -Drevision=${{ needs.preflight.outputs.version }} \
             -DskipToolchain=true
 
