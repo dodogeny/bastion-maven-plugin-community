@@ -136,10 +136,18 @@ jobs:
 
           echo "=== Updating Documentation with Version ${VERSION} ==="
 
-          # Replace @project.version@ with actual version in README.md
+          # Show files before update
+          echo "Checking for @project.version@ placeholders:"
+          grep -n "@project.version@" README.md QUICKSTART.md CHANGELOG.md || echo "No placeholders found"
+
+          # Replace @project.version@ with actual version
           sed -i "s/@project\.version@/${VERSION}/g" README.md
           sed -i "s/@project\.version@/${VERSION}/g" QUICKSTART.md
           sed -i "s/@project\.version@/${VERSION}/g" CHANGELOG.md
+
+          echo ""
+          echo "Files after update:"
+          git status README.md QUICKSTART.md CHANGELOG.md
 
           echo "✓ Updated version placeholders in documentation"
 
@@ -152,22 +160,21 @@ jobs:
           git config user.email "github-actions[bot]@users.noreply.github.com"
 
           # Check if there are changes
-          if git diff --quiet README.md QUICKSTART.md CHANGELOG.md; then
-            echo "✓ No documentation changes needed"
-            exit 0
+          if ! git diff --quiet README.md QUICKSTART.md CHANGELOG.md; then
+            echo "Changes detected, committing..."
+
+            # Commit and push changes
+            git add README.md QUICKSTART.md CHANGELOG.md
+            git commit -m "docs: Update version to ${VERSION} in documentation" \
+                       -m "Automated documentation update for release v${VERSION}" \
+                       -m "Co-Authored-By: Claude Sonnet 4.5 <noreply@anthropic.com>"
+
+            git push origin main
+
+            echo "✓ Documentation updated and pushed successfully"
+          else
+            echo "✓ No documentation changes needed (already up to date)"
           fi
-
-          # Commit and push changes
-          git add README.md QUICKSTART.md CHANGELOG.md
-          git commit -m "docs: Update version to ${VERSION} in documentation
-
-🤖 Automated documentation update for release v${VERSION}
-
-Co-Authored-By: Claude Sonnet 4.5 <noreply@anthropic.com>"
-
-          git push origin main
-
-          echo "✓ Documentation updated and pushed successfully"
 
   # ============================================================================
   # Build and Test
@@ -183,6 +190,9 @@ Co-Authored-By: Claude Sonnet 4.5 <noreply@anthropic.com>"
     steps:
       - name: Checkout code
         uses: actions/checkout@v4
+        with:
+          ref: main  # Get latest commit including doc updates
+          fetch-depth: 0
 
       - name: Set up JDK ${{ env.JAVA_VERSION }}
         uses: actions/setup-java@v4
@@ -298,6 +308,7 @@ Co-Authored-By: Claude Sonnet 4.5 <noreply@anthropic.com>"
       - name: Checkout code
         uses: actions/checkout@v4
         with:
+          ref: main  # Get latest commit including doc updates
           fetch-depth: 0
 
       - name: Set up JDK ${{ env.JAVA_VERSION }}
@@ -428,6 +439,7 @@ Co-Authored-By: Claude Sonnet 4.5 <noreply@anthropic.com>"
       - name: Checkout code
         uses: actions/checkout@v4
         with:
+          ref: main  # Get latest commit including doc updates
           fetch-depth: 0
 
       - name: Download build artifacts
