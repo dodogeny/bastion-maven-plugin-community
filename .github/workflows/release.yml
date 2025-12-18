@@ -540,18 +540,19 @@ jobs:
 
           ### Verification
 
-          #### GPG Signatures
-          All artifacts include GPG signatures (\`.asc\` files). Verify integrity using:
-
-          \`\`\`bash
-          gpg --verify bastion-maven-plugin-${VERSION}-bin.zip.asc bastion-maven-plugin-${VERSION}-bin.zip
-          \`\`\`
-
           #### Checksums
-          SHA-256 checksums are provided for all artifacts (\`.sha256\` files):
+          SHA-256 checksums are provided for all GitHub release artifacts (\`.sha256\` files):
 
           \`\`\`bash
           sha256sum -c bastion-maven-plugin-${VERSION}-bin.zip.sha256
+          \`\`\`
+
+          #### GPG Signatures
+          GPG signatures (\`.asc\` files) are available on [Maven Central](https://central.sonatype.com/artifact/io.github.dodogeny/bastion-maven-plugin-parent/${VERSION}) for all artifacts. To verify:
+
+          \`\`\`bash
+          # Download from Maven Central and verify
+          gpg --verify bastion-maven-plugin-${VERSION}.jar.asc bastion-maven-plugin-${VERSION}.jar
           \`\`\`
 
           EOF
@@ -576,24 +577,20 @@ jobs:
 
           echo "=== Creating GitHub Release ==="
 
-          # Create release with all artifacts
+          # Create release with all artifacts (checksums for verification)
+          # Note: GPG .asc signatures are available on Maven Central
           gh release create "v${VERSION}" \
             --title "Bastion Maven Plugin Community v${VERSION}" \
             --notes-file release_notes.md \
             distribution/target/bastion-maven-plugin-${VERSION}-bin.zip \
-            distribution/target/bastion-maven-plugin-${VERSION}-bin.zip.asc \
             distribution/target/bastion-maven-plugin-${VERSION}-bin.zip.sha256 \
             distribution/target/bastion-maven-plugin-${VERSION}-bin-unix.tar.gz \
-            distribution/target/bastion-maven-plugin-${VERSION}-bin-unix.tar.gz.asc \
             distribution/target/bastion-maven-plugin-${VERSION}-bin-unix.tar.gz.sha256 \
             distribution/target/bastion-maven-plugin-${VERSION}-docs.zip \
-            distribution/target/bastion-maven-plugin-${VERSION}-docs.zip.asc \
             distribution/target/bastion-maven-plugin-${VERSION}-docs.zip.sha256 \
             distribution/target/bastion-maven-plugin-${VERSION}-src.zip \
-            distribution/target/bastion-maven-plugin-${VERSION}-src.zip.asc \
             distribution/target/bastion-maven-plugin-${VERSION}-src.zip.sha256 \
             distribution/target/bastion-maven-plugin-${VERSION}-src.tar.gz \
-            distribution/target/bastion-maven-plugin-${VERSION}-src.tar.gz.asc \
             distribution/target/bastion-maven-plugin-${VERSION}-src.tar.gz.sha256 \
             distribution/target/SHA256SUMS.txt
 
@@ -868,9 +865,9 @@ jobs:
             ASSET_COUNT=$(gh release view "v${VERSION}" --json assets --jq '.assets | length')
             echo "✓ Release exists with $ASSET_COUNT assets"
 
-            # Verify minimum expected assets
-            if [ "$ASSET_COUNT" -lt 15 ]; then
-              echo "⚠️  WARNING: Expected at least 15 assets, found $ASSET_COUNT"
+            # Verify minimum expected assets (11 files: 5 distributions + 5 checksums + SHA256SUMS.txt)
+            if [ "$ASSET_COUNT" -lt 11 ]; then
+              echo "⚠️  WARNING: Expected at least 11 assets, found $ASSET_COUNT"
             fi
           else
             echo "❌ ERROR: Release v${VERSION} not found"
