@@ -1,9 +1,52 @@
 # Changelog
 
-All notable changes to the Bastion Maven Plugin Enterprise will be documented in this file.
+All notable changes to the Bastion Maven Plugin Community will be documented in this file.
 
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
+
+## [@project.version@] - Current Release
+
+### Added
+- **🔄 Dynamic Version Management System**: Revolutionary approach to version management
+  - Single source of truth in parent POM `<revision>` property
+  - Maven resource filtering automatically replaces `@project.version@` in documentation
+  - Eliminates manual version updates across README, QUICKSTART, and examples
+  - Filtered documentation generated in `target/filtered-docs/` during build
+  - New `VERSIONING.md` guide with complete documentation
+
+- **📝 Enhanced Release Workflow**: Improved GitHub Actions release pipeline
+  - Automatic version extraction from POM `<revision>` property
+  - Intelligent version determination (auto-increment with POM fallback)
+  - Comprehensive release notes generation with git commit changelog
+  - Automatic comparison links to previous releases
+  - Build verification with POM structure checks
+  - Cache clearing for dodogeny artifacts
+
+### Changed
+- **📚 Documentation Updates**: All version references now dynamic
+  - `README.md`: All plugin version examples use `@project.version@`
+  - `QUICKSTART.md`: All configuration examples use `@project.version@`
+  - `CHANGELOG.md`: Version history table includes current version dynamically
+  - Compatibility matrix shows current version status
+
+### Improved
+- **🚀 Release Efficiency**: Streamlined release process
+  - Single-point version update (only edit `<revision>` in parent POM)
+  - Zero risk of missed version references
+  - Automatic consistency across all documentation
+  - CI/CD automatically extracts and uses correct version
+  - Professional release notes with detailed changelogs
+
+### Developer Experience
+- **📖 New Documentation**: `VERSIONING.md` comprehensive guide
+  - How the dynamic versioning system works
+  - Maven resource filtering configuration details
+  - Release process walkthrough
+  - CI/CD integration explanation
+  - Troubleshooting guide
+  - Migration guide for adding new files
+  - Best practices
 
 ## [1.2.0] - 2025-12-08
 
@@ -351,12 +394,13 @@ mvn bastion:scan \
 
 ## Version History
 
-| Version | Release Date | Key Features |
-|---------|-------------|--------------|
-| 1.2.0   | 2025-12-08  | Enhanced JAR analysis, improved logging, comprehensive test coverage |
-| 1.1.1   | 2025-11-08  | Zero-config NVD database, intelligent auto-update, Java 21+ |
-| 1.1.0   | 2025-08-29  | Smart NVD caching, performance optimization |
-| 1.0.0   | 2024-01-15  | Initial release with core scanning and reporting |
+| Version | Release Date | Key Features | Status |
+|---------|-------------|--------------|--------|
+| @project.version@ | Current | Enhanced JAR analysis, dynamic versioning, improved release workflow | **Recommended** |
+| 1.2.0   | 2025-12-08  | Enhanced JAR analysis, improved logging, comprehensive test coverage | Stable |
+| 1.1.1   | 2025-11-08  | Zero-config NVD database, intelligent auto-update, Java 21+ | Stable |
+| 1.1.0   | 2025-08-29  | Smart NVD caching, performance optimization | Stable |
+| 1.0.0   | 2024-01-15  | Initial release with core scanning and reporting | Legacy |
 
 ---
 

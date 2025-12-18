@@ -2,6 +2,16 @@ name: Continuous Delivery Release
 
 on:
   workflow_dispatch:
+    inputs:
+      dry_run:
+        description: 'Dry run (skip Maven Central deployment and GitHub release)'
+        required: false
+        default: false
+        type: boolean
+      force_version:
+        description: 'Force specific version (leave empty to use POM version)'
+        required: false
+        type: string
   push:
     branches:
       - main
@@ -10,84 +20,275 @@ on:
       - ".github/**"
       - "!.github/workflows/release.yml"
 
+env:
+  JAVA_VERSION: 21
+  MAVEN_OPTS: "-Xmx2g -XX:+UseG1GC"
+
 jobs:
-  build:
+  # ============================================================================
+  # Pre-flight Checks
+  # ============================================================================
+  preflight:
+    name: Pre-flight checks
     runs-on: ubuntu-latest
     if: github.repository_owner == 'dodogeny'
+    outputs:
+      version: ${{ steps.version.outputs.version }}
+      should_release: ${{ steps.checks.outputs.should_release }}
     steps:
       - name: Checkout code
-        uses: actions/checkout@v4
-
-      - name: Set up JDK 21
-        uses: actions/setup-java@v4
-        with:
-          distribution: temurin
-          java-version: 21
-          cache: maven
-
-      - name: Maven version check
-        run: mvn -v
-
-      - name: Build with Maven
-        run: mvn -B package --file pom.xml -Drevision=${{ github.sha }} -DskipToolchain=true
-
-  release:
-    name: Create release
-    needs: build
-    runs-on: ubuntu-latest
-    permissions:
-      contents: write
-      packages: write
-    steps:
-      - name: Step 1 - Checkout code
         uses: actions/checkout@v4
         with:
           fetch-depth: 0
 
-      - name: Step 2 - Import GPG key
+      - name: Extract version from POM
+        id: version
         run: |
-          echo "${{ secrets.GPG_PUBLIC_KEY }}" | gpg --import
-          echo "${{ secrets.GPG_SECRET_KEY }}" | gpg --import --no-tty --batch --yes
-          gpg --list-secret-keys --keyid-format=long
-          echo "GPG keys imported successfully"
+          POM_VERSION=$(grep -oP '<revision>\K[^<]+' pom.xml | head -1)
 
-      - name: Step 3 - Setup Java
+          if [ -z "$POM_VERSION" ]; then
+            echo "❌ ERROR: Could not extract version from pom.xml"
+            exit 1
+          fi
+
+          # Use forced version if provided (manual workflow dispatch)
+          if [ -n "${{ github.event.inputs.force_version }}" ]; then
+            VERSION="${{ github.event.inputs.force_version }}"
+            echo "⚠️  Using forced version: $VERSION"
+          else
+            VERSION="$POM_VERSION"
+            echo "✓ Using POM version: $VERSION"
+          fi
+
+          echo "version=$VERSION" >> $GITHUB_OUTPUT
+          echo "pom_version=$POM_VERSION" >> $GITHUB_OUTPUT
+
+      - name: Validate version format
+        run: |
+          VERSION="${{ steps.version.outputs.version }}"
+
+          # Check if version matches semver format
+          if ! echo "$VERSION" | grep -qE '^[0-9]+\.[0-9]+\.[0-9]+(-[a-zA-Z0-9]+)?$'; then
+            echo "❌ ERROR: Invalid version format: $VERSION"
+            echo "Expected format: MAJOR.MINOR.PATCH[-QUALIFIER]"
+            exit 1
+          fi
+
+          echo "✓ Version format is valid: $VERSION"
+
+      - name: Check if tag already exists
+        id: checks
+        run: |
+          VERSION="${{ steps.version.outputs.version }}"
+
+          # Check if tag exists
+          if git rev-parse "v${VERSION}" >/dev/null 2>&1; then
+            echo "⚠️  Tag v${VERSION} already exists"
+            echo "should_release=false" >> $GITHUB_OUTPUT
+
+            # Fail if not a manual workflow dispatch
+            if [ "${{ github.event_name }}" != "workflow_dispatch" ]; then
+              echo "❌ ERROR: Tag already exists and this is not a manual run"
+              exit 1
+            fi
+          else
+            echo "✓ Tag v${VERSION} does not exist yet"
+            echo "should_release=true" >> $GITHUB_OUTPUT
+          fi
+
+          # Get previous version for comparison
+          PREV_TAG=$(git tag -l --sort=-v:refname | head -1)
+          echo "prev_tag=${PREV_TAG:-none}" >> $GITHUB_OUTPUT
+          echo "Previous version: ${PREV_TAG:-none}"
+
+      - name: Validate CHANGELOG entry
+        run: |
+          VERSION="${{ steps.version.outputs.version }}"
+
+          # Check if CHANGELOG.md has an entry for this version
+          if ! grep -q "\[${VERSION}\]" CHANGELOG.md && ! grep -q "@project.version@" CHANGELOG.md; then
+            echo "⚠️  WARNING: No CHANGELOG entry found for version ${VERSION}"
+            echo "Consider adding release notes to CHANGELOG.md"
+          else
+            echo "✓ CHANGELOG entry found"
+          fi
+
+  # ============================================================================
+  # Build and Test
+  # ============================================================================
+  build:
+    name: Build and test
+    needs: preflight
+    runs-on: ubuntu-latest
+    if: needs.preflight.outputs.should_release == 'true'
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Set up JDK ${{ env.JAVA_VERSION }}
         uses: actions/setup-java@v4
         with:
           distribution: temurin
-          java-version: 21
+          java-version: ${{ env.JAVA_VERSION }}
           cache: maven
 
-      - name: Step 4 - Get next version
-        uses: reecetech/version-increment@2023.9.3
-        id: version
-        with:
-          scheme: semver
-          increment: patch
-
-      - name: Step 5 - Clean Maven cache
+      - name: Display build environment
         run: |
+          echo "=== Build Environment ==="
+          echo "Java version: $(java -version 2>&1 | head -1)"
+          echo "Maven version: $(mvn -v | head -1)"
+          echo "Build version: ${{ needs.preflight.outputs.version }}"
+          echo "Runner OS: ${{ runner.os }}"
+          echo "========================"
+
+      - name: Clear Maven cache
+        run: |
+          echo "Clearing Maven cache for io.github.dodogeny..."
           rm -rf ~/.m2/repository/io/github/dodogeny
-          rm -rf ~/.m2/repository/org/apache/maven/plugins/maven-gpg-plugin
-          echo "Cleaned local build artifacts and GPG plugin from cache"
+          find ~/.m2/repository -name "*.lastUpdated" -delete 2>/dev/null || true
+          echo "✓ Cache cleared"
 
-      - name: Step 5.5 - Verify secrets are set
+      - name: Run tests
         run: |
-          if [ -z "${{ secrets.OSSRH_USERNAME }}" ]; then
-            echo "ERROR: OSSRH_USERNAME secret is not set!"
-            exit 1
-          fi
-          if [ -z "${{ secrets.OSSRH_TOKEN }}" ]; then
-            echo "ERROR: OSSRH_TOKEN secret is not set!"
-            exit 1
-          fi
-          echo "OSSRH_USERNAME is set (length: ${#OSSRH_USERNAME})"
-          echo "OSSRH_TOKEN is set (length: ${#OSSRH_TOKEN})"
-        env:
-          OSSRH_USERNAME: ${{ secrets.OSSRH_USERNAME }}
-          OSSRH_TOKEN: ${{ secrets.OSSRH_TOKEN }}
+          echo "Running tests for version ${{ needs.preflight.outputs.version }}"
+          mvn -B test \
+            -Drevision=${{ needs.preflight.outputs.version }} \
+            -DskipToolchain=true
 
-      - name: Step 5.6 - Create Maven settings.xml
+      - name: Build project
+        run: |
+          echo "Building version ${{ needs.preflight.outputs.version }}"
+          mvn -B package \
+            -Drevision=${{ needs.preflight.outputs.version }} \
+            -DskipToolchain=true \
+            -DskipTests
+
+      - name: Verify artifacts exist
+        run: |
+          VERSION="${{ needs.preflight.outputs.version }}"
+          MISSING=0
+
+          echo "=== Verifying Distribution Artifacts ==="
+
+          ARTIFACTS=(
+            "distribution/target/bastion-maven-plugin-${VERSION}-bin.zip"
+            "distribution/target/bastion-maven-plugin-${VERSION}-bin-unix.tar.gz"
+            "distribution/target/bastion-maven-plugin-${VERSION}-docs.zip"
+            "distribution/target/bastion-maven-plugin-${VERSION}-src.zip"
+            "distribution/target/bastion-maven-plugin-${VERSION}-src.tar.gz"
+          )
+
+          for artifact in "${ARTIFACTS[@]}"; do
+            if [ -f "$artifact" ]; then
+              SIZE=$(du -h "$artifact" | cut -f1)
+              echo "✓ $artifact ($SIZE)"
+            else
+              echo "❌ MISSING: $artifact"
+              MISSING=$((MISSING + 1))
+            fi
+          done
+
+          if [ $MISSING -gt 0 ]; then
+            echo "❌ ERROR: $MISSING artifact(s) missing"
+            exit 1
+          fi
+
+          echo "✓ All artifacts present"
+
+      - name: Generate checksums
+        run: |
+          VERSION="${{ needs.preflight.outputs.version }}"
+          cd distribution/target
+
+          echo "=== Generating SHA-256 Checksums ==="
+          for file in bastion-maven-plugin-${VERSION}*.{zip,tar.gz}; do
+            if [ -f "$file" ]; then
+              sha256sum "$file" > "${file}.sha256"
+              echo "✓ Generated checksum for $file"
+            fi
+          done
+
+          # Create checksums file
+          sha256sum bastion-maven-plugin-${VERSION}*.{zip,tar.gz} > SHA256SUMS.txt 2>/dev/null || true
+
+          echo ""
+          echo "=== Checksums ==="
+          cat SHA256SUMS.txt || echo "No checksums generated"
+
+      - name: Upload build artifacts
+        uses: actions/upload-artifact@v4
+        with:
+          name: distribution-${{ needs.preflight.outputs.version }}
+          path: |
+            distribution/target/bastion-maven-plugin-${{ needs.preflight.outputs.version }}*
+          retention-days: 7
+          if-no-files-found: error
+
+  # ============================================================================
+  # Release to Maven Central
+  # ============================================================================
+  release:
+    name: Release to Maven Central
+    needs: [preflight, build]
+    runs-on: ubuntu-latest
+    if: needs.preflight.outputs.should_release == 'true' && github.event.inputs.dry_run != 'true'
+    permissions:
+      contents: write
+      packages: write
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Set up JDK ${{ env.JAVA_VERSION }}
+        uses: actions/setup-java@v4
+        with:
+          distribution: temurin
+          java-version: ${{ env.JAVA_VERSION }}
+          cache: maven
+
+      - name: Import GPG key
+        run: |
+          echo "Importing GPG keys..."
+          echo "${{ secrets.GPG_PUBLIC_KEY }}" | gpg --import
+          echo "${{ secrets.GPG_SECRET_KEY }}" | gpg --import --no-tty --batch --yes
+
+          # Verify keys were imported
+          if gpg --list-secret-keys --keyid-format=long | grep -q sec; then
+            echo "✓ GPG keys imported successfully"
+          else
+            echo "❌ ERROR: Failed to import GPG keys"
+            exit 1
+          fi
+
+      - name: Verify secrets
+        run: |
+          MISSING=0
+
+          if [ -z "${{ secrets.OSSRH_USERNAME }}" ]; then
+            echo "❌ OSSRH_USERNAME not set"
+            MISSING=$((MISSING + 1))
+          fi
+
+          if [ -z "${{ secrets.OSSRH_TOKEN }}" ]; then
+            echo "❌ OSSRH_TOKEN not set"
+            MISSING=$((MISSING + 1))
+          fi
+
+          if [ -z "${{ secrets.GPG_PASSPHRASE }}" ]; then
+            echo "❌ GPG_PASSPHRASE not set"
+            MISSING=$((MISSING + 1))
+          fi
+
+          if [ $MISSING -gt 0 ]; then
+            echo "❌ ERROR: $MISSING required secret(s) not set"
+            exit 1
+          fi
+
+          echo "✓ All required secrets are configured"
+
+      - name: Configure Maven settings
         run: |
           mkdir -p ~/.m2
           cat > ~/.m2/settings.xml <<'EOF'
@@ -121,79 +322,621 @@ jobs:
             </activeProfiles>
           </settings>
           EOF
-          echo "Created settings.xml with Central Publishing credentials"
+          echo "✓ Maven settings.xml configured"
 
-      - name: Step 6 - Prepare and perform release to Maven Central
+      - name: Clean Maven cache
+        run: |
+          rm -rf ~/.m2/repository/io/github/dodogeny
+          rm -rf ~/.m2/repository/org/apache/maven/plugins/maven-gpg-plugin
+          find ~/.m2/repository -name "*.lastUpdated" -delete 2>/dev/null || true
+
+      - name: Deploy to Maven Central
         run: |
           export GPG_TTY=$(tty)
-          mvn -B deploy --no-transfer-progress -e -Drevision=${{ steps.version.outputs.version }} -DskipToolchain=true -Dgpg.skip=false
+          VERSION="${{ needs.preflight.outputs.version }}"
+
+          echo "=== Deploying version ${VERSION} to Maven Central ==="
+
+          mvn -B deploy \
+            --no-transfer-progress \
+            -Drevision=${VERSION} \
+            -DskipToolchain=true \
+            -DskipTests \
+            -Dgpg.skip=false
+
+          echo "✓ Deployment completed"
         env:
           MAVEN_USERNAME: ${{ secrets.OSSRH_USERNAME }}
           MAVEN_CENTRAL_TOKEN: ${{ secrets.OSSRH_TOKEN }}
           MAVEN_GPG_PASSPHRASE: ${{ secrets.GPG_PASSPHRASE }}
           GPG_PASSPHRASE: ${{ secrets.GPG_PASSPHRASE }}
 
-      - name: Step 7 - Push Git tag for the new release
+  # ============================================================================
+  # Create GitHub Release
+  # ============================================================================
+  github-release:
+    name: Create GitHub release
+    needs: [preflight, build, release]
+    runs-on: ubuntu-latest
+    if: |
+      always() &&
+      needs.preflight.outputs.should_release == 'true' &&
+      (needs.release.result == 'success' || needs.release.result == 'skipped') &&
+      github.event.inputs.dry_run != 'true'
+    permissions:
+      contents: write
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Download build artifacts
+        uses: actions/download-artifact@v4
+        with:
+          name: distribution-${{ needs.preflight.outputs.version }}
+          path: distribution/target/
+
+      - name: Create Git tag
         uses: rickstaa/action-create-tag@v1
         id: tag_create
         with:
-          tag: v${{ steps.version.outputs.version }}
+          tag: v${{ needs.preflight.outputs.version }}
           tag_exists_error: false
+          message: "Release v${{ needs.preflight.outputs.version }}"
 
-      - name: Step 8 - Create GitHub release with artifacts
-        env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+      - name: Extract CHANGELOG entry
+        id: changelog
         run: |
-          gh release create 'v${{ steps.version.outputs.version }}' \
-            -t "Bastion Maven Plugin v${{ steps.version.outputs.version }}" \
-            --generate-notes \
-            distribution/target/bastion-maven-plugin-${{ steps.version.outputs.version }}-bin.zip \
-            distribution/target/bastion-maven-plugin-${{ steps.version.outputs.version }}-bin.zip.asc \
-            distribution/target/bastion-maven-plugin-${{ steps.version.outputs.version }}-bin-unix.tar.gz \
-            distribution/target/bastion-maven-plugin-${{ steps.version.outputs.version }}-bin-unix.tar.gz.asc \
-            distribution/target/bastion-maven-plugin-${{ steps.version.outputs.version }}-docs.zip \
-            distribution/target/bastion-maven-plugin-${{ steps.version.outputs.version }}-docs.zip.asc \
-            distribution/target/bastion-maven-plugin-${{ steps.version.outputs.version }}-src.zip \
-            distribution/target/bastion-maven-plugin-${{ steps.version.outputs.version }}-src.zip.asc \
-            distribution/target/bastion-maven-plugin-${{ steps.version.outputs.version }}-src.tar.gz \
-            distribution/target/bastion-maven-plugin-${{ steps.version.outputs.version }}-src.tar.gz.asc \
-            --notes "## Installation
+          VERSION="${{ needs.preflight.outputs.version }}"
+
+          # Try to extract changelog entry for this version
+          if grep -q "\[${VERSION}\]" CHANGELOG.md || grep -q "@project.version@" CHANGELOG.md; then
+            # Extract section between this version and next version header
+            CHANGELOG_ENTRY=$(awk "/## \[${VERSION}\]|## \[@project.version@\]/,/## \[[0-9]/" CHANGELOG.md | head -n -1 | tail -n +2)
+
+            if [ -n "$CHANGELOG_ENTRY" ]; then
+              echo "✓ Extracted CHANGELOG entry"
+              echo "changelog_found=true" >> $GITHUB_OUTPUT
+              # Save to file to preserve formatting
+              echo "$CHANGELOG_ENTRY" > /tmp/changelog_entry.md
+            else
+              echo "⚠️  CHANGELOG section found but empty"
+              echo "changelog_found=false" >> $GITHUB_OUTPUT
+            fi
+          else
+            echo "⚠️  No CHANGELOG entry for version ${VERSION}"
+            echo "changelog_found=false" >> $GITHUB_OUTPUT
+          fi
+
+      - name: Generate release notes
+        id: release_notes
+        run: |
+          VERSION="${{ needs.preflight.outputs.version }}"
+          PREV_TAG="${{ needs.preflight.outputs.prev_tag }}"
+
+          echo "=== Generating Release Notes ==="
+          echo "Current version: $VERSION"
+          echo "Previous tag: ${PREV_TAG:-none}"
+
+          # Start release notes
+          cat > release_notes.md <<EOF
+          ## Installation
+
+          Add the following plugin to your Maven \`pom.xml\`:
 
           \`\`\`xml
           <plugin>
               <groupId>io.github.dodogeny</groupId>
               <artifactId>bastion-maven-community-plugin</artifactId>
-              <version>${{ steps.version.outputs.version }}</version>
+              <version>${VERSION}</version>
           </plugin>
           \`\`\`
 
-          ## Release Artifacts
+          EOF
+
+          # Add CHANGELOG entry if available
+          if [ "${{ steps.changelog.outputs.changelog_found }}" == "true" ]; then
+            echo "## What's Changed" >> release_notes.md
+            echo "" >> release_notes.md
+            cat /tmp/changelog_entry.md >> release_notes.md
+            echo "" >> release_notes.md
+          else
+            # Generate detailed changelog from commits and PRs
+            echo "## What's Changed" >> release_notes.md
+            echo "" >> release_notes.md
+
+            if [ -z "$PREV_TAG" ]; then
+              echo "### Commits" >> release_notes.md
+              git log --pretty=format:"- %s (%h)" --no-merges | head -20 >> release_notes.md
+            else
+              # Get commits between versions
+              echo "### Commits Since ${PREV_TAG}" >> release_notes.md
+              echo "" >> release_notes.md
+
+              # Extract PR numbers and categorize commits
+              git log ${PREV_TAG}..HEAD --pretty=format:"%s|%h|%an" --no-merges > /tmp/commits.txt
+
+              # Process commits and extract PR references
+              echo "#### 🚀 Features & Enhancements" >> release_notes.md
+              grep -iE "^(feat|feature|add|added|new):" /tmp/commits.txt | while IFS='|' read -r subject hash author; do
+                PR_NUM=$(echo "$subject" | grep -oP '#\d+' | head -1)
+                if [ -n "$PR_NUM" ]; then
+                  echo "- $subject by @$author ([$hash](https://github.com/${{ github.repository }}/commit/$hash)) [${PR_NUM}](https://github.com/${{ github.repository }}/pull/${PR_NUM#\#})" >> release_notes.md
+                else
+                  echo "- $subject by @$author ([$hash](https://github.com/${{ github.repository }}/commit/$hash))" >> release_notes.md
+                fi
+              done || echo "_No new features_" >> release_notes.md
+              echo "" >> release_notes.md
+
+              echo "#### 🐛 Bug Fixes" >> release_notes.md
+              grep -iE "^(fix|fixed|bugfix|bug):" /tmp/commits.txt | while IFS='|' read -r subject hash author; do
+                PR_NUM=$(echo "$subject" | grep -oP '#\d+' | head -1)
+                if [ -n "$PR_NUM" ]; then
+                  echo "- $subject by @$author ([$hash](https://github.com/${{ github.repository }}/commit/$hash)) [${PR_NUM}](https://github.com/${{ github.repository }}/pull/${PR_NUM#\#})" >> release_notes.md
+                else
+                  echo "- $subject by @$author ([$hash](https://github.com/${{ github.repository }}/commit/$hash))" >> release_notes.md
+                fi
+              done || echo "_No bug fixes_" >> release_notes.md
+              echo "" >> release_notes.md
+
+              echo "#### 📚 Documentation" >> release_notes.md
+              grep -iE "^(docs|doc|documentation):" /tmp/commits.txt | while IFS='|' read -r subject hash author; do
+                PR_NUM=$(echo "$subject" | grep -oP '#\d+' | head -1)
+                if [ -n "$PR_NUM" ]; then
+                  echo "- $subject by @$author ([$hash](https://github.com/${{ github.repository }}/commit/$hash)) [${PR_NUM}](https://github.com/${{ github.repository }}/pull/${PR_NUM#\#})" >> release_notes.md
+                else
+                  echo "- $subject by @$author ([$hash](https://github.com/${{ github.repository }}/commit/$hash))" >> release_notes.md
+                fi
+              done || echo "_No documentation changes_" >> release_notes.md
+              echo "" >> release_notes.md
+
+              echo "#### 🔧 Maintenance & Chores" >> release_notes.md
+              grep -iE "^(chore|refactor|test|ci|build|perf):" /tmp/commits.txt | while IFS='|' read -r subject hash author; do
+                PR_NUM=$(echo "$subject" | grep -oP '#\d+' | head -1)
+                if [ -n "$PR_NUM" ]; then
+                  echo "- $subject by @$author ([$hash](https://github.com/${{ github.repository }}/commit/$hash)) [${PR_NUM}](https://github.com/${{ github.repository }}/pull/${PR_NUM#\#})" >> release_notes.md
+                else
+                  echo "- $subject by @$author ([$hash](https://github.com/${{ github.repository }}/commit/$hash))" >> release_notes.md
+                fi
+              done || echo "_No maintenance changes_" >> release_notes.md
+              echo "" >> release_notes.md
+
+              echo "#### 📦 Other Changes" >> release_notes.md
+              grep -viE "^(feat|feature|add|added|new|fix|fixed|bugfix|bug|docs|doc|documentation|chore|refactor|test|ci|build|perf):" /tmp/commits.txt | while IFS='|' read -r subject hash author; do
+                PR_NUM=$(echo "$subject" | grep -oP '#\d+' | head -1)
+                if [ -n "$PR_NUM" ]; then
+                  echo "- $subject by @$author ([$hash](https://github.com/${{ github.repository }}/commit/$hash)) [${PR_NUM}](https://github.com/${{ github.repository }}/pull/${PR_NUM#\#})" >> release_notes.md
+                else
+                  echo "- $subject by @$author ([$hash](https://github.com/${{ github.repository }}/commit/$hash))" >> release_notes.md
+                fi
+              done || echo "_No other changes_" >> release_notes.md
+              echo "" >> release_notes.md
+            fi
+            echo "" >> release_notes.md
+          fi
+
+          # Add Maven Central section
+          cat >> release_notes.md <<EOF
+          ## Maven Central
+
+          🚀 This release has been deployed to Maven Central and will be available within 30 minutes.
+
+          - **Maven Central**: https://central.sonatype.com/artifact/io.github.dodogeny/bastion-maven-community-plugin/${VERSION}
+          - **Deployment Status**: [Central Portal](https://central.sonatype.com/publishing/deployments)
+
+          ## Artifacts
 
           ### Binary Distributions
-          - **bastion-maven-plugin-${{ steps.version.outputs.version }}-bin.zip** - Windows/cross-platform distribution with all libraries and scripts
-          - **bastion-maven-plugin-${{ steps.version.outputs.version }}-bin-unix.tar.gz** - Unix/Linux/macOS distribution with proper file permissions
+          - **bastion-maven-plugin-${VERSION}-bin.zip** - Windows/cross-platform distribution (with checksums)
+          - **bastion-maven-plugin-${VERSION}-bin-unix.tar.gz** - Unix/Linux/macOS distribution (with checksums)
 
           ### Documentation
-          - **bastion-maven-plugin-${{ steps.version.outputs.version }}-docs.zip** - Complete documentation package including API docs, examples, and guides
+          - **bastion-maven-plugin-${VERSION}-docs.zip** - Complete documentation package
 
           ### Source Code
-          - **bastion-maven-plugin-${{ steps.version.outputs.version }}-src.zip** - Full source code archive (Windows/cross-platform)
-          - **bastion-maven-plugin-${{ steps.version.outputs.version }}-src.tar.gz** - Full source code archive (Unix/Linux/macOS)
+          - **bastion-maven-plugin-${VERSION}-src.zip** - Full source code (zip format)
+          - **bastion-maven-plugin-${VERSION}-src.tar.gz** - Full source code (tar.gz format)
 
-          ### GPG Signatures
-          All artifacts include corresponding \`.asc\` signature files for verification. Verify signatures using:
+          ### Verification
+
+          #### GPG Signatures
+          All artifacts include GPG signatures (\`.asc\` files). Verify integrity using:
+
           \`\`\`bash
-          gpg --verify bastion-maven-plugin-${{ steps.version.outputs.version }}-bin.zip.asc bastion-maven-plugin-${{ steps.version.outputs.version }}-bin.zip
+          gpg --verify bastion-maven-plugin-${VERSION}-bin.zip.asc bastion-maven-plugin-${VERSION}-bin.zip
           \`\`\`
 
-          ## Maven Central Deployment
+          #### Checksums
+          SHA-256 checksums are provided for all artifacts (\`.sha256\` files):
 
-          Artifacts have been uploaded to Maven Central staging repository.
+          \`\`\`bash
+          sha256sum -c bastion-maven-plugin-${VERSION}-bin.zip.sha256
+          \`\`\`
 
-          **Next Steps:**
-          1. Review the staged artifacts at [Central Portal](https://central.sonatype.com/publishing/deployments)
-          2. Verify all artifacts, signatures, and checksums are correct
-          3. Click **Publish** to release to Maven Central (artifacts will be available within 30 minutes)
-          4. Or click **Drop** to discard this deployment if issues are found
+          EOF
 
-          Once published, artifacts will sync to Maven Central within 30 minutes and appear in search within 2 hours."
+          # Add comparison link if previous tag exists
+          if [ -n "$PREV_TAG" ]; then
+            echo "---" >> release_notes.md
+            echo "" >> release_notes.md
+            echo "📦 **Full Changelog**: https://github.com/${{ github.repository }}/compare/${PREV_TAG}...v${VERSION}" >> release_notes.md
+          fi
+
+          echo ""
+          echo "=== Release Notes Preview ==="
+          cat release_notes.md
+          echo "========================="
+
+      - name: Create GitHub Release
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: |
+          VERSION="${{ needs.preflight.outputs.version }}"
+
+          echo "=== Creating GitHub Release ==="
+
+          # Create release with all artifacts
+          gh release create "v${VERSION}" \
+            --title "Bastion Maven Plugin Community v${VERSION}" \
+            --notes-file release_notes.md \
+            distribution/target/bastion-maven-plugin-${VERSION}-bin.zip \
+            distribution/target/bastion-maven-plugin-${VERSION}-bin.zip.asc \
+            distribution/target/bastion-maven-plugin-${VERSION}-bin.zip.sha256 \
+            distribution/target/bastion-maven-plugin-${VERSION}-bin-unix.tar.gz \
+            distribution/target/bastion-maven-plugin-${VERSION}-bin-unix.tar.gz.asc \
+            distribution/target/bastion-maven-plugin-${VERSION}-bin-unix.tar.gz.sha256 \
+            distribution/target/bastion-maven-plugin-${VERSION}-docs.zip \
+            distribution/target/bastion-maven-plugin-${VERSION}-docs.zip.asc \
+            distribution/target/bastion-maven-plugin-${VERSION}-docs.zip.sha256 \
+            distribution/target/bastion-maven-plugin-${VERSION}-src.zip \
+            distribution/target/bastion-maven-plugin-${VERSION}-src.zip.asc \
+            distribution/target/bastion-maven-plugin-${VERSION}-src.zip.sha256 \
+            distribution/target/bastion-maven-plugin-${VERSION}-src.tar.gz \
+            distribution/target/bastion-maven-plugin-${VERSION}-src.tar.gz.asc \
+            distribution/target/bastion-maven-plugin-${VERSION}-src.tar.gz.sha256 \
+            distribution/target/SHA256SUMS.txt
+
+          echo "✓ GitHub release created successfully"
+          echo "📦 Release URL: https://github.com/${{ github.repository }}/releases/tag/v${VERSION}"
+
+  # ============================================================================
+  # Email Notification
+  # ============================================================================
+  notify:
+    name: Send release notification
+    needs: [preflight, build, release, github-release]
+    runs-on: ubuntu-latest
+    if: |
+      always() &&
+      needs.github-release.result == 'success' &&
+      github.event.inputs.dry_run != 'true'
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Download build artifacts
+        uses: actions/download-artifact@v4
+        with:
+          name: distribution-${{ needs.preflight.outputs.version }}
+          path: distribution/target/
+
+      - name: Prepare email content
+        id: email_content
+        run: |
+          VERSION="${{ needs.preflight.outputs.version }}"
+          PREV_TAG="${{ needs.preflight.outputs.prev_tag }}"
+          RELEASE_URL="https://github.com/${{ github.repository }}/releases/tag/v${VERSION}"
+          MAVEN_CENTRAL_URL="https://central.sonatype.com/artifact/io.github.dodogeny/bastion-maven-community-plugin/${VERSION}"
+
+          # Get artifact sizes
+          cd distribution/target
+          BIN_SIZE=$(du -h bastion-maven-plugin-${VERSION}-bin.zip 2>/dev/null | cut -f1 || echo "N/A")
+          UNIX_SIZE=$(du -h bastion-maven-plugin-${VERSION}-bin-unix.tar.gz 2>/dev/null | cut -f1 || echo "N/A")
+          DOCS_SIZE=$(du -h bastion-maven-plugin-${VERSION}-docs.zip 2>/dev/null | cut -f1 || echo "N/A")
+          cd ../..
+
+          # Count commits since last version
+          if [ -n "$PREV_TAG" ]; then
+            COMMIT_COUNT=$(git rev-list ${PREV_TAG}..HEAD --count)
+            CONTRIBUTORS=$(git log ${PREV_TAG}..HEAD --pretty=format:"%an" | sort -u | wc -l)
+          else
+            COMMIT_COUNT=$(git rev-list HEAD --count | head -20)
+            CONTRIBUTORS=$(git log --pretty=format:"%an" | sort -u | head -20 | wc -l)
+          fi
+
+          # Get PR count
+          if [ -n "$PREV_TAG" ]; then
+            PR_COUNT=$(git log ${PREV_TAG}..HEAD --pretty=format:"%s" --no-merges | grep -c '#[0-9]\+' || echo "0")
+          else
+            PR_COUNT="0"
+          fi
+
+          # Create email body
+          cat > email_body.html <<EOF
+          <!DOCTYPE html>
+          <html>
+          <head>
+            <style>
+              body { font-family: Arial, sans-serif; line-height: 1.6; color: #333; max-width: 800px; margin: 0 auto; }
+              .header { background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); color: white; padding: 30px; text-align: center; border-radius: 8px 8px 0 0; }
+              .header h1 { margin: 0; font-size: 28px; }
+              .header p { margin: 10px 0 0 0; font-size: 16px; opacity: 0.9; }
+              .content { background: #f8f9fa; padding: 30px; }
+              .section { background: white; padding: 20px; margin-bottom: 20px; border-radius: 8px; box-shadow: 0 2px 4px rgba(0,0,0,0.1); }
+              .section h2 { margin-top: 0; color: #667eea; font-size: 20px; border-bottom: 2px solid #667eea; padding-bottom: 10px; }
+              .stats { display: flex; flex-wrap: wrap; gap: 15px; margin: 20px 0; }
+              .stat-box { flex: 1; min-width: 150px; background: #f0f4ff; padding: 15px; border-radius: 6px; text-align: center; }
+              .stat-box .number { font-size: 32px; font-weight: bold; color: #667eea; }
+              .stat-box .label { font-size: 14px; color: #666; margin-top: 5px; }
+              .artifacts { list-style: none; padding: 0; }
+              .artifacts li { padding: 10px; margin: 5px 0; background: #f8f9fa; border-left: 4px solid #667eea; border-radius: 4px; }
+              .artifacts li strong { color: #667eea; }
+              .btn { display: inline-block; padding: 12px 24px; background: #667eea; color: white; text-decoration: none; border-radius: 6px; margin: 10px 10px 10px 0; font-weight: bold; }
+              .btn:hover { background: #5568d3; }
+              .btn-secondary { background: #6c757d; }
+              .btn-secondary:hover { background: #5a6268; }
+              .code-block { background: #2d3748; color: #e2e8f0; padding: 15px; border-radius: 6px; overflow-x: auto; margin: 15px 0; }
+              .code-block code { font-family: 'Courier New', monospace; font-size: 14px; }
+              .footer { text-align: center; padding: 20px; color: #666; font-size: 14px; }
+              .success-badge { background: #10b981; color: white; padding: 4px 12px; border-radius: 12px; font-size: 14px; font-weight: bold; }
+            </style>
+          </head>
+          <body>
+            <div class="header">
+              <h1>🚀 Bastion Maven Plugin Community v${VERSION}</h1>
+              <p>Successfully Released to Maven Central</p>
+              <span class="success-badge">✓ Build Successful</span>
+            </div>
+
+            <div class="content">
+              <!-- Release Stats -->
+              <div class="section">
+                <h2>📊 Release Statistics</h2>
+                <div class="stats">
+                  <div class="stat-box">
+                    <div class="number">${VERSION}</div>
+                    <div class="label">Version</div>
+                  </div>
+                  <div class="stat-box">
+                    <div class="number">${COMMIT_COUNT}</div>
+                    <div class="label">Commits</div>
+                  </div>
+                  <div class="stat-box">
+                    <div class="number">${PR_COUNT}</div>
+                    <div class="label">Pull Requests</div>
+                  </div>
+                  <div class="stat-box">
+                    <div class="number">${CONTRIBUTORS}</div>
+                    <div class="label">Contributors</div>
+                  </div>
+                </div>
+              </div>
+
+              <!-- Installation -->
+              <div class="section">
+                <h2>💻 Installation</h2>
+                <p>Add the following plugin to your Maven <code>pom.xml</code>:</p>
+                <div class="code-block">
+                  <code>&lt;plugin&gt;
+              &lt;groupId&gt;io.github.dodogeny&lt;/groupId&gt;
+              &lt;artifactId&gt;bastion-maven-community-plugin&lt;/artifactId&gt;
+              &lt;version&gt;${VERSION}&lt;/version&gt;
+          &lt;/plugin&gt;</code>
+                </div>
+              </div>
+
+              <!-- Distribution Artifacts -->
+              <div class="section">
+                <h2>📦 Distribution Artifacts</h2>
+                <ul class="artifacts">
+                  <li><strong>Windows/Cross-Platform:</strong> bastion-maven-plugin-${VERSION}-bin.zip <em>(${BIN_SIZE})</em></li>
+                  <li><strong>Unix/Linux/macOS:</strong> bastion-maven-plugin-${VERSION}-bin-unix.tar.gz <em>(${UNIX_SIZE})</em></li>
+                  <li><strong>Documentation:</strong> bastion-maven-plugin-${VERSION}-docs.zip <em>(${DOCS_SIZE})</em></li>
+                  <li><strong>Source Code:</strong> bastion-maven-plugin-${VERSION}-src.zip & .tar.gz</li>
+                </ul>
+                <p><small>All artifacts include GPG signatures (.asc) and SHA-256 checksums (.sha256) for verification.</small></p>
+              </div>
+
+              <!-- What's Changed -->
+              <div class="section">
+                <h2>📝 What's Changed</h2>
+                <p>This release includes <strong>${COMMIT_COUNT} commits</strong> since ${PREV_TAG:-the beginning}.</p>
+                <p>For detailed release notes, see the GitHub release page.</p>
+              </div>
+
+              <!-- Links -->
+              <div class="section">
+                <h2>🔗 Quick Links</h2>
+                <a href="${RELEASE_URL}" class="btn">View Release on GitHub</a>
+                <a href="${MAVEN_CENTRAL_URL}" class="btn btn-secondary">View on Maven Central</a>
+                <br>
+                <a href="https://github.com/${{ github.repository }}" class="btn btn-secondary">Repository</a>
+                <a href="https://github.com/${{ github.repository }}/blob/main/README.md" class="btn btn-secondary">Documentation</a>
+              </div>
+
+              <!-- Deployment Info -->
+              <div class="section">
+                <h2>ℹ️ Deployment Information</h2>
+                <ul>
+                  <li><strong>Released:</strong> $(date -u +"%Y-%m-%d %H:%M:%S UTC")</li>
+                  <li><strong>Workflow:</strong> <a href="https://github.com/${{ github.repository }}/actions/runs/${{ github.run_id }}">View workflow run</a></li>
+                  <li><strong>Commit:</strong> <a href="https://github.com/${{ github.repository }}/commit/${{ github.sha }}">${{ github.sha }}</a></li>
+                  <li><strong>Triggered by:</strong> ${{ github.actor }}</li>
+                </ul>
+              </div>
+            </div>
+
+            <div class="footer">
+              <p>This is an automated notification from GitHub Actions.</p>
+              <p><a href="https://github.com/${{ github.repository }}">Bastion Maven Plugin Community</a> | Apache License 2.0</p>
+            </div>
+          </body>
+          </html>
+          EOF
+
+          echo "Email content prepared"
+
+          # Save summary for plain text version
+          cat > email_body.txt <<EOF
+          Bastion Maven Plugin Community v${VERSION} Released
+
+          Release Statistics:
+          - Version: ${VERSION}
+          - Commits: ${COMMIT_COUNT}
+          - Pull Requests: ${PR_COUNT}
+          - Contributors: ${CONTRIBUTORS}
+
+          Installation:
+          <plugin>
+            <groupId>io.github.dodogeny</groupId>
+            <artifactId>bastion-maven-community-plugin</artifactId>
+            <version>${VERSION}</version>
+          </plugin>
+
+          Distribution Artifacts:
+          - Windows/Cross-Platform: bastion-maven-plugin-${VERSION}-bin.zip (${BIN_SIZE})
+          - Unix/Linux/macOS: bastion-maven-plugin-${VERSION}-bin-unix.tar.gz (${UNIX_SIZE})
+          - Documentation: bastion-maven-plugin-${VERSION}-docs.zip (${DOCS_SIZE})
+          - Source Code: Available in .zip and .tar.gz formats
+
+          All artifacts include GPG signatures and SHA-256 checksums.
+
+          Quick Links:
+          - GitHub Release: ${RELEASE_URL}
+          - Maven Central: ${MAVEN_CENTRAL_URL}
+          - Repository: https://github.com/${{ github.repository }}
+
+          Deployment Information:
+          - Released: $(date -u +"%Y-%m-%d %H:%M:%S UTC")
+          - Workflow Run: https://github.com/${{ github.repository }}/actions/runs/${{ github.run_id }}
+          - Commit: ${{ github.sha }}
+          - Triggered by: ${{ github.actor }}
+
+          ---
+          This is an automated notification from GitHub Actions.
+          EOF
+
+      - name: Send email notification
+        uses: dawidd6/action-send-mail@v3
+        with:
+          server_address: smtp.gmail.com
+          server_port: 587
+          secure: true
+          username: ${{ secrets.SMTP_USERNAME }}
+          password: ${{ secrets.SMTP_PASSWORD }}
+          subject: "✅ Bastion Maven Plugin v${{ needs.preflight.outputs.version }} Released to Maven Central"
+          to: ${{ secrets.RELEASE_NOTIFICATION_EMAIL }}
+          from: "Bastion CI/CD <${{ secrets.SMTP_USERNAME }}>"
+          html_body: file://email_body.html
+          body: file://email_body.txt
+          priority: normal
+
+      - name: Confirm email sent
+        run: |
+          VERSION="${{ needs.preflight.outputs.version }}"
+          EMAIL="${{ secrets.RELEASE_NOTIFICATION_EMAIL }}"
+
+          echo "✅ Release notification email sent successfully"
+          echo "   Version: v${VERSION}"
+          echo "   Recipient: ${EMAIL}"
+          echo "   Time: $(date -u +"%Y-%m-%d %H:%M:%S UTC")"
+
+  # ============================================================================
+  # Post-Release Verification
+  # ============================================================================
+  verify:
+    name: Post-release verification
+    needs: [preflight, github-release, notify]
+    runs-on: ubuntu-latest
+    if: |
+      always() &&
+      needs.github-release.result == 'success' &&
+      github.event.inputs.dry_run != 'true'
+    steps:
+      - name: Verify GitHub release
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: |
+          VERSION="${{ needs.preflight.outputs.version }}"
+
+          echo "=== Verifying GitHub Release ==="
+
+          if gh release view "v${VERSION}" --json tagName,assets; then
+            ASSET_COUNT=$(gh release view "v${VERSION}" --json assets --jq '.assets | length')
+            echo "✓ Release exists with $ASSET_COUNT assets"
+
+            # Verify minimum expected assets
+            if [ "$ASSET_COUNT" -lt 15 ]; then
+              echo "⚠️  WARNING: Expected at least 15 assets, found $ASSET_COUNT"
+            fi
+          else
+            echo "❌ ERROR: Release v${VERSION} not found"
+            exit 1
+          fi
+
+      - name: Verify Maven Central (async)
+        continue-on-error: true
+        run: |
+          VERSION="${{ needs.preflight.outputs.version }}"
+
+          echo "=== Checking Maven Central Availability ==="
+          echo "Note: This may take up to 30 minutes to sync"
+
+          # Try to fetch POM from Maven Central
+          URL="https://repo1.maven.org/maven2/io/github/dodogeny/bastion-maven-community-plugin/${VERSION}/bastion-maven-community-plugin-${VERSION}.pom"
+
+          if curl --head --silent --fail "$URL" > /dev/null 2>&1; then
+            echo "✓ Artifact is available on Maven Central"
+            echo "🔗 ${URL}"
+          else
+            echo "⏳ Artifact not yet available on Maven Central (this is normal)"
+            echo "Check status at: https://central.sonatype.com/artifact/io.github.dodogeny/bastion-maven-community-plugin/${VERSION}"
+          fi
+
+  # ============================================================================
+  # Summary
+  # ============================================================================
+  summary:
+    name: Release summary
+    needs: [preflight, build, release, github-release, notify, verify]
+    runs-on: ubuntu-latest
+    if: always()
+    steps:
+      - name: Generate summary
+        run: |
+          VERSION="${{ needs.preflight.outputs.version }}"
+          DRY_RUN="${{ github.event.inputs.dry_run }}"
+
+          echo "# 🚀 Release Summary" >> $GITHUB_STEP_SUMMARY
+          echo "" >> $GITHUB_STEP_SUMMARY
+          echo "**Version**: v${VERSION}" >> $GITHUB_STEP_SUMMARY
+          echo "**Dry Run**: ${DRY_RUN:-false}" >> $GITHUB_STEP_SUMMARY
+          echo "**Trigger**: ${{ github.event_name }}" >> $GITHUB_STEP_SUMMARY
+          echo "" >> $GITHUB_STEP_SUMMARY
+
+          echo "## Job Status" >> $GITHUB_STEP_SUMMARY
+          echo "" >> $GITHUB_STEP_SUMMARY
+          echo "| Job | Status |" >> $GITHUB_STEP_SUMMARY
+          echo "|-----|--------|" >> $GITHUB_STEP_SUMMARY
+          echo "| Pre-flight | ${{ needs.preflight.result }} |" >> $GITHUB_STEP_SUMMARY
+          echo "| Build | ${{ needs.build.result }} |" >> $GITHUB_STEP_SUMMARY
+          echo "| Maven Central Release | ${{ needs.release.result }} |" >> $GITHUB_STEP_SUMMARY
+          echo "| GitHub Release | ${{ needs.github-release.result }} |" >> $GITHUB_STEP_SUMMARY
+          echo "| Email Notification | ${{ needs.notify.result }} |" >> $GITHUB_STEP_SUMMARY
+          echo "| Verification | ${{ needs.verify.result }} |" >> $GITHUB_STEP_SUMMARY
+          echo "" >> $GITHUB_STEP_SUMMARY
+
+          if [ "${{ needs.github-release.result }}" == "success" ]; then
+            echo "## 📦 Release Links" >> $GITHUB_STEP_SUMMARY
+            echo "" >> $GITHUB_STEP_SUMMARY
+            echo "- [GitHub Release](https://github.com/${{ github.repository }}/releases/tag/v${VERSION})" >> $GITHUB_STEP_SUMMARY
+            echo "- [Maven Central](https://central.sonatype.com/artifact/io.github.dodogeny/bastion-maven-community-plugin/${VERSION})" >> $GITHUB_STEP_SUMMARY
+            echo "- [Deployment Status](https://central.sonatype.com/publishing/deployments)" >> $GITHUB_STEP_SUMMARY
+          fi
+
+          echo "" >> $GITHUB_STEP_SUMMARY
+          echo "---" >> $GITHUB_STEP_SUMMARY
+          echo "*Generated by GitHub Actions*" >> $GITHUB_STEP_SUMMARY

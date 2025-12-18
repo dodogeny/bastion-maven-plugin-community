@@ -42,7 +42,7 @@
     </scm>
 
     <properties>
-        <revision>1.2.4</revision>
+        <revision>1.2.5</revision>
         <maven.compiler.source>21</maven.compiler.source>
         <maven.compiler.target>21</maven.compiler.target>
         <maven.compiler.release>21</maven.compiler.release>
@@ -248,6 +248,19 @@
     </dependencyManagement>
 
     <build>
+        <resources>
+            <resource>
+                <directory>${project.basedir}</directory>
+                <includes>
+                    <include>README.md</include>
+                    <include>QUICKSTART.md</include>
+                    <include>CHANGELOG.md</include>
+                </includes>
+                <filtering>true</filtering>
+                <targetPath>${project.build.directory}/filtered-docs</targetPath>
+            </resource>
+        </resources>
+
         <pluginManagement>
             <plugins>
                 <plugin>
@@ -258,6 +271,18 @@
                         <source>21</source>
                         <target>21</target>
                         <release>21</release>
+                    </configuration>
+                </plugin>
+
+                <plugin>
+                    <groupId>org.apache.maven.plugins</groupId>
+                    <artifactId>maven-resources-plugin</artifactId>
+                    <version>3.3.1</version>
+                    <configuration>
+                        <delimiters>
+                            <delimiter>@</delimiter>
+                        </delimiters>
+                        <useDefaultDelimiters>false</useDefaultDelimiters>
                     </configuration>
                 </plugin>
                 
@@ -392,6 +417,11 @@
                         </jdk>
                     </toolchains>
                 </configuration>
+            </plugin>
+
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-resources-plugin</artifactId>
             </plugin>
 
             <plugin>
