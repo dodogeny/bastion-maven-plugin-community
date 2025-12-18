@@ -167,7 +167,7 @@ jobs:
             git add README.md QUICKSTART.md CHANGELOG.md
             git commit -m "docs: Update version to ${VERSION} in documentation" \
                        -m "Automated documentation update for release v${VERSION}" \
-                       -m "Co-Authored-By: [CI]GithubReleaseBot <noreply@dodogeny.com>"
+                       -m "Co-Authored-By: github-actions[bot] <github-actions[bot]@users.noreply.github.com>"
 
             git push origin main
 
@@ -591,7 +591,7 @@ jobs:
           cat >> release_notes.md <<EOF
           ## Maven Central
 
-          🚀 This release has been deployed to Maven Central and will be available within 30 minutes.
+          🚀 This release has been deployed to Maven Central.
 
           - **Maven Central**: https://central.sonatype.com/artifact/io.github.dodogeny/bastion-maven-community-plugin/${VERSION}
           - **Deployment Status**: [Central Portal](https://central.sonatype.com/publishing/deployments)
