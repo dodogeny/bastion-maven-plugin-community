@@ -167,7 +167,7 @@ jobs:
             git add README.md QUICKSTART.md CHANGELOG.md
             git commit -m "docs: Update version to ${VERSION} in documentation" \
                        -m "Automated documentation update for release v${VERSION}" \
-                       -m "Co-Authored-By: Claude Sonnet 4.5 <noreply@anthropic.com>"
+                       -m "Co-Authored-By: [CI]GithubReleaseBot <noreply@dodogeny.com>"
 
             git push origin main
 

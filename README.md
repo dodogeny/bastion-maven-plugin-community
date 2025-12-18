@@ -38,7 +38,7 @@ Add the plugin to your `pom.xml`:
 <plugin>
     <groupId>io.github.dodogeny</groupId>
     <artifactId>bastion-maven-community-plugin</artifactId>
-    <version>1.2.5</version>
+    <version>@project.version@</version>
     <executions>
         <execution>
             <goals>
@@ -60,10 +60,10 @@ mvn clean verify
 **Option 2: Direct Plugin Execution**
 ```bash
 # Basic scan
-mvn io.github.dodogeny:bastion-maven-community-plugin:1.2.5:scan
+mvn io.github.dodogeny:bastion-maven-community-plugin:@project.version@:scan
 
 # With NVD API key (recommended for faster downloads)
-mvn io.github.dodogeny:bastion-maven-community-plugin:1.2.5:scan \
+mvn io.github.dodogeny:bastion-maven-community-plugin:@project.version@:scan \
   -Dbastion.nvd.apiKey=YOUR_NVD_API_KEY
 
 # Short form (after first use)
@@ -79,27 +79,27 @@ mvn bastion-maven-community-plugin:scan
 **🚀 Subsequent Runs**: Uses cached database (30-60 seconds)
 **📊 Reports**: Generated in `target/bastion-reports/`
 
-## What's New in v1.2.5
+## What's New in v@project.version@
 
 ### 🔄 Dynamic Version Management & Enhanced Release Workflow
 - **Single Source of Truth**: Version managed in parent POM `<revision>` property
 - **Automated Documentation**: All version references update automatically via Maven resource filtering
 - **Enhanced Release Process**: Comprehensive GitHub Actions workflow with:
-  - Pre-flight validation (version format, tag checking, CHANGELOG validation)
-  - Automated testing and artifact verification with SHA-256 checksums
-  - Professional release notes with commit categorization (Features, Bug Fixes, Docs)
-  - Email notifications to distribution list after successful deployment
-  - Maven Central deployment with GPG signing
-  - Detailed release summaries with job status tracking
+    - Pre-flight validation (version format, tag checking, CHANGELOG validation)
+    - Automated testing and artifact verification with SHA-256 checksums
+    - Professional release notes with commit categorization (Features, Bug Fixes, Docs)
+    - Email notifications to distribution list after successful deployment
+    - Maven Central deployment with GPG signing
+    - Detailed release summaries with job status tracking
 
 ### Enhanced JAR-Level Vulnerability Analysis
 - **📦 Detailed Dependency Tracking**: Comprehensive tracking of vulnerable JAR dependencies across scans
-  - **✅ Resolved JARs**: See exactly which JARs are no longer vulnerable with all fixed CVEs
-  - **🆕 New Vulnerable JARs**: Identify newly introduced dependencies with complete CVE details
-  - **⏳ Pending Vulnerable JARs**: Track ongoing vulnerabilities with partial resolution detection
-    - Know which CVEs were fixed within still-vulnerable JARs
-    - Identify new CVEs discovered in previously vulnerable dependencies
-    - Severity breakdown (Critical, High, Medium, Low) for each JAR
+    - **✅ Resolved JARs**: See exactly which JARs are no longer vulnerable with all fixed CVEs
+    - **🆕 New Vulnerable JARs**: Identify newly introduced dependencies with complete CVE details
+    - **⏳ Pending Vulnerable JARs**: Track ongoing vulnerabilities with partial resolution detection
+        - Know which CVEs were fixed within still-vulnerable JARs
+        - Identify new CVEs discovered in previously vulnerable dependencies
+        - Severity breakdown (Critical, High, Medium, Low) for each JAR
 
 ### Improved Console Output
 - **📊 Enhanced Logging**: Beautiful formatted output boxes with detailed JAR analysis
@@ -123,10 +123,10 @@ mvn bastion-maven-community-plugin:scan
 
 ### Core Improvements
 - **💾 Automatic Memory Management**: Intelligent MAVEN_OPTS configuration for OWASP subprocesses
-  - Automatically allocates 3GB heap for NVD database downloads
-  - Automatically allocates 2GB heap for vulnerability scanning
-  - Eliminates Out of Memory errors during long-running scans
-  - No manual memory configuration required
+    - Automatically allocates 3GB heap for NVD database downloads
+    - Automatically allocates 2GB heap for vulnerability scanning
+    - Eliminates Out of Memory errors during long-running scans
+    - No manual memory configuration required
 - **🎉 Zero-Configuration Setup**: Automatic NVD database initialization - no manual commands required!
 - **🔄 Intelligent Auto-Update**: Always uses the latest CVE data with automatic incremental updates
 - **OWASP Dependency-Check 12.1.3**: Latest vulnerability detection engine with improved accuracy
@@ -147,30 +147,30 @@ mvn bastion-maven-community-plugin:scan
 
 ### User Experience Improvements
 - **🎯 Contextual Enterprise Suggestions**: Intelligent upgrade prompts at key moments
-  - Appears when approaching storage limits or at usage milestones
-  - Shows relevant features based on your project scale and findings
-  - Non-intrusive with built-in frequency control
+    - Appears when approaching storage limits or at usage milestones
+    - Shows relevant features based on your project scale and findings
+    - Non-intrusive with built-in frequency control
 - **📊 Enhanced HTML Reports**: Visual comparison banner showcasing Enterprise features
 - **💡 Smart Feature Discovery**: Learn about advanced capabilities when you need them
 - **📈 Usage Tracking**: Milestone messages at 5th, 10th, and 20th scans
 
 ### Trend Analysis Enhancements
 - **📈 Detailed CVE Changes**: Track exactly which vulnerabilities changed between scans
-  - ✅ **Resolved CVEs**: Shows CVEs that were fixed since the last scan
-  - 🆕 **New CVEs Introduced**: Highlights newly detected vulnerabilities
-  - ⏳ **Pending CVEs**: Count of unresolved vulnerabilities
+    - ✅ **Resolved CVEs**: Shows CVEs that were fixed since the last scan
+    - 🆕 **New CVEs Introduced**: Highlights newly detected vulnerabilities
+    - ⏳ **Pending CVEs**: Count of unresolved vulnerabilities
 - **📊 Overall Vulnerability Trends**: Visual trend indicators showing changes in total, critical, high, medium, and low severity counts
 - **🔗 NVD Links**: Direct links to NIST NVD for each CVE with severity badges
 
 ### Architecture Improvements
 - **🏗️ ScanEngine Architecture**: New orchestration layer for scanning workflow
-  - `ScanEngine` interface for unified scanning API
-  - `DefaultScanEngine` implementation with processor chains
-  - `ScanEngineFactory` with preset configurations (default, lightweight, CI/CD, development)
+    - `ScanEngine` interface for unified scanning API
+    - `DefaultScanEngine` implementation with processor chains
+    - `ScanEngineFactory` with preset configurations (default, lightweight, CI/CD, development)
 - **🔧 Design Patterns**: Improved code quality with enterprise patterns
-  - `ProcessorChain` for vulnerability processing pipeline
-  - `ScanEventPublisher` for event-driven notifications
-  - Builder pattern for flexible engine configuration
+    - `ProcessorChain` for vulnerability processing pipeline
+    - `ScanEventPublisher` for event-driven notifications
+    - Builder pattern for flexible engine configuration
 
 ### Migration Notes
 - Upgrading from v1.0.x requires Java 21+ (breaking change)
@@ -208,7 +208,7 @@ mvn bastion:scan -Dbastion.failOnError=true -Dbastion.severityThreshold=CRITICAL
 <plugin>
     <groupId>io.github.dodogeny</groupId>
     <artifactId>bastion-maven-community-plugin</artifactId>
-    <version>1.2.5</version>
+    <version>@project.version@</version>
     <configuration>
         <skip>false</skip>
         <failOnError>true</failOnError>
@@ -224,7 +224,7 @@ mvn bastion:scan -Dbastion.failOnError=true -Dbastion.severityThreshold=CRITICAL
 <plugin>
     <groupId>io.github.dodogeny</groupId>
     <artifactId>bastion-maven-community-plugin</artifactId>
-    <version>1.2.5</version>
+    <version>@project.version@</version>
     <configuration>
         <communityStorageMode>JSON_FILE</communityStorageMode>
         <jsonFilePath>${project.build.directory}/security/vulnerabilities.json</jsonFilePath>
@@ -240,7 +240,7 @@ mvn bastion:scan -Dbastion.failOnError=true -Dbastion.severityThreshold=CRITICAL
 <plugin>
     <groupId>io.github.dodogeny</groupId>
     <artifactId>bastion-maven-community-plugin</artifactId>
-    <version>1.2.5</version>
+    <version>@project.version@</version>
     <configuration>
         <enableMultiModule>true</enableMultiModule>
         <communityStorageMode>JSON_FILE</communityStorageMode>
@@ -256,7 +256,7 @@ mvn bastion:scan -Dbastion.failOnError=true -Dbastion.severityThreshold=CRITICAL
 <plugin>
     <groupId>io.github.dodogeny</groupId>
     <artifactId>bastion-maven-community-plugin</artifactId>
-    <version>1.2.5</version>
+    <version>@project.version@</version>
     <configuration>
         <!-- NVD API key for faster database downloads and updates -->
         <nvdApiKey>${env.NVD_API_KEY}</nvdApiKey>
@@ -579,11 +579,11 @@ mvn bastion:scan
 If you're using an older version and experiencing OOM errors (exit code 137) or scans hanging for hours:
 
 ```bash
-# Upgrade to v1.2.5 (or v1.1.0+) which includes automatic memory management
-# Update your pom.xml to version 1.2.5
+# Upgrade to v@project.version@ (or v1.1.0+) which includes automatic memory management
+# Update your pom.xml to version @project.version@
 ```
 
-v1.1.0+ and v1.2.5 automatically configure memory allocation for OWASP subprocesses:
+v1.1.0+ and v@project.version@ automatically configure memory allocation for OWASP subprocesses:
 - **NVD Database Downloads**: 3GB heap automatically allocated
 - **Vulnerability Scanning**: 2GB heap automatically allocated
 - **No manual MAVEN_OPTS configuration needed**
@@ -678,10 +678,10 @@ Intelligent dependency update recommendations powered by real-time Maven Central
 Comprehensive license management to prevent legal issues and ensure regulatory compliance:
 - **Automatic License Detection**: Scans all project dependencies and detects licenses from manifests, POMs, and metadata
 - **Policy Enforcement Engine**:
-  - Define approved licenses (allowlist)
-  - Block prohibited licenses (blocklist)
-  - Require OSI-approved licenses only
-  - Custom policy presets (DEFAULT, PERMISSIVE, STRICT)
+    - Define approved licenses (allowlist)
+    - Block prohibited licenses (blocklist)
+    - Require OSI-approved licenses only
+    - Custom policy presets (DEFAULT, PERMISSIVE, STRICT)
 - **License Compatibility Matrix**: Validates compatibility between 150+ license pairs (e.g., GPL + Apache, MIT + BSD)
 - **Risk Scoring System**: Automated risk assessment (0-100 scale) with compliance percentage
 - **Comprehensive Reporting**: TEXT, HTML, JSON, CSV, and PDF formats for audits and stakeholders
@@ -979,7 +979,7 @@ Need help with integration or have questions?
 
 | Bastion Version | Java Requirement | OWASP Dependency-Check | Auto-Update | Memory Management | JAR Analysis | Status |
 |-----------------|------------------|------------------------|-------------|-------------------|--------------|--------|
-| 1.2.5 | Java 21+ | 12.1.3 | ✅ Automatic | ✅ Automatic | ✅ Enhanced | **Recommended** |
+| @project.version@ | Java 21+ | 12.1.3 | ✅ Automatic | ✅ Automatic | ✅ Enhanced | **Recommended** |
 | 1.1.0 | Java 21+ | 12.1.3 | ✅ Automatic | ✅ Automatic | ✅ Basic | Stable |
 | 1.0.x | Java 8+ | 10.0.4 | ❌ Manual | ⚠️ Manual MAVEN_OPTS | ❌ None | Legacy (security patches only) |
 
