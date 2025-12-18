@@ -54,11 +54,14 @@ team@example.com, releases@example.com, notifications@example.com
 
 #### Option A: Gmail (Recommended for Personal Use)
 
+> ⚠️ **IMPORTANT**: Gmail requires App Passwords, NOT your regular Gmail password!
+> You MUST create an App Password (step 2 below) or you'll get "Invalid login" errors.
+
 1. **Enable 2-Step Verification**:
    - Go to https://myaccount.google.com/security
-   - Enable 2-Step Verification
+   - Enable 2-Step Verification (required for App Passwords)
 
-2. **Create App Password**:
+2. **Create App Password** (REQUIRED):
    - Go to https://myaccount.google.com/apppasswords
    - Select app: "Mail"
    - Select device: "Other (Custom name)"
