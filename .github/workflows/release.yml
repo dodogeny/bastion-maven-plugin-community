@@ -114,13 +114,72 @@ jobs:
           fi
 
   # ============================================================================
+  # Update Documentation with Version
+  # ============================================================================
+  update-docs:
+    name: Update documentation with version
+    needs: preflight
+    runs-on: ubuntu-latest
+    if: needs.preflight.outputs.should_release == 'true' && github.event.inputs.dry_run != 'true'
+    permissions:
+      contents: write
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+        with:
+          token: ${{ secrets.GITHUB_TOKEN }}
+          fetch-depth: 0
+
+      - name: Update version placeholders in documentation
+        run: |
+          VERSION="${{ needs.preflight.outputs.version }}"
+
+          echo "=== Updating Documentation with Version ${VERSION} ==="
+
+          # Replace @project.version@ with actual version in README.md
+          sed -i "s/@project\.version@/${VERSION}/g" README.md
+          sed -i "s/@project\.version@/${VERSION}/g" QUICKSTART.md
+          sed -i "s/@project\.version@/${VERSION}/g" CHANGELOG.md
+
+          echo "✓ Updated version placeholders in documentation"
+
+      - name: Commit and push documentation updates
+        run: |
+          VERSION="${{ needs.preflight.outputs.version }}"
+
+          # Configure git
+          git config user.name "github-actions[bot]"
+          git config user.email "github-actions[bot]@users.noreply.github.com"
+
+          # Check if there are changes
+          if git diff --quiet README.md QUICKSTART.md CHANGELOG.md; then
+            echo "✓ No documentation changes needed"
+            exit 0
+          fi
+
+          # Commit and push changes
+          git add README.md QUICKSTART.md CHANGELOG.md
+          git commit -m "docs: Update version to ${VERSION} in documentation
+
+🤖 Automated documentation update for release v${VERSION}
+
+Co-Authored-By: Claude Sonnet 4.5 <noreply@anthropic.com>"
+
+          git push origin main
+
+          echo "✓ Documentation updated and pushed successfully"
+
+  # ============================================================================
   # Build and Test
   # ============================================================================
   build:
     name: Build and test
-    needs: preflight
+    needs: [preflight, update-docs]
     runs-on: ubuntu-latest
-    if: needs.preflight.outputs.should_release == 'true'
+    if: |
+      always() &&
+      needs.preflight.outputs.should_release == 'true' &&
+      (needs.update-docs.result == 'success' || needs.update-docs.result == 'skipped')
     steps:
       - name: Checkout code
         uses: actions/checkout@v4

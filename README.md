@@ -81,6 +81,17 @@ mvn bastion-maven-community-plugin:scan
 
 ## What's New in v@project.version@
 
+### 🔄 Dynamic Version Management & Enhanced Release Workflow
+- **Single Source of Truth**: Version managed in parent POM `<revision>` property
+- **Automated Documentation**: All version references update automatically via Maven resource filtering
+- **Enhanced Release Process**: Comprehensive GitHub Actions workflow with:
+  - Pre-flight validation (version format, tag checking, CHANGELOG validation)
+  - Automated testing and artifact verification with SHA-256 checksums
+  - Professional release notes with commit categorization (Features, Bug Fixes, Docs)
+  - Email notifications to distribution list after successful deployment
+  - Maven Central deployment with GPG signing
+  - Detailed release summaries with job status tracking
+
 ### Enhanced JAR-Level Vulnerability Analysis
 - **📦 Detailed Dependency Tracking**: Comprehensive tracking of vulnerable JAR dependencies across scans
   - **✅ Resolved JARs**: See exactly which JARs are no longer vulnerable with all fixed CVEs
