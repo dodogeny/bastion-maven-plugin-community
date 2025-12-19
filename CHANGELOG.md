@@ -5,12 +5,12 @@ All notable changes to the Bastion Maven Plugin Community will be documented in 
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
-## [@project.version@] - Current Release
+## [1.2.7] - Current Release
 
 ### Added
 - **🔄 Dynamic Version Management System**: Revolutionary approach to version management
     - Single source of truth in parent POM `<revision>` property
-    - Maven resource filtering automatically replaces `@project.version@` in documentation
+    - Maven resource filtering automatically replaces `1.2.7` in documentation
     - Eliminates manual version updates across README, QUICKSTART, and examples
     - Filtered documentation generated in `target/filtered-docs/` during build
     - New `VERSIONING.md` guide with complete documentation
@@ -25,8 +25,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Changed
 - **📚 Documentation Updates**: All version references now dynamic
-    - `README.md`: All plugin version examples use `@project.version@`
-    - `QUICKSTART.md`: All configuration examples use `@project.version@`
+    - `README.md`: All plugin version examples use `1.2.7`
+    - `QUICKSTART.md`: All configuration examples use `1.2.7`
     - `CHANGELOG.md`: Version history table includes current version dynamically
     - Compatibility matrix shows current version status
 
@@ -396,7 +396,7 @@ mvn bastion:scan \
 
 | Version | Release Date | Key Features | Status |
 |---------|-------------|--------------|--------|
-| @project.version@ | Current | Enhanced JAR analysis, dynamic versioning, improved release workflow | **Recommended** |
+| 1.2.7 | Current | Enhanced JAR analysis, dynamic versioning, improved release workflow | **Recommended** |
 | 1.2.0   | 2025-12-08  | Enhanced JAR analysis, improved logging, comprehensive test coverage | Stable |
 | 1.1.1   | 2025-11-08  | Zero-config NVD database, intelligent auto-update, Java 21+ | Stable |
 | 1.1.0   | 2025-08-29  | Smart NVD caching, performance optimization | Stable |
