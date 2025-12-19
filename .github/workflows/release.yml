@@ -513,204 +513,76 @@ jobs:
             cat /tmp/changelog_entry.md >> release_notes.md
             echo "" >> release_notes.md
           else
-            # Generate detailed changelog from latest merged PR or commits
+            # Generate detailed changelog from commits and PRs
             echo "## What's Changed" >> release_notes.md
             echo "" >> release_notes.md
 
-            # Try to extract PR number from recent merge commits or get latest merged PR
-            PR_NUMBER=""
-            PR_TITLE=""
-            PR_AUTHOR=""
-            PR_BRANCH=""
+            if [ -z "$PREV_TAG" ]; then
+              echo "### Commits" >> release_notes.md
+              git log --pretty=format:"- %s (%h)" --no-merges | head -20 >> release_notes.md
+            else
+              # Get commits between versions
+              echo "### Commits Since ${PREV_TAG}" >> release_notes.md
+              echo "" >> release_notes.md
 
-            # Method 1: Check recent merge commits for PR references
-            MERGE_COMMIT=$(git log --merges --grep="Merge pull request" --pretty=format:"%s" -1 2>/dev/null || echo "")
-            if [ -n "$MERGE_COMMIT" ]; then
-              # Extract PR number from merge commit message like "Merge pull request #123 from..."
-              PR_NUMBER=$(echo "$MERGE_COMMIT" | grep -oP 'Merge pull request #\K\d+' || echo "")
-            fi
+              # Extract PR numbers and categorize commits
+              git log ${PREV_TAG}..HEAD --pretty=format:"%s|%h|%an" --no-merges > /tmp/commits.txt
 
-            # Method 2: If no merge commit found, try squash/rebase commits with PR reference
-            if [ -z "$PR_NUMBER" ]; then
-              # Look for PR references in recent commit messages like "fixes #123" or "(#123)"
-              PR_NUMBER=$(git log --pretty=format:"%s" -10 | grep -oP '\(#\K\d+\)' | head -1 | tr -d ')' || echo "")
-            fi
-
-            # Method 3: Fallback to latest merged PR from GitHub API
-            if [ -z "$PR_NUMBER" ]; then
-              LATEST_PR=$(gh pr list --state merged --base main --limit 1 --json number,title,mergedAt,author,headRefName 2>/dev/null || echo "")
-              if [ -n "$LATEST_PR" ] && [ "$LATEST_PR" != "[]" ]; then
-                PR_NUMBER=$(echo "$LATEST_PR" | jq -r '.[0].number // empty')
-              fi
-            fi
-
-            # Track if we successfully displayed PR-based changelog
-            CHANGELOG_DISPLAYED=false
-
-            if [ -n "$PR_NUMBER" ]; then
-              echo "Found PR #${PR_NUMBER}, fetching commits..."
-
-              # Fetch PR commits directly using GitHub REST API
-              # This works even after branch deletion
-              gh api repos/${{ github.repository }}/pulls/${PR_NUMBER}/commits \
-                --jq '.[] | "\(.commit.message)|\(.sha[0:7])|\(.commit.author.name)"' \
-                > /tmp/pr_commits.txt 2>/dev/null || echo "" > /tmp/pr_commits.txt
-
-              if [ -s /tmp/pr_commits.txt ]; then
-                # Successfully got commits, now get PR details for display
-                echo "Fetching PR details..."
-                PR_INFO=$(gh api repos/${{ github.repository }}/pulls/${PR_NUMBER} 2>/dev/null || echo "")
-
-                if [ -n "$PR_INFO" ]; then
-                  PR_TITLE=$(echo "$PR_INFO" | jq -r '.title // "Unknown"')
-                  PR_AUTHOR=$(echo "$PR_INFO" | jq -r '.user.login // "Unknown"')
-                  PR_BRANCH=$(echo "$PR_INFO" | jq -r '.head.ref // "Unknown"')
+              # Process commits and extract PR references
+              echo "#### 🚀 Features & Enhancements" >> release_notes.md
+              grep -iE "^(feat|feature|add|added|new):" /tmp/commits.txt | while IFS='|' read -r subject hash author; do
+                PR_NUM=$(echo "$subject" | grep -oP '#\d+' | head -1)
+                if [ -n "$PR_NUM" ]; then
+                  echo "- $subject by @$author ([$hash](https://github.com/${{ github.repository }}/commit/$hash)) [${PR_NUM}](https://github.com/${{ github.repository }}/pull/${PR_NUM#\#})" >> release_notes.md
                 else
-                  PR_TITLE="Pull Request #${PR_NUMBER}"
-                  PR_AUTHOR="Unknown"
-                  PR_BRANCH="Unknown"
+                  echo "- $subject by @$author ([$hash](https://github.com/${{ github.repository }}/commit/$hash))" >> release_notes.md
                 fi
+              done || echo "_No new features_" >> release_notes.md
+              echo "" >> release_notes.md
 
-                echo "### Latest Merged Pull Request" >> release_notes.md
-                echo "" >> release_notes.md
-                echo "**[#${PR_NUMBER}](https://github.com/${{ github.repository }}/pull/${PR_NUMBER})** - ${PR_TITLE}" >> release_notes.md
-                echo "- **Author**: @${PR_AUTHOR}" >> release_notes.md
-                echo "- **Branch**: \`${PR_BRANCH}\`" >> release_notes.md
-                echo "" >> release_notes.md
-
-                echo "### Changes in This Release" >> release_notes.md
-                echo "" >> release_notes.md
-
-                # Categorize commits from the PR
-
-                # Features & Enhancements
-                FEATURES=$(grep -iE "^(feat|feature|add|added|new):" /tmp/pr_commits.txt || echo "")
-                if [ -n "$FEATURES" ]; then
-                  echo "#### 🚀 Features & Enhancements" >> release_notes.md
-                  echo "$FEATURES" | while IFS='|' read -r subject hash author; do
-                    # Get first line of commit message only
-                    FIRST_LINE=$(echo "$subject" | head -1)
-                    echo "- ${FIRST_LINE} ([\`${hash}\`](https://github.com/${{ github.repository }}/commit/${hash})) - @${author}" >> release_notes.md
-                  done
-                  echo "" >> release_notes.md
+              echo "#### 🐛 Bug Fixes" >> release_notes.md
+              grep -iE "^(fix|fixed|bugfix|bug):" /tmp/commits.txt | while IFS='|' read -r subject hash author; do
+                PR_NUM=$(echo "$subject" | grep -oP '#\d+' | head -1)
+                if [ -n "$PR_NUM" ]; then
+                  echo "- $subject by @$author ([$hash](https://github.com/${{ github.repository }}/commit/$hash)) [${PR_NUM}](https://github.com/${{ github.repository }}/pull/${PR_NUM#\#})" >> release_notes.md
+                else
+                  echo "- $subject by @$author ([$hash](https://github.com/${{ github.repository }}/commit/$hash))" >> release_notes.md
                 fi
+              done || echo "_No bug fixes_" >> release_notes.md
+              echo "" >> release_notes.md
 
-                # Bug Fixes
-                FIXES=$(grep -iE "^(fix|fixed|bugfix|bug):" /tmp/pr_commits.txt || echo "")
-                if [ -n "$FIXES" ]; then
-                  echo "#### 🐛 Bug Fixes" >> release_notes.md
-                  echo "$FIXES" | while IFS='|' read -r subject hash author; do
-                    FIRST_LINE=$(echo "$subject" | head -1)
-                    echo "- ${FIRST_LINE} ([\`${hash}\`](https://github.com/${{ github.repository }}/commit/${hash})) - @${author}" >> release_notes.md
-                  done
-                  echo "" >> release_notes.md
+              echo "#### 📚 Documentation" >> release_notes.md
+              grep -iE "^(docs|doc|documentation):" /tmp/commits.txt | while IFS='|' read -r subject hash author; do
+                PR_NUM=$(echo "$subject" | grep -oP '#\d+' | head -1)
+                if [ -n "$PR_NUM" ]; then
+                  echo "- $subject by @$author ([$hash](https://github.com/${{ github.repository }}/commit/$hash)) [${PR_NUM}](https://github.com/${{ github.repository }}/pull/${PR_NUM#\#})" >> release_notes.md
+                else
+                  echo "- $subject by @$author ([$hash](https://github.com/${{ github.repository }}/commit/$hash))" >> release_notes.md
                 fi
+              done || echo "_No documentation changes_" >> release_notes.md
+              echo "" >> release_notes.md
 
-                # Documentation
-                DOCS=$(grep -iE "^(docs|doc|documentation):" /tmp/pr_commits.txt || echo "")
-                if [ -n "$DOCS" ]; then
-                  echo "#### 📚 Documentation" >> release_notes.md
-                  echo "$DOCS" | while IFS='|' read -r subject hash author; do
-                    FIRST_LINE=$(echo "$subject" | head -1)
-                    echo "- ${FIRST_LINE} ([\`${hash}\`](https://github.com/${{ github.repository }}/commit/${hash})) - @${author}" >> release_notes.md
-                  done
-                  echo "" >> release_notes.md
+              echo "#### 🔧 Maintenance & Chores" >> release_notes.md
+              grep -iE "^(chore|refactor|test|ci|build|perf):" /tmp/commits.txt | while IFS='|' read -r subject hash author; do
+                PR_NUM=$(echo "$subject" | grep -oP '#\d+' | head -1)
+                if [ -n "$PR_NUM" ]; then
+                  echo "- $subject by @$author ([$hash](https://github.com/${{ github.repository }}/commit/$hash)) [${PR_NUM}](https://github.com/${{ github.repository }}/pull/${PR_NUM#\#})" >> release_notes.md
+                else
+                  echo "- $subject by @$author ([$hash](https://github.com/${{ github.repository }}/commit/$hash))" >> release_notes.md
                 fi
+              done || echo "_No maintenance changes_" >> release_notes.md
+              echo "" >> release_notes.md
 
-                # Maintenance & Chores
-                CHORES=$(grep -iE "^(chore|refactor|test|ci|build|perf):" /tmp/pr_commits.txt || echo "")
-                if [ -n "$CHORES" ]; then
-                  echo "#### 🔧 Maintenance & Chores" >> release_notes.md
-                  echo "$CHORES" | while IFS='|' read -r subject hash author; do
-                    FIRST_LINE=$(echo "$subject" | head -1)
-                    echo "- ${FIRST_LINE} ([\`${hash}\`](https://github.com/${{ github.repository }}/commit/${hash})) - @${author}" >> release_notes.md
-                  done
-                  echo "" >> release_notes.md
+              echo "#### 📦 Other Changes" >> release_notes.md
+              grep -viE "^(feat|feature|add|added|new|fix|fixed|bugfix|bug|docs|doc|documentation|chore|refactor|test|ci|build|perf):" /tmp/commits.txt | while IFS='|' read -r subject hash author; do
+                PR_NUM=$(echo "$subject" | grep -oP '#\d+' | head -1)
+                if [ -n "$PR_NUM" ]; then
+                  echo "- $subject by @$author ([$hash](https://github.com/${{ github.repository }}/commit/$hash)) [${PR_NUM}](https://github.com/${{ github.repository }}/pull/${PR_NUM#\#})" >> release_notes.md
+                else
+                  echo "- $subject by @$author ([$hash](https://github.com/${{ github.repository }}/commit/$hash))" >> release_notes.md
                 fi
-
-                # Other Changes
-                OTHERS=$(grep -viE "^(feat|feature|add|added|new|fix|fixed|bugfix|bug|docs|doc|documentation|chore|refactor|test|ci|build|perf):" /tmp/pr_commits.txt || echo "")
-                if [ -n "$OTHERS" ]; then
-                  echo "#### 📦 Other Changes" >> release_notes.md
-                  echo "$OTHERS" | while IFS='|' read -r subject hash author; do
-                    FIRST_LINE=$(echo "$subject" | head -1)
-                    echo "- ${FIRST_LINE} ([\`${hash}\`](https://github.com/${{ github.repository }}/commit/${hash})) - @${author}" >> release_notes.md
-                  done
-                  echo "" >> release_notes.md
-                fi
-
-                CHANGELOG_DISPLAYED=true
-              else
-                # Couldn't fetch commits from PR
-                echo "⚠️ Could not fetch commits for PR #${PR_NUMBER}, will use commit-based changelog..."
-              fi
-            fi
-
-            # Fallback: Use commit-based changelog if PR-based failed
-            if [ "$CHANGELOG_DISPLAYED" != "true" ]; then
-              if [ -n "$PREV_TAG" ]; then
-                echo "### Changes Since ${PREV_TAG}" >> release_notes.md
-                echo "" >> release_notes.md
-
-                # Get commits between versions
-                git log ${PREV_TAG}..HEAD --pretty=format:"%s|%h|%an" --no-merges > /tmp/commits.txt
-
-                # Features & Enhancements
-                FEATURES=$(grep -iE "^(feat|feature|add|added|new):" /tmp/commits.txt || echo "")
-                if [ -n "$FEATURES" ]; then
-                  echo "#### 🚀 Features & Enhancements" >> release_notes.md
-                  echo "$FEATURES" | while IFS='|' read -r subject hash author; do
-                    echo "- $subject ([\`$hash\`](https://github.com/${{ github.repository }}/commit/$hash)) - @$author" >> release_notes.md
-                  done
-                  echo "" >> release_notes.md
-                fi
-
-                # Bug Fixes
-                FIXES=$(grep -iE "^(fix|fixed|bugfix|bug):" /tmp/commits.txt || echo "")
-                if [ -n "$FIXES" ]; then
-                  echo "#### 🐛 Bug Fixes" >> release_notes.md
-                  echo "$FIXES" | while IFS='|' read -r subject hash author; do
-                    echo "- $subject ([\`$hash\`](https://github.com/${{ github.repository }}/commit/$hash)) - @$author" >> release_notes.md
-                  done
-                  echo "" >> release_notes.md
-                fi
-
-                # Documentation
-                DOCS=$(grep -iE "^(docs|doc|documentation):" /tmp/commits.txt || echo "")
-                if [ -n "$DOCS" ]; then
-                  echo "#### 📚 Documentation" >> release_notes.md
-                  echo "$DOCS" | while IFS='|' read -r subject hash author; do
-                    echo "- $subject ([\`$hash\`](https://github.com/${{ github.repository }}/commit/$hash)) - @$author" >> release_notes.md
-                  done
-                  echo "" >> release_notes.md
-                fi
-
-                # Maintenance & Chores
-                CHORES=$(grep -iE "^(chore|refactor|test|ci|build|perf):" /tmp/commits.txt || echo "")
-                if [ -n "$CHORES" ]; then
-                  echo "#### 🔧 Maintenance & Chores" >> release_notes.md
-                  echo "$CHORES" | while IFS='|' read -r subject hash author; do
-                    echo "- $subject ([\`$hash\`](https://github.com/${{ github.repository }}/commit/$hash)) - @$author" >> release_notes.md
-                  done
-                  echo "" >> release_notes.md
-                fi
-
-                # Other Changes
-                OTHERS=$(grep -viE "^(feat|feature|add|added|new|fix|fixed|bugfix|bug|docs|doc|documentation|chore|refactor|test|ci|build|perf):" /tmp/commits.txt || echo "")
-                if [ -n "$OTHERS" ]; then
-                  echo "#### 📦 Other Changes" >> release_notes.md
-                  echo "$OTHERS" | while IFS='|' read -r subject hash author; do
-                    echo "- $subject ([\`$hash\`](https://github.com/${{ github.repository }}/commit/$hash)) - @$author" >> release_notes.md
-                  done
-                  echo "" >> release_notes.md
-                fi
-              else
-                # No previous tag and no PR found - show simple message
-                echo "### Initial Release" >> release_notes.md
-                echo "" >> release_notes.md
-                echo "This is the first release. For detailed information, please see the [repository](https://github.com/${{ github.repository }})." >> release_notes.md
-                echo "" >> release_notes.md
-              fi
+              done || echo "_No other changes_" >> release_notes.md
+              echo "" >> release_notes.md
             fi
             echo "" >> release_notes.md
           fi
