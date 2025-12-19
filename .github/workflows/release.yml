@@ -628,7 +628,6 @@ jobs:
                   echo "_No commit details available for this PR_" >> release_notes.md
                   echo "" >> release_notes.md
                 fi
-              fi
             else
               # Fallback: No recent PR found, use commit-based approach with previous tag
               if [ -n "$PREV_TAG" ]; then
