@@ -517,17 +517,41 @@ jobs:
             echo "## What's Changed" >> release_notes.md
             echo "" >> release_notes.md
 
-            # Try to get the latest merged PR that triggered this release
-            LATEST_PR=$(gh pr list --state merged --base main --limit 1 --json number,title,mergedAt,author,headRefName 2>/dev/null || echo "")
+            # Try to extract PR number from recent merge commits or get latest merged PR
+            PR_NUMBER=""
+            PR_TITLE=""
+            PR_AUTHOR=""
+            PR_BRANCH=""
 
-            if [ -n "$LATEST_PR" ] && [ "$LATEST_PR" != "[]" ]; then
-              # Extract PR details
-              PR_NUMBER=$(echo "$LATEST_PR" | jq -r '.[0].number // empty')
-              PR_TITLE=$(echo "$LATEST_PR" | jq -r '.[0].title // empty')
-              PR_AUTHOR=$(echo "$LATEST_PR" | jq -r '.[0].author.login // empty')
-              PR_BRANCH=$(echo "$LATEST_PR" | jq -r '.[0].headRefName // empty')
+            # Method 1: Check recent merge commits for PR references
+            MERGE_COMMIT=$(git log --merges --grep="Merge pull request" --pretty=format:"%s" -1 2>/dev/null || echo "")
+            if [ -n "$MERGE_COMMIT" ]; then
+              # Extract PR number from merge commit message like "Merge pull request #123 from..."
+              PR_NUMBER=$(echo "$MERGE_COMMIT" | grep -oP 'Merge pull request #\K\d+' || echo "")
+            fi
 
-              if [ -n "$PR_NUMBER" ]; then
+            # Method 2: If no merge commit found, try squash/rebase commits with PR reference
+            if [ -z "$PR_NUMBER" ]; then
+              # Look for PR references in recent commit messages like "fixes #123" or "(#123)"
+              PR_NUMBER=$(git log --pretty=format:"%s" -10 | grep -oP '\(#\K\d+\)' | head -1 | tr -d ')' || echo "")
+            fi
+
+            # Method 3: Fallback to latest merged PR from GitHub API
+            if [ -z "$PR_NUMBER" ]; then
+              LATEST_PR=$(gh pr list --state merged --base main --limit 1 --json number,title,mergedAt,author,headRefName 2>/dev/null || echo "")
+              if [ -n "$LATEST_PR" ] && [ "$LATEST_PR" != "[]" ]; then
+                PR_NUMBER=$(echo "$LATEST_PR" | jq -r '.[0].number // empty')
+              fi
+            fi
+
+            if [ -n "$PR_NUMBER" ]; then
+              # Get PR details from GitHub API
+              PR_DATA=$(gh pr view ${PR_NUMBER} --json title,author,headRefName 2>/dev/null || echo "")
+              if [ -n "$PR_DATA" ]; then
+                PR_TITLE=$(echo "$PR_DATA" | jq -r '.title // empty')
+                PR_AUTHOR=$(echo "$PR_DATA" | jq -r '.author.login // empty')
+                PR_BRANCH=$(echo "$PR_DATA" | jq -r '.headRefName // empty')
+              fi
                 echo "### Latest Merged Pull Request" >> release_notes.md
                 echo "" >> release_notes.md
                 echo "**[#${PR_NUMBER}](https://github.com/${{ github.repository }}/pull/${PR_NUMBER})** - ${PR_TITLE}" >> release_notes.md
@@ -606,15 +630,11 @@ jobs:
                 fi
               fi
             else
-              # Fallback: No recent PR found, use commit-based approach
-              echo "### Changes Since ${PREV_TAG:-Initial Release}" >> release_notes.md
-              echo "" >> release_notes.md
-
-              if [ -z "$PREV_TAG" ]; then
-                echo "#### Recent Commits" >> release_notes.md
-                git log --pretty=format:"- %s ([\`%h\`](https://github.com/${{ github.repository }}/commit/%H)) - %an" --no-merges | head -20 >> release_notes.md
+              # Fallback: No recent PR found, use commit-based approach with previous tag
+              if [ -n "$PREV_TAG" ]; then
+                echo "### Changes Since ${PREV_TAG}" >> release_notes.md
                 echo "" >> release_notes.md
-              else
+
                 # Get commits between versions
                 git log ${PREV_TAG}..HEAD --pretty=format:"%s|%h|%an" --no-merges > /tmp/commits.txt
 
@@ -667,6 +687,12 @@ jobs:
                   done
                   echo "" >> release_notes.md
                 fi
+              else
+                # No previous tag and no PR found - show simple message
+                echo "### Initial Release" >> release_notes.md
+                echo "" >> release_notes.md
+                echo "This is the first release. For detailed information, please see the [repository](https://github.com/${{ github.repository }})." >> release_notes.md
+                echo "" >> release_notes.md
               fi
             fi
             echo "" >> release_notes.md
