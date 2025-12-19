@@ -548,15 +548,28 @@ jobs:
             CHANGELOG_DISPLAYED=false
 
             if [ -n "$PR_NUMBER" ]; then
-              # Get PR details from GitHub API
-              echo "Found PR #${PR_NUMBER}, fetching details..."
-              PR_DATA=$(gh pr view ${PR_NUMBER} --json title,author,headRefName,commits 2>/dev/null || echo "")
+              echo "Found PR #${PR_NUMBER}, fetching commits..."
 
-              # Validate that we got actual data (not empty or just {})
-              if [ -n "$PR_DATA" ] && [ "$PR_DATA" != "{}" ] && echo "$PR_DATA" | jq -e '.title' >/dev/null 2>&1; then
-                PR_TITLE=$(echo "$PR_DATA" | jq -r '.title // "Unknown"')
-                PR_AUTHOR=$(echo "$PR_DATA" | jq -r '.author.login // "Unknown"')
-                PR_BRANCH=$(echo "$PR_DATA" | jq -r '.headRefName // "Unknown"')
+              # Fetch PR commits directly using GitHub REST API
+              # This works even after branch deletion
+              gh api repos/${{ github.repository }}/pulls/${PR_NUMBER}/commits \
+                --jq '.[] | "\(.commit.message)|\(.sha[0:7])|\(.commit.author.name)"' \
+                > /tmp/pr_commits.txt 2>/dev/null || echo "" > /tmp/pr_commits.txt
+
+              if [ -s /tmp/pr_commits.txt ]; then
+                # Successfully got commits, now get PR details for display
+                echo "Fetching PR details..."
+                PR_INFO=$(gh api repos/${{ github.repository }}/pulls/${PR_NUMBER} 2>/dev/null || echo "")
+
+                if [ -n "$PR_INFO" ]; then
+                  PR_TITLE=$(echo "$PR_INFO" | jq -r '.title // "Unknown"')
+                  PR_AUTHOR=$(echo "$PR_INFO" | jq -r '.user.login // "Unknown"')
+                  PR_BRANCH=$(echo "$PR_INFO" | jq -r '.head.ref // "Unknown"')
+                else
+                  PR_TITLE="Pull Request #${PR_NUMBER}"
+                  PR_AUTHOR="Unknown"
+                  PR_BRANCH="Unknown"
+                fi
 
                 echo "### Latest Merged Pull Request" >> release_notes.md
                 echo "" >> release_notes.md
@@ -565,83 +578,71 @@ jobs:
                 echo "- **Branch**: \`${PR_BRANCH}\`" >> release_notes.md
                 echo "" >> release_notes.md
 
-                # Get commits from this specific PR using GitHub API
-                # This works even after branch deletion because GitHub preserves PR commit history
                 echo "### Changes in This Release" >> release_notes.md
                 echo "" >> release_notes.md
 
-                # Fetch PR commits using GitHub API (not CLI view which may fail on deleted branches)
-                gh api repos/${{ github.repository }}/pulls/${PR_NUMBER}/commits \
-                  --jq '.[] | "\(.commit.message)|\(.sha[0:7])|\(.commit.author.name)"' \
-                  > /tmp/pr_commits.txt 2>/dev/null || echo "" > /tmp/pr_commits.txt
+                # Categorize commits from the PR
 
-                if [ -s /tmp/pr_commits.txt ]; then
-                  # Categorize commits from the PR
+                # Features & Enhancements
+                FEATURES=$(grep -iE "^(feat|feature|add|added|new):" /tmp/pr_commits.txt || echo "")
+                if [ -n "$FEATURES" ]; then
+                  echo "#### 🚀 Features & Enhancements" >> release_notes.md
+                  echo "$FEATURES" | while IFS='|' read -r subject hash author; do
+                    # Get first line of commit message only
+                    FIRST_LINE=$(echo "$subject" | head -1)
+                    echo "- ${FIRST_LINE} ([\`${hash}\`](https://github.com/${{ github.repository }}/commit/${hash})) - @${author}" >> release_notes.md
+                  done
+                  echo "" >> release_notes.md
+                fi
 
-                  # Features & Enhancements
-                  FEATURES=$(grep -iE "^(feat|feature|add|added|new):" /tmp/pr_commits.txt || echo "")
-                  if [ -n "$FEATURES" ]; then
-                    echo "#### 🚀 Features & Enhancements" >> release_notes.md
-                    echo "$FEATURES" | while IFS='|' read -r subject hash author; do
-                      # Get first line of commit message only
-                      FIRST_LINE=$(echo "$subject" | head -1)
-                      echo "- ${FIRST_LINE} ([\`${hash}\`](https://github.com/${{ github.repository }}/commit/${hash})) - @${author}" >> release_notes.md
-                    done
-                    echo "" >> release_notes.md
-                  fi
+                # Bug Fixes
+                FIXES=$(grep -iE "^(fix|fixed|bugfix|bug):" /tmp/pr_commits.txt || echo "")
+                if [ -n "$FIXES" ]; then
+                  echo "#### 🐛 Bug Fixes" >> release_notes.md
+                  echo "$FIXES" | while IFS='|' read -r subject hash author; do
+                    FIRST_LINE=$(echo "$subject" | head -1)
+                    echo "- ${FIRST_LINE} ([\`${hash}\`](https://github.com/${{ github.repository }}/commit/${hash})) - @${author}" >> release_notes.md
+                  done
+                  echo "" >> release_notes.md
+                fi
 
-                  # Bug Fixes
-                  FIXES=$(grep -iE "^(fix|fixed|bugfix|bug):" /tmp/pr_commits.txt || echo "")
-                  if [ -n "$FIXES" ]; then
-                    echo "#### 🐛 Bug Fixes" >> release_notes.md
-                    echo "$FIXES" | while IFS='|' read -r subject hash author; do
-                      FIRST_LINE=$(echo "$subject" | head -1)
-                      echo "- ${FIRST_LINE} ([\`${hash}\`](https://github.com/${{ github.repository }}/commit/${hash})) - @${author}" >> release_notes.md
-                    done
-                    echo "" >> release_notes.md
-                  fi
+                # Documentation
+                DOCS=$(grep -iE "^(docs|doc|documentation):" /tmp/pr_commits.txt || echo "")
+                if [ -n "$DOCS" ]; then
+                  echo "#### 📚 Documentation" >> release_notes.md
+                  echo "$DOCS" | while IFS='|' read -r subject hash author; do
+                    FIRST_LINE=$(echo "$subject" | head -1)
+                    echo "- ${FIRST_LINE} ([\`${hash}\`](https://github.com/${{ github.repository }}/commit/${hash})) - @${author}" >> release_notes.md
+                  done
+                  echo "" >> release_notes.md
+                fi
 
-                  # Documentation
-                  DOCS=$(grep -iE "^(docs|doc|documentation):" /tmp/pr_commits.txt || echo "")
-                  if [ -n "$DOCS" ]; then
-                    echo "#### 📚 Documentation" >> release_notes.md
-                    echo "$DOCS" | while IFS='|' read -r subject hash author; do
-                      FIRST_LINE=$(echo "$subject" | head -1)
-                      echo "- ${FIRST_LINE} ([\`${hash}\`](https://github.com/${{ github.repository }}/commit/${hash})) - @${author}" >> release_notes.md
-                    done
-                    echo "" >> release_notes.md
-                  fi
+                # Maintenance & Chores
+                CHORES=$(grep -iE "^(chore|refactor|test|ci|build|perf):" /tmp/pr_commits.txt || echo "")
+                if [ -n "$CHORES" ]; then
+                  echo "#### 🔧 Maintenance & Chores" >> release_notes.md
+                  echo "$CHORES" | while IFS='|' read -r subject hash author; do
+                    FIRST_LINE=$(echo "$subject" | head -1)
+                    echo "- ${FIRST_LINE} ([\`${hash}\`](https://github.com/${{ github.repository }}/commit/${hash})) - @${author}" >> release_notes.md
+                  done
+                  echo "" >> release_notes.md
+                fi
 
-                  # Maintenance & Chores
-                  CHORES=$(grep -iE "^(chore|refactor|test|ci|build|perf):" /tmp/pr_commits.txt || echo "")
-                  if [ -n "$CHORES" ]; then
-                    echo "#### 🔧 Maintenance & Chores" >> release_notes.md
-                    echo "$CHORES" | while IFS='|' read -r subject hash author; do
-                      FIRST_LINE=$(echo "$subject" | head -1)
-                      echo "- ${FIRST_LINE} ([\`${hash}\`](https://github.com/${{ github.repository }}/commit/${hash})) - @${author}" >> release_notes.md
-                    done
-                    echo "" >> release_notes.md
-                  fi
-
-                  # Other Changes
-                  OTHERS=$(grep -viE "^(feat|feature|add|added|new|fix|fixed|bugfix|bug|docs|doc|documentation|chore|refactor|test|ci|build|perf):" /tmp/pr_commits.txt || echo "")
-                  if [ -n "$OTHERS" ]; then
-                    echo "#### 📦 Other Changes" >> release_notes.md
-                    echo "$OTHERS" | while IFS='|' read -r subject hash author; do
-                      FIRST_LINE=$(echo "$subject" | head -1)
-                      echo "- ${FIRST_LINE} ([\`${hash}\`](https://github.com/${{ github.repository }}/commit/${hash})) - @${author}" >> release_notes.md
-                    done
-                    echo "" >> release_notes.md
-                  fi
-                else
-                  echo "_No commit details available for this PR_" >> release_notes.md
+                # Other Changes
+                OTHERS=$(grep -viE "^(feat|feature|add|added|new|fix|fixed|bugfix|bug|docs|doc|documentation|chore|refactor|test|ci|build|perf):" /tmp/pr_commits.txt || echo "")
+                if [ -n "$OTHERS" ]; then
+                  echo "#### 📦 Other Changes" >> release_notes.md
+                  echo "$OTHERS" | while IFS='|' read -r subject hash author; do
+                    FIRST_LINE=$(echo "$subject" | head -1)
+                    echo "- ${FIRST_LINE} ([\`${hash}\`](https://github.com/${{ github.repository }}/commit/${hash})) - @${author}" >> release_notes.md
+                  done
                   echo "" >> release_notes.md
                 fi
 
                 CHANGELOG_DISPLAYED=true
               else
-                # PR found but couldn't fetch details
-                echo "⚠️ Could not fetch details for PR #${PR_NUMBER}, will use commit-based changelog..."
+                # Couldn't fetch commits from PR
+                echo "⚠️ Could not fetch commits for PR #${PR_NUMBER}, will use commit-based changelog..."
               fi
             fi
 
