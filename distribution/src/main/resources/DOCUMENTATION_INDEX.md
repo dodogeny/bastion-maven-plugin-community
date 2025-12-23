@@ -5,13 +5,22 @@ This documentation package contains comprehensive information about Bastion Mave
 ## 📚 Documentation Structure
 
 ### Quick Start
-- **[README.md](README.md)** - Project overview and feature summary
+- **[README.md](../../../README.md)** - Project overview and feature summary (located at project root)
 - **[INSTALLATION.md](INSTALLATION.md)** - Complete installation guide
-- **[QUICK_START.md](QUICK_START.md)** - 5-minute getting started guide
+- **[QUICKSTART.md](docs/QUICKSTART.md)** - 5-minute getting started guide
+- **[CHANGELOG.md](docs/CHANGELOG.md)** - Version history and release notes
 
-### Business Documentation  
-- **[EXECUTIVE_SUMMARY.md](EXECUTIVE_SUMMARY.md)** - Business value proposition and ROI analysis
-- **[DISTRIBUTION_GUIDE.md](DISTRIBUTION_GUIDE.md)** - Guidelines for different audiences
+### Developer Documentation
+- **[DEVELOPER_GUIDE.md](docs/DEVELOPER_GUIDE.md)** - Development setup and contribution guide
+- **[VERSIONING.md](docs/VERSIONING.md)** - Version management and release process
+
+### Workflow Documentation
+- **[RELEASE_WORKFLOW.md](docs/RELEASE_WORKFLOW.md)** - Release workflow and CI/CD setup
+- **[EMAIL_NOTIFICATIONS_SETUP.md](docs/EMAIL_NOTIFICATIONS_SETUP.md)** - Email notification configuration
+
+### License & Compliance
+- **[LICENSE](../../../LICENSE)** - Apache License 2.0 (located at project root)
+- **[LICENSE_COMPLIANCE_GUIDE.md](docs/LICENSE_COMPLIANCE_GUIDE.md)** - License compliance guide for enterprise
 
 ### Technical Documentation
 - **[API Documentation](api/)** - Complete JavaDoc API reference
@@ -30,26 +39,23 @@ This documentation package contains comprehensive information about Bastion Mave
 ## 🎯 Quick Navigation by Role
 
 ### 👨‍💼 For Decision Makers
-1. [EXECUTIVE_SUMMARY.md](EXECUTIVE_SUMMARY.md) - ROI and business benefits
-2. [README.md](README.md) - Feature overview and competitive advantages
-3. [Commercial Features](site/commercial-features.html) - Premium capabilities
+1. [README.md](../../../README.md) - Feature overview and competitive advantages
+2. [CHANGELOG.md](docs/CHANGELOG.md) - Version history and what's new
 
 ### 👨‍💻 For Developers
-1. [QUICK_START.md](QUICK_START.md) - Get running in 5 minutes
-2. [examples/basic-setup/](examples/basic-setup/) - Basic configuration examples
-3. [API Documentation](api/) - Technical API reference
-4. [examples/ci-cd/](examples/ci-cd/) - CI/CD integration examples
+1. [QUICKSTART.md](docs/QUICKSTART.md) - Get running in 5 minutes
+2. [DEVELOPER_GUIDE.md](docs/DEVELOPER_GUIDE.md) - Development setup and contribution guide
+3. [VERSIONING.md](docs/VERSIONING.md) - Version management strategy
+4. [RELEASE_WORKFLOW.md](docs/RELEASE_WORKFLOW.md) - Release process and automation
 
 ### 🛡️ For Security Teams
-1. [Security Features](site/security-features.html) - Security scanning capabilities
-2. [examples/enterprise-setup/](examples/enterprise-setup/) - Advanced configuration with commercial features
-3. [Commercial Features](site/commercial-features.html) - Premium security capabilities
+1. [README.md](../../../README.md) - Security scanning capabilities and features
+2. [LICENSE_COMPLIANCE_GUIDE.md](docs/LICENSE_COMPLIANCE_GUIDE.md) - License compliance management
 
 ### 🔧 For Operations Teams
 1. [INSTALLATION.md](INSTALLATION.md) - Deployment and installation
-2. [Configuration Reference](site/configuration.html) - Complete parameter guide
-3. [examples/production-deployment/](examples/production-deployment/) - Production setup
-4. [Monitoring Guide](examples/monitoring/) - Performance and health monitoring
+2. [QUICKSTART.md](docs/QUICKSTART.md) - Quick configuration guide
+3. [EMAIL_NOTIFICATIONS_SETUP.md](docs/EMAIL_NOTIFICATIONS_SETUP.md) - Email notification configuration
 
 ## 📊 Report Types
 

@@ -18,9 +18,16 @@
             <outputDirectory>/</outputDirectory>
             <includes>
                 <include>README.md</include>
-                <include>CHANGELOG.md</include>
-                <include>DEVELOPER_GUIDE.md</include>
-                <include>LICENSE_COMPLIANCE_GUIDE.md</include>
+                <include>LICENSE</include>
+            </includes>
+        </fileSet>
+
+        <!-- Documentation from distribution module -->
+        <fileSet>
+            <directory>${project.basedir}/src/main/resources/docs</directory>
+            <outputDirectory>docs/</outputDirectory>
+            <includes>
+                <include>**/*.md</include>
             </includes>
         </fileSet>
 
