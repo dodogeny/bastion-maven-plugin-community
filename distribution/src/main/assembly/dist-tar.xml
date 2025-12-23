@@ -20,8 +20,16 @@
                 <include>README.md</include>
                 <include>LICENSE</include>
                 <include>NOTICE</include>
-                <include>CHANGELOG.md</include>
-                <include>QUICKSTART.md</include>
+            </includes>
+            <fileMode>0644</fileMode>
+        </fileSet>
+
+        <!-- Documentation from distribution module -->
+        <fileSet>
+            <directory>${project.basedir}/src/main/resources/docs</directory>
+            <outputDirectory>docs/</outputDirectory>
+            <includes>
+                <include>**/*.md</include>
             </includes>
             <fileMode>0644</fileMode>
         </fileSet>

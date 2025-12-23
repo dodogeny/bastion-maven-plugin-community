@@ -42,7 +42,7 @@
     </scm>
 
     <properties>
-        <revision>1.2.7</revision>
+        <revision>1.2.8-rc1</revision>
         <maven.compiler.source>21</maven.compiler.source>
         <maven.compiler.target>21</maven.compiler.target>
         <maven.compiler.release>21</maven.compiler.release>
@@ -260,6 +260,15 @@
                 <directory>${project.basedir}</directory>
                 <includes>
                     <include>README.md</include>
+                </includes>
+                <filtering>true</filtering>
+                <targetPath>${project.build.directory}/filtered-docs</targetPath>
+            </resource>
+
+            <!-- Filtered documentation from distribution module -->
+            <resource>
+                <directory>${project.basedir}/distribution/src/main/resources/docs</directory>
+                <includes>
                     <include>QUICKSTART.md</include>
                     <include>CHANGELOG.md</include>
                 </includes>

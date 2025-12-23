@@ -67,10 +67,21 @@ jobs:
         run: |
           VERSION="${{ steps.version.outputs.version }}"
 
-          # Check if version matches semver format
-          if ! echo "$VERSION" | grep -qE '^[0-9]+\.[0-9]+\.[0-9]+(-[a-zA-Z0-9]+)?$'; then
+          # Check if version matches extended semver format
+          # Supports:
+          # - Standard: 1.2.3
+          # - With pre-release: 1.2.3-beta, 1.2.3-rc1
+          # - With build segment: 1.2.3.b01, 1.2.3.build123
+          # - With build metadata: 1.2.3+build, 1.2.3-beta+build
+          # - Combined: 1.2.3.b01-rc1+build
+          if ! echo "$VERSION" | grep -qE '^[0-9]+\.[0-9]+\.[0-9]+(\.[a-zA-Z0-9]+)?(-[a-zA-Z0-9\.]+)?(\+[a-zA-Z0-9\.]+)?$'; then
             echo "❌ ERROR: Invalid version format: $VERSION"
-            echo "Expected format: MAJOR.MINOR.PATCH[-QUALIFIER]"
+            echo "Expected formats:"
+            echo "  - MAJOR.MINOR.PATCH (e.g., 1.2.3)"
+            echo "  - MAJOR.MINOR.PATCH-QUALIFIER (e.g., 1.2.3-beta)"
+            echo "  - MAJOR.MINOR.PATCH.BUILD (e.g., 1.2.3.b01)"
+            echo "  - MAJOR.MINOR.PATCH+METADATA (e.g., 1.2.3+build123)"
+            echo "  - Combinations of the above"
             exit 1
           fi
 
@@ -106,9 +117,9 @@ jobs:
           VERSION="${{ steps.version.outputs.version }}"
 
           # Check if CHANGELOG.md has an entry for this version
-          if ! grep -q "\[${VERSION}\]" CHANGELOG.md && ! grep -q "@project.version@" CHANGELOG.md; then
+          if ! grep -q "\[${VERSION}\]" distribution/src/main/resources/docs/CHANGELOG.md && ! grep -q "@project.version@" distribution/src/main/resources/docs/CHANGELOG.md; then
             echo "⚠️  WARNING: No CHANGELOG entry found for version ${VERSION}"
-            echo "Consider adding release notes to CHANGELOG.md"
+            echo "Consider adding release notes to distribution/src/main/resources/docs/CHANGELOG.md"
           else
             echo "✓ CHANGELOG entry found"
           fi
@@ -138,16 +149,16 @@ jobs:
 
           # Show files before update
           echo "Checking for @project.version@ placeholders:"
-          grep -n "@project.version@" README.md QUICKSTART.md CHANGELOG.md || echo "No placeholders found"
+          grep -n "@project.version@" README.md distribution/src/main/resources/docs/QUICKSTART.md distribution/src/main/resources/docs/CHANGELOG.md || echo "No placeholders found"
 
           # Replace @project.version@ with actual version
           sed -i "s/@project\.version@/${VERSION}/g" README.md
-          sed -i "s/@project\.version@/${VERSION}/g" QUICKSTART.md
-          sed -i "s/@project\.version@/${VERSION}/g" CHANGELOG.md
+          sed -i "s/@project\.version@/${VERSION}/g" distribution/src/main/resources/docs/QUICKSTART.md
+          sed -i "s/@project\.version@/${VERSION}/g" distribution/src/main/resources/docs/CHANGELOG.md
 
           echo ""
           echo "Files after update:"
-          git status README.md QUICKSTART.md CHANGELOG.md
+          git status README.md distribution/src/main/resources/docs/QUICKSTART.md distribution/src/main/resources/docs/CHANGELOG.md
 
           echo "✓ Updated version placeholders in documentation"
 
@@ -160,11 +171,11 @@ jobs:
           git config user.email "github-actions[bot]@users.noreply.github.com"
 
           # Check if there are changes
-          if ! git diff --quiet README.md QUICKSTART.md CHANGELOG.md; then
+          if ! git diff --quiet README.md distribution/src/main/resources/docs/QUICKSTART.md distribution/src/main/resources/docs/CHANGELOG.md; then
             echo "Changes detected, committing..."
 
             # Commit and push changes
-            git add README.md QUICKSTART.md CHANGELOG.md
+            git add README.md distribution/src/main/resources/docs/QUICKSTART.md distribution/src/main/resources/docs/CHANGELOG.md
             git commit -m "docs: Update version to ${VERSION} in documentation" \
                        -m "Automated documentation update for release v${VERSION}" \
                        -m "Co-Authored-By: github-actions[bot] <github-actions[bot]@users.noreply.github.com>"
@@ -462,9 +473,9 @@ jobs:
           VERSION="${{ needs.preflight.outputs.version }}"
 
           # Try to extract changelog entry for this version
-          if grep -q "\[${VERSION}\]" CHANGELOG.md || grep -q "@project.version@" CHANGELOG.md; then
+          if grep -q "\[${VERSION}\]" distribution/src/main/resources/docs/CHANGELOG.md || grep -q "@project.version@" distribution/src/main/resources/docs/CHANGELOG.md; then
             # Extract section between this version and next version header
-            CHANGELOG_ENTRY=$(awk "/## \[${VERSION}\]|## \[@project.version@\]/,/## \[[0-9]/" CHANGELOG.md | head -n -1 | tail -n +2)
+            CHANGELOG_ENTRY=$(awk "/## \[${VERSION}\]|## \[@project.version@\]/,/## \[[0-9]/" distribution/src/main/resources/docs/CHANGELOG.md | head -n -1 | tail -n +2)
 
             if [ -n "$CHANGELOG_ENTRY" ]; then
               echo "✓ Extracted CHANGELOG entry"
