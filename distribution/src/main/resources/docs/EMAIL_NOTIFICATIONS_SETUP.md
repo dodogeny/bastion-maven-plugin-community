@@ -199,7 +199,7 @@ team@example.com, releases@example.com, notifications@example.com
 ├─────────────────────────────────────────────────────────┤
 │  💻 Installation                                        │
 │  <plugin>                                               │
-│    <version>1.2.5</version>                             │
+│    <version>@project.version@</version>                 │
 │  </plugin>                                              │
 ├─────────────────────────────────────────────────────────┤
 │  📦 Distribution Artifacts                              │
@@ -241,7 +241,7 @@ Installation:
 <plugin>
   <groupId>io.github.dodogeny</groupId>
   <artifactId>bastion-maven-community-plugin</artifactId>
-  <version>1.2.5</version>
+  <version>@project.version@</version>
 </plugin>
 
 Distribution Artifacts:
