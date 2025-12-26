@@ -654,6 +654,8 @@ Intelligent dependency update recommendations powered by real-time Maven Central
 - **CVE Impact Forecasting**: Predicts which CVEs would be resolved vs. introduced by each update
 - **Risk-Based Recommendations**: Categorizes updates as "Safe" (reduces CVEs, no new issues) vs "Risky" (may introduce new vulnerabilities)
 - **Comprehensive Reporting**: HTML, PDF, and JSON reports with detailed upgrade paths
+- **Interactive Tree Visualization**: D3.js-powered dependency tree showing vulnerability propagation paths
+- **Version Conflict Detection**: Automatic detection and reporting of "Jar Hell" scenarios
 - **Zero Configuration**: Works out-of-the-box with your existing dependencies
 - **Maven Central Integration**: Real-time version availability and metadata lookup
 - **Configurable Analysis Depth**: COMPREHENSIVE, STANDARD, or QUICK scanning modes
@@ -749,6 +751,8 @@ Comprehensive license management to prevent legal issues and ensure regulatory c
 | Safe Update Recommendations  | ❌ No                  | ✅ Yes                    |
 | CVE Impact Forecasting       | ❌ No                  | ✅ Yes                    |
 | Maven Central Integration    | ❌ No                  | ✅ Real-time              |
+| Dependency Tree Visualization| ❌ No                  | ✅ Interactive D3.js      |
+| Version Conflict Detection   | ❌ No                  | ✅ "Jar Hell" Detection   |
 | **License Compliance**       |                       |                          |
 | License Detection            | ❌ No                  | ✅ Automatic              |
 | Policy Enforcement           | ❌ No                  | ✅ Approve/Block Lists    |
