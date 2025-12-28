@@ -76,7 +76,7 @@ Add the plugin to your `pom.xml`:
 <plugin>
     <groupId>io.github.dodogeny</groupId>
     <artifactId>bastion-maven-community-plugin</artifactId>
-    <version>1.2.8-rc2</version>
+    <version>@project.version@</version>
     <executions>
         <execution>
             <goals>
@@ -98,10 +98,10 @@ mvn clean verify
 **Option 2: Direct Plugin Execution**
 ```bash
 # Basic scan
-mvn io.github.dodogeny:bastion-maven-community-plugin:1.2.8-rc2:scan
+mvn io.github.dodogeny:bastion-maven-community-plugin:@project.version@:scan
 
 # With NVD API key (recommended for faster downloads)
-mvn io.github.dodogeny:bastion-maven-community-plugin:1.2.8-rc2:scan \
+mvn io.github.dodogeny:bastion-maven-community-plugin:@project.version@:scan \
   -Dbastion.nvd.apiKey=YOUR_NVD_API_KEY
 
 # Short form (after first use)
@@ -117,7 +117,7 @@ mvn bastion-maven-community-plugin:scan
 **🚀 Subsequent Runs**: Uses cached database (30-60 seconds)
 **📊 Reports**: Generated in `target/bastion-reports/`
 
-## What's New in v1.2.8-rc2
+## What's New in v@project.version@
 
 ### 🔄 Dynamic Version Management & Enhanced Release Workflow
 - **Single Source of Truth**: Version managed in parent POM `<revision>` property
@@ -282,7 +282,7 @@ mvn bastion:scan -Dbastion.failOnError=true -Dbastion.severityThreshold=CRITICAL
 <plugin>
     <groupId>io.github.dodogeny</groupId>
     <artifactId>bastion-maven-community-plugin</artifactId>
-    <version>1.2.8-rc2</version>
+    <version>@project.version@</version>
     <configuration>
         <skip>false</skip>
         <failOnError>true</failOnError>
@@ -298,7 +298,7 @@ mvn bastion:scan -Dbastion.failOnError=true -Dbastion.severityThreshold=CRITICAL
 <plugin>
     <groupId>io.github.dodogeny</groupId>
     <artifactId>bastion-maven-community-plugin</artifactId>
-    <version>1.2.8-rc2</version>
+    <version>@project.version@</version>
     <configuration>
         <communityStorageMode>JSON_FILE</communityStorageMode>
         <jsonFilePath>${project.build.directory}/security/vulnerabilities.json</jsonFilePath>
@@ -314,7 +314,7 @@ mvn bastion:scan -Dbastion.failOnError=true -Dbastion.severityThreshold=CRITICAL
 <plugin>
     <groupId>io.github.dodogeny</groupId>
     <artifactId>bastion-maven-community-plugin</artifactId>
-    <version>1.2.8-rc2</version>
+    <version>@project.version@</version>
     <configuration>
         <enableMultiModule>true</enableMultiModule>
         <communityStorageMode>JSON_FILE</communityStorageMode>
@@ -330,7 +330,7 @@ mvn bastion:scan -Dbastion.failOnError=true -Dbastion.severityThreshold=CRITICAL
 <plugin>
     <groupId>io.github.dodogeny</groupId>
     <artifactId>bastion-maven-community-plugin</artifactId>
-    <version>1.2.8-rc2</version>
+    <version>@project.version@</version>
     <configuration>
         <!-- NVD API key for faster database downloads and updates -->
         <nvdApiKey>${env.NVD_API_KEY}</nvdApiKey>
@@ -653,11 +653,11 @@ mvn bastion:scan
 If you're using an older version and experiencing OOM errors (exit code 137) or scans hanging for hours:
 
 ```bash
-# Upgrade to v1.2.8-rc2 (or v1.1.0+) which includes automatic memory management
-# Update your pom.xml to version 1.2.8-rc2
+# Upgrade to v@project.version@ (or v1.1.0+) which includes automatic memory management
+# Update your pom.xml to version @project.version@
 ```
 
-v1.1.0+ and v1.2.8-rc2 automatically configure memory allocation for OWASP subprocesses:
+v1.1.0+ and v@project.version@ automatically configure memory allocation for OWASP subprocesses:
 - **NVD Database Downloads**: 3GB heap automatically allocated
 - **Vulnerability Scanning**: 2GB heap automatically allocated
 - **No manual MAVEN_OPTS configuration needed**
@@ -1352,7 +1352,7 @@ Need help with integration or have questions?
 
 | Bastion Version | Java Requirement | OWASP Dependency-Check | Auto-Update | Memory Management | JAR Analysis | Status |
 |-----------------|------------------|------------------------|-------------|-------------------|--------------|--------|
-| 1.2.8-rc2 | Java 21+ | 12.1.3 | ✅ Automatic | ✅ Automatic | ✅ Enhanced | **Recommended** |
+| @project.version@ | Java 21+ | 12.1.3 | ✅ Automatic | ✅ Automatic | ✅ Enhanced | **Recommended** |
 | 1.1.0 | Java 21+ | 12.1.3 | ✅ Automatic | ✅ Automatic | ✅ Basic | Stable |
 | 1.0.x | Java 8+ | 10.0.4 | ❌ Manual | ⚠️ Manual MAVEN_OPTS | ❌ None | Legacy (security patches only) |
 

@@ -21,7 +21,7 @@ Add the license check goal to your Maven build:
 <plugin>
     <groupId>io.github.dodogeny</groupId>
     <artifactId>bastion-maven-enterprise-plugin</artifactId>
-    <version>1.1.0</version>
+    <version>@project.version@</version>
     <executions>
         <execution>
             <goals>
@@ -159,7 +159,7 @@ Customize report generation:
 <plugin>
     <groupId>io.github.dodogeny</groupId>
     <artifactId>bastion-maven-enterprise-plugin</artifactId>
-    <version>1.1.0</version>
+    <version>@project.version@</version>
     <executions>
         <execution>
             <id>license-check</id>
