@@ -8,6 +8,41 @@ A comprehensive Maven security plugin for automated vulnerability scanning, CVE 
 
 📖 **[Quick Start Guide](distribution/src/main/resources/docs/QUICKSTART.md)** - Get up and running in 5 minutes!
 
+---
+
+### 🌟 Enterprise Highlights
+
+**New in Enterprise Edition:**
+- 🚀 **[CI/CD Platform Integration](#-cicd-platform-deep-integration-enterprise-exclusive)** - Native support for Jenkins, GitHub Actions, Azure DevOps, CircleCI
+- 🔔 **[Webhook Notifications](#-real-time-webhook-notifications-enterprise-exclusive)** - Real-time alerts to Slack, Teams, Discord
+- 📊 **[Enhanced Metrics](#-enhanced-metrics-integration-enterprise-exclusive)** - Export to Prometheus, Grafana, Datadog, New Relic with pre-built dashboards
+- 🔮 **[Predictive Updates](#-predictive-update-analysis-enterprise-exclusive)** - AI-powered dependency upgrade recommendations
+- ⚖️ **[License Compliance](#️-license-compliance--risk-analysis-enterprise-exclusive)** - Automated license scanning and policy enforcement
+- 📧 **Email Alerts** - Automatic notifications for critical vulnerabilities
+- 💾 **Unlimited Storage** - PostgreSQL/MySQL support with unlimited scan history
+
+[👉 Compare Community vs Enterprise](#community-vs-enterprise) | [🚀 Try Enterprise Free for 14 Days](#getting-started-with-enterprise)
+
+---
+
+## Table of Contents
+
+- [Features](#features)
+- [Quick Start](#quick-start)
+- [What's New](#whats-new-in-v128-rc2)
+- [Configuration](#configuration-examples)
+- [CI/CD Integration](#cicd-integration)
+- [Enterprise Features](#enterprise-features)
+  - [Predictive Update Analysis](#-predictive-update-analysis-enterprise-exclusive)
+  - [License Compliance](#️-license-compliance--risk-analysis-enterprise-exclusive)
+  - [Advanced Reporting](#-advanced-reporting--export-formats)
+  - [CI/CD Platform Integration](#-cicd-platform-deep-integration-enterprise-exclusive)
+  - [Webhook Notifications](#-real-time-webhook-notifications-enterprise-exclusive)
+  - [Enhanced Metrics](#-enhanced-metrics-integration-enterprise-exclusive)
+- [Community vs Enterprise](#community-vs-enterprise)
+- [Troubleshooting](#troubleshooting)
+- [Support](#support)
+
 ## Features
 
 - **Zero-Configuration Setup**: Automatically downloads and updates the NVD database - no manual setup required
@@ -111,6 +146,41 @@ mvn bastion-maven-community-plugin:scan
 - **🧪 New Test Suites**: 14 new test cases ensuring reliability
 - **✅ 100% Coverage**: All new JAR analysis features thoroughly tested
 - **🔍 Complex Scenarios**: Tests for partial resolutions and multi-JAR states
+
+### 🚀 Enterprise Edition Enhancements
+
+**CI/CD Platform Deep Integration** *(Enterprise Only)*
+- **Native Platform Support**: Jenkins, GitHub Actions, Azure DevOps, CircleCI
+- **Platform-Specific Reports**: JUnit XML, SARIF 2.1.0, Warnings-NG JSON, Insights JSON
+- **Build Status Integration**: Pass/Fail/Unstable based on vulnerability thresholds
+- **Pull Request Comments**: Automated security summaries on PRs/MRs
+- **Pipeline Metrics**: Scan duration, vulnerability trends, historical comparisons
+- **Progressive Enforcement**: Fail on new vulnerabilities only, baseline comparisons
+
+**Real-Time Webhook Notifications** *(Enterprise Only)*
+- **Multi-Platform Support**: Slack, Microsoft Teams, Discord, Generic webhooks
+- **Rich Formatting**: Platform-native messages with colors, emojis, structured data
+- **Smart Filtering**: Severity thresholds, branch-specific configurations, multiple channels
+- **Automatic Retry**: Built-in retry logic with exponential backoff
+- **Parallel Sending**: Fast concurrent webhook delivery
+- **Environment Variable Support**: Secure credential management
+
+**Enhanced Metrics Integration** *(Enterprise Only)*
+- **6 Platform Support**: Prometheus, Grafana Cloud, Datadog, New Relic, InfluxDB, StatsD
+- **15+ Security Metrics**: Vulnerabilities, dependencies, risk scores, performance metrics
+- **Pre-built Dashboards**: 3 Grafana dashboards with 39 visualization panels
+- **Risk Scoring**: Automated calculation (0-100) with weighted severity algorithm
+- **Parallel Export**: Concurrent push to multiple platforms with retry logic
+- **Custom Tags**: Organization, team, and environment tagging support
+
+**35+ New Enterprise Files Added:**
+- 11 metrics implementation files (models, exporters, service layer)
+- 6 comprehensive unit test suites (50+ test cases)
+- 4 Grafana dashboard templates (Security, Performance, Trends)
+- 9 webhook implementation files (adapters for Slack/Teams/Discord/Generic)
+- 3 webhook test suites (35+ test cases)
+- 3 integration files with CI/CD reporters
+- 1 comprehensive metrics export documentation guide
 
 ### Version History
 - **📚 CHANGELOG.md**: Comprehensive version history with detailed change tracking
@@ -730,6 +800,227 @@ Comprehensive license management to prevent legal issues and ensure regulatory c
 - **Dependency Tree Visualization**: Interactive graphs showing vulnerability propagation paths
 - **Transitive Dependency Analysis**: Identify which top-level dependencies introduce vulnerabilities
 
+**🚀 CI/CD Platform Deep Integration** *(Enterprise Exclusive)*
+Native integration with major CI/CD platforms for streamlined security workflows:
+- **Supported Platforms**: GitHub Actions, Jenkins, Azure DevOps, CircleCI
+- **Platform-Native Reports**:
+  - **Jenkins**: JUnit XML, Warnings-NG JSON, HTML summaries
+  - **Azure DevOps**: SARIF 2.1.0, Build Summary Markdown, Pipeline Commands
+  - **CircleCI**: JUnit XML, Insights JSON, Trend Analysis
+  - **GitHub Actions**: SARIF for Code Scanning, Workflow Annotations, PR Comments
+- **Build Status Integration**: Pass/Fail/Unstable based on vulnerability thresholds
+- **Pull Request Comments**: Automatic security scan summaries on PRs/MRs
+- **Pipeline Metrics**: Scan duration, vulnerability trends, historical comparisons
+- **Policy Enforcement**:
+  - Branch-based severity thresholds (stricter for main branch)
+  - Progressive enforcement (fail on new vulnerabilities only)
+  - Vulnerability suppressions with expiration dates
+  - Custom threshold configurations per environment
+
+*Maven Goals Available:*
+```bash
+# Platform-specific reporting goals
+mvn bastion:jenkins-report
+mvn bastion:azure-devops-report
+mvn bastion:circleci-report
+mvn bastion:github-actions-report
+```
+
+**🔔 Real-Time Webhook Notifications** *(Enterprise Exclusive)*
+Get instant security alerts in your team's communication channels:
+- **Supported Platforms**: Slack, Microsoft Teams, Discord, Generic/Custom webhooks
+- **Rich Formatting**: Platform-native message formats with colors, emojis, and structured data
+- **Smart Filtering**: Severity-based thresholds, branch-specific configurations
+- **Multiple Channels**: Send different severity levels to different channels
+- **Automatic Retry**: Built-in retry logic with exponential backoff
+- **CI/CD Integration**: Works seamlessly with all CI/CD platform reporters
+
+*What You Get:*
+- 🔴 **Critical/High Alerts** - Immediate notifications with CVE details and CVSS scores
+- 📊 **Severity Breakdown** - Visual indicators (🔴 Critical, 🟠 High, 🟡 Medium, ⚪ Low)
+- 🔗 **Direct Links** - Clickable links to full scan reports and build logs
+- 📈 **Dependency Stats** - Total dependencies analyzed and vulnerable count
+- ⚡ **Real-time Updates** - Notifications sent as soon as scan completes
+
+*Example Slack Notification:*
+```
+🔴 Bastion Security Scan Results
+
+Project: my-application
+Version: 1.0.0
+Branch: main
+Platform: github-actions
+
+Total Vulnerabilities: 15
+🔴 Critical: 2
+🟠 High: 5
+🟡 Medium: 6
+⚪ Low: 2
+
+Total Dependencies: 150
+Vulnerable Dependencies: 8
+
+[View Full Report →]
+```
+
+*Configuration Example:*
+```xml
+<webhookConfig>
+  <enabled>true</enabled>
+  <severityThreshold>MEDIUM</severityThreshold>
+  <notifyOnSuccess>false</notifyOnSuccess>
+  <notifyOnFailure>true</notifyOnFailure>
+
+  <endpoints>
+    <!-- Critical alerts to security team -->
+    <endpoint>
+      <name>Security Team</name>
+      <type>SLACK</type>
+      <url>${env.SLACK_SECURITY_WEBHOOK}</url>
+      <severityFilter>HIGH</severityFilter>
+    </endpoint>
+
+    <!-- All vulnerabilities to dev team -->
+    <endpoint>
+      <name>Dev Team</name>
+      <type>SLACK</type>
+      <url>${env.SLACK_DEV_WEBHOOK}</url>
+    </endpoint>
+
+    <!-- Microsoft Teams integration -->
+    <endpoint>
+      <name>Teams Dashboard</name>
+      <type>TEAMS</type>
+      <url>${env.TEAMS_WEBHOOK}</url>
+    </endpoint>
+  </endpoints>
+</webhookConfig>
+```
+
+*Setup Instructions:*
+1. Get webhook URL from Slack/Teams/Discord
+2. Store URL in environment variable or CI/CD secrets
+3. Configure webhook in POM as shown above
+4. Run scan - notifications sent automatically!
+
+📖 **[Complete Webhook Integration Guide](distribution/src/main/resources/docs/WEBHOOK_INTEGRATION.md)**
+
+**📊 Enhanced Metrics Integration** *(Enterprise Exclusive)*
+Monitor security trends across your entire infrastructure with real-time metrics export:
+- **6 Platform Support**: Prometheus, Grafana Cloud, Datadog, New Relic, InfluxDB, StatsD
+- **15+ Security Metrics**: Vulnerabilities by severity, risk scores, dependency counts, scan performance
+- **Pre-built Dashboards**: 3 Grafana dashboards with 39 visualization panels
+- **Parallel Export**: Concurrent export to multiple platforms with automatic retry
+- **Custom Tags**: Add organization, team, and environment tags to all metrics
+- **Risk Calculation**: Weighted risk scoring (0-100) based on severity distribution
+
+*What You Get:*
+- 📈 **Real-time Monitoring** - Track vulnerability trends across all projects
+- 🎯 **Risk Scoring** - Automated risk calculation with severity-weighted algorithm
+- 📊 **Pre-built Dashboards** - Import-ready Grafana dashboards for instant visualization
+- 🔔 **Alerting** - Set up alerts on critical thresholds (risk score, CVE counts)
+- 📉 **Trend Analysis** - Visualize new vs. fixed vulnerabilities over time
+- ⚡ **Performance Tracking** - Monitor scan duration and throughput
+
+*Supported Metrics Platforms:*
+
+| Platform | Protocol | Use Case |
+|----------|----------|----------|
+| **Prometheus** | HTTP Push | Self-hosted, Kubernetes environments |
+| **Grafana Cloud** | HTTP API | Managed Grafana with Prometheus backend |
+| **Datadog** | HTTP API | APM and infrastructure monitoring |
+| **New Relic** | HTTP API | Full-stack observability |
+| **InfluxDB** | HTTP API | Time-series database, custom analytics |
+| **StatsD** | UDP | Low-overhead metrics collection |
+
+*Example Grafana Dashboard Visualization:*
+```
+┌─────────────────────────────────────────────────────────────┐
+│ 🔴 Critical: 2    🟠 High: 5    🟡 Medium: 6    ⚪ Low: 2  │
+│                                                             │
+│ Risk Score: 45.5/100    Total Vulnerabilities: 15          │
+│                                                             │
+│ Vulnerabilities Over Time                                  │
+│ 20│  ╭─╮                                                   │
+│ 15│  │ │    ╭─╮                                            │
+│ 10│╭─╯ ╰────╯ ╰──╮                                         │
+│  5│               ╰────────────────                        │
+│  0└─────────────────────────────────────────────           │
+│    Jan  Feb  Mar  Apr  May  Jun  Jul  Aug                  │
+└─────────────────────────────────────────────────────────────┘
+```
+
+*Configuration Example:*
+```xml
+<metricsExport>
+  <enabled>true</enabled>
+  <endpoints>
+    <!-- Prometheus for long-term storage -->
+    <endpoint>
+      <name>Prometheus Pushgateway</name>
+      <platform>PROMETHEUS</platform>
+      <url>http://pushgateway:9091/metrics/job/bastion-security</url>
+      <prefix>bastion</prefix>
+      <enabled>true</enabled>
+    </endpoint>
+
+    <!-- Datadog for real-time monitoring -->
+    <endpoint>
+      <name>Datadog</name>
+      <platform>DATADOG</platform>
+      <url>https://api.datadoghq.com/api/v1/series</url>
+      <apiKey>${env.DATADOG_API_KEY}</apiKey>
+      <prefix>bastion</prefix>
+      <enabled>true</enabled>
+    </endpoint>
+  </endpoints>
+
+  <!-- Global tags for all metrics -->
+  <globalTags>
+    <tag>
+      <key>organization</key>
+      <value>my-company</value>
+    </tag>
+    <tag>
+      <key>team</key>
+      <value>platform-security</value>
+    </tag>
+  </globalTags>
+</metricsExport>
+```
+
+*Key Metrics Exported:*
+- `bastion_vulnerabilities_total` - Total vulnerabilities detected
+- `bastion_vulnerabilities_critical/high/medium/low` - By severity
+- `bastion_vulnerabilities_new/fixed` - Trend tracking
+- `bastion_risk_score` - Calculated risk (0-100)
+- `bastion_dependencies_total/vulnerable` - Dependency counts
+- `bastion_scan_duration_ms` - Performance monitoring
+- `bastion_policy_passed` - Build compliance status
+
+*Pre-built Grafana Dashboards:*
+1. **Security Overview** (13 panels) - Real-time vulnerability monitoring, risk gauges, trend graphs
+2. **Performance Metrics** (12 panels) - Scan duration, throughput, success rates
+3. **Vulnerability Trends** (14 panels) - Long-term analysis, compliance tracking, remediation velocity
+
+📖 **[Complete Metrics Export Guide](distribution/src/main/resources/docs/METRICS_EXPORT.md)**
+
+*Example Jenkins Integration:*
+```groovy
+stage('Security Scan') {
+  steps {
+    sh 'mvn bastion:jenkins-report'
+  }
+  post {
+    always {
+      junit 'target/bastion-reports/jenkins-junit-report.xml'
+      recordIssues(tools: [issues(pattern: 'target/bastion-reports/jenkins-warnings-ng.json')])
+      publishHTML(reportDir: 'target/bastion-reports', reportFiles: 'jenkins-summary.html')
+    }
+  }
+}
+```
+
 **⚡ Enterprise Support & SLA**
 - **24-Hour Response SLA**: Priority email support with guaranteed response times
 - **Direct Access to Security Experts**: Consult with security professionals on vulnerability remediation
@@ -764,8 +1055,21 @@ Comprehensive license management to prevent legal issues and ensure regulatory c
 | SARIF (GitHub Security)      | ❌ No                  | ✅ Yes                    |
 | CycloneDX SBOM               | ❌ No                  | ✅ Yes                    |
 | Custom Templates             | ❌ No                  | ✅ Yes                    |
-| **Collaboration**            |                       |                          |
+| **Collaboration & Notifications** |                  |                          |
 | Email Notifications          | ❌ No                  | ✅ CRITICAL/HIGH Alerts   |
+| Webhook Notifications        | ❌ No                  | ✅ Slack/Teams/Discord    |
+| **Enhanced Metrics**         |                       |                          |
+| Metrics Export               | ❌ No                  | ✅ 6 Platforms            |
+| Pre-built Dashboards         | ❌ No                  | ✅ 3 Grafana Dashboards   |
+| Risk Scoring                 | ❌ No                  | ✅ 0-100 Weighted Score   |
+| Real-time Monitoring         | ❌ No                  | ✅ Prometheus/Datadog/etc |
+| **CI/CD Integration**        |                       |                          |
+| Basic CI/CD Compatible       | ✅ Yes                 | ✅ Yes                    |
+| Platform-Native Reports      | ❌ No                  | ✅ Jenkins/GitLab/Azure/CircleCI/GitHub |
+| Pull Request Comments        | ❌ No                  | ✅ Automated              |
+| Build Status Integration     | ❌ No                  | ✅ Pass/Fail/Unstable     |
+| Pipeline Metrics             | ❌ No                  | ✅ Duration/Trends        |
+| Progressive Enforcement      | ❌ No                  | ✅ Baseline/Degradation   |
 | **Storage & Scale**          |                       |                          |
 | Storage Mode                 | 💾 In-Memory/JSON     | ✅ PostgreSQL/MySQL/H2    |
 | Scan History                 | ✅ 10 per project      | ✅ Unlimited              |
@@ -777,7 +1081,7 @@ Comprehensive license management to prevent legal issues and ensure regulatory c
 | Response Time                | ⏰ Best Effort         | ✅ 24-Hour SLA            |
 | Custom Integrations          | ❌ No                  | ✅ Yes                    |
 | **Pricing**                  |                       |                          |
-| Cost                         | 🆓 **Free Forever**   | 💰 **$89/month**         |
+| Cost                         | 🆓 **Free Forever**   | 💰 **$149/month**        |
 | 14-Day Trial                 | N/A                   | ✅ Available               |
 
 ### Upgrade Messaging
@@ -792,7 +1096,7 @@ These messages are **non-intrusive** and designed to inform users about features
 
 ### Enterprise Pricing & Trial
 
-**Monthly Subscription**: $89/month
+**Monthly Subscription**: $149/month
 - ✅ Full feature access
 - ✅ Unlimited projects and scan history
 - ✅ PostgreSQL/MySQL database support
