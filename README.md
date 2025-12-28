@@ -7,6 +7,7 @@
 A comprehensive Maven security plugin for automated vulnerability scanning, CVE detection, and software supply chain security. The **Community Edition** provides powerful open-source vulnerability scanning built on OWASP Dependency-Check 12.1.3 with intelligent auto-update and trend analysis. The **Commercial Edition** extends this with advanced features including predictive update analysis, license compliance checks, risk scoring, and enterprise-grade reporting.
 
 📖 **[Quick Start Guide](distribution/src/main/resources/docs/QUICKSTART.md)** - Get up and running in 5 minutes!
+📚 **[Full Documentation](https://dodogeny.github.io/bastion-maven-plugin-community/)** - Complete guide and API reference
 
 ---
 
