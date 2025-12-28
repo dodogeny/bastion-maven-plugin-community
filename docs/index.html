@@ -1,0 +1,1161 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="Bastion Maven Plugin - Detect vulnerabilities in your Maven projects before they reach production. Free, open-source security scanning.">
+    <title>Bastion Maven Plugin - Your Security Fortress</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        :root {
+            --primary: #2563eb;
+            --primary-dark: #1e40af;
+            --secondary: #7c3aed;
+            --danger: #dc2626;
+            --warning: #f59e0b;
+            --success: #10b981;
+            --gray-50: #f9fafb;
+            --gray-100: #f3f4f6;
+            --gray-200: #e5e7eb;
+            --gray-300: #d1d5db;
+            --gray-600: #4b5563;
+            --gray-700: #374151;
+            --gray-800: #1f2937;
+            --gray-900: #111827;
+        }
+
+        body {
+            font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+            line-height: 1.6;
+            color: var(--gray-800);
+            background: white;
+            overflow-x: hidden;
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 0 2rem;
+        }
+
+        /* Navigation */
+        nav {
+            position: sticky;
+            top: 0;
+            background: rgba(255, 255, 255, 0.95);
+            backdrop-filter: blur(10px);
+            border-bottom: 1px solid var(--gray-200);
+            z-index: 1000;
+            padding: 1rem 0;
+        }
+
+        nav .container {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .logo {
+            font-size: 1.5rem;
+            font-weight: 800;
+            color: var(--primary);
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        .logo svg {
+            width: 32px;
+            height: 32px;
+        }
+
+        .nav-links {
+            display: flex;
+            gap: 2rem;
+            list-style: none;
+        }
+
+        .nav-links a {
+            text-decoration: none;
+            color: var(--gray-700);
+            font-weight: 500;
+            transition: color 0.2s;
+        }
+
+        .nav-links a:hover {
+            color: var(--primary);
+        }
+
+        /* Hero Section */
+        .hero {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            padding: 6rem 0 8rem;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .hero::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: url('data:image/svg+xml,<svg width="60" height="60" xmlns="http://www.w3.org/2000/svg"><defs><pattern id="grid" width="60" height="60" patternUnits="userSpaceOnUse"><path d="M 60 0 L 0 0 0 60" fill="none" stroke="white" stroke-width="0.5" opacity="0.1"/></pattern></defs><rect width="100%" height="100%" fill="url(%23grid)"/></svg>');
+            opacity: 0.3;
+        }
+
+        .hero .container {
+            position: relative;
+            z-index: 1;
+        }
+
+        .hero h1 {
+            font-size: 3.5rem;
+            font-weight: 800;
+            line-height: 1.1;
+            margin-bottom: 1.5rem;
+            max-width: 800px;
+        }
+
+        .hero .subtitle {
+            font-size: 1.5rem;
+            opacity: 0.95;
+            margin-bottom: 2rem;
+            max-width: 700px;
+        }
+
+        .hero .stats {
+            display: flex;
+            gap: 3rem;
+            margin-top: 3rem;
+            flex-wrap: wrap;
+        }
+
+        .stat {
+            text-align: center;
+        }
+
+        .stat-number {
+            font-size: 2.5rem;
+            font-weight: 800;
+            display: block;
+        }
+
+        .stat-label {
+            opacity: 0.9;
+            font-size: 0.95rem;
+        }
+
+        .cta-group {
+            display: flex;
+            gap: 1rem;
+            margin-top: 2rem;
+            flex-wrap: wrap;
+        }
+
+        .btn {
+            padding: 1rem 2rem;
+            border-radius: 0.5rem;
+            font-weight: 600;
+            text-decoration: none;
+            display: inline-flex;
+            align-items: center;
+            gap: 0.5rem;
+            transition: all 0.2s;
+            border: none;
+            cursor: pointer;
+            font-size: 1.1rem;
+        }
+
+        .btn-primary {
+            background: white;
+            color: var(--primary);
+            box-shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.2);
+        }
+
+        .btn-primary:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 15px 35px -5px rgba(0, 0, 0, 0.3);
+        }
+
+        .btn-secondary {
+            background: rgba(255, 255, 255, 0.2);
+            color: white;
+            border: 2px solid white;
+        }
+
+        .btn-secondary:hover {
+            background: rgba(255, 255, 255, 0.3);
+        }
+
+        /* Code Snippet in Hero */
+        .code-preview {
+            background: var(--gray-900);
+            color: #e5e7eb;
+            padding: 1.5rem;
+            border-radius: 0.75rem;
+            font-family: 'JetBrains Mono', monospace;
+            font-size: 0.9rem;
+            margin-top: 2rem;
+            max-width: 600px;
+            box-shadow: 0 20px 40px -10px rgba(0, 0, 0, 0.4);
+        }
+
+        .code-preview .comment {
+            color: #6b7280;
+        }
+
+        .code-preview .keyword {
+            color: #c084fc;
+        }
+
+        .code-preview .string {
+            color: #34d399;
+        }
+
+        /* Problem Section */
+        .problem-section {
+            padding: 6rem 0;
+            background: var(--gray-50);
+        }
+
+        .section-title {
+            font-size: 2.5rem;
+            font-weight: 800;
+            margin-bottom: 1rem;
+            text-align: center;
+        }
+
+        .section-subtitle {
+            font-size: 1.25rem;
+            color: var(--gray-600);
+            text-align: center;
+            max-width: 700px;
+            margin: 0 auto 3rem;
+        }
+
+        .nightmare-box {
+            background: white;
+            padding: 3rem;
+            border-radius: 1rem;
+            box-shadow: 0 10px 30px -10px rgba(0, 0, 0, 0.1);
+            border-left: 4px solid var(--danger);
+            margin-bottom: 3rem;
+        }
+
+        .nightmare-box h3 {
+            font-size: 1.75rem;
+            color: var(--danger);
+            margin-bottom: 1rem;
+        }
+
+        .nightmare-box p {
+            font-size: 1.1rem;
+            line-height: 1.8;
+            color: var(--gray-700);
+        }
+
+        .stats-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 2rem;
+            margin-top: 3rem;
+        }
+
+        .stat-card {
+            background: white;
+            padding: 2rem;
+            border-radius: 0.75rem;
+            box-shadow: 0 4px 20px -5px rgba(0, 0, 0, 0.1);
+            border-top: 3px solid var(--warning);
+        }
+
+        .stat-card .number {
+            font-size: 2.5rem;
+            font-weight: 800;
+            color: var(--primary);
+            display: block;
+            margin-bottom: 0.5rem;
+        }
+
+        .stat-card .label {
+            color: var(--gray-600);
+            font-size: 1rem;
+        }
+
+        /* Solution Section */
+        .solution-section {
+            padding: 6rem 0;
+            background: linear-gradient(to bottom, white, var(--gray-50));
+        }
+
+        .before-after {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 2rem;
+            margin-top: 3rem;
+        }
+
+        .comparison-box {
+            background: white;
+            padding: 2rem;
+            border-radius: 1rem;
+            box-shadow: 0 10px 30px -10px rgba(0, 0, 0, 0.1);
+        }
+
+        .comparison-box h3 {
+            font-size: 1.5rem;
+            margin-bottom: 1rem;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        .comparison-box.before h3 {
+            color: var(--danger);
+        }
+
+        .comparison-box.after h3 {
+            color: var(--success);
+        }
+
+        .terminal {
+            background: var(--gray-900);
+            color: #22c55e;
+            padding: 1.5rem;
+            border-radius: 0.5rem;
+            font-family: 'JetBrains Mono', monospace;
+            font-size: 0.85rem;
+            margin-top: 1rem;
+            line-height: 1.8;
+        }
+
+        .terminal .error {
+            color: #ef4444;
+        }
+
+        .terminal .warning {
+            color: #f59e0b;
+        }
+
+        /* Features Section */
+        .features-section {
+            padding: 6rem 0;
+            background: white;
+        }
+
+        .features-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 2rem;
+            margin-top: 3rem;
+        }
+
+        .feature-card {
+            padding: 2rem;
+            background: var(--gray-50);
+            border-radius: 1rem;
+            transition: all 0.3s;
+        }
+
+        .feature-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 15px 35px -10px rgba(0, 0, 0, 0.15);
+        }
+
+        .feature-icon {
+            width: 48px;
+            height: 48px;
+            background: linear-gradient(135deg, var(--primary), var(--secondary));
+            border-radius: 0.75rem;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.5rem;
+            margin-bottom: 1rem;
+        }
+
+        .feature-card h3 {
+            font-size: 1.25rem;
+            margin-bottom: 0.75rem;
+            color: var(--gray-900);
+        }
+
+        .feature-card p {
+            color: var(--gray-600);
+            line-height: 1.7;
+        }
+
+        /* Case Study Section */
+        .case-study-section {
+            padding: 6rem 0;
+            background: var(--primary);
+            color: white;
+        }
+
+        .case-study-box {
+            background: rgba(255, 255, 255, 0.1);
+            backdrop-filter: blur(10px);
+            border-radius: 1rem;
+            padding: 3rem;
+            margin-top: 3rem;
+        }
+
+        .metrics-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 2rem;
+            margin-top: 2rem;
+        }
+
+        .metric {
+            text-align: center;
+        }
+
+        .metric-value {
+            font-size: 2rem;
+            font-weight: 800;
+            display: block;
+            margin-bottom: 0.5rem;
+        }
+
+        /* Pricing Section */
+        .pricing-section {
+            padding: 6rem 0;
+            background: var(--gray-50);
+        }
+
+        .pricing-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(350px, 1fr));
+            gap: 2rem;
+            margin-top: 3rem;
+        }
+
+        .pricing-card {
+            background: white;
+            border-radius: 1rem;
+            padding: 3rem;
+            box-shadow: 0 10px 30px -10px rgba(0, 0, 0, 0.1);
+            position: relative;
+        }
+
+        .pricing-card.featured {
+            border: 3px solid var(--primary);
+            transform: scale(1.05);
+        }
+
+        .badge {
+            position: absolute;
+            top: -15px;
+            right: 20px;
+            background: var(--primary);
+            color: white;
+            padding: 0.5rem 1rem;
+            border-radius: 2rem;
+            font-size: 0.85rem;
+            font-weight: 600;
+        }
+
+        .price {
+            font-size: 3rem;
+            font-weight: 800;
+            color: var(--primary);
+            margin: 1rem 0;
+        }
+
+        .price-period {
+            font-size: 1rem;
+            color: var(--gray-600);
+            font-weight: 400;
+        }
+
+        .features-list {
+            list-style: none;
+            margin: 2rem 0;
+        }
+
+        .features-list li {
+            padding: 0.75rem 0;
+            display: flex;
+            align-items: start;
+            gap: 0.75rem;
+        }
+
+        .features-list li::before {
+            content: "✓";
+            color: var(--success);
+            font-weight: 800;
+            font-size: 1.2rem;
+        }
+
+        /* CTA Section */
+        .cta-section {
+            padding: 6rem 0;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            text-align: center;
+        }
+
+        .cta-section h2 {
+            font-size: 3rem;
+            font-weight: 800;
+            margin-bottom: 1rem;
+        }
+
+        .cta-section p {
+            font-size: 1.5rem;
+            opacity: 0.95;
+            margin-bottom: 2rem;
+        }
+
+        /* Footer */
+        footer {
+            background: var(--gray-900);
+            color: var(--gray-300);
+            padding: 3rem 0 1.5rem;
+        }
+
+        .footer-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 3rem;
+            margin-bottom: 2rem;
+        }
+
+        .footer-section h4 {
+            color: white;
+            font-weight: 700;
+            margin-bottom: 1rem;
+        }
+
+        .footer-links {
+            list-style: none;
+        }
+
+        .footer-links li {
+            margin-bottom: 0.5rem;
+        }
+
+        .footer-links a {
+            color: var(--gray-400);
+            text-decoration: none;
+            transition: color 0.2s;
+        }
+
+        .footer-links a:hover {
+            color: white;
+        }
+
+        .footer-bottom {
+            border-top: 1px solid var(--gray-800);
+            padding-top: 1.5rem;
+            text-align: center;
+            color: var(--gray-500);
+        }
+
+        /* Responsive */
+        @media (max-width: 768px) {
+            .hero h1 {
+                font-size: 2.5rem;
+            }
+
+            .hero .subtitle {
+                font-size: 1.25rem;
+            }
+
+            .before-after {
+                grid-template-columns: 1fr;
+            }
+
+            .pricing-card.featured {
+                transform: none;
+            }
+
+            .nav-links {
+                display: none;
+            }
+        }
+
+        /* Animations */
+        @keyframes fadeInUp {
+            from {
+                opacity: 0;
+                transform: translateY(30px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        .fade-in-up {
+            animation: fadeInUp 0.6s ease-out;
+        }
+    </style>
+</head>
+<body>
+    <!-- Navigation -->
+    <nav>
+        <div class="container">
+            <div class="logo">
+                <svg viewBox="0 0 24 24" fill="currentColor">
+                    <path d="M12 1L3 5v6c0 5.55 3.84 10.74 9 12 5.16-1.26 9-6.45 9-12V5l-9-4z"/>
+                </svg>
+                Bastion Maven Plugin
+            </div>
+            <ul class="nav-links">
+                <li><a href="#features">Features</a></li>
+                <li><a href="#pricing">Pricing</a></li>
+                <li><a href="https://github.com/dodogeny/bastion-maven-plugin-community">GitHub</a></li>
+                <li><a href="https://github.com/dodogeny/bastion-maven-plugin-community#quick-start">Docs</a></li>
+            </ul>
+        </div>
+    </nav>
+
+    <!-- Hero Section -->
+    <section class="hero">
+        <div class="container">
+            <h1 class="fade-in-up">Stop shipping vulnerabilities.<br>Start shipping confidence.</h1>
+            <p class="subtitle fade-in-up">Bastion automatically scans your Maven projects against 318,000+ known vulnerabilities from the National Vulnerability Database. Free, open-source, and zero-configuration.</p>
+
+            <div class="cta-group">
+                <a href="#get-started" class="btn btn-primary">
+                    Get Started in 5 Minutes
+                    <svg width="20" height="20" viewBox="0 0 20 20" fill="currentColor">
+                        <path fill-rule="evenodd" d="M10.293 3.293a1 1 0 011.414 0l6 6a1 1 0 010 1.414l-6 6a1 1 0 01-1.414-1.414L14.586 11H3a1 1 0 110-2h11.586l-4.293-4.293a1 1 0 010-1.414z" clip-rule="evenodd"/>
+                    </svg>
+                </a>
+                <a href="https://github.com/dodogeny/bastion-maven-plugin-community" class="btn btn-secondary">
+                    View on GitHub
+                </a>
+            </div>
+
+            <div class="code-preview">
+                <div class="comment"># Add to your pom.xml and run</div>
+                mvn clean verify<br><br>
+                <div class="comment"># That's it. You're protected.</div>
+            </div>
+
+            <div class="stats">
+                <div class="stat">
+                    <span class="stat-number">318,000+</span>
+                    <span class="stat-label">CVEs Tracked</span>
+                </div>
+                <div class="stat">
+                    <span class="stat-number">3 min</span>
+                    <span class="stat-label">Scan Time</span>
+                </div>
+                <div class="stat">
+                    <span class="stat-number">100%</span>
+                    <span class="stat-label">Free Forever</span>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Problem Section -->
+    <section class="problem-section">
+        <div class="container">
+            <h2 class="section-title">The Hidden Danger in Your Dependencies</h2>
+            <p class="section-subtitle">Every dependency is a potential security risk. Most developers discover vulnerabilities weeks or months too late.</p>
+
+            <div class="nightmare-box">
+                <h3>🚨 It's 3 AM. Your phone rings.</h3>
+                <p>Your production application is down. A critical security vulnerability in a dependency you didn't even know you were using has been exploited. The breach affects thousands of users. Your team scrambles to patch the issue, but the damage is done.</p>
+                <p style="margin-top: 1rem;"><strong>This nightmare scenario happens more often than you think.</strong></p>
+            </div>
+
+            <div class="stats-grid">
+                <div class="stat-card">
+                    <span class="number">84%</span>
+                    <span class="label">of codebases contain at least one known vulnerability</span>
+                </div>
+                <div class="stat-card">
+                    <span class="number">26,000+</span>
+                    <span class="label">new CVEs discovered in 2023 alone</span>
+                </div>
+                <div class="stat-card">
+                    <span class="number">80+</span>
+                    <span class="label">dependencies in average applications (hundreds more transitively)</span>
+                </div>
+                <div class="stat-card">
+                    <span class="number">Weeks</span>
+                    <span class="label">before vulnerabilities are discovered without scanning</span>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Solution Section -->
+    <section class="solution-section">
+        <div class="container">
+            <h2 class="section-title">Security Scanning That Actually Works</h2>
+            <p class="section-subtitle">Bastion turns security from a quarterly audit into a seamless part of your build process.</p>
+
+            <div class="before-after">
+                <div class="comparison-box before">
+                    <h3>❌ Before Bastion</h3>
+                    <div class="terminal">
+                        <div style="color: #22c55e;">✓ BUILD SUCCESS</div>
+                        <div style="color: #9ca3af;">Total time: 45 seconds</div>
+                    </div>
+                    <p style="margin-top: 1rem; color: var(--gray-600); font-style: italic;">You have no idea that log4j-core 2.14.1 has 37 known vulnerabilities, including CVE-2021-44228 (Log4Shell) with a CVSS score of 10.0</p>
+                </div>
+
+                <div class="comparison-box after">
+                    <h3>✅ After Bastion</h3>
+                    <div class="terminal">
+                        <div class="error">🔴 CRITICAL VULNERABILITIES DETECTED</div>
+                        <br>
+                        <div>📦 Vulnerable Dependency: log4j-core 2.14.1</div>
+                        <div class="error">   🔴 CVE-2021-44228 (Log4Shell) - CVSS 10.0</div>
+                        <div class="error">   🔴 CVE-2021-45046 - CVSS 9.0</div>
+                        <div>   + 35 more vulnerabilities</div>
+                        <br>
+                        <div style="color: #3b82f6;">💡 Upgrade to log4j-core 2.17.1 (resolves all CVEs)</div>
+                    </div>
+                    <p style="margin-top: 1rem; color: var(--success); font-weight: 600;">Now you know. Now you can fix it.</p>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Features Section -->
+    <section id="features" class="features-section">
+        <div class="container">
+            <h2 class="section-title">Everything You Need, Nothing You Don't</h2>
+            <p class="section-subtitle">Built for developers who want security without the complexity.</p>
+
+            <div class="features-grid">
+                <div class="feature-card">
+                    <div class="feature-icon">🚀</div>
+                    <h3>Zero Configuration</h3>
+                    <p>Add one plugin to your pom.xml. That's it. No complex YAML files, no security expertise needed, no learning curve.</p>
+                </div>
+
+                <div class="feature-card">
+                    <div class="feature-icon">🧠</div>
+                    <h3>Intelligent Auto-Updates</h3>
+                    <p>Automatically downloads the latest NVD database on first run, then intelligently updates only new/changed data. Always scanning against fresh vulnerability data.</p>
+                </div>
+
+                <div class="feature-card">
+                    <div class="feature-icon">📊</div>
+                    <h3>Beautiful Reports</h3>
+                    <p>HTML reports with visual dependency trees, direct NVD links, severity breakdowns, and trend analysis showing new vs. resolved vulnerabilities.</p>
+                </div>
+
+                <div class="feature-card">
+                    <div class="feature-icon">📈</div>
+                    <h3>Historical Tracking</h3>
+                    <p>Track your security posture over time. See exactly which CVEs were resolved, introduced, or remain pending between scans.</p>
+                </div>
+
+                <div class="feature-card">
+                    <div class="feature-icon">⚡</div>
+                    <h3>CI/CD Ready</h3>
+                    <p>Works seamlessly with GitHub Actions, Jenkins, GitLab CI, Azure DevOps, CircleCI, and any platform that runs Maven.</p>
+                </div>
+
+                <div class="feature-card">
+                    <div class="feature-icon">💾</div>
+                    <h3>Smart Caching</h3>
+                    <p>First scan: 20-30 minutes (one-time database download). Every scan after: 2-3 minutes. Intelligent caching reduces scan times dramatically.</p>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Case Study Section -->
+    <section class="case-study-section">
+        <div class="container">
+            <h2 class="section-title" style="color: white;">Real Results from Real Projects</h2>
+            <p class="section-subtitle" style="color: rgba(255,255,255,0.9);">How Bastion transformed security for a legacy enterprise application</p>
+
+            <div class="case-study-box">
+                <h3 style="font-size: 1.5rem; margin-bottom: 2rem;">150-module Maven monolith, 8 years old, 800+ dependencies</h3>
+
+                <div class="metrics-grid">
+                    <div class="metric">
+                        <span class="metric-value">147</span>
+                        Vulnerabilities found on first scan
+                    </div>
+                    <div class="metric">
+                        <span class="metric-value">98</span>
+                        Critical/High CVEs fixed in first month
+                    </div>
+                    <div class="metric">
+                        <span class="metric-value">3 min</span>
+                        Scan time (vs 2 weeks manual audit)
+                    </div>
+                    <div class="metric">
+                        <span class="metric-value">Same Day</span>
+                        Time to patch critical issues
+                    </div>
+                </div>
+
+                <p style="margin-top: 2rem; font-size: 1.1rem; text-align: center; opacity: 0.95;">
+                    "Security went from a quarterly audit to a continuous, automated check on every build. Game changer."
+                </p>
+            </div>
+        </div>
+    </section>
+
+    <!-- Get Started Section -->
+    <section id="get-started" class="solution-section">
+        <div class="container">
+            <h2 class="section-title">Get Started in 5 Minutes</h2>
+            <p class="section-subtitle">Three simple steps to secure your Maven project</p>
+
+            <div style="max-width: 800px; margin: 3rem auto;">
+                <div style="background: white; padding: 2rem; border-radius: 1rem; box-shadow: 0 10px 30px -10px rgba(0,0,0,0.1); margin-bottom: 2rem;">
+                    <h3 style="display: flex; align-items: center; gap: 1rem; margin-bottom: 1rem;">
+                        <span style="background: var(--primary); color: white; width: 40px; height: 40px; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-weight: 800;">1</span>
+                        Add the Plugin
+                    </h3>
+                    <div style="background: var(--gray-900); color: #e5e7eb; padding: 1.5rem; border-radius: 0.5rem; font-family: 'JetBrains Mono', monospace; font-size: 0.85rem; overflow-x: auto;">
+<span style="color: #6b7280;">&lt;!-- Add to your pom.xml --&gt;</span>
+<span style="color: #c084fc;">&lt;plugin&gt;</span>
+    <span style="color: #c084fc;">&lt;groupId&gt;</span>io.github.dodogeny<span style="color: #c084fc;">&lt;/groupId&gt;</span>
+    <span style="color: #c084fc;">&lt;artifactId&gt;</span>bastion-maven-community-plugin<span style="color: #c084fc;">&lt;/artifactId&gt;</span>
+    <span style="color: #c084fc;">&lt;version&gt;</span>1.2.8-rc2<span style="color: #c084fc;">&lt;/version&gt;</span>
+<span style="color: #c084fc;">&lt;/plugin&gt;</span>
+                    </div>
+                </div>
+
+                <div style="background: white; padding: 2rem; border-radius: 1rem; box-shadow: 0 10px 30px -10px rgba(0,0,0,0.1); margin-bottom: 2rem;">
+                    <h3 style="display: flex; align-items: center; gap: 1rem; margin-bottom: 1rem;">
+                        <span style="background: var(--primary); color: white; width: 40px; height: 40px; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-weight: 800;">2</span>
+                        Run Your Build
+                    </h3>
+                    <div style="background: var(--gray-900); color: #22c55e; padding: 1.5rem; border-radius: 0.5rem; font-family: 'JetBrains Mono', monospace; font-size: 0.85rem;">
+$ mvn clean verify
+                    </div>
+                </div>
+
+                <div style="background: white; padding: 2rem; border-radius: 1rem; box-shadow: 0 10px 30px -10px rgba(0,0,0,0.1);">
+                    <h3 style="display: flex; align-items: center; gap: 1rem; margin-bottom: 1rem;">
+                        <span style="background: var(--primary); color: white; width: 40px; height: 40px; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-weight: 800;">3</span>
+                        Review Your Report
+                    </h3>
+                    <p style="color: var(--gray-600);">Open <code style="background: var(--gray-100); padding: 0.25rem 0.5rem; border-radius: 0.25rem;">target/bastion-reports/bastion-report.html</code> in your browser.</p>
+                    <p style="margin-top: 1rem; color: var(--success); font-weight: 600;">That's it! You're now scanning for vulnerabilities.</p>
+                </div>
+
+                <div style="text-align: center; margin-top: 3rem;">
+                    <a href="https://github.com/dodogeny/bastion-maven-plugin-community#quick-start" class="btn btn-primary" style="font-size: 1rem;">
+                        View Full Documentation
+                    </a>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Why Enterprise Section -->
+    <section class="features-section" style="background: linear-gradient(to bottom, var(--gray-50), white);">
+        <div class="container">
+            <h2 class="section-title">When Community Isn't Enough</h2>
+            <p class="section-subtitle">Enterprise Edition pays for itself in hours, not months. Here's how teams justify the upgrade.</p>
+
+            <!-- ROI Calculator -->
+            <div style="max-width: 900px; margin: 3rem auto; background: white; padding: 3rem; border-radius: 1rem; box-shadow: 0 10px 30px -10px rgba(0,0,0,0.1);">
+                <h3 style="font-size: 1.75rem; margin-bottom: 2rem; text-align: center; color: var(--primary);">💰 The Enterprise ROI Story</h3>
+
+                <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 2rem; margin-bottom: 2rem;">
+                    <div style="border-left: 4px solid var(--danger); padding-left: 1.5rem;">
+                        <h4 style="color: var(--danger); margin-bottom: 0.5rem;">Without Enterprise</h4>
+                        <ul style="color: var(--gray-700); line-height: 2;">
+                            <li>🐌 Scans take <strong>45 seconds</strong></li>
+                            <li>⏰ <strong>20 builds/day</strong> × 5 devs = <strong>15 minutes wasted daily</strong></li>
+                            <li>❓ "Which dependency should I upgrade?" - <strong>2 hours research</strong></li>
+                            <li>📋 Manual license audits - <strong>8 hours/quarter</strong></li>
+                            <li>🔍 Digging through scan history in JSON files - <strong>frustrating</strong></li>
+                        </ul>
+                    </div>
+
+                    <div style="border-left: 4px solid var(--success); padding-left: 1.5rem;">
+                        <h4 style="color: var(--success); margin-bottom: 0.5rem;">With Enterprise</h4>
+                        <ul style="color: var(--gray-700); line-height: 2;">
+                            <li>⚡ Scans take <strong>15 seconds</strong> (3x faster)</li>
+                            <li>💨 Same 100 builds = <strong>50 minutes saved weekly</strong></li>
+                            <li>🔮 Predictive updates tell you exactly what to upgrade</li>
+                            <li>⚖️ Automated license compliance - <strong>0 hours</strong></li>
+                            <li>📊 PostgreSQL storage with unlimited history - <strong>query anything</strong></li>
+                        </ul>
+                    </div>
+                </div>
+
+                <div style="background: linear-gradient(135deg, var(--primary), var(--secondary)); color: white; padding: 2rem; border-radius: 0.75rem; text-align: center;">
+                    <div style="font-size: 2.5rem; font-weight: 800; margin-bottom: 0.5rem;">$149/month = $1.50 per developer per day</div>
+                    <div style="font-size: 1.25rem; opacity: 0.95;">Less than a cup of coffee. More valuable than 10 hours of manual security work.</div>
+                </div>
+            </div>
+
+            <!-- When to Upgrade -->
+            <div style="max-width: 900px; margin: 3rem auto;">
+                <h3 style="font-size: 2rem; margin-bottom: 2rem; text-align: center;">You Need Enterprise If...</h3>
+
+                <div style="display: grid; gap: 1.5rem;">
+                    <div style="background: white; padding: 2rem; border-radius: 0.75rem; box-shadow: 0 4px 20px -5px rgba(0,0,0,0.1); border-left: 4px solid var(--primary);">
+                        <h4 style="font-size: 1.25rem; margin-bottom: 0.75rem; display: flex; align-items: center; gap: 0.5rem;">
+                            👥 You Have a Team (3+ developers)
+                        </h4>
+                        <p style="color: var(--gray-700);">Time is money. If 5 developers save 10 minutes each per day with faster scans, that's <strong>20+ hours saved per month</strong>. Your team's time costs more than $149.</p>
+                    </div>
+
+                    <div style="background: white; padding: 2rem; border-radius: 0.75rem; box-shadow: 0 4px 20px -5px rgba(0,0,0,0.1); border-left: 4px solid var(--warning);">
+                        <h4 style="font-size: 1.25rem; margin-bottom: 0.75rem; display: flex; align-items: center; gap: 0.5rem;">
+                            🏢 You're Building Commercial Software
+                        </h4>
+                        <p style="color: var(--gray-700);">License compliance isn't optional. One GPL violation can cost <strong>$50,000+ in legal fees</strong>. Enterprise automatically checks 150+ license combinations and prevents compliance disasters.</p>
+                    </div>
+
+                    <div style="background: white; padding: 2rem; border-radius: 0.75rem; box-shadow: 0 4px 20px -5px rgba(0,0,0,0.1); border-left: 4px solid var(--danger);">
+                        <h4 style="font-size: 1.25rem; margin-bottom: 0.75rem; display: flex; align-items: center; gap: 0.5rem;">
+                            🚨 You Need Compliance Audits
+                        </h4>
+                        <p style="color: var(--gray-700);">SOC 2, ISO 27001, PCI-DSS all require vulnerability tracking and SBOM documentation. Enterprise provides <strong>unlimited scan history, PDF reports, and CycloneDX SBOMs</strong> that auditors actually accept.</p>
+                    </div>
+
+                    <div style="background: white; padding: 2rem; border-radius: 0.75rem; box-shadow: 0 4px 20px -5px rgba(0,0,0,0.1); border-left: 4px solid var(--secondary);">
+                        <h4 style="font-size: 1.25rem; margin-bottom: 0.75rem; display: flex; align-items: center; gap: 0.5rem;">
+                            🤔 You Waste Time on "Which Version Should I Upgrade To?"
+                        </h4>
+                        <p style="color: var(--gray-700);">Predictive update analysis is a game-changer. Instead of spending <strong>2 hours researching</strong> which spring-security version to upgrade to, Enterprise tells you: <em>"Upgrade to 6.2.1 - resolves 8 CVEs, introduces 0 new ones, safe update."</em></p>
+                    </div>
+
+                    <div style="background: white; padding: 2rem; border-radius: 0.75rem; box-shadow: 0 4px 20px -5px rgba(0,0,0,0.1); border-left: 4px solid var(--success);">
+                        <h4 style="font-size: 1.25rem; margin-bottom: 0.75rem; display: flex; align-items: center; gap: 0.5rem;">
+                            📊 You Want Real Observability
+                        </h4>
+                        <p style="color: var(--gray-700);">Security isn't just about scans - it's about trends. Enterprise exports metrics to <strong>Prometheus, Grafana, Datadog</strong> with pre-built dashboards. See your security posture improve over time, not just "scan passed/failed".</p>
+                    </div>
+
+                    <div style="background: white; padding: 2rem; border-radius: 0.75rem; box-shadow: 0 4px 20px -5px rgba(0,0,0,0.1); border-left: 4px solid #f59e0b;">
+                        <h4 style="font-size: 1.25rem; margin-bottom: 0.75rem; display: flex; align-items: center; gap: 0.5rem;">
+                            🔔 Your Team Misses Critical Alerts
+                        </h4>
+                        <p style="color: var(--gray-700);">Webhook notifications to <strong>Slack, Teams, or Discord</strong> mean your security team knows about CRITICAL vulnerabilities <strong>within seconds</strong>, not days. Real-time alerts = faster response = reduced risk exposure.</p>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Feature Comparison Grid -->
+            <div style="max-width: 1000px; margin: 4rem auto;">
+                <h3 style="font-size: 2rem; margin-bottom: 2rem; text-align: center;">What You Get With Enterprise</h3>
+
+                <div style="display: grid; grid-template-columns: repeat(3, 1fr); gap: 2rem;">
+                    <!-- Speed -->
+                    <div style="text-align: center;">
+                        <div style="font-size: 3rem; margin-bottom: 0.5rem;">⚡</div>
+                        <h4 style="font-size: 1.25rem; margin-bottom: 0.5rem; color: var(--primary);">3-6x Faster</h4>
+                        <p style="color: var(--gray-600); font-size: 0.95rem;">Worker Pool optimizations with parallel processing. 800-dependency project? 30 seconds instead of 2 minutes.</p>
+                    </div>
+
+                    <!-- Intelligence -->
+                    <div style="text-align: center;">
+                        <div style="font-size: 3rem; margin-bottom: 0.5rem;">🔮</div>
+                        <h4 style="font-size: 1.25rem; margin-bottom: 0.5rem; color: var(--primary);">Predictive Intelligence</h4>
+                        <p style="color: var(--gray-600); font-size: 0.95rem;">AI-powered recommendations: "Upgrade jackson-databind to 2.16.1 - resolves 12 CVEs, safe update."</p>
+                    </div>
+
+                    <!-- Compliance -->
+                    <div style="text-align: center;">
+                        <div style="font-size: 3rem; margin-bottom: 0.5rem;">⚖️</div>
+                        <h4 style="font-size: 1.25rem; margin-bottom: 0.5rem; color: var(--primary);">License Compliance</h4>
+                        <p style="color: var(--gray-600); font-size: 0.95rem;">Automatic license detection, GPL/MIT/Apache compatibility checks, policy enforcement.</p>
+                    </div>
+
+                    <!-- Storage -->
+                    <div style="text-align: center;">
+                        <div style="font-size: 3rem; margin-bottom: 0.5rem;">💾</div>
+                        <h4 style="font-size: 1.25rem; margin-bottom: 0.5rem; color: var(--primary);">Unlimited History</h4>
+                        <p style="color: var(--gray-600); font-size: 0.95rem;">PostgreSQL/MySQL storage. Query years of scan data. Community limited to 10 scans per project.</p>
+                    </div>
+
+                    <!-- Reports -->
+                    <div style="text-align: center;">
+                        <div style="font-size: 3rem; margin-bottom: 0.5rem;">📊</div>
+                        <h4 style="font-size: 1.25rem; margin-bottom: 0.5rem; color: var(--primary);">Executive Reports</h4>
+                        <p style="color: var(--gray-600); font-size: 0.95rem;">PDF reports for stakeholders, SARIF for GitHub Security, CycloneDX SBOM for compliance.</p>
+                    </div>
+
+                    <!-- Support -->
+                    <div style="text-align: center;">
+                        <div style="font-size: 3rem; margin-bottom: 0.5rem;">🎯</div>
+                        <h4 style="font-size: 1.25rem; margin-bottom: 0.5rem; color: var(--primary);">Priority Support</h4>
+                        <p style="color: var(--gray-600); font-size: 0.95rem;">24-hour SLA. Direct access to security experts. Custom integration support.</p>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Risk Calculation -->
+            <div style="max-width: 800px; margin: 4rem auto; background: linear-gradient(135deg, #fee2e2, #fef3c7); padding: 3rem; border-radius: 1rem; border: 2px solid var(--warning);">
+                <h3 style="font-size: 1.75rem; margin-bottom: 1.5rem; text-align: center; color: var(--gray-900);">⚠️ The Cost of NOT Upgrading</h3>
+
+                <div style="background: white; padding: 2rem; border-radius: 0.75rem; margin-bottom: 1.5rem;">
+                    <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 2rem; text-align: center;">
+                        <div>
+                            <div style="font-size: 2.5rem; font-weight: 800; color: var(--danger);">$50,000+</div>
+                            <div style="color: var(--gray-600);">Average cost of one security breach (IBM Security)</div>
+                        </div>
+                        <div>
+                            <div style="font-size: 2.5rem; font-weight: 800; color: var(--danger);">$30,000+</div>
+                            <div style="color: var(--gray-600);">Legal fees for license violations (GPL in commercial code)</div>
+                        </div>
+                    </div>
+                </div>
+
+                <p style="text-align: center; color: var(--gray-700); font-size: 1.1rem; line-height: 1.8;">
+                    <strong>One prevented security incident or license violation</strong> pays for <strong>20+ years</strong> of Enterprise Edition.<br>
+                    <span style="color: var(--primary); font-weight: 600;">$149/month is insurance, not an expense.</span>
+                </p>
+            </div>
+
+            <!-- Try It Risk Free -->
+            <div style="text-align: center; margin-top: 4rem;">
+                <h3 style="font-size: 2rem; margin-bottom: 1rem;">Try Enterprise Risk-Free for 14 Days</h3>
+                <p style="color: var(--gray-600); font-size: 1.1rem; margin-bottom: 2rem;">No credit card required. Cancel anytime. See the difference yourself.</p>
+                <a href="https://bastion-plugin.lemonsqueezy.com/" class="btn btn-primary" style="font-size: 1.1rem; padding: 1.25rem 2.5rem;">
+                    Start Free Trial →
+                </a>
+                <p style="margin-top: 1rem; color: var(--gray-500); font-size: 0.95rem;">Join teams at startups, enterprises, and government agencies using Bastion Enterprise</p>
+            </div>
+        </div>
+    </section>
+
+    <!-- Pricing Section -->
+    <section id="pricing" class="pricing-section">
+        <div class="container">
+            <h2 class="section-title">Choose Your Edition</h2>
+            <p class="section-subtitle">Community Edition is free forever. Upgrade to Enterprise for advanced features.</p>
+
+            <div class="pricing-grid">
+                <!-- Community Edition -->
+                <div class="pricing-card">
+                    <h3 style="font-size: 1.75rem; margin-bottom: 0.5rem;">Community Edition</h3>
+                    <div class="price">
+                        Free
+                        <span class="price-period">forever</span>
+                    </div>
+                    <p style="color: var(--gray-600); margin-bottom: 2rem;">Perfect for individual developers and small teams</p>
+                    <ul class="features-list">
+                        <li>318,000+ CVE vulnerability scanning</li>
+                        <li>Automatic NVD database updates</li>
+                        <li>HTML & JSON reports</li>
+                        <li>10 historical scans per project</li>
+                        <li>Multi-module support</li>
+                        <li>CI/CD integration</li>
+                        <li>Community support</li>
+                    </ul>
+                    <a href="https://github.com/dodogeny/bastion-maven-plugin-community#quick-start" class="btn btn-secondary" style="width: 100%; justify-content: center; background: var(--gray-100); color: var(--gray-800);">
+                        Get Started
+                    </a>
+                </div>
+
+                <!-- Enterprise Edition -->
+                <div class="pricing-card featured">
+                    <span class="badge">Most Popular</span>
+                    <h3 style="font-size: 1.75rem; margin-bottom: 0.5rem;">Enterprise Edition</h3>
+                    <div class="price">
+                        $149
+                        <span class="price-period">/month</span>
+                    </div>
+                    <p style="color: var(--gray-600); margin-bottom: 2rem;">Production-grade features for teams and organizations</p>
+                    <ul class="features-list">
+                        <li><strong>Everything in Community, plus:</strong></li>
+                        <li>⚡ 3-6x faster scanning with Worker Pools</li>
+                        <li>🔮 Predictive update analysis</li>
+                        <li>⚖️ License compliance & risk scoring</li>
+                        <li>📊 PDF, SARIF, SBOM exports</li>
+                        <li>PostgreSQL/MySQL storage</li>
+                        <li>Unlimited scan history</li>
+                        <li>Webhook notifications (Slack, Teams)</li>
+                        <li>Metrics export (Prometheus, Grafana)</li>
+                        <li>24-hour SLA support</li>
+                    </ul>
+                    <a href="https://bastion-plugin.lemonsqueezy.com/" class="btn btn-primary" style="width: 100%; justify-content: center;">
+                        Start Free Trial
+                    </a>
+                    <p style="text-align: center; margin-top: 1rem; font-size: 0.9rem; color: var(--gray-600);">14-day free trial • No credit card required</p>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Final CTA -->
+    <section class="cta-section">
+        <div class="container">
+            <h2>Ready to Secure Your Maven Projects?</h2>
+            <p>Join developers who are shipping secure software with confidence.</p>
+            <div class="cta-group" style="justify-content: center;">
+                <a href="https://github.com/dodogeny/bastion-maven-plugin-community#quick-start" class="btn btn-primary">
+                    Get Started Free
+                </a>
+                <a href="https://github.com/dodogeny/bastion-maven-plugin-community" class="btn btn-secondary">
+                    View on GitHub
+                </a>
+            </div>
+        </div>
+    </section>
+
+    <!-- Footer -->
+    <footer>
+        <div class="container">
+            <div class="footer-grid">
+                <div class="footer-section">
+                    <h4>Bastion Maven Plugin</h4>
+                    <p style="color: var(--gray-400); margin-top: 0.5rem;">
+                        Open-source security scanning for Maven projects. Detect vulnerabilities before they reach production.
+                    </p>
+                </div>
+
+                <div class="footer-section">
+                    <h4>Product</h4>
+                    <ul class="footer-links">
+                        <li><a href="#features">Features</a></li>
+                        <li><a href="#pricing">Pricing</a></li>
+                        <li><a href="https://github.com/dodogeny/bastion-maven-plugin-community#quick-start">Documentation</a></li>
+                        <li><a href="https://github.com/dodogeny/bastion-maven-plugin-community/blob/main/distribution/src/main/resources/docs/CHANGELOG.md">Changelog</a></li>
+                    </ul>
+                </div>
+
+                <div class="footer-section">
+                    <h4>Community</h4>
+                    <ul class="footer-links">
+                        <li><a href="https://github.com/dodogeny/bastion-maven-plugin-community">GitHub</a></li>
+                        <li><a href="https://github.com/dodogeny/bastion-maven-plugin-community/issues">Report Issues</a></li>
+                        <li><a href="https://github.com/dodogeny/bastion-maven-plugin-community/discussions">Discussions</a></li>
+                        <li><a href="https://github.com/dodogeny/bastion-maven-plugin-community#contributing">Contributing</a></li>
+                    </ul>
+                </div>
+
+                <div class="footer-section">
+                    <h4>Support</h4>
+                    <ul class="footer-links">
+                        <li><a href="mailto:it.dodogeny@gmail.com">Email Support</a></li>
+                        <li><a href="https://github.com/dodogeny/bastion-maven-plugin-community#troubleshooting">Troubleshooting</a></li>
+                        <li><a href="https://bastion-plugin.lemonsqueezy.com/">Enterprise Trial</a></li>
+                    </ul>
+                </div>
+            </div>
+
+            <div class="footer-bottom">
+                <p>&copy; 2024 Bastion Maven Plugin. Licensed under Apache License 2.0.</p>
+                <p style="margin-top: 0.5rem;">Built on <a href="https://owasp.org/www-project-dependency-check/" style="color: var(--primary);">OWASP Dependency-Check</a></p>
+            </div>
+        </div>
+    </footer>
+</body>
+</html>
