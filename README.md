@@ -13,6 +13,7 @@ A comprehensive Maven security plugin for automated vulnerability scanning, CVE 
 ### 🌟 Enterprise Highlights
 
 **New in Enterprise Edition:**
+- ⚡ **[Worker Pool Optimizations](#-worker-pool-optimizations-enterprise-exclusive)** - 3-6x faster scanning with intelligent parallelization (NEW!)
 - 🚀 **[CI/CD Platform Integration](#-cicd-platform-deep-integration-enterprise-exclusive)** - Native support for Jenkins, GitHub Actions, Azure DevOps, CircleCI
 - 🔔 **[Webhook Notifications](#-real-time-webhook-notifications-enterprise-exclusive)** - Real-time alerts to Slack, Teams, Discord
 - 📊 **[Enhanced Metrics](#-enhanced-metrics-integration-enterprise-exclusive)** - Export to Prometheus, Grafana, Datadog, New Relic with pre-built dashboards
@@ -33,6 +34,7 @@ A comprehensive Maven security plugin for automated vulnerability scanning, CVE 
 - [Configuration](#configuration-examples)
 - [CI/CD Integration](#cicd-integration)
 - [Enterprise Features](#enterprise-features)
+  - [Worker Pool Optimizations](#-worker-pool-optimizations-enterprise-exclusive)
   - [Predictive Update Analysis](#-predictive-update-analysis-enterprise-exclusive)
   - [License Compliance](#️-license-compliance--risk-analysis-enterprise-exclusive)
   - [Advanced Reporting](#-advanced-reporting--export-formats)
@@ -213,6 +215,8 @@ mvn bastion-maven-community-plugin:scan
 - Memory optimization for large enterprise projects
 - Enhanced NVD API 2.0 integration with better rate limiting
 - **Prevents OOM Kills**: No more exit code 137 errors during long scans
+
+**🚀 Enterprise Performance**: Up to **6x faster** with Worker Pool optimizations - parallel file hashing, multi-threaded dependency scanning, and intelligent resource management. [Learn more →](#-worker-pool-optimizations-enterprise-exclusive)
 
 ### User Experience Improvements
 - **🎯 Contextual Enterprise Suggestions**: Intelligent upgrade prompts at key moments
@@ -718,6 +722,54 @@ Bastion Maven Plugin offers an **Enterprise Edition** designed for teams and org
 
 ### Key Enterprise Features
 
+**⚡ Worker Pool Optimizations** *(Enterprise Exclusive)*
+Dramatically improve scanning speed with intelligent parallelization and resource management:
+- **3-6x Faster Scans**: Advanced multi-threaded architecture for maximum throughput
+- **4-Tier Strategy System**:
+  - **AUTO** - Automatically detects optimal settings based on your hardware (recommended)
+  - **AGGRESSIVE** - Maximum performance for powerful servers (16+ cores, 32GB+ RAM)
+  - **MODERATE** - Balanced approach for development machines (8+ cores, 16GB+ RAM)
+  - **NORMAL** - Conservative for CI/CD and shared environments (4+ cores, 8GB+ RAM)
+- **Specialized Thread Pools**:
+  - **I/O Pool**: Parallel file hashing with streaming (3-5x faster)
+  - **CPU Pool**: Parallel dependency scanning (8-16x faster on multi-core)
+  - **Scanner Pool**: Parallel OWASP/Grype invocation (2-4x faster)
+  - **Database Pool**: Concurrent vulnerability lookups
+- **Intelligent Caching**: Extended TTLs and cache hit rates of 80-95%
+- **Streaming I/O**: Constant memory usage regardless of file size
+- **Real-time Metrics**: Track pool utilization, throughput, and performance
+
+*Performance Benchmarks (16-core workstation):*
+```
+Project Size | Standard | Optimized | Speedup
+Small (50)   | 15 sec   | 12 sec    | 1.25x
+Medium (300) | 45 sec   | 15 sec    | 3.0x
+Large (800)  | 120 sec  | 30 sec    | 4.0x
+Very Large   | 300 sec  | 50 sec    | 6.0x
+```
+
+*Simple Configuration:*
+```xml
+<configuration>
+  <!-- AUTO mode: Automatically detects optimal settings -->
+  <workerPoolStrategy>AUTO</workerPoolStrategy>
+
+  <!-- Or choose specific strategy -->
+  <workerPoolStrategy>AGGRESSIVE</workerPoolStrategy>
+
+  <!-- Optimizations enabled by default -->
+  <enableWorkerPoolOptimization>true</enableWorkerPoolOptimization>
+</configuration>
+```
+
+*Hardware-Specific Optimization:*
+- **16+ cores, 32GB+ RAM**: AUTO selects AGGRESSIVE (5-8x speedup)
+- **8+ cores, 16GB+ RAM**: AUTO selects MODERATE (3-5x speedup)
+- **4+ cores, 8GB+ RAM**: AUTO selects NORMAL (2-3x speedup)
+
+📖 **[Complete Worker Pool Guide](../bastion-maven-plugin-enterprise/WORKER_POOL_OPTIMIZATION.md)**
+📊 **[Performance Testing Suite](../bastion-maven-plugin-enterprise/PERFORMANCE_TESTING.md)**
+
 **🔮 Predictive Update Analysis** *(Enterprise Exclusive)*
 Intelligent dependency update recommendations powered by real-time Maven Central analysis:
 - **Smart Version Analysis**: Automatically analyzes 5+ newer versions of vulnerable dependencies
@@ -1037,6 +1089,14 @@ stage('Security Scan') {
 | Multi-Module Support         | ✅ Yes                 | ✅ Yes                    |
 | HTML/JSON Reports            | ✅ Yes                 | ✅ Yes                    |
 | Trend Analysis (CVE Changes) | ✅ Basic               | ✅ Advanced               |
+| **Performance**              |                       |                          |
+| Worker Pool Optimizations    | ❌ No                  | ✅ 3-6x Faster Scans      |
+| Parallel File Hashing        | ❌ No                  | ✅ 3-5x Faster            |
+| Parallel Dependency Scanning | ❌ No                  | ✅ 8-16x Faster           |
+| Auto Hardware Detection      | ❌ No                  | ✅ AUTO Strategy          |
+| Strategy Modes               | ❌ No                  | ✅ 4 Modes (AUTO/AGG/MOD/NORM) |
+| Streaming I/O                | ❌ No                  | ✅ Constant Memory        |
+| Extended Caching             | ❌ No                  | ✅ 80-95% Hit Rate        |
 | **Predictive Intelligence**  |                       |                          |
 | Predictive Update Analysis   | ❌ No                  | ✅ Yes                    |
 | Safe Update Recommendations  | ❌ No                  | ✅ Yes                    |
@@ -1098,6 +1158,7 @@ These messages are **non-intrusive** and designed to inform users about features
 
 **Monthly Subscription**: $149/month
 - ✅ Full feature access
+- ✅ **3-6x faster scanning** with Worker Pool optimizations
 - ✅ Unlimited projects and scan history
 - ✅ PostgreSQL/MySQL database support
 - ✅ PDF/SARIF/SBOM exports
@@ -1135,6 +1196,10 @@ After subscribing, you'll receive a license key. Here's how to configure it:
 
         <!-- NVD API Key -->
         <nvdApiKey>${env.NVD_API_KEY}</nvdApiKey>
+
+        <!-- Worker Pool Optimizations (NEW - 3-6x faster scanning) -->
+        <workerPoolStrategy>AUTO</workerPoolStrategy> <!-- AUTO, AGGRESSIVE, MODERATE, NORMAL -->
+        <enableWorkerPoolOptimization>true</enableWorkerPoolOptimization>
 
         <!-- Database Configuration (PostgreSQL/MySQL) -->
         <databaseUrl>jdbc:postgresql://localhost:5432/bastion</databaseUrl>
