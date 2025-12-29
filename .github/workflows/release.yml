@@ -141,7 +141,7 @@ jobs:
           token: ${{ secrets.GITHUB_TOKEN }}
           fetch-depth: 0
 
-      - name: Update version placeholders in documentation
+      - name: Update version placeholders in specific documentations
         run: |
           VERSION="${{ needs.preflight.outputs.version }}"
 
