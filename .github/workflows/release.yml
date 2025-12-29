@@ -148,10 +148,19 @@ jobs:
           echo "=== Updating Documentation with Version ${VERSION} ==="
 
           # Show files before update
-          echo "Checking for @project.version@ placeholders:"
-          grep -n "@project.version@" README.md distribution/src/main/resources/docs/QUICKSTART.md distribution/src/main/resources/docs/CHANGELOG.md || echo "No placeholders found"
+          echo "Checking for existing hardcoded versions and placeholders:"
+          grep -n "@project.version@\|<version>[0-9]" README.md distribution/src/main/resources/docs/QUICKSTART.md distribution/src/main/resources/docs/CHANGELOG.md || echo "No versions found"
 
-          # Replace @project.version@ with actual version
+          # Step 1: Restore placeholders by replacing any existing hardcoded version
+          # This handles the previous release's version and makes the workflow self-healing
+          echo ""
+          echo "Step 1: Restoring placeholders for previous hardcoded versions..."
+          sed -i 's/<version>[0-9]\+\.[0-9]\+\.[0-9]\+\(-rc[0-9]\+\)\?<\/version>/<version>@project.version@<\/version>/g' README.md
+          sed -i 's/<version>[0-9]\+\.[0-9]\+\.[0-9]\+\(-rc[0-9]\+\)\?<\/version>/<version>@project.version@<\/version>/g' distribution/src/main/resources/docs/QUICKSTART.md
+          sed -i 's/<version>[0-9]\+\.[0-9]\+\.[0-9]\+\(-rc[0-9]\+\)\?<\/version>/<version>@project.version@<\/version>/g' distribution/src/main/resources/docs/CHANGELOG.md
+
+          # Step 2: Replace placeholders with current version
+          echo "Step 2: Replacing placeholders with new version ${VERSION}..."
           sed -i "s/@project\.version@/${VERSION}/g" README.md
           sed -i "s/@project\.version@/${VERSION}/g" distribution/src/main/resources/docs/QUICKSTART.md
           sed -i "s/@project\.version@/${VERSION}/g" distribution/src/main/resources/docs/CHANGELOG.md
