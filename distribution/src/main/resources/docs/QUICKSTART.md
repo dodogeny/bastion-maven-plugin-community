@@ -10,7 +10,7 @@
         <plugin>
             <groupId>io.github.dodogeny</groupId>
             <artifactId>bastion-maven-community-plugin</artifactId>
-            <version>1.2.8-rc7</version>
+            <version>@project.version@</version>
             <executions>
                 <execution>
                     <id>security-scan</id>
@@ -51,7 +51,7 @@
 mvn clean verify
 
 # Or run scan directly
-mvn io.github.dodogeny:bastion-maven-community-plugin:1.2.8-rc7:scan \
+mvn io.github.dodogeny:bastion-maven-community-plugin:@project.version@:scan \
   -Dbastion.nvd.apiKey=YOUR_API_KEY
 ```
 
@@ -71,7 +71,7 @@ Reports are generated in `target/bastion-reports/`:
 <plugin>
     <groupId>io.github.dodogeny</groupId>
     <artifactId>bastion-maven-community-plugin</artifactId>
-    <version>1.2.8-rc7</version>
+    <version>@project.version@</version>
     <executions>
         <execution>
             <goals>
@@ -100,7 +100,7 @@ mvn clean verify
 <plugin>
     <groupId>io.github.dodogeny</groupId>
     <artifactId>bastion-maven-community-plugin</artifactId>
-    <version>1.2.8-rc7</version>
+    <version>@project.version@</version>
     <!-- No executions - only run when explicitly called -->
     <configuration>
         <nvdApiKey>${env.NVD_API_KEY}</nvdApiKey>
@@ -115,7 +115,7 @@ mvn clean verify
 mvn bastion-maven-community-plugin:scan
 
 # Or with full coordinates
-mvn io.github.dodogeny:bastion-maven-community-plugin:1.2.8-rc7:scan
+mvn io.github.dodogeny:bastion-maven-community-plugin:@project.version@:scan
 ```
 
 ### Pattern 3: Multi-Module Projects
@@ -128,7 +128,7 @@ mvn io.github.dodogeny:bastion-maven-community-plugin:1.2.8-rc7:scan
             <plugin>
                 <groupId>io.github.dodogeny</groupId>
                 <artifactId>bastion-maven-community-plugin</artifactId>
-                <version>1.2.8-rc7</version>
+                <version>@project.version@</version>
                 <configuration>
                     <nvdApiKey>${env.NVD_API_KEY}</nvdApiKey>
                     <enableMultiModule>true</enableMultiModule>
@@ -365,7 +365,7 @@ mvn verify -Dbastion.failOnError=false
 
 ## Version Information
 
-- **Plugin Version**: 1.2.8-rc7
+- **Plugin Version**: @project.version@
 - **OWASP Dependency-Check**: 12.1.3
 - **Java Version**: 11+ (21 recommended)
 - **Maven Version**: 3.6.0+

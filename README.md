@@ -84,7 +84,7 @@ Add the plugin to your `pom.xml`:
 <plugin>
     <groupId>io.github.dodogeny</groupId>
     <artifactId>bastion-maven-community-plugin</artifactId>
-    <version>1.2.8-rc7</version>
+    <version>@project.version@</version>
     <executions>
         <execution>
             <goals>
@@ -106,10 +106,10 @@ mvn clean verify
 **Option 2: Direct Plugin Execution**
 ```bash
 # Basic scan
-mvn io.github.dodogeny:bastion-maven-community-plugin:1.2.8-rc7:scan
+mvn io.github.dodogeny:bastion-maven-community-plugin:@project.version@:scan
 
 # With NVD API key (recommended for faster downloads)
-mvn io.github.dodogeny:bastion-maven-community-plugin:1.2.8-rc7:scan \
+mvn io.github.dodogeny:bastion-maven-community-plugin:@project.version@:scan \
   -Dbastion.nvd.apiKey=YOUR_NVD_API_KEY
 
 # Short form (after first use)
@@ -125,7 +125,7 @@ mvn bastion-maven-community-plugin:scan
 **🚀 Subsequent Runs**: Uses cached database (30-60 seconds)
 **📊 Reports**: Generated in `target/bastion-reports/`
 
-## What's New in v1.2.8-rc7
+## What's New in v@project.version@
 
 ### 🔄 Dynamic Version Management & Enhanced Release Workflow
 - **Single Source of Truth**: Version managed in parent POM `<revision>` property
@@ -160,7 +160,7 @@ mvn bastion-maven-community-plugin:scan
 
 ### 🚀 Enterprise Edition Enhancements
 
-**🐝 Bee Swarm Optimization - Major Performance Breakthrough** *(Enterprise Only)*
+#### 🐝 Bee Swarm Optimization - Major Performance Breakthrough *(Enterprise Only)*
 
 **LATEST (v1.2.8-rc1)**: Bee Swarm completely rewritten with **advanced high-impact optimizations**:
 
@@ -213,7 +213,7 @@ Bee Swarm uses **exclusive transitive dependency analysis** for complexity deter
 - **Zero Configuration**: Automatically adapts to your project characteristics
 - **Command Line Control**: Enable with `-Dbastion.swarm.enabled=true`
 
-**CI/CD Platform Deep Integration** *(Enterprise Only)*
+#### CI/CD Platform Deep Integration *(Enterprise Only)*
 - **Native Platform Support**: Jenkins, GitHub Actions, Azure DevOps, CircleCI
 - **Platform-Specific Reports**: JUnit XML, SARIF 2.1.0, Warnings-NG JSON, Insights JSON
 - **Build Status Integration**: Pass/Fail/Unstable based on vulnerability thresholds
@@ -221,7 +221,7 @@ Bee Swarm uses **exclusive transitive dependency analysis** for complexity deter
 - **Pipeline Metrics**: Scan duration, vulnerability trends, historical comparisons
 - **Progressive Enforcement**: Fail on new vulnerabilities only, baseline comparisons
 
-**Real-Time Webhook Notifications** *(Enterprise Only)*
+#### Real-Time Webhook Notifications *(Enterprise Only)*
 - **Multi-Platform Support**: Slack, Microsoft Teams, Discord, Generic webhooks
 - **Rich Formatting**: Platform-native messages with colors, emojis, structured data
 - **Smart Filtering**: Severity thresholds, branch-specific configurations, multiple channels
@@ -229,7 +229,7 @@ Bee Swarm uses **exclusive transitive dependency analysis** for complexity deter
 - **Parallel Sending**: Fast concurrent webhook delivery
 - **Environment Variable Support**: Secure credential management
 
-**Enhanced Metrics Integration** *(Enterprise Only)*
+#### Enhanced Metrics Integration *(Enterprise Only)*
 - **6 Platform Support**: Prometheus, Grafana Cloud, Datadog, New Relic, InfluxDB, StatsD
 - **15+ Security Metrics**: Vulnerabilities, dependencies, risk scores, performance metrics
 - **Pre-built Dashboards**: 3 Grafana dashboards with 39 visualization panels
@@ -343,7 +343,7 @@ mvn bastion:scan -Dbastion.failOnError=true -Dbastion.severityThreshold=CRITICAL
 <plugin>
     <groupId>io.github.dodogeny</groupId>
     <artifactId>bastion-maven-community-plugin</artifactId>
-    <version>1.2.8-rc7</version>
+    <version>@project.version@</version>
     <configuration>
         <skip>false</skip>
         <failOnError>true</failOnError>
@@ -359,7 +359,7 @@ mvn bastion:scan -Dbastion.failOnError=true -Dbastion.severityThreshold=CRITICAL
 <plugin>
     <groupId>io.github.dodogeny</groupId>
     <artifactId>bastion-maven-community-plugin</artifactId>
-    <version>1.2.8-rc7</version>
+    <version>@project.version@</version>
     <configuration>
         <communityStorageMode>JSON_FILE</communityStorageMode>
         <jsonFilePath>${project.build.directory}/security/vulnerabilities.json</jsonFilePath>
@@ -375,7 +375,7 @@ mvn bastion:scan -Dbastion.failOnError=true -Dbastion.severityThreshold=CRITICAL
 <plugin>
     <groupId>io.github.dodogeny</groupId>
     <artifactId>bastion-maven-community-plugin</artifactId>
-    <version>1.2.8-rc7</version>
+    <version>@project.version@</version>
     <configuration>
         <enableMultiModule>true</enableMultiModule>
         <communityStorageMode>JSON_FILE</communityStorageMode>
@@ -391,7 +391,7 @@ mvn bastion:scan -Dbastion.failOnError=true -Dbastion.severityThreshold=CRITICAL
 <plugin>
     <groupId>io.github.dodogeny</groupId>
     <artifactId>bastion-maven-community-plugin</artifactId>
-    <version>1.2.8-rc7</version>
+    <version>@project.version@</version>
     <configuration>
         <!-- NVD API key for faster database downloads and updates -->
         <nvdApiKey>${env.NVD_API_KEY}</nvdApiKey>
@@ -714,11 +714,11 @@ mvn bastion:scan
 If you're using an older version and experiencing OOM errors (exit code 137) or scans hanging for hours:
 
 ```bash
-# Upgrade to v1.2.8-rc7 (or v1.1.0+) which includes automatic memory management
-# Update your pom.xml to version 1.2.8-rc7
+# Upgrade to v@project.version@ (or v1.1.0+) which includes automatic memory management
+# Update your pom.xml to version @project.version@
 ```
 
-v1.1.0+ and v1.2.8-rc7 automatically configure memory allocation for OWASP subprocesses:
+v1.1.0+ and v@project.version@ automatically configure memory allocation for OWASP subprocesses:
 - **NVD Database Downloads**: 3GB heap automatically allocated
 - **Vulnerability Scanning**: 2GB heap automatically allocated
 - **No manual MAVEN_OPTS configuration needed**
@@ -784,7 +784,7 @@ Bastion Maven Plugin offers an **Enterprise Edition** designed for teams and org
 
 ### Key Enterprise Features
 
-**🐝 Bee Swarm Optimization** *(Enterprise Exclusive)*
+#### 🐝 Bee Swarm Optimization *(Enterprise Exclusive)*
 Intelligent task distribution using swarm intelligence algorithms for unprecedented scan performance:
 - **20-30% Faster Scans**: Swarm algorithms optimize task selection and execution
 - **Self-Organizing Workers**: Bees autonomously select optimal tasks based on capabilities
@@ -830,7 +830,7 @@ mvn verify -Dbastion.swarm.enabled=true -Dbastion.swarm.size=20
 
 📖 **[Complete Bee Swarm Guide](../bastion-maven-plugin-enterprise/distribution/src/main/resources/docs/BEE_SWARM_OPTIMIZATION.md)**
 
-**⚡ Worker Pool Optimizations** *(Enterprise Exclusive)*
+#### ⚡ Worker Pool Optimizations *(Enterprise Exclusive)*
 Dramatically improve scanning speed with intelligent parallelization and resource management:
 - **3-6x Faster Scans**: Advanced multi-threaded architecture for maximum throughput
 - **4-Tier Strategy System**:
@@ -878,7 +878,7 @@ Very Large   | 300 sec  | 50 sec    | 6.0x
 📖 **[Complete Worker Pool Guide](../bastion-maven-plugin-enterprise/WORKER_POOL_OPTIMIZATION.md)**
 📊 **[Performance Testing Suite](../bastion-maven-plugin-enterprise/PERFORMANCE_TESTING.md)**
 
-**💾 Persistent Scan Cache** *(Enterprise Exclusive)*
+#### 💾 Persistent Scan Cache *(Enterprise Exclusive)*
 
 Eliminate redundant scans across projects with intelligent filesystem-based caching:
 - **80-95% Cache Hit Rate**: Shared vulnerability scan results across all projects on the same machine
@@ -959,7 +959,7 @@ mvn bastion:scan -Dbastion.cache.cleanup=true
 - ✅ **Zero maintenance**: Automatic cleanup and integrity verification
 - ✅ **Backwards compatible**: Works seamlessly with existing configurations
 
-**🔮 Predictive Update Analysis** *(Enterprise Exclusive)*
+#### 🔮 Predictive Update Analysis *(Enterprise Exclusive)*
 Intelligent dependency update recommendations powered by real-time Maven Central analysis:
 - **Smart Version Analysis**: Automatically analyzes 5+ newer versions of vulnerable dependencies
 - **CVE Impact Forecasting**: Predicts which CVEs would be resolved vs. introduced by each update
@@ -986,7 +986,7 @@ Intelligent dependency update recommendations powered by real-time Maven Central
   • commons-fileupload: 1.4 → 1.5 (resolves 2 CVEs)
 ```
 
-**⚖️ License Compliance & Risk Analysis** *(Enterprise Exclusive)*
+#### ⚖️ License Compliance & Risk Analysis *(Enterprise Exclusive)*
 Comprehensive license management to prevent legal issues and ensure regulatory compliance:
 - **Automatic License Detection**: Scans all project dependencies and detects licenses from manifests, POMs, and metadata
 - **Policy Enforcement Engine**:
@@ -1015,7 +1015,7 @@ Comprehensive license management to prevent legal issues and ensure regulatory c
 </configuration>
 ```
 
-**📊 Advanced Reporting & Export Formats**
+#### 📊 Advanced Reporting & Export Formats
 - **PDF Reports**: Executive-ready documents for stakeholders, auditors, and compliance teams
 - **SARIF Format**: GitHub Security tab integration for automated security alerts
 - **CycloneDX SBOM**: Software Bill of Materials for supply chain compliance (NTIA, EO 14028)
@@ -1023,25 +1023,25 @@ Comprehensive license management to prevent legal issues and ensure regulatory c
 - **Trend Graphs**: Visual charts showing vulnerability trends over time
 - **Comparison Reports**: Side-by-side current vs. predictive analysis
 
-**💾 Enterprise Storage & Scalability**
+#### 💾 Enterprise Storage & Scalability
 - **Persistent Databases**: PostgreSQL, MySQL, H2 support with automatic schema management
 - **Unlimited Scan History**: Store years of scan data for trend analysis and compliance audits
 - **Unlimited Projects**: No 50-project limit (Community restriction removed)
 - **Cross-Project Analytics**: Organization-wide security dashboards
 - **Data Retention Policies**: Configurable retention with automatic archival
 
-**📧 Team Collaboration & Notifications**
+#### 📧 Team Collaboration & Notifications
 - **Email Notifications**: Automatic alerts on CRITICAL/HIGH findings with detailed CVE information
 - **Configurable Triggers**: Set thresholds for when to notify (e.g., only CRITICAL vulnerabilities)
 
-**🔍 Advanced Analysis Features**
+#### 🔍 Advanced Analysis Features
 - **False Positive Suppression**: Mark and track false positives with justifications (audit trail)
 - **Custom Severity Thresholds**: Override default CVSS scores based on your environment
 - **Exploitability Analysis**: Identify CVEs with known exploits in the wild
 - **Dependency Tree Visualization**: Interactive graphs showing vulnerability propagation paths
 - **Transitive Dependency Analysis**: Identify which top-level dependencies introduce vulnerabilities
 
-**🚀 CI/CD Platform Deep Integration** *(Enterprise Exclusive)*
+#### 🚀 CI/CD Platform Deep Integration *(Enterprise Exclusive)*
 Native integration with major CI/CD platforms for streamlined security workflows:
 - **Supported Platforms**: GitHub Actions, Jenkins, Azure DevOps, CircleCI
 - **Platform-Native Reports**:
@@ -1067,7 +1067,7 @@ mvn bastion:circleci-report
 mvn bastion:github-actions-report
 ```
 
-**🔔 Real-Time Webhook Notifications** *(Enterprise Exclusive)*
+#### 🔔 Real-Time Webhook Notifications *(Enterprise Exclusive)*
 Get instant security alerts in your team's communication channels:
 - **Supported Platforms**: Slack, Microsoft Teams, Discord, Generic/Custom webhooks
 - **Rich Formatting**: Platform-native message formats with colors, emojis, and structured data
@@ -1146,7 +1146,7 @@ Vulnerable Dependencies: 8
 
 📖 **[Complete Webhook Integration Guide](distribution/src/main/resources/docs/WEBHOOK_INTEGRATION.md)**
 
-**📊 Enhanced Metrics Integration** *(Enterprise Exclusive)*
+#### 📊 Enhanced Metrics Integration *(Enterprise Exclusive)*
 Monitor security trends across your entire infrastructure with real-time metrics export:
 - **6 Platform Support**: Prometheus, Grafana Cloud, Datadog, New Relic, InfluxDB, StatsD
 - **15+ Security Metrics**: Vulnerabilities by severity, risk scores, dependency counts, scan performance
@@ -1262,7 +1262,7 @@ stage('Security Scan') {
 }
 ```
 
-**⚡ Enterprise Support & SLA**
+#### ⚡ Enterprise Support & SLA
 - **24-Hour Response SLA**: Priority email support with guaranteed response times
 - **Direct Access to Security Experts**: Consult with security professionals on vulnerability remediation
 - **Custom Integration Support**: Help with CI/CD pipelines, custom workflows, and automation
@@ -1546,7 +1546,7 @@ Need help with integration or have questions?
 
 | Bastion Version | Java Requirement | OWASP Dependency-Check | Auto-Update | Memory Management | JAR Analysis | Status |
 |-----------------|------------------|------------------------|-------------|-------------------|--------------|--------|
-| 1.2.8-rc7 | Java 21+ | 12.1.3 | ✅ Automatic | ✅ Automatic | ✅ Enhanced | **Recommended** |
+| @project.version@ | Java 21+ | 12.1.3 | ✅ Automatic | ✅ Automatic | ✅ Enhanced | **Recommended** |
 | 1.1.0 | Java 21+ | 12.1.3 | ✅ Automatic | ✅ Automatic | ✅ Basic | Stable |
 | 1.0.x | Java 8+ | 10.0.4 | ❌ Manual | ⚠️ Manual MAVEN_OPTS | ❌ None | Legacy (security patches only) |
 
