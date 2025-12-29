@@ -141,27 +141,28 @@ jobs:
           token: ${{ secrets.GITHUB_TOKEN }}
           fetch-depth: 0
 
-      - name: Set up JDK for documentation filtering
-        uses: actions/setup-java@v4
-        with:
-          distribution: temurin
-          java-version: 21
-          cache: maven
-
-      - name: Filter GitHub Pages documentation with Maven
+      - name: Update version placeholders in documentation
         run: |
           VERSION="${{ needs.preflight.outputs.version }}"
 
-          echo "=== Using Maven Resource Filtering for GitHub Pages ==="
-          echo "Version: ${VERSION}"
+          echo "=== Updating Documentation with Version ${VERSION} ==="
 
-          # Maven resource filtering will replace @project.version@ in docs/index.html
-          # Use -N to only process parent POM (non-recursive) to avoid dependency resolution issues
-          mvn generate-resources -N -q
+          # Show files before update
+          echo "Checking for @project.version@ placeholders:"
+          grep -n "@project.version@" README.md distribution/src/main/resources/docs/QUICKSTART.md distribution/src/main/resources/docs/CHANGELOG.md || echo "No placeholders found"
 
-          echo "✓ Maven resource filtering completed"
+          # Replace @project.version@ with actual version
+          sed -i "s/@project\.version@/${VERSION}/g" README.md
+          sed -i "s/@project\.version@/${VERSION}/g" distribution/src/main/resources/docs/QUICKSTART.md
+          sed -i "s/@project\.version@/${VERSION}/g" distribution/src/main/resources/docs/CHANGELOG.md
 
-      - name: Commit filtered GitHub Pages if changed
+          echo ""
+          echo "Files after update:"
+          git status README.md distribution/src/main/resources/docs/QUICKSTART.md distribution/src/main/resources/docs/CHANGELOG.md
+
+          echo "✓ Updated version placeholders in documentation"
+
+      - name: Commit and push documentation updates
         run: |
           VERSION="${{ needs.preflight.outputs.version }}"
 
@@ -169,30 +170,21 @@ jobs:
           git config user.name "github-actions[bot]"
           git config user.email "github-actions[bot]@users.noreply.github.com"
 
-          # Check if docs/index.html was updated by Maven filtering
-          if ! git diff --quiet docs/index.html; then
-            echo "GitHub Pages index.html was filtered, committing..."
+          # Check if there are changes
+          if ! git diff --quiet README.md distribution/src/main/resources/docs/QUICKSTART.md distribution/src/main/resources/docs/CHANGELOG.md; then
+            echo "Changes detected, committing..."
 
-            # Commit only the filtered GitHub Pages file
-            git add docs/index.html
-            git commit -m "docs: Update GitHub Pages to version ${VERSION}" \
-                       -m "Maven resource filtering updated docs/index.html with version ${VERSION}" \
+            # Commit and push changes
+            git add README.md distribution/src/main/resources/docs/QUICKSTART.md distribution/src/main/resources/docs/CHANGELOG.md
+            git commit -m "docs: Update version to ${VERSION} in documentation" \
+                       -m "Automated documentation update for release v${VERSION}" \
                        -m "Co-Authored-By: github-actions[bot] <github-actions[bot]@users.noreply.github.com>"
 
             git push origin main
 
-            echo "✓ GitHub Pages updated successfully"
+            echo "✓ Documentation updated and pushed successfully"
           else
-            echo "✓ No GitHub Pages changes needed"
-          fi
-
-          # Verify source files still have placeholders
-          echo ""
-          echo "Verifying source files retain @project.version@ placeholders:"
-          if grep -q "@project.version@" README.md; then
-            echo "✓ README.md has placeholders (correct)"
-          else
-            echo "⚠ WARNING: README.md missing placeholders!"
+            echo "✓ No documentation changes needed (already up to date)"
           fi
 
   # ============================================================================
