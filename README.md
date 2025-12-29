@@ -71,7 +71,7 @@ A comprehensive Maven security plugin for automated vulnerability scanning, CVE 
 
 ### Prerequisites
 
-- **Java**: JDK 21 or higher (required for v1.1.0+, v@project.version@ recommended)
+- **Java**: JDK 21 or higher (required for v1.1.0+, v1.2.8-rc9 recommended)
 - **Maven**: 3.6.0 or higher
 - **Memory**: 1GB+ RAM for large projects
 - **Internet**: First-time NVD database download (~317,000 CVEs)
@@ -84,7 +84,7 @@ Add the plugin to your `pom.xml`:
 <plugin>
     <groupId>io.github.dodogeny</groupId>
     <artifactId>bastion-maven-community-plugin</artifactId>
-    <version>@project.version@</version>
+    <version>1.2.8-rc9</version>
     <executions>
         <execution>
             <goals>
@@ -106,10 +106,10 @@ mvn clean verify
 **Option 2: Direct Plugin Execution**
 ```bash
 # Basic scan
-mvn io.github.dodogeny:bastion-maven-community-plugin:@project.version@:scan
+mvn io.github.dodogeny:bastion-maven-community-plugin:1.2.8-rc9:scan
 
 # With NVD API key (recommended for faster downloads)
-mvn io.github.dodogeny:bastion-maven-community-plugin:@project.version@:scan \
+mvn io.github.dodogeny:bastion-maven-community-plugin:1.2.8-rc9:scan \
   -Dbastion.nvd.apiKey=YOUR_NVD_API_KEY
 
 # Short form (after first use)
@@ -125,7 +125,7 @@ mvn bastion-maven-community-plugin:scan
 **🚀 Subsequent Runs**: Uses cached database (30-60 seconds)
 **📊 Reports**: Generated in `target/bastion-reports/`
 
-## What's New in v@project.version@
+## What's New in v1.2.8-rc9
 
 ### 🔄 Dynamic Version Management & Enhanced Release Workflow
 - **Single Source of Truth**: Version managed in parent POM `<revision>` property
@@ -162,7 +162,7 @@ mvn bastion-maven-community-plugin:scan
 
 **🐝 Bee Swarm Optimization - Major Performance Breakthrough** *(Enterprise Only)*
 
-**LATEST (v@project.version@)**: Bee Swarm completely rewritten with **advanced high-impact optimizations**:
+**LATEST (v1.2.8-rc9)**: Bee Swarm completely rewritten with **advanced high-impact optimizations**:
 
 **NEW Performance Optimizations:**
 - ✅ **Work-Stealing Queues**: Replaced single blocking queue with per-worker `ConcurrentLinkedDeque` + global `PriorityBlockingQueue`
@@ -343,7 +343,7 @@ mvn bastion:scan -Dbastion.failOnError=true -Dbastion.severityThreshold=CRITICAL
 <plugin>
     <groupId>io.github.dodogeny</groupId>
     <artifactId>bastion-maven-community-plugin</artifactId>
-    <version>@project.version@</version>
+    <version>1.2.8-rc9</version>
     <configuration>
         <skip>false</skip>
         <failOnError>true</failOnError>
@@ -359,7 +359,7 @@ mvn bastion:scan -Dbastion.failOnError=true -Dbastion.severityThreshold=CRITICAL
 <plugin>
     <groupId>io.github.dodogeny</groupId>
     <artifactId>bastion-maven-community-plugin</artifactId>
-    <version>@project.version@</version>
+    <version>1.2.8-rc9</version>
     <configuration>
         <communityStorageMode>JSON_FILE</communityStorageMode>
         <jsonFilePath>${project.build.directory}/security/vulnerabilities.json</jsonFilePath>
@@ -375,7 +375,7 @@ mvn bastion:scan -Dbastion.failOnError=true -Dbastion.severityThreshold=CRITICAL
 <plugin>
     <groupId>io.github.dodogeny</groupId>
     <artifactId>bastion-maven-community-plugin</artifactId>
-    <version>@project.version@</version>
+    <version>1.2.8-rc9</version>
     <configuration>
         <enableMultiModule>true</enableMultiModule>
         <communityStorageMode>JSON_FILE</communityStorageMode>
@@ -391,7 +391,7 @@ mvn bastion:scan -Dbastion.failOnError=true -Dbastion.severityThreshold=CRITICAL
 <plugin>
     <groupId>io.github.dodogeny</groupId>
     <artifactId>bastion-maven-community-plugin</artifactId>
-    <version>@project.version@</version>
+    <version>1.2.8-rc9</version>
     <configuration>
         <!-- NVD API key for faster database downloads and updates -->
         <nvdApiKey>${env.NVD_API_KEY}</nvdApiKey>
@@ -714,11 +714,11 @@ mvn bastion:scan
 If you're using an older version and experiencing OOM errors (exit code 137) or scans hanging for hours:
 
 ```bash
-# Upgrade to v@project.version@ (or v1.1.0+) which includes automatic memory management
-# Update your pom.xml to version @project.version@
+# Upgrade to v1.2.8-rc9 (or v1.1.0+) which includes automatic memory management
+# Update your pom.xml to version 1.2.8-rc9
 ```
 
-v1.1.0+ and v@project.version@ automatically configure memory allocation for OWASP subprocesses:
+v1.1.0+ and v1.2.8-rc9 automatically configure memory allocation for OWASP subprocesses:
 - **NVD Database Downloads**: 3GB heap automatically allocated
 - **Vulnerability Scanning**: 2GB heap automatically allocated
 - **No manual MAVEN_OPTS configuration needed**
@@ -1372,7 +1372,7 @@ After subscribing, you'll receive a license key. Here's how to configure it:
 <plugin>
     <groupId>io.github.dodogeny</groupId>
     <artifactId>bastion-maven-enterprise-plugin</artifactId>
-    <version>1.1.0</version>
+    <version>1.2.8-rc9</version>
     <executions>
         <execution>
             <goals>
@@ -1487,7 +1487,7 @@ Add predictive analysis and license checking to your build lifecycle:
 <plugin>
     <groupId>io.github.dodogeny</groupId>
     <artifactId>bastion-maven-enterprise-plugin</artifactId>
-    <version>1.1.0</version>
+    <version>1.2.8-rc9</version>
     <executions>
         <!-- Vulnerability Scanning -->
         <execution>
@@ -1546,7 +1546,7 @@ Need help with integration or have questions?
 
 | Bastion Version | Java Requirement | OWASP Dependency-Check | Auto-Update | Memory Management | JAR Analysis | Status |
 |-----------------|------------------|------------------------|-------------|-------------------|--------------|--------|
-| @project.version@ | Java 21+ | 12.1.3 | ✅ Automatic | ✅ Automatic | ✅ Enhanced | **Recommended** |
+| 1.2.8-rc9 | Java 21+ | 12.1.3 | ✅ Automatic | ✅ Automatic | ✅ Enhanced | **Recommended** |
 | 1.1.0 | Java 21+ | 12.1.3 | ✅ Automatic | ✅ Automatic | ✅ Basic | Stable |
 | 1.0.x | Java 8+ | 10.0.4 | ❌ Manual | ⚠️ Manual MAVEN_OPTS | ❌ None | Legacy (security patches only) |
 
