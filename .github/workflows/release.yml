@@ -156,7 +156,8 @@ jobs:
           echo "Version: ${VERSION}"
 
           # Maven resource filtering will replace @project.version@ in docs/index.html
-          mvn generate-resources -q
+          # Use -N to only process parent POM (non-recursive) to avoid dependency resolution issues
+          mvn generate-resources -N -q
 
           echo "✓ Maven resource filtering completed"
 
