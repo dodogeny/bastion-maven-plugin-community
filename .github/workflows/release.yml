@@ -149,7 +149,7 @@ jobs:
 
           # Show files before update
           echo "Checking for existing hardcoded versions and placeholders:"
-          grep -n "@project.version@\|<version>[0-9]" README.md distribution/src/main/resources/docs/QUICKSTART.md distribution/src/main/resources/docs/CHANGELOG.md || echo "No versions found"
+          grep -n "@project.version@\|<version>[0-9]" README.md distribution/src/main/resources/docs/QUICKSTART.md distribution/src/main/resources/docs/CHANGELOG.md docs/index.html || echo "No versions found"
 
           # Step 1: Restore placeholders by replacing any existing hardcoded version
           # This handles the previous release's version and makes the workflow self-healing
@@ -158,16 +158,18 @@ jobs:
           sed -i 's/<version>[0-9]\+\.[0-9]\+\.[0-9]\+\(-rc[0-9]\+\)\?<\/version>/<version>@project.version@<\/version>/g' README.md
           sed -i 's/<version>[0-9]\+\.[0-9]\+\.[0-9]\+\(-rc[0-9]\+\)\?<\/version>/<version>@project.version@<\/version>/g' distribution/src/main/resources/docs/QUICKSTART.md
           sed -i 's/<version>[0-9]\+\.[0-9]\+\.[0-9]\+\(-rc[0-9]\+\)\?<\/version>/<version>@project.version@<\/version>/g' distribution/src/main/resources/docs/CHANGELOG.md
+          sed -i 's/>\([0-9]\+\.[0-9]\+\.[0-9]\+\(-rc[0-9]\+\)\?\)</>\@project.version\@</g' docs/index.html
 
           # Step 2: Replace placeholders with current version
           echo "Step 2: Replacing placeholders with new version ${VERSION}..."
           sed -i "s/@project\.version@/${VERSION}/g" README.md
           sed -i "s/@project\.version@/${VERSION}/g" distribution/src/main/resources/docs/QUICKSTART.md
           sed -i "s/@project\.version@/${VERSION}/g" distribution/src/main/resources/docs/CHANGELOG.md
+          sed -i "s/@project\.version@/${VERSION}/g" docs/index.html
 
           echo ""
           echo "Files after update:"
-          git status README.md distribution/src/main/resources/docs/QUICKSTART.md distribution/src/main/resources/docs/CHANGELOG.md
+          git status README.md distribution/src/main/resources/docs/QUICKSTART.md distribution/src/main/resources/docs/CHANGELOG.md docs/index.html
 
           echo "✓ Updated version placeholders in documentation"
 
@@ -180,11 +182,11 @@ jobs:
           git config user.email "github-actions[bot]@users.noreply.github.com"
 
           # Check if there are changes
-          if ! git diff --quiet README.md distribution/src/main/resources/docs/QUICKSTART.md distribution/src/main/resources/docs/CHANGELOG.md; then
+          if ! git diff --quiet README.md distribution/src/main/resources/docs/QUICKSTART.md distribution/src/main/resources/docs/CHANGELOG.md docs/index.html; then
             echo "Changes detected, committing..."
 
             # Commit and push changes
-            git add README.md distribution/src/main/resources/docs/QUICKSTART.md distribution/src/main/resources/docs/CHANGELOG.md
+            git add README.md distribution/src/main/resources/docs/QUICKSTART.md distribution/src/main/resources/docs/CHANGELOG.md docs/index.html
             git commit -m "docs: Update version to ${VERSION} in documentation" \
                        -m "Automated documentation update for release v${VERSION}" \
                        -m "Co-Authored-By: github-actions[bot] <github-actions[bot]@users.noreply.github.com>"
