@@ -22,6 +22,11 @@ A comprehensive Maven security plugin for automated vulnerability scanning, CVE 
   - **NEW**: LongAdder metrics - 3-5x faster on multi-core systems
 - ⚡ **[Worker Pool Optimizations](#-worker-pool-optimizations-enterprise-exclusive)** - 3-6x faster scanning with intelligent parallelization
 - 💾 **[Cross-Project Cache](#-persistent-scan-cache-enterprise-exclusive)** - 80-95% cache hit rate with filesystem-based result sharing (NEW!)
+- 📊 **[Resource Monitoring](#-resource-monitoring--optimization-enterprise-exclusive)** - Real-time performance monitoring with beautiful console visualizations (NEW in v1.2.8!)
+  - Live CPU, Memory, Thread, and GC tracking
+  - Dynamic ASCII art dashboards with color-coded sparklines
+  - Intelligent alerting and AI-powered optimization recommendations
+  - **NEW**: Historical trend analysis across builds with automatic regression detection
 - 🚀 **[CI/CD Platform Integration](#-cicd-platform-deep-integration-enterprise-exclusive)** - Native support for Jenkins, GitHub Actions, Azure DevOps, CircleCI
 - 🔔 **[Webhook Notifications](#-real-time-webhook-notifications-enterprise-exclusive)** - Real-time alerts to Slack, Teams, Discord
 - 📊 **[Enhanced Metrics](#-enhanced-metrics-integration-enterprise-exclusive)** - Export to Prometheus, Grafana, Datadog, New Relic with pre-built dashboards
@@ -44,6 +49,7 @@ A comprehensive Maven security plugin for automated vulnerability scanning, CVE 
 - [Enterprise Features](#enterprise-features)
   - [Bee Swarm Optimization](#-bee-swarm-optimization-enterprise-exclusive)
   - [Worker Pool Optimizations](#-worker-pool-optimizations-enterprise-exclusive)
+  - [Resource Monitoring & Optimization](#-resource-monitoring--optimization-enterprise-exclusive)
   - [Predictive Update Analysis](#-predictive-update-analysis-enterprise-exclusive)
   - [License Compliance](#️-license-compliance--risk-analysis-enterprise-exclusive)
   - [Advanced Reporting](#-advanced-reporting--export-formats)
@@ -958,6 +964,98 @@ mvn bastion:scan -Dbastion.cache.cleanup=true
 - ✅ **Monorepo friendly**: Massive speedups for multi-module projects
 - ✅ **Zero maintenance**: Automatic cleanup and integrity verification
 - ✅ **Backwards compatible**: Works seamlessly with existing configurations
+
+**📊 Resource Monitoring & Optimization** *(Enterprise Exclusive - NEW in v1.2.8!)*
+
+Real-time performance monitoring with beautiful dynamic console visualizations. Track CPU, memory, thread, and GC activity during vulnerability scans with professional ASCII art dashboards.
+
+*Key Features:*
+- **Live Resource Tracking**: Real-time monitoring of CPU (process & system), memory (heap & non-heap), thread activity, and garbage collection metrics
+- **Beautiful Console Visualizations**: Dynamic ASCII art dashboards with Unicode box-drawing, color-coded sparklines (`▁▂▃▄▅▆▇█`), and progress bars
+- **Intelligent Alerting**: Configurable thresholds for CPU, memory, and threads with three alert levels (INFO, WARNING, CRITICAL)
+- **AI-Powered Recommendations**: Automatic JVM tuning suggestions, thread pool optimization advice, and memory allocation guidance
+- **Historical Trend Analysis** *(NEW)*: Automatic regression detection comparing each build to last 10 builds with actionable insights
+- **Multiple Profiles**: Pre-configured settings for DEVELOPMENT, CICD, AGGRESSIVE, and CONSERVATIVE environments
+- **< 0.5% CPU Overhead**: Non-blocking, asynchronous sampling with minimal performance impact
+
+*Example Dashboard:*
+```
+╔════════════════════════════════════════════════════════════════════════════╗
+║                    BASTION RESOURCE MONITOR - LIVE VIEW                   ║
+╚════════════════════════════════════════════════════════════════════════════╝
+
+CPU Usage
+╭────────────────────────────────────────────────────────────────────────────╮
+│ Process CPU:  45.2% ████████████████████████░░░░░░░░░░░░░░░░░░░░░░░░░░░░ │
+│ System CPU:   62.8% █████████████████████████████████░░░░░░░░░░░░░░░░░░░ │
+│ History:     ▁▂▃▄▅▆▇█▇▆▅▄▃▂▁▂▃▄▅▆▇█▇▆▅▄▃▂▁▂▃▄▅▆▇█▇▆▅▄▃▂▁▂▃▄▅▆▇█▇▆▅▄▃▂ │
+╰────────────────────────────────────────────────────────────────────────────╯
+
+Memory Usage
+╭────────────────────────────────────────────────────────────────────────────╮
+│ Heap Memory:  72.3% ████████████████████████████████████░░░░░░░░░░░░░░░░ │
+│ ├─ Used:       1,856 MB /  2,048 MB                                       │
+│ History:     ▁▂▃▃▄▄▅▅▆▆▇▇████▇▇▆▆▅▅▄▄▃▃▂▂▁▁▂▂▃▃▄▄▅▅▆▆▇▇████▇▇▆▆▅▅▄▄ │
+╰────────────────────────────────────────────────────────────────────────────╯
+
+╔════════════════════════════════════════════════════════════════════════════╗
+║                      RESOURCE TREND ANALYSIS                               ║
+╚════════════════════════════════════════════════════════════════════════════╝
+
+Overall Status: ✓ STABLE
+
+Metric Trends (vs last 10 builds):
+╭────────────────────────────────────────────────────────────────────────────╮
+│ CPU Usage         :   45.2% ↓ (-5.3%) [baseline: 47.8%]                   │
+│ Memory Usage      :   72.3% → (stable) [baseline: 71.5%]                  │
+│ Thread Count      :    142 → (stable) [baseline: 138]                     │
+│ GC Time           :  1234ms ↑ (+12.1%) [baseline: 1100ms]                 │
+│ Scan Throughput   :   6.5 deps/sec → (stable) [baseline: 6.2 deps/sec]    │
+╰────────────────────────────────────────────────────────────────────────────╯
+
+Insights & Recommendations:
+  ✓ CPU usage decreased by 5.3% (47.8% → 45.2%)
+  ⚠ GC time increased by 12.1% (1100ms → 1234ms)
+  💡 Consider GC tuning or increasing heap size
+```
+
+*Quick Start:*
+```xml
+<configuration>
+  <!-- Enable resource monitoring -->
+  <enableResourceMonitoring>true</enableResourceMonitoring>
+
+  <!-- Show live dashboard (updates every 10 seconds) -->
+  <showLiveDashboard>true</showLiveDashboard>
+
+  <!-- Choose monitoring profile -->
+  <monitoringProfile>DEVELOPMENT</monitoringProfile>
+</configuration>
+```
+
+*Command Line:*
+```bash
+# Enable live dashboard
+mvn bastion:scan -Dbastion.showLiveDashboard=true
+
+# Use CI/CD profile (summary only, no live updates)
+mvn bastion:scan -Dbastion.monitoringProfile=CICD
+```
+
+*Configuration Profiles:*
+- **DEVELOPMENT**: Frequent updates (5s), detailed graphs, all metrics enabled
+- **CICD**: No live dashboard, compact status updates, minimal overhead (2s sampling)
+- **AGGRESSIVE**: High thresholds (CPU 90%, Memory 90%) for powerful systems
+- **CONSERVATIVE**: Low thresholds (CPU 60%, Memory 70%) for constrained environments
+
+*Benefits:*
+- ✅ **Real-time visibility**: See exactly how resources are used during scans
+- ✅ **Performance optimization**: Instant bottleneck identification with actionable recommendations
+- ✅ **Intelligent alerting**: Prevents resource exhaustion with early warnings
+- ✅ **Professional UX**: CLI-based but beautiful with color-coded indicators
+- ✅ **Zero overhead option**: Fully disableable with no performance impact when not needed
+
+📖 **[Complete Resource Monitoring Guide](https://github.com/dodogeny/bastion-maven-plugin-enterprise/blob/main/RESOURCE_MONITORING.md)**
 
 **🔮 Predictive Update Analysis** *(Enterprise Exclusive)*
 Intelligent dependency update recommendations powered by real-time Maven Central analysis:
