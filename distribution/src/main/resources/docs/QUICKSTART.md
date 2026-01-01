@@ -10,7 +10,7 @@
         <plugin>
             <groupId>io.github.dodogeny</groupId>
             <artifactId>bastion-maven-community-plugin</artifactId>
-            <version>1.2.8-rc12</version>
+            <version>1.2.8</version>
             <executions>
                 <execution>
                     <id>security-scan</id>
@@ -71,7 +71,7 @@ Reports are generated in `target/bastion-reports/`:
 <plugin>
     <groupId>io.github.dodogeny</groupId>
     <artifactId>bastion-maven-community-plugin</artifactId>
-    <version>1.2.8-rc12</version>
+    <version>1.2.8</version>
     <executions>
         <execution>
             <goals>
@@ -100,7 +100,7 @@ mvn clean verify
 <plugin>
     <groupId>io.github.dodogeny</groupId>
     <artifactId>bastion-maven-community-plugin</artifactId>
-    <version>1.2.8-rc12</version>
+    <version>1.2.8</version>
     <!-- No executions - only run when explicitly called -->
     <configuration>
         <nvdApiKey>${env.NVD_API_KEY}</nvdApiKey>
@@ -128,7 +128,7 @@ mvn io.github.dodogeny:bastion-maven-community-plugin:1.2.8-rc9:scan
             <plugin>
                 <groupId>io.github.dodogeny</groupId>
                 <artifactId>bastion-maven-community-plugin</artifactId>
-                <version>1.2.8-rc12</version>
+                <version>1.2.8</version>
                 <configuration>
                     <nvdApiKey>${env.NVD_API_KEY}</nvdApiKey>
                     <enableMultiModule>true</enableMultiModule>

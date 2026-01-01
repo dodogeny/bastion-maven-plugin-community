@@ -122,7 +122,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 <plugin>
     <groupId>io.github.dodogeny</groupId>
     <artifactId>bastion-maven-plugin-parent</artifactId>
-    <version>1.2.8-rc12</version>
+    <version>1.2.8</version>
 </plugin>
 ```
 
