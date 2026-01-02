@@ -28,14 +28,14 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 <plugin>
     <groupId>io.github.dodogeny</groupId>
     <artifactId>bastion-maven-community-plugin</artifactId>
-    <version>2.0.0-rc1</version>
+    <version>2.0.0</version>
 </plugin>
 
 <!-- After (v2.0.0) -->
 <plugin>
     <groupId>io.github.dodogeny</groupId>
     <artifactId>sechive-maven-plugin</artifactId>
-    <version>2.0.0-rc1</version>
+    <version>2.0.0</version>
 </plugin>
 ```
 
@@ -194,7 +194,7 @@ All configuration properties have been renamed:
 <plugin>
     <groupId>io.github.dodogeny</groupId>
     <artifactId>bastion-maven-plugin-parent</artifactId>
-    <version>2.0.0-rc1</version>
+    <version>2.0.0</version>
 </plugin>
 ```
 
