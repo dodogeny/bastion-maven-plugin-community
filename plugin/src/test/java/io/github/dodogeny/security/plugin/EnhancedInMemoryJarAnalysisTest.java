@@ -39,11 +39,11 @@ class EnhancedInMemoryJarAnalysisTest {
     @Mock
     private Log mockLog;
 
-    private BastionScanMojo scanMojo;
+    private SecHiveScanMojo scanMojo;
 
     @BeforeEach
     void setUp() {
-        scanMojo = new BastionScanMojo();
+        scanMojo = new SecHiveScanMojo();
         scanMojo.setLog(mockLog);
 
         lenient().when(mockProject.getGroupId()).thenReturn("com.test");
@@ -64,7 +64,7 @@ class EnhancedInMemoryJarAnalysisTest {
         ScanResult currentScan = createCurrentScanWithVulnerableJars();
 
         // Call the in-memory jar analysis method
-        Method jarAnalysisMethod = BastionScanMojo.class.getDeclaredMethod(
+        Method jarAnalysisMethod = SecHiveScanMojo.class.getDeclaredMethod(
             "generateInMemoryJarAnalysis",
             ScanResult.class,
             InMemoryVulnerabilityDatabase.ScanSummary.class
@@ -95,7 +95,7 @@ class EnhancedInMemoryJarAnalysisTest {
         currentScan.setTotalVulnerabilities(15); // Increased from 5
         currentScan.setTotalDependencies(12); // Increased from 10
 
-        Method jarAnalysisMethod = BastionScanMojo.class.getDeclaredMethod(
+        Method jarAnalysisMethod = SecHiveScanMojo.class.getDeclaredMethod(
             "generateInMemoryJarAnalysis",
             ScanResult.class,
             InMemoryVulnerabilityDatabase.ScanSummary.class
@@ -118,7 +118,7 @@ class EnhancedInMemoryJarAnalysisTest {
         currentScan.setTotalVulnerabilities(5); // Decreased from 10
         currentScan.setTotalDependencies(15); // Same
 
-        Method jarAnalysisMethod = BastionScanMojo.class.getDeclaredMethod(
+        Method jarAnalysisMethod = SecHiveScanMojo.class.getDeclaredMethod(
             "generateInMemoryJarAnalysis",
             ScanResult.class,
             InMemoryVulnerabilityDatabase.ScanSummary.class
@@ -140,7 +140,7 @@ class EnhancedInMemoryJarAnalysisTest {
         // Create scan with multiple JARs with different severity levels
         ScanResult currentScan = createCurrentScanWithMultipleSeverities();
 
-        Method jarAnalysisMethod = BastionScanMojo.class.getDeclaredMethod(
+        Method jarAnalysisMethod = SecHiveScanMojo.class.getDeclaredMethod(
             "generateInMemoryJarAnalysis",
             ScanResult.class,
             InMemoryVulnerabilityDatabase.ScanSummary.class
@@ -164,7 +164,7 @@ class EnhancedInMemoryJarAnalysisTest {
         // Create scan with 10 vulnerable JARs (should show only top 5)
         ScanResult currentScan = createCurrentScanWithManyVulnerableJars(10);
 
-        Method jarAnalysisMethod = BastionScanMojo.class.getDeclaredMethod(
+        Method jarAnalysisMethod = SecHiveScanMojo.class.getDeclaredMethod(
             "generateInMemoryJarAnalysis",
             ScanResult.class,
             InMemoryVulnerabilityDatabase.ScanSummary.class
@@ -186,7 +186,7 @@ class EnhancedInMemoryJarAnalysisTest {
 
         ScanResult currentScan = createCurrentScanWithKnownSeverities();
 
-        Method jarAnalysisMethod = BastionScanMojo.class.getDeclaredMethod(
+        Method jarAnalysisMethod = SecHiveScanMojo.class.getDeclaredMethod(
             "generateInMemoryJarAnalysis",
             ScanResult.class,
             InMemoryVulnerabilityDatabase.ScanSummary.class
@@ -212,7 +212,7 @@ class EnhancedInMemoryJarAnalysisTest {
         currentScan.setTotalVulnerabilities(10); // Same as previous
         currentScan.setTotalDependencies(15); // Same as previous
 
-        Method jarAnalysisMethod = BastionScanMojo.class.getDeclaredMethod(
+        Method jarAnalysisMethod = SecHiveScanMojo.class.getDeclaredMethod(
             "generateInMemoryJarAnalysis",
             ScanResult.class,
             InMemoryVulnerabilityDatabase.ScanSummary.class
@@ -233,7 +233,7 @@ class EnhancedInMemoryJarAnalysisTest {
 
         ScanResult currentScan = createCurrentScanWithVulnerableJars();
 
-        Method jarAnalysisMethod = BastionScanMojo.class.getDeclaredMethod(
+        Method jarAnalysisMethod = SecHiveScanMojo.class.getDeclaredMethod(
             "generateInMemoryJarAnalysis",
             ScanResult.class,
             InMemoryVulnerabilityDatabase.ScanSummary.class

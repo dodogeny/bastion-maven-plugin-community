@@ -6,13 +6,13 @@
     <modelVersion>4.0.0</modelVersion>
 
     <groupId>io.github.dodogeny</groupId>
-    <artifactId>bastion-maven-plugin-parent</artifactId>
+    <artifactId>sechive-maven-plugin-parent</artifactId>
     <version>${revision}</version>
     <packaging>pom</packaging>
 
-    <name>Bastion Maven Plugin - Community Edition</name>
-    <description>Community edition of Bastion Maven Plugin - Open source vulnerability scanner for Maven projects</description>
-    <url>https://github.com/dodogeny/bastion-maven-plugin-community</url>
+    <name>SecHive Maven Plugin</name>
+    <description>SecHive Maven Plugin - Open source vulnerability scanner for Maven projects</description>
+    <url>https://github.com/dodogeny/sechive-maven-plugin</url>
 
     <licenses>
         <license>
@@ -32,17 +32,17 @@
 
     <organization>
         <name>Dodogeny</name>
-        <url>https://github.com/dodogeny/bastion-maven-plugin-community</url>
+        <url>https://github.com/dodogeny/sechive-maven-plugin</url>
     </organization>
 
     <scm>
-        <url>https://github.com/dodogeny/bastion-maven-plugin-community</url>
-        <connection>scm:git:git://github.com/dodogeny/bastion-maven-plugin-community.git</connection>
-        <developerConnection>scm:git:ssh://git@github.com:dodogeny/bastion-maven-plugin-community.git</developerConnection>
+        <url>https://github.com/dodogeny/sechive-maven-plugin</url>
+        <connection>scm:git:git://github.com/dodogeny/sechive-maven-plugin.git</connection>
+        <developerConnection>scm:git:ssh://git@github.com:dodogeny/sechive-maven-plugin.git</developerConnection>
     </scm>
 
     <properties>
-        <revision>1.2.8</revision>
+        <revision>2.0.0-rc1</revision>
         <maven.compiler.source>21</maven.compiler.source>
         <maven.compiler.target>21</maven.compiler.target>
         <maven.compiler.release>21</maven.compiler.release>
@@ -91,22 +91,22 @@
             <!-- Internal modules -->
             <dependency>
                 <groupId>io.github.dodogeny</groupId>
-                <artifactId>bastion-vulnerability-community-db</artifactId>
+                <artifactId>sechive-vulnerability-db</artifactId>
                 <version>${project.version}</version>
             </dependency>
             <dependency>
                 <groupId>io.github.dodogeny</groupId>
-                <artifactId>bastion-scanner-community-core</artifactId>
+                <artifactId>sechive-scanner-core</artifactId>
                 <version>${project.version}</version>
             </dependency>
             <dependency>
                 <groupId>io.github.dodogeny</groupId>
-                <artifactId>bastion-reporting-community</artifactId>
+                <artifactId>sechive-reporting</artifactId>
                 <version>${project.version}</version>
             </dependency>
             <dependency>
                 <groupId>io.github.dodogeny</groupId>
-                <artifactId>bastion-maven-community-plugin</artifactId>
+                <artifactId>sechive-maven-plugin</artifactId>
                 <version>${project.version}</version>
             </dependency>
             

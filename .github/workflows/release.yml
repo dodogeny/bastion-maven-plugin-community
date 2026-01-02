@@ -262,11 +262,11 @@ jobs:
           echo "=== Verifying Distribution Artifacts ==="
 
           ARTIFACTS=(
-            "distribution/target/bastion-maven-plugin-${VERSION}-bin.zip"
-            "distribution/target/bastion-maven-plugin-${VERSION}-bin-unix.tar.gz"
-            "distribution/target/bastion-maven-plugin-${VERSION}-docs.zip"
-            "distribution/target/bastion-maven-plugin-${VERSION}-src.zip"
-            "distribution/target/bastion-maven-plugin-${VERSION}-src.tar.gz"
+            "distribution/target/sechive-maven-plugin-${VERSION}-bin.zip"
+            "distribution/target/sechive-maven-plugin-${VERSION}-bin-unix.tar.gz"
+            "distribution/target/sechive-maven-plugin-${VERSION}-docs.zip"
+            "distribution/target/sechive-maven-plugin-${VERSION}-src.zip"
+            "distribution/target/sechive-maven-plugin-${VERSION}-src.tar.gz"
           )
 
           for artifact in "${ARTIFACTS[@]}"; do
@@ -292,7 +292,7 @@ jobs:
           cd distribution/target
 
           echo "=== Generating SHA-256 Checksums ==="
-          for file in bastion-maven-plugin-${VERSION}*.{zip,tar.gz}; do
+          for file in sechive-maven-plugin-${VERSION}*.{zip,tar.gz}; do
             if [ -f "$file" ]; then
               sha256sum "$file" > "${file}.sha256"
               echo "✓ Generated checksum for $file"
@@ -300,7 +300,7 @@ jobs:
           done
 
           # Create checksums file
-          sha256sum bastion-maven-plugin-${VERSION}*.{zip,tar.gz} > SHA256SUMS.txt 2>/dev/null || true
+          sha256sum sechive-maven-plugin-${VERSION}*.{zip,tar.gz} > SHA256SUMS.txt 2>/dev/null || true
 
           echo ""
           echo "=== Checksums ==="
@@ -311,7 +311,7 @@ jobs:
         with:
           name: distribution-${{ needs.preflight.outputs.version }}
           path: |
-            distribution/target/bastion-maven-plugin-${{ needs.preflight.outputs.version }}*
+            distribution/target/sechive-maven-plugin-${{ needs.preflight.outputs.version }}*
           retention-days: 7
           if-no-files-found: error
 
@@ -521,7 +521,7 @@ jobs:
           \`\`\`xml
           <plugin>
               <groupId>io.github.dodogeny</groupId>
-              <artifactId>bastion-maven-community-plugin</artifactId>
+              <artifactId>sechive-maven-plugin</artifactId>
               <version>${VERSION}</version>
           </plugin>
           \`\`\`
@@ -615,21 +615,21 @@ jobs:
 
           🚀 This release has been deployed to Maven Central.
 
-          - **Maven Central**: https://central.sonatype.com/artifact/io.github.dodogeny/bastion-maven-community-plugin/${VERSION}
+          - **Maven Central**: https://central.sonatype.com/artifact/io.github.dodogeny/sechive-maven-plugin/${VERSION}
           - **Deployment Status**: [Central Portal](https://central.sonatype.com/publishing/deployments)
 
           ## Artifacts
 
           ### Binary Distributions
-          - **bastion-maven-plugin-${VERSION}-bin.zip** - Windows/cross-platform distribution (with checksums)
-          - **bastion-maven-plugin-${VERSION}-bin-unix.tar.gz** - Unix/Linux/macOS distribution (with checksums)
+          - **sechive-maven-plugin-${VERSION}-bin.zip** - Windows/cross-platform distribution (with checksums)
+          - **sechive-maven-plugin-${VERSION}-bin-unix.tar.gz** - Unix/Linux/macOS distribution (with checksums)
 
           ### Documentation
-          - **bastion-maven-plugin-${VERSION}-docs.zip** - Complete documentation package
+          - **sechive-maven-plugin-${VERSION}-docs.zip** - Complete documentation package
 
           ### Source Code
-          - **bastion-maven-plugin-${VERSION}-src.zip** - Full source code (zip format)
-          - **bastion-maven-plugin-${VERSION}-src.tar.gz** - Full source code (tar.gz format)
+          - **sechive-maven-plugin-${VERSION}-src.zip** - Full source code (zip format)
+          - **sechive-maven-plugin-${VERSION}-src.tar.gz** - Full source code (tar.gz format)
 
           ### Verification
 
@@ -637,15 +637,15 @@ jobs:
           SHA-256 checksums are provided for all GitHub release artifacts (\`.sha256\` files):
 
           \`\`\`bash
-          sha256sum -c bastion-maven-plugin-${VERSION}-bin.zip.sha256
+          sha256sum -c sechive-maven-plugin-${VERSION}-bin.zip.sha256
           \`\`\`
 
           #### GPG Signatures
-          GPG signatures (\`.asc\` files) are available on [Maven Central](https://central.sonatype.com/artifact/io.github.dodogeny/bastion-maven-plugin-parent/${VERSION}) for all artifacts. To verify:
+          GPG signatures (\`.asc\` files) are available on [Maven Central](https://central.sonatype.com/artifact/io.github.dodogeny/sechive-maven-plugin-parent/${VERSION}) for all artifacts. To verify:
 
           \`\`\`bash
           # Download from Maven Central and verify
-          gpg --verify bastion-maven-plugin-${VERSION}.jar.asc bastion-maven-plugin-${VERSION}.jar
+          gpg --verify sechive-maven-plugin-${VERSION}.jar.asc sechive-maven-plugin-${VERSION}.jar
           \`\`\`
 
           EOF
@@ -673,18 +673,18 @@ jobs:
           # Create release with all artifacts (checksums for verification)
           # Note: GPG .asc signatures are available on Maven Central
           gh release create "v${VERSION}" \
-            --title "Bastion Maven Plugin Community v${VERSION}" \
+            --title "SecHive Maven Plugin v${VERSION}" \
             --notes-file release_notes.md \
-            distribution/target/bastion-maven-plugin-${VERSION}-bin.zip \
-            distribution/target/bastion-maven-plugin-${VERSION}-bin.zip.sha256 \
-            distribution/target/bastion-maven-plugin-${VERSION}-bin-unix.tar.gz \
-            distribution/target/bastion-maven-plugin-${VERSION}-bin-unix.tar.gz.sha256 \
-            distribution/target/bastion-maven-plugin-${VERSION}-docs.zip \
-            distribution/target/bastion-maven-plugin-${VERSION}-docs.zip.sha256 \
-            distribution/target/bastion-maven-plugin-${VERSION}-src.zip \
-            distribution/target/bastion-maven-plugin-${VERSION}-src.zip.sha256 \
-            distribution/target/bastion-maven-plugin-${VERSION}-src.tar.gz \
-            distribution/target/bastion-maven-plugin-${VERSION}-src.tar.gz.sha256
+            distribution/target/sechive-maven-plugin-${VERSION}-bin.zip \
+            distribution/target/sechive-maven-plugin-${VERSION}-bin.zip.sha256 \
+            distribution/target/sechive-maven-plugin-${VERSION}-bin-unix.tar.gz \
+            distribution/target/sechive-maven-plugin-${VERSION}-bin-unix.tar.gz.sha256 \
+            distribution/target/sechive-maven-plugin-${VERSION}-docs.zip \
+            distribution/target/sechive-maven-plugin-${VERSION}-docs.zip.sha256 \
+            distribution/target/sechive-maven-plugin-${VERSION}-src.zip \
+            distribution/target/sechive-maven-plugin-${VERSION}-src.zip.sha256 \
+            distribution/target/sechive-maven-plugin-${VERSION}-src.tar.gz \
+            distribution/target/sechive-maven-plugin-${VERSION}-src.tar.gz.sha256
 
           echo "✓ GitHub release created successfully"
           echo "📦 Release URL: https://github.com/${{ github.repository }}/releases/tag/v${VERSION}"
@@ -718,13 +718,13 @@ jobs:
           VERSION="${{ needs.preflight.outputs.version }}"
           PREV_TAG="${{ needs.preflight.outputs.prev_tag }}"
           RELEASE_URL="https://github.com/${{ github.repository }}/releases/tag/v${VERSION}"
-          MAVEN_CENTRAL_URL="https://central.sonatype.com/artifact/io.github.dodogeny/bastion-maven-community-plugin/${VERSION}"
+          MAVEN_CENTRAL_URL="https://central.sonatype.com/artifact/io.github.dodogeny/sechive-maven-plugin/${VERSION}"
 
           # Get artifact sizes
           cd distribution/target
-          BIN_SIZE=$(du -h bastion-maven-plugin-${VERSION}-bin.zip 2>/dev/null | cut -f1 || echo "N/A")
-          UNIX_SIZE=$(du -h bastion-maven-plugin-${VERSION}-bin-unix.tar.gz 2>/dev/null | cut -f1 || echo "N/A")
-          DOCS_SIZE=$(du -h bastion-maven-plugin-${VERSION}-docs.zip 2>/dev/null | cut -f1 || echo "N/A")
+          BIN_SIZE=$(du -h sechive-maven-plugin-${VERSION}-bin.zip 2>/dev/null | cut -f1 || echo "N/A")
+          UNIX_SIZE=$(du -h sechive-maven-plugin-${VERSION}-bin-unix.tar.gz 2>/dev/null | cut -f1 || echo "N/A")
+          DOCS_SIZE=$(du -h sechive-maven-plugin-${VERSION}-docs.zip 2>/dev/null | cut -f1 || echo "N/A")
           cd ../..
 
           # Count commits since last version
@@ -775,7 +775,7 @@ jobs:
           </head>
           <body>
             <div class="header">
-              <h1>🚀 Bastion Maven Plugin Community v${VERSION}</h1>
+              <h1>🚀 SecHive Maven Plugin v${VERSION}</h1>
               <p>Successfully Released to Maven Central</p>
               <span class="success-badge">✓ Build Successful</span>
             </div>
@@ -811,7 +811,7 @@ jobs:
                 <div class="code-block">
                   <code>&lt;plugin&gt;
               &lt;groupId&gt;io.github.dodogeny&lt;/groupId&gt;
-              &lt;artifactId&gt;bastion-maven-community-plugin&lt;/artifactId&gt;
+              &lt;artifactId&gt;sechive-maven-plugin&lt;/artifactId&gt;
               &lt;version&gt;${VERSION}&lt;/version&gt;
           &lt;/plugin&gt;</code>
                 </div>
@@ -821,10 +821,10 @@ jobs:
               <div class="section">
                 <h2>📦 Distribution Artifacts</h2>
                 <ul class="artifacts">
-                  <li><strong>Windows/Cross-Platform:</strong> bastion-maven-plugin-${VERSION}-bin.zip <em>(${BIN_SIZE})</em></li>
-                  <li><strong>Unix/Linux/macOS:</strong> bastion-maven-plugin-${VERSION}-bin-unix.tar.gz <em>(${UNIX_SIZE})</em></li>
-                  <li><strong>Documentation:</strong> bastion-maven-plugin-${VERSION}-docs.zip <em>(${DOCS_SIZE})</em></li>
-                  <li><strong>Source Code:</strong> bastion-maven-plugin-${VERSION}-src.zip & .tar.gz</li>
+                  <li><strong>Windows/Cross-Platform:</strong> sechive-maven-plugin-${VERSION}-bin.zip <em>(${BIN_SIZE})</em></li>
+                  <li><strong>Unix/Linux/macOS:</strong> sechive-maven-plugin-${VERSION}-bin-unix.tar.gz <em>(${UNIX_SIZE})</em></li>
+                  <li><strong>Documentation:</strong> sechive-maven-plugin-${VERSION}-docs.zip <em>(${DOCS_SIZE})</em></li>
+                  <li><strong>Source Code:</strong> sechive-maven-plugin-${VERSION}-src.zip & .tar.gz</li>
                 </ul>
                 <p><small>All artifacts include GPG signatures (.asc) and SHA-256 checksums (.sha256) for verification.</small></p>
               </div>
@@ -860,7 +860,7 @@ jobs:
 
             <div class="footer">
               <p>This is an automated notification from GitHub Actions.</p>
-              <p><a href="https://github.com/${{ github.repository }}">Bastion Maven Plugin Community</a> | Apache License 2.0</p>
+              <p><a href="https://github.com/${{ github.repository }}">SecHive Maven Plugin</a> | Apache License 2.0</p>
             </div>
           </body>
           </html>
@@ -870,7 +870,7 @@ jobs:
 
           # Save summary for plain text version
           cat > email_body.txt <<EOF
-          Bastion Maven Plugin Community v${VERSION} Released
+          SecHive Maven Plugin v${VERSION} Released
 
           Release Statistics:
           - Version: ${VERSION}
@@ -881,14 +881,14 @@ jobs:
           Installation:
           <plugin>
             <groupId>io.github.dodogeny</groupId>
-            <artifactId>bastion-maven-community-plugin</artifactId>
+            <artifactId>sechive-maven-plugin</artifactId>
             <version>${VERSION}</version>
           </plugin>
 
           Distribution Artifacts:
-          - Windows/Cross-Platform: bastion-maven-plugin-${VERSION}-bin.zip (${BIN_SIZE})
-          - Unix/Linux/macOS: bastion-maven-plugin-${VERSION}-bin-unix.tar.gz (${UNIX_SIZE})
-          - Documentation: bastion-maven-plugin-${VERSION}-docs.zip (${DOCS_SIZE})
+          - Windows/Cross-Platform: sechive-maven-plugin-${VERSION}-bin.zip (${BIN_SIZE})
+          - Unix/Linux/macOS: sechive-maven-plugin-${VERSION}-bin-unix.tar.gz (${UNIX_SIZE})
+          - Documentation: sechive-maven-plugin-${VERSION}-docs.zip (${DOCS_SIZE})
           - Source Code: Available in .zip and .tar.gz formats
 
           All artifacts include GPG signatures and SHA-256 checksums.
@@ -916,9 +916,9 @@ jobs:
           # Port 587 uses STARTTLS (not direct SSL) - do not set secure: true
           username: ${{ secrets.SMTP_USERNAME }}
           password: ${{ secrets.SMTP_PASSWORD }}
-          subject: "✅ Bastion Maven Plugin v${{ needs.preflight.outputs.version }} Released to Maven Central"
+          subject: "✅ SecHive Maven Plugin v${{ needs.preflight.outputs.version }} Released to Maven Central"
           to: ${{ secrets.RELEASE_NOTIFICATION_EMAIL }}
-          from: "Bastion CI/CD <${{ secrets.SMTP_USERNAME }}>"
+          from: "SecHive CI/CD <${{ secrets.SMTP_USERNAME }}>"
           html_body: file://email_body.html
           body: file://email_body.txt
           priority: normal
@@ -969,7 +969,7 @@ jobs:
             echo "## 📦 Release Links" >> $GITHUB_STEP_SUMMARY
             echo "" >> $GITHUB_STEP_SUMMARY
             echo "- [GitHub Release](https://github.com/${{ github.repository }}/releases/tag/v${VERSION})" >> $GITHUB_STEP_SUMMARY
-            echo "- [Maven Central](https://central.sonatype.com/artifact/io.github.dodogeny/bastion-maven-community-plugin/${VERSION})" >> $GITHUB_STEP_SUMMARY
+            echo "- [Maven Central](https://central.sonatype.com/artifact/io.github.dodogeny/sechive-maven-plugin/${VERSION})" >> $GITHUB_STEP_SUMMARY
             echo "- [Deployment Status](https://central.sonatype.com/publishing/deployments)" >> $GITHUB_STEP_SUMMARY
           fi
 

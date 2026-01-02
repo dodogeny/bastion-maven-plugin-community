@@ -65,7 +65,7 @@ team@example.com, releases@example.com, notifications@example.com
    - Go to https://myaccount.google.com/apppasswords
    - Select app: "Mail"
    - Select device: "Other (Custom name)"
-   - Enter name: "GitHub Actions - Bastion Release"
+   - Enter name: "GitHub Actions - SecHive Release"
    - Click "Generate"
    - Copy the 16-character password
 
@@ -178,7 +178,7 @@ team@example.com, releases@example.com, notifications@example.com
 
 3. **Verify Email Received**:
    - Check inbox at the configured email address
-   - Email subject: "✅ Bastion Maven Plugin vX.X.X Released to Maven Central"
+   - Email subject: "✅ SecHive Maven Plugin vX.X.X Released to Maven Central"
    - Verify HTML rendering and all links work
 
 ## Email Content Structure
@@ -187,7 +187,7 @@ team@example.com, releases@example.com, notifications@example.com
 
 ```
 ┌─────────────────────────────────────────────────────────┐
-│  🚀 Bastion Maven Plugin Community v1.2.5               │
+│  🚀 SecHive Maven Plugin Community v1.2.5               │
 │  Successfully Released to Maven Central                 │
 │  ✓ Build Successful                                     │
 ├─────────────────────────────────────────────────────────┤
@@ -229,7 +229,7 @@ team@example.com, releases@example.com, notifications@example.com
 For email clients that don't support HTML, a plain text version is automatically included:
 
 ```
-Bastion Maven Plugin Community v1.2.5 Released
+SecHive Maven Plugin Community v1.2.5 Released
 
 Release Statistics:
 - Version: 1.2.5
@@ -240,14 +240,14 @@ Release Statistics:
 Installation:
 <plugin>
   <groupId>io.github.dodogeny</groupId>
-  <artifactId>bastion-maven-community-plugin</artifactId>
+  <artifactId>sechive-maven-plugin</artifactId>
   <version>@project.version@</version>
 </plugin>
 
 Distribution Artifacts:
-- Windows/Cross-Platform: bastion-maven-plugin-1.2.5-bin.zip (25M)
-- Unix/Linux/macOS: bastion-maven-plugin-1.2.5-bin-unix.tar.gz (24M)
-- Documentation: bastion-maven-plugin-1.2.5-docs.zip (12M)
+- Windows/Cross-Platform: sechive-maven-plugin-1.2.5-bin.zip (25M)
+- Unix/Linux/macOS: sechive-maven-plugin-1.2.5-bin-unix.tar.gz (24M)
+- Documentation: sechive-maven-plugin-1.2.5-docs.zip (12M)
 - Source Code: Available in .zip and .tar.gz formats
 
 Quick Links:
@@ -409,7 +409,7 @@ bcc: optional-bcc@example.com
 Change the email subject:
 
 ```yaml
-subject: "🚀 NEW RELEASE: Bastion v${{ needs.preflight.outputs.version }} - Check it out!"
+subject: "🚀 NEW RELEASE: SecHive v${{ needs.preflight.outputs.version }} - Check it out!"
 ```
 
 ### Add Attachments
@@ -418,7 +418,7 @@ Include files as attachments:
 
 ```yaml
 attachments: |
-  distribution/target/bastion-maven-plugin-${{ needs.preflight.outputs.version }}-bin.zip
+  distribution/target/sechive-maven-plugin-${{ needs.preflight.outputs.version }}-bin.zip
   distribution/target/SHA256SUMS.txt
 ```
 
@@ -595,7 +595,7 @@ Send notifications to Discord:
   env:
     DISCORD_WEBHOOK: ${{ secrets.DISCORD_WEBHOOK }}
   with:
-    args: '🚀 Bastion v${{ needs.preflight.outputs.version }} released!'
+    args: '🚀 SecHive v${{ needs.preflight.outputs.version }} released!'
 ```
 
 ### Add Microsoft Teams
@@ -659,4 +659,4 @@ For issues with email notifications:
 
 **Last Updated**: 2025-12-18
 **Workflow Version**: 2.0 (with Email Notifications)
-**Maintained By**: Bastion Maven Plugin Team
+**Maintained By**: SecHive Maven Plugin Team

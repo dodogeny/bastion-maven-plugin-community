@@ -1,11 +1,83 @@
 # Changelog
 
-All notable changes to the Bastion Maven Plugin Community will be documented in this file.
+All notable changes to the SecHive Maven Plugin will be documented in this file.
 
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
-## [1.2.8-rc9] - Current Release
+## [2.0.0] - 2026-01-02
+
+### 🎉 Major Changes
+- **BREAKING**: Rebranded from `bastion-maven-plugin-community` to `sechive-maven-plugin`
+- **BREAKING**: New artifact coordinates required (see migration guide below)
+- **BREAKING**: Plugin goal prefix changed from `bastion` to `sechive`
+- **BREAKING**: All Maven properties renamed from `bastion.*` to `sechive.*`
+- **BREAKING**: Cache directory changed from `~/.bastion/` to `~/.sechive/`
+- **BREAKING**: Output directory changed from `target/sechive-reports/` to `target/sechive-reports/`
+
+### 📦 Artifact Changes
+- **GroupId**: `io.github.dodogeny` (unchanged)
+- **ArtifactId**: `bastion-maven-community-plugin` → `sechive-maven-plugin`
+- **Version**: `1.2.8` → `2.0.0`
+
+### 🔄 Migration Guide
+
+#### Update pom.xml
+```xml
+<!-- Before (v1.2.8) -->
+<plugin>
+    <groupId>io.github.dodogeny</groupId>
+    <artifactId>bastion-maven-community-plugin</artifactId>
+    <version>1.2.8</version>
+</plugin>
+
+<!-- After (v2.0.0) -->
+<plugin>
+    <groupId>io.github.dodogeny</groupId>
+    <artifactId>sechive-maven-plugin</artifactId>
+    <version>2.0.0</version>
+</plugin>
+```
+
+#### Update Maven Commands
+```bash
+# Before
+mvn bastion:scan
+mvn bastion:scan -Dbastion.skip=false
+
+# After
+mvn sechive:scan
+mvn sechive:scan -Dsechive.skip=false
+```
+
+#### Update Properties
+All configuration properties have been renamed:
+- `bastion.skip` → `sechive.skip`
+- `bastion.failOnError` → `sechive.failOnError`
+- `bastion.outputDirectory` → `sechive.outputDirectory`
+- `bastion.reportFormats` → `sechive.reportFormats`
+- `bastion.severityThreshold` → `sechive.severityThreshold`
+- `bastion.nvd.apiKey` → `sechive.nvd.apiKey`
+- And all other `bastion.*` properties → `sechive.*`
+
+#### Update File Paths
+- NVD Cache: `~/.bastion/nvd-cache/` → `~/.sechive/nvd-cache/`
+- Reports: `target/sechive-reports/` → `target/sechive-reports/`
+- Database: `bastion-db/` → `sechive-db/`
+
+### 📚 Documentation Updates
+- Complete rebranding across all documentation
+- Updated README with migration guide
+- Updated all example configurations
+- New SecHive branding and identity
+
+### 🔗 Repository Changes
+- Repository URL: `https://github.com/dodogeny/sechive-maven-plugin`
+- Documentation: `https://dodogeny.github.io/sechive-maven-plugin/`
+
+---
+
+## [1.2.8-rc9] - 2025-12-XX
 
 ### Added
 - **🔄 Dynamic Version Management System**: Revolutionary approach to version management
@@ -209,7 +281,7 @@ No configuration changes required. The enhanced JAR analysis will automatically 
     - Detailed logging of cache hit/miss decisions
     - Performance impact metrics and timing information
 - **📁 Default Cache Location**: Sensible defaults for cache storage
-    - Linux/Mac: `~/.bastion/nvd-cache/`
+    - Linux/Mac: `~/.sechive/nvd-cache/`
     - Windows: `%USERPROFILE%\.bastion\nvd-cache\`
     - Automatic cache directory creation and management
 
@@ -334,25 +406,25 @@ No configuration changes required. The enhanced JAR analysis will automatically 
 ### Examples Added
 ```bash
 # JSON storage with trend analysis
-mvn bastion:scan -Dbastion.storage.useJsonFile=true
+mvn sechive:scan -Dsechive.storage.useJsonFile=true
 
 # Purge old data before scanning  
-mvn bastion:scan -Dbastion.purgeBeforeScan=true -Dbastion.purge.olderThanDays=30
+mvn sechive:scan -Dsechive.purgeBeforeScan=true -Dsechive.purge.olderThanDays=30
 
 # Safe purge preview
-mvn bastion:scan -Dbastion.purgeBeforeScan=true -Dbastion.purge.dryRun=true
+mvn sechive:scan -Dsechive.purgeBeforeScan=true -Dsechive.purge.dryRun=true
 
 # Project-specific JSON cleanup
-mvn bastion:scan \
-  -Dbastion.storage.useJsonFile=true \
-  -Dbastion.purgeBeforeScan=true \
-  -Dbastion.purge.projectOnly=true
+mvn sechive:scan \
+  -Dsechive.storage.useJsonFile=true \
+  -Dsechive.purgeBeforeScan=true \
+  -Dsechive.purge.projectOnly=true
 ```
 
 ## [1.0.0] - 2024-01-15
 
 ### Added
-- Initial release of Bastion Maven Plugin Enterprise
+- Initial release of SecHive Maven Plugin Enterprise
 - Multi-module Maven architecture
 - OWASP Dependency-Check integration
 - Database storage (H2, PostgreSQL, MySQL)
@@ -404,6 +476,6 @@ mvn bastion:scan \
 
 ---
 
-For detailed information about any version, see the [releases page](https://github.com/jdneemuth/bastion-maven-plugin-enterprise/releases).
+For detailed information about any version, see the [releases page](https://github.com/jdneemuth/sechive-maven-plugin-enterprise/releases).
 
 For upgrade instructions, see the [Migration Guide](MIGRATION.md).

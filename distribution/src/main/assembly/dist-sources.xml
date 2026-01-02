@@ -10,7 +10,7 @@
     </formats>
     
     <includeBaseDirectory>true</includeBaseDirectory>
-    <baseDirectory>bastion-maven-plugin-${project.version}-src</baseDirectory>
+    <baseDirectory>sechive-maven-plugin-${project.version}-src</baseDirectory>
 
     <fileSets>
         <!-- Root level files -->

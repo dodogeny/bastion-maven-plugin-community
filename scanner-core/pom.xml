@@ -7,21 +7,21 @@
 
     <parent>
         <groupId>io.github.dodogeny</groupId>
-        <artifactId>bastion-maven-plugin-parent</artifactId>
+        <artifactId>sechive-maven-plugin-parent</artifactId>
         <version>${revision}</version>
     </parent>
 
-    <artifactId>bastion-scanner-community-core</artifactId>
+    <artifactId>sechive-scanner-core</artifactId>
     <packaging>jar</packaging>
 
-    <name>Bastion Scanner Core - Community Edition</name>
-    <description>Core vulnerability scanning engine with OWASP Dependency-Check, Snyk, and GitHub Security Advisory integration for Bastion Maven Plugin</description>
+    <name>SecHive Scanner Core</name>
+    <description>Core vulnerability scanning engine with OWASP Dependency-Check, Snyk, and GitHub Security Advisory integration for SecHive Maven Plugin</description>
 
     <dependencies>
         <!-- Internal dependencies -->
         <dependency>
             <groupId>io.github.dodogeny</groupId>
-            <artifactId>bastion-vulnerability-community-db</artifactId>
+            <artifactId>sechive-vulnerability-db</artifactId>
         </dependency>
 
         <!-- OWASP Dependency-Check -->

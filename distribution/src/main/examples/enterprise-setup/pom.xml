@@ -1,10 +1,10 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!--
-  Example: Enterprise Bastion Maven Plugin Setup
+  Example: Enterprise SecHive Maven Plugin Setup
 
   This example shows advanced configuration options available in the plugin.
   Note: Some features shown here (PDF/SARIF reports, email notifications, SIEM integration)
-  require the Commercial Edition license.
+  may require additional licenses or plugins.
 -->
 <project xmlns="http://maven.apache.org/POM/4.0.0"
          xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
@@ -24,9 +24,9 @@
         <maven.compiler.source>11</maven.compiler.source>
         <maven.compiler.target>11</maven.compiler.target>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
-        
-        <!-- Bastion Plugin Version - Always use latest from Maven Central -->
-        <bastion.version>[1.2.0,)</bastion.version>
+
+        <!-- SecHive Plugin Version - Always use latest from Maven Central -->
+        <sechive.version>[2.0.0,)</sechive.version>
     </properties>
 
     <dependencies>
@@ -83,11 +83,11 @@
                 </configuration>
             </plugin>
 
-            <!-- Bastion Maven Plugin - Enterprise Configuration -->
+            <!-- SecHive Maven Plugin - Enterprise Configuration -->
             <plugin>
                 <groupId>io.github.dodogeny</groupId>
-                <artifactId>bastion-maven-community-plugin</artifactId>
-                <version>${bastion.version}</version>
+                <artifactId>sechive-maven-plugin</artifactId>
+                <version>${sechive.version}</version>
                 <executions>
                     <execution>
                         <id>enterprise-security-scan</id>
@@ -98,25 +98,25 @@
                     </execution>
                 </executions>
                 <configuration>
-                    <!-- Enterprise Edition Configuration -->
-                    <!-- Note: Set API key for commercial features -->
-                    <apiKey>${env.BASTION_API_KEY}</apiKey>
+                    <!-- Enterprise Configuration -->
+                    <!-- Note: Set API key if using commercial features -->
+                    <apiKey>${env.SECHIVE_API_KEY}</apiKey>
 
                     <!-- Advanced Scanning Configuration -->
                     <severityThreshold>HIGH</severityThreshold>
                     <failOnError>true</failOnError>
                     <maxAllowedVulnerabilities>5</maxAllowedVulnerabilities>
-                    
-                    <!-- Premium Report Formats (PDF and SARIF require Commercial Edition) -->
+
+                    <!-- Report Formats -->
                     <reportFormats>HTML,JSON,CSV,PDF,SARIF</reportFormats>
                     <outputDirectory>${project.build.directory}/enterprise-security-reports</outputDirectory>
-                    
+
                     <!-- Database Configuration -->
-                    <databaseUrl>jdbc:postgresql://db-server:5432/bastion_enterprise</databaseUrl>
-                    <databaseUsername>${env.BASTION_DB_USER}</databaseUsername>
-                    <databasePassword>${env.BASTION_DB_PASS}</databasePassword>
-                    
-                    <!-- Email Notifications (Commercial Edition feature) -->
+                    <databaseUrl>jdbc:postgresql://db-server:5432/sechive_enterprise</databaseUrl>
+                    <databaseUsername>${env.SECHIVE_DB_USER}</databaseUsername>
+                    <databasePassword>${env.SECHIVE_DB_PASS}</databasePassword>
+
+                    <!-- Email Notifications -->
                     <emailEnabled>true</emailEnabled>
                     <smtpHost>smtp.company.com</smtpHost>
                     <smtpPort>587</smtpPort>
@@ -162,8 +162,8 @@
                             <approvedBy>security-team@company.com</approvedBy>
                         </exclusion>
                     </exclusions>
-                    
-                    <!-- SIEM Integration (Commercial Edition feature) -->
+
+                    <!-- SIEM Integration -->
                     <siemIntegration>
                         <splunk>
                             <enabled>true</enabled>
@@ -189,7 +189,7 @@
                 <plugins>
                     <plugin>
                         <groupId>io.github.dodogeny</groupId>
-                        <artifactId>bastion-maven-community-plugin</artifactId>
+                        <artifactId>sechive-maven-plugin</artifactId>
                         <executions>
                             <execution>
                                 <id>production-security-scan</id>
@@ -216,7 +216,7 @@
                 <plugins>
                     <plugin>
                         <groupId>io.github.dodogeny</groupId>
-                        <artifactId>bastion-maven-community-plugin</artifactId>
+                        <artifactId>sechive-maven-plugin</artifactId>
                         <executions>
                             <execution>
                                 <id>compliance-scan</id>

@@ -1,12 +1,12 @@
 #!/bin/bash
 
-# Bastion Maven Plugin Installation Script
+# SecHive Maven Plugin Installation Script
 # Version: ${project.version}
 
 set -e
 
 SCRIPT_DIR="$( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd )"
-BASTION_HOME="$(dirname "$SCRIPT_DIR")"
+SECHIVE_HOME="$(dirname "$SCRIPT_DIR")"
 
 # Colors for output
 RED='\033[0;31m'
@@ -18,7 +18,7 @@ NC='\033[0m' # No Color
 # Functions
 print_header() {
     echo -e "${BLUE}"
-    echo "🛡️  Bastion Maven Plugin Installer v${project.version}"
+    echo "🛡️  SecHive Maven Plugin Installer v${project.version}"
     echo "======================================================"
     echo -e "${NC}"
 }
@@ -69,33 +69,33 @@ check_requirements() {
 }
 
 install_to_local_repository() {
-    print_info "Installing Bastion Maven Plugin to local repository..."
+    print_info "Installing SecHive Maven Plugin to local repository..."
     
     # Get Maven local repository path
     LOCAL_REPO=$(mvn help:evaluate -Dexpression=settings.localRepository -q -DforceStdout 2>/dev/null || echo "$HOME/.m2/repository")
     
     # Create directory structure
-    BASTION_REPO_DIR="$LOCAL_REPO/mu/dodogeny/bastion-maven-plugin/${project.version}"
-    mkdir -p "$BASTION_REPO_DIR"
+    SECHIVE_REPO_DIR="$LOCAL_REPO/io/github/dodogeny/sechive-maven-plugin/${project.version}"
+    mkdir -p "$SECHIVE_REPO_DIR"
     
     # Copy main plugin JAR
-    if [ -f "$BASTION_HOME/lib/bastion-maven-plugin-${project.version}.jar" ]; then
-        cp "$BASTION_HOME/lib/bastion-maven-plugin-${project.version}.jar" "$BASTION_REPO_DIR/"
+    if [ -f "$SECHIVE_HOME/lib/sechive-maven-plugin-${project.version}.jar" ]; then
+        cp "$SECHIVE_HOME/lib/sechive-maven-plugin-${project.version}.jar" "$SECHIVE_REPO_DIR/"
         print_success "Copied plugin JAR"
     else
-        print_error "Plugin JAR not found in $BASTION_HOME/lib/"
+        print_error "Plugin JAR not found in $SECHIVE_HOME/lib/"
         exit 1
     fi
     
     # Copy dependency JARs
-    BASTION_DEPS_DIR="$LOCAL_REPO/mu/dodogeny"
-    mkdir -p "$BASTION_DEPS_DIR"
+    SECHIVE_DEPS_DIR="$LOCAL_REPO/io/github/dodogeny"
+    mkdir -p "$SECHIVE_DEPS_DIR"
     
-    for jar in "$BASTION_HOME"/lib/bastion-*.jar; do
+    for jar in "$SECHIVE_HOME"/lib/sechive-*.jar; do
         if [ -f "$jar" ]; then
             # Extract artifactId from filename
             ARTIFACT=$(basename "$jar" | sed 's/-[0-9].*//')
-            ARTIFACT_DIR="$BASTION_DEPS_DIR/$ARTIFACT/${project.version}"
+            ARTIFACT_DIR="$SECHIVE_DEPS_DIR/$ARTIFACT/${project.version}"
             mkdir -p "$ARTIFACT_DIR"
             cp "$jar" "$ARTIFACT_DIR/"
         fi
@@ -107,14 +107,14 @@ install_to_local_repository() {
 create_example_pom() {
     print_info "Creating example project configuration..."
     
-    EXAMPLE_DIR="$BASTION_HOME/examples/quick-start"
+    EXAMPLE_DIR="$SECHIVE_HOME/examples/quick-start"
     mkdir -p "$EXAMPLE_DIR"
     
     cat > "$EXAMPLE_DIR/pom-snippet.xml" << EOF
 <!-- Add this plugin to your project's pom.xml -->
 <plugin>
-    <groupId>mu.dodogeny</groupId>
-    <artifactId>bastion-maven-plugin</artifactId>
+    <groupId>io.github.dodogeny</groupId>
+    <artifactId>sechive-maven-plugin</artifactId>
     <version>${project.version}</version>
     <executions>
         <execution>
@@ -130,7 +130,7 @@ create_example_pom() {
         <failOnError>true</failOnError>
         
         <!-- For commercial edition -->
-        <!-- <licensePath>/path/to/bastion-license.enc</licensePath> -->
+        <!-- <licensePath>/path/to/sechive-license.enc</licensePath> -->
     </configuration>
 </plugin>
 EOF
@@ -139,39 +139,39 @@ EOF
 }
 
 create_verification_script() {
-    cat > "$BASTION_HOME/bin/verify-installation.sh" << 'EOF'
+    cat > "$SECHIVE_HOME/bin/verify-installation.sh" << 'EOF'
 #!/bin/bash
 
-echo "🔍 Verifying Bastion Maven Plugin installation..."
+echo "🔍 Verifying SecHive Maven Plugin installation..."
 
 # Check if plugin is available
-if mvn help:describe -Dplugin=mu.dodogeny:bastion-maven-plugin >/dev/null 2>&1; then
+if mvn help:describe -Dplugin=io.github.dodogeny:sechive-maven-plugin >/dev/null 2>&1; then
     echo "✅ Plugin found in repository"
-    
+
     # Get plugin version
-    PLUGIN_INFO=$(mvn help:describe -Dplugin=mu.dodogeny:bastion-maven-plugin -Ddetail=false 2>/dev/null)
+    PLUGIN_INFO=$(mvn help:describe -Dplugin=io.github.dodogeny:sechive-maven-plugin -Ddetail=false 2>/dev/null)
     echo "$PLUGIN_INFO" | grep -E "(Name|Version|Description)"
-    
+
     echo ""
     echo "🚀 Ready to scan! Try:"
-    echo "   mvn mu.dodogeny:bastion-maven-plugin:${project.version}:scan"
+    echo "   mvn io.github.dodogeny:sechive-maven-plugin:${project.version}:scan"
     echo ""
-    echo "📚 Documentation: $BASTION_HOME/docs/"
-    echo "💡 Examples: $BASTION_HOME/examples/"
+    echo "📚 Documentation: $SECHIVE_HOME/docs/"
+    echo "💡 Examples: $SECHIVE_HOME/examples/"
 else
     echo "❌ Plugin not found. Installation may have failed."
-    echo "   Try running: $BASTION_HOME/bin/install.sh"
+    echo "   Try running: $SECHIVE_HOME/bin/install.sh"
     exit 1
 fi
 EOF
     
-    chmod +x "$BASTION_HOME/bin/verify-installation.sh"
+    chmod +x "$SECHIVE_HOME/bin/verify-installation.sh"
 }
 
 main() {
     print_header
     
-    print_info "Installation directory: $BASTION_HOME"
+    print_info "Installation directory: $SECHIVE_HOME"
     echo
     
     check_requirements
@@ -183,19 +183,19 @@ main() {
     echo -e "${GREEN}🎉 Installation completed successfully!${NC}"
     echo
     print_info "Next steps:"
-    echo "  1. Verify installation: $BASTION_HOME/bin/verify-installation.sh"
-    echo "  2. Add plugin to your project using: $BASTION_HOME/examples/quick-start/pom-snippet.xml"
-    echo "  3. Run your first scan: mvn bastion:scan"
+    echo "  1. Verify installation: $SECHIVE_HOME/bin/verify-installation.sh"
+    echo "  2. Add plugin to your project using: $SECHIVE_HOME/examples/quick-start/pom-snippet.xml"
+    echo "  3. Run your first scan: mvn sechive:scan"
     echo
-    print_info "Documentation: $BASTION_HOME/docs/"
-    print_info "Examples: $BASTION_HOME/examples/"
+    print_info "Documentation: $SECHIVE_HOME/docs/"
+    print_info "Examples: $SECHIVE_HOME/examples/"
     echo
-    print_info "For commercial features, visit: https://bastion.dodogeny.mu"
+    print_info "For commercial features, visit: https://sechive-plugin.lemonsqueezy.com"
     
     # Run verification
-    if [ -x "$BASTION_HOME/bin/verify-installation.sh" ]; then
+    if [ -x "$SECHIVE_HOME/bin/verify-installation.sh" ]; then
         echo
-        "$BASTION_HOME/bin/verify-installation.sh"
+        "$SECHIVE_HOME/bin/verify-installation.sh"
     fi
 }
 

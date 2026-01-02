@@ -143,7 +143,7 @@ class NvdCacheManagerTest {
         
         String cacheDir = defaultCacheManager.getCacheDirectory();
         assertNotNull(cacheDir, "Cache directory should not be null");
-        assertTrue(cacheDir.contains(".bastion"), "Should use default bastion cache directory");
+        assertTrue(cacheDir.contains(".sechive"), "Should use default sechive cache directory");
         assertTrue(cacheDir.contains("nvd-cache"), "Should use nvd-cache subdirectory");
     }
     

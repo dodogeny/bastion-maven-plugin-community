@@ -44,9 +44,9 @@ import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule;
       defaultPhase = LifecyclePhase.VERIFY,
       requiresDependencyResolution = ResolutionScope.COMPILE_PLUS_RUNTIME,
       threadSafe = true)
-public class BastionScanMojo extends AbstractMojo {
+public class SecHiveScanMojo extends AbstractMojo {
     
-    private static final Logger logger = LoggerFactory.getLogger(BastionScanMojo.class);
+    private static final Logger logger = LoggerFactory.getLogger(SecHiveScanMojo.class);
 
     @Parameter(defaultValue = "${project}", readonly = true, required = true)
     private MavenProject project;
@@ -54,75 +54,75 @@ public class BastionScanMojo extends AbstractMojo {
     @Parameter(defaultValue = "${session}", readonly = true, required = true)
     private MavenSession session;
 
-    @Parameter(property = "bastion.skip", defaultValue = "false")
+    @Parameter(property = "sechive.skip", defaultValue = "false")
     private boolean skip;
 
-    @Parameter(property = "bastion.failOnError", defaultValue = "true")
+    @Parameter(property = "sechive.failOnError", defaultValue = "true")
     private boolean failOnError;
 
-    @Parameter(property = "bastion.outputDirectory", defaultValue = "${project.build.directory}/bastion-reports")
+    @Parameter(property = "sechive.outputDirectory", defaultValue = "${project.build.directory}/sechive-reports")
     private File outputDirectory;
 
-    @Parameter(property = "bastion.reportFormats", defaultValue = "HTML,JSON")
+    @Parameter(property = "sechive.reportFormats", defaultValue = "HTML,JSON")
     private String reportFormats;
 
-    @Parameter(property = "bastion.severityThreshold", defaultValue = "MEDIUM")
+    @Parameter(property = "sechive.severityThreshold", defaultValue = "MEDIUM")
     private String severityThreshold;
 
-    @Parameter(property = "bastion.database.url")
+    @Parameter(property = "sechive.database.url")
     private String databaseUrl;
 
-    @Parameter(property = "bastion.database.username")
+    @Parameter(property = "sechive.database.username")
     private String databaseUsername;
 
-    @Parameter(property = "bastion.database.password")
+    @Parameter(property = "sechive.database.password")
     private String databasePassword;
 
 
-    @Parameter(property = "bastion.scanner.timeout", defaultValue = "300000")
+    @Parameter(property = "sechive.scanner.timeout", defaultValue = "300000")
     private int scannerTimeout;
 
-    @Parameter(property = "bastion.enableMultiModule", defaultValue = "true")
+    @Parameter(property = "sechive.enableMultiModule", defaultValue = "true")
     private boolean enableMultiModule;
 
 
-    @Parameter(property = "bastion.purge.force", defaultValue = "false")
+    @Parameter(property = "sechive.purge.force", defaultValue = "false")
     private boolean force;
 
-    @Parameter(property = "bastion.purge.confirm", defaultValue = "false")
+    @Parameter(property = "sechive.purge.confirm", defaultValue = "false")
     private boolean confirmPurge;
 
-    @Parameter(property = "bastion.purge.projectOnly", defaultValue = "false")
+    @Parameter(property = "sechive.purge.projectOnly", defaultValue = "false")
     private boolean projectOnly;
 
-    @Parameter(property = "bastion.purge.olderThanDays", defaultValue = "0")
+    @Parameter(property = "sechive.purge.olderThanDays", defaultValue = "0")
     private int olderThanDays;
 
-    @Parameter(property = "bastion.purge.dryRun", defaultValue = "false")
+    @Parameter(property = "sechive.purge.dryRun", defaultValue = "false")
     private boolean dryRun;
 
-    @Parameter(property = "bastion.purgeBeforeScan", defaultValue = "false")
+    @Parameter(property = "sechive.purgeBeforeScan", defaultValue = "false")
     private boolean purgeBeforeScan;
 
-    @Parameter(property = "bastion.storage.useJsonFile", defaultValue = "false")
+    @Parameter(property = "sechive.storage.useJsonFile", defaultValue = "false")
     private boolean useJsonFileStorage;
 
-    @Parameter(property = "bastion.storage.jsonFilePath", defaultValue = "${project.build.directory}/bastion-vulnerabilities.json")
+    @Parameter(property = "sechive.storage.jsonFilePath", defaultValue = "${project.build.directory}/sechive-vulnerabilities.json")
     private String jsonFilePath;
 
-    @Parameter(property = "bastion.nvd.apiKey")
+    @Parameter(property = "sechive.nvd.apiKey")
     private String nvdApiKey;
 
-    @Parameter(property = "bastion.community.storageMode", defaultValue = "IN_MEMORY")
+    @Parameter(property = "sechive.community.storageMode", defaultValue = "IN_MEMORY")
     private String communityStorageMode;
 
-    @Parameter(property = "bastion.useOwaspPlugin", defaultValue = "true")
+    @Parameter(property = "sechive.useOwaspPlugin", defaultValue = "true")
     private boolean useOwaspPlugin;
 
-    @Parameter(property = "bastion.owaspVersion", defaultValue = "12.1.3")
+    @Parameter(property = "sechive.owaspVersion", defaultValue = "12.1.3")
     private String owaspVersion;
 
-    @Parameter(property = "bastion.owaspReportPath", defaultValue = "${project.build.directory}/dependency-check-report.json")
+    @Parameter(property = "sechive.owaspReportPath", defaultValue = "${project.build.directory}/dependency-check-report.json")
     private String owaspReportPath;
 
     private VulnerabilityDatabase database;
@@ -134,15 +134,15 @@ public class BastionScanMojo extends AbstractMojo {
     @Override
     public void execute() throws MojoExecutionException, MojoFailureException {
         if (skip) {
-            getLog().info("Bastion scan skipped by configuration");
+            getLog().info("SecHive scan skipped by configuration");
             return;
         }
 
         try {
-            getLog().info("🛡️  Starting Bastion vulnerability scan (Community Edition)...");
+            getLog().info("🛡️  Starting SecHive vulnerability scan (Community Edition)...");
             getLog().info("Project: " + project.getName());
             getLog().info("Multi-module enabled: " + enableMultiModule);
-            getLog().info("📢 Running Community Edition - For additional features, upgrade to bastion-maven-plugin-enterprise");
+            getLog().info("📢 Running Community Edition - For additional features, upgrade to sechive-maven-plugin-enterprise");
             getLog().info("💾 Storage mode: " + communityStorageMode.toUpperCase().replace("_", " "));
 
             validateStorageConfiguration();
@@ -160,7 +160,7 @@ public class BastionScanMojo extends AbstractMojo {
             handleScanResults(result);
 
         } catch (Exception e) {
-            getLog().error("Bastion scan failed", e);
+            getLog().error("SecHive scan failed", e);
             if (failOnError) {
                 throw new MojoExecutionException("Vulnerability scan failed", e);
             }
@@ -198,7 +198,7 @@ public class BastionScanMojo extends AbstractMojo {
 
     private void initialize() throws MojoExecutionException {
         try {
-            getLog().info("Initializing Bastion components...");
+            getLog().info("Initializing SecHive components...");
 
             // Handle storage initialization for community edition
             if (useJsonFileStorage) {
@@ -215,7 +215,7 @@ public class BastionScanMojo extends AbstractMojo {
             }
 
         } catch (Exception e) {
-            throw new MojoExecutionException("Failed to initialize Bastion components", e);
+            throw new MojoExecutionException("Failed to initialize SecHive components", e);
         }
     }
 
@@ -268,7 +268,7 @@ public class BastionScanMojo extends AbstractMojo {
             }
             database = new VulnerabilityDatabase(config, LoggerFactory.getLogger(VulnerabilityDatabase.class));
         } else {
-            String h2Path = project.getBuild().getDirectory() + "/bastion-db/vulnerabilities";
+            String h2Path = project.getBuild().getDirectory() + "/sechive-db/vulnerabilities";
             getLog().info("Using H2 database: " + h2Path);
             config.setType("h2");
             config.setPath(h2Path);
@@ -290,9 +290,9 @@ public class BastionScanMojo extends AbstractMojo {
         }
         
         if (apiKey == null || apiKey.trim().isEmpty()) {
-            apiKey = System.getProperty("bastion.nvd.apiKey");
+            apiKey = System.getProperty("sechive.nvd.apiKey");
             if (apiKey != null && !apiKey.trim().isEmpty()) {
-                keySource = "system property 'bastion.nvd.apiKey'";
+                keySource = "system property 'sechive.nvd.apiKey'";
             }
         }
         
@@ -343,7 +343,7 @@ public class BastionScanMojo extends AbstractMojo {
     }
 
     /**
-     * Hybrid approach: Invoke OWASP plugin -> Parse JSON -> Convert to Bastion format
+     * Hybrid approach: Invoke OWASP plugin -> Parse JSON -> Convert to SecHive format
      */
     private ScanResult performHybridScan() throws Exception {
         long scanStartTime = System.currentTimeMillis();
@@ -361,9 +361,9 @@ public class BastionScanMojo extends AbstractMojo {
         // Step 2: Parse OWASP JSON report
         Map<String, Object> owaspData = parseOwaspJsonReport(owaspReport);
 
-        // Step 3: Convert OWASP data to Bastion format
+        // Step 3: Convert OWASP data to SecHive format
         long scanDurationMs = System.currentTimeMillis() - scanStartTime;
-        ScanResult result = convertOwaspToBastion(owaspData, scanDurationMs);
+        ScanResult result = convertOwaspToSecHive(owaspData, scanDurationMs);
 
         getLog().info("✅ Hybrid scan completed successfully!");
         getLog().info("📊 Total vulnerabilities found: " + result.getTotalVulnerabilities());
@@ -447,12 +447,12 @@ public class BastionScanMojo extends AbstractMojo {
 
                     getLog().warn("");
                     getLog().warn("📊 Enterprise teams save 10+ hours/month on security workflows");
-                    getLog().warn("   → Start 14-day trial: https://bastion-plugin.lemonsqueezy.com/");
+                    getLog().warn("   → Start 14-day trial: https://github.com/dodogeny/sechive-maven-plugin");
                     getLog().warn("");
                     continue;
                 }
                 
-                String fileName = String.format("bastion-report-%s.%s", 
+                String fileName = String.format("sechive-report-%s.%s", 
                     project.getArtifactId(), 
                     cleanFormat.toLowerCase());
                 File reportFile = new File(outputDirectory, fileName);
@@ -474,7 +474,7 @@ public class BastionScanMojo extends AbstractMojo {
         try {
             getLog().info("📈 Generating dedicated trend analysis report...");
             
-            String fileName = String.format("bastion-trend-report-%s.html", project.getArtifactId());
+            String fileName = String.format("sechive-trend-report-%s.html", project.getArtifactId());
             File trendReportFile = new File(outputDirectory, fileName);
             
             reportGenerator.generateTrendReport(result, trendReportFile.getAbsolutePath());
@@ -1189,7 +1189,7 @@ public class BastionScanMojo extends AbstractMojo {
         try {
             getLog().info("");
             getLog().info("╭─────────────────────────────────────────────────────────────╮");
-            getLog().info("│  📊 Bastion Scan Statistics & Performance Metrics          │");
+            getLog().info("│  📊 SecHive Scan Statistics & Performance Metrics          │");
             getLog().info("├─────────────────────────────────────────────────────────────┤");
             
             // Basic scan metrics
@@ -1333,14 +1333,14 @@ public class BastionScanMojo extends AbstractMojo {
         if (scanCount == 5 && totalVulns < 50) {
             getLog().info("");
             getLog().info("════════════════════════════════════════════════════════════");
-            getLog().info("  🎉 You've completed 5 scans! You're getting value from Bastion.");
+            getLog().info("  🎉 You've completed 5 scans! You're getting value from SecHive.");
             getLog().info("");
             getLog().info("  💼 Teams using Enterprise Edition also get:");
             getLog().info("     • Persistent scan history (currently limited to 24 hours)");
             getLog().info("     • Multi-project dashboard");
             getLog().info("     • Priority support with 4-hour SLA");
             getLog().info("");
-            getLog().info("  → $89/month • 14-day free trial: https://bastion-plugin.lemonsqueezy.com/checkout");
+            getLog().info("  → $89/month • 14-day free trial: https://github.com/dodogeny/sechive-maven-plugin");
             getLog().info("════════════════════════════════════════════════════════════");
             return;
         }
@@ -1355,7 +1355,7 @@ public class BastionScanMojo extends AbstractMojo {
             getLog().info("     • Email notifications");
             getLog().info("     • PDF/SARIF export for compliance");
             getLog().info("");
-            getLog().info("  → Start 14-day free trial: https://bastion-plugin.lemonsqueezy.com/");
+            getLog().info("  → Start 14-day free trial: https://github.com/dodogeny/sechive-maven-plugin");
             getLog().info("════════════════════════════════════════════════════════════");
             return;
         }
@@ -1367,7 +1367,7 @@ public class BastionScanMojo extends AbstractMojo {
                 getLog().info("");
                 getLog().info("  💼 " + (criticalCount + highCount) + " HIGH/CRITICAL vulnerabilities need attention");
                 getLog().info("  → Enterprise Edition: Automated alerts + compliance reports");
-                getLog().info("  → Learn more: https://bastion-plugin.lemonsqueezy.com/");
+                getLog().info("  → Learn more: https://github.com/dodogeny/sechive-maven-plugin");
             }
             return;
         }
@@ -1392,7 +1392,7 @@ public class BastionScanMojo extends AbstractMojo {
             getLog().info("     → Track your security posture over time");
             getLog().info("");
             getLog().info("  📊 $89/month • Save 10+ hours on security workflows");
-            getLog().info("  → Start 14-day free trial: https://bastion-plugin.lemonsqueezy.com/");
+            getLog().info("  → Start 14-day free trial: https://github.com/dodogeny/sechive-maven-plugin");
             getLog().info("════════════════════════════════════════════════════════════");
         } else if (isEnterpriseScale) {
             // Enterprise-scale project detected
@@ -1406,14 +1406,14 @@ public class BastionScanMojo extends AbstractMojo {
             getLog().info("  ✓ Advanced reporting (PDF for management, SARIF for CI/CD)");
             getLog().info("  ✓ Unlimited scan history (Community: 10 scans/project)");
             getLog().info("");
-            getLog().info("  → Built for teams: https://bastion-plugin.lemonsqueezy.com/");
+            getLog().info("  → Built for teams: https://github.com/dodogeny/sechive-maven-plugin");
             getLog().info("════════════════════════════════════════════════════════════");
         } else if ((criticalCount + highCount) > 10) {
             // Moderate vulnerabilities with high severity
             getLog().info("");
             getLog().info("  💼 " + (criticalCount + highCount) + " HIGH/CRITICAL vulnerabilities need attention");
             getLog().info("  → Enterprise Edition: Automated alerts + compliance reports");
-            getLog().info("  → Learn more: https://bastion-plugin.lemonsqueezy.com/checkout");
+            getLog().info("  → Learn more: https://github.com/dodogeny/sechive-maven-plugin");
         }
     }
     
@@ -1479,8 +1479,8 @@ public class BastionScanMojo extends AbstractMojo {
             showPurgeImpact();
             
             getLog().info("To proceed without confirmation, use:");
-            getLog().info("  mvn bastion:scan -Dbastion.purge.confirm=true");
-            getLog().info("  mvn bastion:scan -Dbastion.purge.force=true");
+            getLog().info("  mvn sechive:scan -Dsechive.purge.confirm=true");
+            getLog().info("  mvn sechive:scan -Dsechive.purge.force=true");
             getLog().info("");
             
             System.out.print("Are you sure you want to continue? Type 'DELETE' to confirm: ");
@@ -2022,7 +2022,7 @@ public class BastionScanMojo extends AbstractMojo {
 
     private File invokeOwaspPlugin() throws MojoExecutionException {
         getLog().info("🔄 Invoking official OWASP Dependency-Check plugin v" + owaspVersion + "...");
-        getLog().info("📋 Hybrid mode: OWASP for scanning + Bastion for enhanced reporting");
+        getLog().info("📋 Hybrid mode: OWASP for scanning + SecHive for enhanced reporting");
         getLog().info("🔄 Auto-update enabled: OWASP will check for latest NVD data");
 
         try {
@@ -2141,16 +2141,16 @@ public class BastionScanMojo extends AbstractMojo {
     }
 
     /**
-     * Convert OWASP report data to Bastion ScanResult format
+     * Convert OWASP report data to SecHive ScanResult format
      */
     @SuppressWarnings("unchecked")
-    private ScanResult convertOwaspToBastion(Map<String, Object> owaspReport, long scanDurationMs) throws MojoExecutionException {
-        getLog().info("🔄 Converting OWASP data to Bastion format...");
+    private ScanResult convertOwaspToSecHive(Map<String, Object> owaspReport, long scanDurationMs) throws MojoExecutionException {
+        getLog().info("🔄 Converting OWASP data to SecHive format...");
 
         try {
             List<Map<String, Object>> owaspDependencies = (List<Map<String, Object>>) owaspReport.get("dependencies");
 
-            // Create Bastion ScanResult
+            // Create SecHive ScanResult
             ScanResult result = new ScanResult();
             result.setProjectName(project.getName());
             result.setProjectGroupId(project.getGroupId());
@@ -2169,7 +2169,7 @@ public class BastionScanMojo extends AbstractMojo {
             int vulnerableDependenciesCount = 0;
 
             // Convert each dependency
-            List<ScanResult.DependencyResult> bastionDependencies = new ArrayList<>();
+            List<ScanResult.DependencyResult> sechiveDependencies = new ArrayList<>();
             List<io.github.dodogeny.security.model.Vulnerability> allVulnerabilities = new ArrayList<>();
 
             for (Map<String, Object> owaspDep : owaspDependencies) {
@@ -2205,18 +2205,18 @@ public class BastionScanMojo extends AbstractMojo {
                 }
 
                 // Create DependencyResult
-                ScanResult.DependencyResult bastionDep = new ScanResult.DependencyResult();
-                bastionDep.setGroupId(groupId);
-                bastionDep.setArtifactId(artifactId);
-                bastionDep.setVersion(version);
-                bastionDep.setFilePath(filePath);
+                ScanResult.DependencyResult sechiveDep = new ScanResult.DependencyResult();
+                sechiveDep.setGroupId(groupId);
+                sechiveDep.setArtifactId(artifactId);
+                sechiveDep.setVersion(version);
+                sechiveDep.setFilePath(filePath);
 
                 // Try to get file size
                 if (filePath != null) {
                     try {
                         java.io.File depFile = new java.io.File(filePath);
                         if (depFile.exists()) {
-                            bastionDep.setFileSize(depFile.length());
+                            sechiveDep.setFileSize(depFile.length());
                         }
                     } catch (Exception e) {
                         // Ignore file size errors
@@ -2238,7 +2238,7 @@ public class BastionScanMojo extends AbstractMojo {
                         String severity = (String) owaspVuln.get("severity");
 
                         // Create Vulnerability object
-                        io.github.dodogeny.security.model.Vulnerability bastionVuln =
+                        io.github.dodogeny.security.model.Vulnerability sechiveVuln =
                             new io.github.dodogeny.security.model.Vulnerability(cveId, severity, description);
 
                         // Extract CVSS score
@@ -2246,7 +2246,7 @@ public class BastionScanMojo extends AbstractMojo {
                         if (cvssv3 != null && cvssv3.containsKey("baseScore")) {
                             Object baseScoreObj = cvssv3.get("baseScore");
                             if (baseScoreObj instanceof Number) {
-                                bastionVuln.setCvssV3Score(((Number) baseScoreObj).doubleValue());
+                                sechiveVuln.setCvssV3Score(((Number) baseScoreObj).doubleValue());
                             }
                         }
 
@@ -2268,18 +2268,18 @@ public class BastionScanMojo extends AbstractMojo {
                             }
                         }
 
-                        allVulnerabilities.add(bastionVuln);
+                        allVulnerabilities.add(sechiveVuln);
                         vulnerabilityIds.add(cveId);
                         totalVulnerabilities++;
                     }
 
-                    bastionDep.setVulnerabilityIds(vulnerabilityIds);
+                    sechiveDep.setVulnerabilityIds(vulnerabilityIds);
                 }
 
-                bastionDependencies.add(bastionDep);
+                sechiveDependencies.add(sechiveDep);
             }
 
-            result.setDependencies(bastionDependencies);
+            result.setDependencies(sechiveDependencies);
             result.setVulnerabilities(allVulnerabilities);
 
             // Set summary statistics
@@ -2308,7 +2308,7 @@ public class BastionScanMojo extends AbstractMojo {
             int duplicateJars = 0;
             long totalJarSize = 0;
 
-            for (ScanResult.DependencyResult dep : bastionDependencies) {
+            for (ScanResult.DependencyResult dep : sechiveDependencies) {
                 if (dep.getGroupId() != null) {
                     uniqueGroupIds.add(dep.getGroupId());
                 }
@@ -2378,7 +2378,7 @@ public class BastionScanMojo extends AbstractMojo {
             // Component Analysis - find most vulnerable
             String mostVulnerableComponent = null;
             int maxVulnCount = 0;
-            for (ScanResult.DependencyResult dep : bastionDependencies) {
+            for (ScanResult.DependencyResult dep : sechiveDependencies) {
                 int vulnCount = dep.getVulnerabilityIds().size();
                 if (vulnCount > maxVulnCount) {
                     maxVulnCount = vulnCount;
@@ -2390,7 +2390,7 @@ public class BastionScanMojo extends AbstractMojo {
 
             result.setStatistics(stats);
 
-            getLog().info("✅ Converted to Bastion format:");
+            getLog().info("✅ Converted to SecHive format:");
             getLog().info("   📦 Total dependencies: " + owaspDependencies.size());
             getLog().info("   ⚠️  Vulnerable dependencies: " + vulnerableDependenciesCount);
             getLog().info("   🔴 Total vulnerabilities: " + totalVulnerabilities);
@@ -2399,7 +2399,7 @@ public class BastionScanMojo extends AbstractMojo {
             return result;
 
         } catch (Exception e) {
-            throw new MojoExecutionException("Failed to convert OWASP data to Bastion format", e);
+            throw new MojoExecutionException("Failed to convert OWASP data to SecHive format", e);
         }
     }
 
@@ -2423,13 +2423,13 @@ public class BastionScanMojo extends AbstractMojo {
     // ============================================================================
 
     /**
-     * Builder for configuring BastionScanMojo in tests without using reflection.
+     * Builder for configuring SecHiveScanMojo in tests without using reflection.
      * This provides a type-safe, refactoring-friendly way to set up test instances.
      */
     static class TestConfigBuilder {
-        private final BastionScanMojo mojo;
+        private final SecHiveScanMojo mojo;
 
-        TestConfigBuilder(BastionScanMojo mojo) {
+        TestConfigBuilder(SecHiveScanMojo mojo) {
             this.mojo = mojo;
         }
 
@@ -2528,7 +2528,7 @@ public class BastionScanMojo extends AbstractMojo {
             return this;
         }
 
-        BastionScanMojo build() {
+        SecHiveScanMojo build() {
             return mojo;
         }
     }

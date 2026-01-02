@@ -27,7 +27,7 @@ import static org.mockito.Mockito.*;
 
 @ExtendWith(MockitoExtension.class)
 @TestInstance(TestInstance.Lifecycle.PER_CLASS)
-class BastionScanMojoTest {
+class SecHiveScanMojoTest {
 
     @Mock
     private MavenProject mockProject;
@@ -38,7 +38,7 @@ class BastionScanMojoTest {
     @Mock
     private Log mockLog;
 
-    private BastionScanMojo scanMojo;
+    private SecHiveScanMojo scanMojo;
 
     @TempDir
     private Path tempDir;
@@ -50,7 +50,7 @@ class BastionScanMojoTest {
         lenient().when(mockLog.isWarnEnabled()).thenReturn(true);
         lenient().when(mockLog.isErrorEnabled()).thenReturn(true);
         
-        scanMojo = new BastionScanMojo();
+        scanMojo = new SecHiveScanMojo();
         
         // Use reflection to set private fields for testing
         setPrivateField("project", mockProject);
@@ -90,9 +90,9 @@ class BastionScanMojoTest {
         
         scanMojo.execute();
         
-        verify(mockLog).info("Bastion scan skipped by configuration");
+        verify(mockLog).info("SecHive scan skipped by configuration");
         // Should not proceed with actual scanning
-        verify(mockLog, never()).info(contains("Starting Bastion vulnerability scan"));
+        verify(mockLog, never()).info(contains("Starting SecHive vulnerability scan"));
     }
 
     @Test
@@ -254,7 +254,7 @@ class BastionScanMojoTest {
         for (int i = 0; i < 3; i++) {
             Thread thread = new Thread(() -> {
                 try {
-                    BastionScanMojo concurrentMojo = new BastionScanMojo();
+                    SecHiveScanMojo concurrentMojo = new SecHiveScanMojo();
                     // Configure with separate output directories to avoid conflicts
                     File outputDir = tempDir.resolve("concurrent-reports-" + Thread.currentThread().getId()).toFile();
                     setPrivateFieldForInstance(concurrentMojo, "outputDirectory", outputDir);
@@ -328,7 +328,7 @@ class BastionScanMojoTest {
     }
 
     private void setPrivateFieldForInstance(Object instance, String fieldName, Object value) throws Exception {
-        Field field = BastionScanMojo.class.getDeclaredField(fieldName);
+        Field field = SecHiveScanMojo.class.getDeclaredField(fieldName);
         field.setAccessible(true);
         field.set(instance, value);
     }

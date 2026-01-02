@@ -99,7 +99,7 @@ public class OwaspDependencyCheckScanner implements VulnerabilityScanner {
                 ConsoleLogger.printWelcome("Security Scanner", "2.0");
                 ConsoleLogger.printSubHeader("FIRST-TIME SETUP");
                 logger.info("");
-                ConsoleLogger.info("Welcome to Bastion Security Scanner!");
+                ConsoleLogger.info("Welcome to SecHive Security Scanner!");
                 ConsoleLogger.bullet("We need to download the NVD vulnerability database");
                 ConsoleLogger.bullet("This is a one-time setup that takes a few minutes");
                 ConsoleLogger.bullet("Subsequent scans will be much faster");
@@ -376,7 +376,7 @@ public class OwaspDependencyCheckScanner implements VulnerabilityScanner {
                     (e.getCause().getMessage().contains("CVSS") || e.getCause().getMessage().contains("SAFETY"))) {
                     logger.error("⚠️ CVSS v4.0 parsing error detected. This may be due to new NVD data format.");
                     logger.error("💡 Try updating OWASP Dependency-Check version or running scan without auto-update.");
-                    logger.error("🔧 Workaround: Add -Dbastion.autoUpdate=false to disable NVD updates temporarily.");
+                    logger.error("🔧 Workaround: Add -Dsechive.autoUpdate=false to disable NVD updates temporarily.");
                 }
                 
                 // Handle Jackson/JSON parsing errors
@@ -1014,7 +1014,7 @@ public class OwaspDependencyCheckScanner implements VulnerabilityScanner {
             // Set all known NVD API key system properties for OWASP compatibility
             System.setProperty("nvd.api.key", effectiveNvdApiKey);
             System.setProperty("NVD_API_KEY", effectiveNvdApiKey);
-            System.setProperty("bastion.nvd.apiKey", effectiveNvdApiKey);
+            System.setProperty("sechive.nvd.apiKey", effectiveNvdApiKey);
             
             // Configure OWASP settings directly for NVD API key
             settings.setString(Settings.KEYS.NVD_API_KEY, effectiveNvdApiKey);
@@ -1257,8 +1257,8 @@ public class OwaspDependencyCheckScanner implements VulnerabilityScanner {
             return systemProperty.trim();
         }
         
-        // Priority 3: System property from plugin parameter (-Dbastion.nvd.apiKey)
-        systemProperty = System.getProperty("bastion.nvd.apiKey");
+        // Priority 3: System property from plugin parameter (-Dsechive.nvd.apiKey)
+        systemProperty = System.getProperty("sechive.nvd.apiKey");
         if (systemProperty != null && !systemProperty.trim().isEmpty()) {
             return systemProperty.trim();
         }
@@ -1287,7 +1287,7 @@ public class OwaspDependencyCheckScanner implements VulnerabilityScanner {
             // Set all possible system properties that OWASP might check
             System.setProperty("nvd.api.key", apiKey);
             System.setProperty("NVD_API_KEY", apiKey);
-            System.setProperty("bastion.nvd.apiKey", apiKey);
+            System.setProperty("sechive.nvd.apiKey", apiKey);
 
             logger.info("API key system properties configured for OWASP Dependency-Check");
         } else {
@@ -1684,7 +1684,7 @@ public class OwaspDependencyCheckScanner implements VulnerabilityScanner {
             // Set all known NVD API key system properties for OWASP compatibility
             System.setProperty("nvd.api.key", effectiveNvdApiKey);
             System.setProperty("NVD_API_KEY", effectiveNvdApiKey);
-            System.setProperty("bastion.nvd.apiKey", effectiveNvdApiKey);
+            System.setProperty("sechive.nvd.apiKey", effectiveNvdApiKey);
             
             // Configure OWASP settings directly for NVD API key
             settings.setString(Settings.KEYS.NVD_API_KEY, effectiveNvdApiKey);
@@ -1778,7 +1778,7 @@ public class OwaspDependencyCheckScanner implements VulnerabilityScanner {
 
                 // Let OWASP use default Maven repository location for database
                 // This ensures proper initialization and resource loading
-                logger.info("📁 Using Bastion cache directory for temporary files: {}", cacheDir);
+                logger.info("📁 Using SecHive cache directory for temporary files: {}", cacheDir);
                 logger.info("🗄️  OWASP database location: {} - shared between storage modes", cveDbPath.getAbsolutePath());
                 logger.info("⚡ Cache optimizations: temp directory configured, JAR resources accessible");
             }
@@ -2075,7 +2075,7 @@ public class OwaspDependencyCheckScanner implements VulnerabilityScanner {
         logger.warn("This is a known issue with OWASP Dependency-Check v10.0.4 and CVSS v4.0 'SAFETY' enum values from NVD.");
         logger.info("🔧 Available workarounds:");
         logger.info("  1. Upgrade to OWASP Dependency-Check v11.0+ when available (recommended)");
-        logger.info("  2. Temporarily disable auto-updates: -Dbastion.autoUpdate=false");
+        logger.info("  2. Temporarily disable auto-updates: -Dsechive.autoUpdate=false");
         logger.info("  3. Use offline mode only by removing the NVD API key");
         logger.info("  4. Accept partial vulnerability data - scan will continue successfully");
         logger.info("  5. 🆕 Automatic fallback to custom NVD client with enhanced CVSSv4 support (enabled)");
@@ -2224,7 +2224,7 @@ public class OwaspDependencyCheckScanner implements VulnerabilityScanner {
         if (System.getProperty("maven.test.skip") != null ||
             System.getProperty("skipTests") != null ||
             System.getProperty("surefire.test") != null ||
-            "test".equals(System.getProperty("bastion.environment"))) {
+            "test".equals(System.getProperty("sechive.environment"))) {
             return true;
         }
         
@@ -2253,7 +2253,7 @@ public class OwaspDependencyCheckScanner implements VulnerabilityScanner {
             
             // Clear the cache manager cache to force fresh download
             if (cacheManager != null) {
-                logger.info("🗑️  Clearing Bastion NVD cache...");
+                logger.info("🗑️  Clearing SecHive NVD cache...");
                 cacheManager.clearCache();
                 recoverySuccess = true;
             }
@@ -2388,7 +2388,7 @@ public class OwaspDependencyCheckScanner implements VulnerabilityScanner {
                 clearCorruptedOwaspFiles(owaspDataDir);
             }
             
-            // Also clear Bastion cache
+            // Also clear SecHive cache
             if (cacheManager != null) {
                 cacheManager.clearCache();
             }

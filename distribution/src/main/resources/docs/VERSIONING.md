@@ -21,7 +21,7 @@ All child modules inherit this version through:
 ```xml
 <parent>
     <groupId>io.github.dodogeny</groupId>
-    <artifactId>bastion-maven-plugin-parent</artifactId>
+    <artifactId>sechive-maven-plugin-parent</artifactId>
     <version>${revision}</version>
 </parent>
 ```

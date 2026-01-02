@@ -1,13 +1,91 @@
-# Bastion Maven Plugin Community
+# SecHive Maven Plugin
 
-[![Maven Central](https://maven-badges.herokuapp.com/maven-central/io.github.dodogeny/bastion-maven-community-plugin/badge.svg)](https://maven-badges.herokuapp.com/maven-central/io.github.dodogeny/bastion-maven-community-plugin)
-[![Build Status](https://github.com/dodogeny/bastion-maven-community-plugin/workflows/CI/badge.svg)](https://github.com/dodogeny/bastion-maven-community-plugin/actions)
+[![Maven Central](https://maven-badges.herokuapp.com/maven-central/io.github.dodogeny/sechive-maven-plugin/badge.svg)](https://maven-badges.herokuapp.com/maven-central/io.github.dodogeny/sechive-maven-plugin)
+[![Build Status](https://github.com/dodogeny/sechive-maven-plugin/workflows/CI/badge.svg)](https://github.com/dodogeny/sechive-maven-plugin/actions)
 [![License](https://img.shields.io/badge/License-Apache%202.0-blue.svg)](https://opensource.org/licenses/Apache-2.0)
 
 A comprehensive Maven security plugin for automated vulnerability scanning, CVE detection, and software supply chain security. The **Community Edition** provides powerful open-source vulnerability scanning built on OWASP Dependency-Check 12.1.3 with intelligent auto-update and trend analysis. The **Commercial Edition** extends this with advanced features including predictive update analysis, license compliance checks, risk scoring, and enterprise-grade reporting.
 
 📖 **[Quick Start Guide](distribution/src/main/resources/docs/QUICKSTART.md)** - Get up and running in 5 minutes!
-📚 **[Full Documentation](https://dodogeny.github.io/bastion-maven-plugin-community/)** - Complete guide and API reference
+📚 **[Full Documentation](https://dodogeny.github.io/sechive-maven-plugin/)** - Complete guide and API reference
+
+---
+
+<details open>
+<summary><h2>🎉 Important: Bastion → SecHive Rebrand (v2.0.0)</h2></summary>
+
+> **Breaking Changes Alert!** We've rebranded **Bastion Maven Plugin** to **SecHive Maven Plugin** starting with version 2.0.0.
+
+### 🐝 Why SecHive?
+**SecHive** (Security Hive) better represents our mission: protecting your code hive from security threats through collective intelligence. The name reflects the collaborative nature of open-source security scanning and the community working together to keep codebases secure.
+
+### ⚠️ What Changed in v2.0.0
+
+| Change | Old (v1.2.8) | New (v2.0.0) |
+|--------|--------------|--------------|
+| **Artifact ID** | `bastion-maven-community-plugin` | `sechive-maven-plugin` |
+| **Plugin Prefix** | `mvn bastion:scan` | `mvn sechive:scan` |
+| **Properties** | `bastion.*` | `sechive.*` |
+| **Cache Dir** | `~/.bastion/` | `~/.sechive/` |
+| **Reports** | `target/bastion-reports/` | `target/sechive-reports/` |
+
+### 🚀 Quick Migration (30 seconds)
+
+**Step 1:** Update your `pom.xml`
+```xml
+<!-- ❌ Old (Bastion v1.2.8) -->
+<plugin>
+    <groupId>io.github.dodogeny</groupId>
+    <artifactId>bastion-maven-community-plugin</artifactId>
+    <version>1.2.8</version>
+</plugin>
+
+<!-- ✅ New (SecHive v2.0.0) -->
+<plugin>
+    <groupId>io.github.dodogeny</groupId>
+    <artifactId>sechive-maven-plugin</artifactId>
+    <version>2.0.0</version>
+</plugin>
+```
+
+**Step 2:** Update Maven commands
+```bash
+# ❌ Old
+mvn bastion:scan -Dbastion.failOnError=true
+
+# ✅ New
+mvn sechive:scan -Dsechive.failOnError=true
+```
+
+**Step 3:** Update properties (if using)
+- `bastion.skip` → `sechive.skip`
+- `bastion.nvd.apiKey` → `sechive.nvd.apiKey`
+- All other `bastion.*` → `sechive.*`
+
+### ✅ Migration Checklist
+
+- [ ] Update `pom.xml` artifact coordinates
+- [ ] Update CI/CD pipeline commands (GitHub Actions, Jenkins, etc.)
+- [ ] Update Maven properties from `bastion.*` to `sechive.*`
+- [ ] Update environment variables (if using Commercial Edition)
+- [ ] Clear old cache: `rm -rf ~/.bastion/`
+- [ ] Test: `mvn clean verify`
+
+### 📅 Timeline & Support
+
+- **v1.2.8**: Last Bastion release (December 2025)
+- **v2.0.0**: First SecHive release (January 2026) ← **You are here!**
+- **Bastion Support**: v1.2.8 will not receive further updates
+
+### 🆘 Need Help?
+
+- 📚 [Full Documentation](https://dodogeny.github.io/sechive-maven-plugin/)
+- 💬 [GitHub Discussions](https://github.com/dodogeny/sechive-maven-plugin/discussions)
+- 🐛 [Report Issues](https://github.com/dodogeny/sechive-maven-plugin/issues)
+
+**Thank you for your continued support!** 🐝🛡️
+
+</details>
 
 ---
 
@@ -22,7 +100,7 @@ A comprehensive Maven security plugin for automated vulnerability scanning, CVE 
   - **NEW**: LongAdder metrics - 3-5x faster on multi-core systems
 - ⚡ **[Worker Pool Optimizations](#-worker-pool-optimizations-enterprise-exclusive)** - 3-6x faster scanning with intelligent parallelization
 - 💾 **[Cross-Project Cache](#-persistent-scan-cache-enterprise-exclusive)** - 80-95% cache hit rate with filesystem-based result sharing (NEW!)
-- 📊 **[Resource Monitoring](#-resource-monitoring--optimization-enterprise-exclusive)** - Real-time performance monitoring with beautiful console visualizations (NEW in v1.2.8!)
+- 📊 **[Resource Monitoring](#-resource-monitoring--optimization-enterprise-exclusive)** - Real-time performance monitoring with beautiful console visualizations (NEW in v2.0.0!)
   - Live CPU, Memory, Thread, and GC tracking
   - Dynamic ASCII art dashboards with color-coded sparklines
   - Intelligent alerting and AI-powered optimization recommendations
@@ -77,7 +155,7 @@ A comprehensive Maven security plugin for automated vulnerability scanning, CVE 
 
 ### Prerequisites
 
-- **Java**: JDK 21 or higher (required for v1.1.0+, v1.2.8-rc9 recommended)
+- **Java**: JDK 21 or higher (required for v1.1.0+, v2.0.0 recommended)
 - **Maven**: 3.6.0 or higher
 - **Memory**: 1GB+ RAM for large projects
 - **Internet**: First-time NVD database download (~317,000 CVEs)
@@ -89,8 +167,8 @@ Add the plugin to your `pom.xml`:
 ```xml
 <plugin>
     <groupId>io.github.dodogeny</groupId>
-    <artifactId>bastion-maven-community-plugin</artifactId>
-    <version>1.2.8</version>
+    <artifactId>sechive-maven-plugin</artifactId>
+    <version>2.0.0</version>
     <executions>
         <execution>
             <goals>
@@ -98,6 +176,80 @@ Add the plugin to your `pom.xml`:
             </goals>
         </execution>
     </executions>
+</plugin>
+```
+
+## Migration Guide (v1.2.8 → v2.0.0)
+
+SecHive Maven Plugin v2.0.0 introduces a major rebranding from "Bastion Maven Plugin" to "SecHive Maven Plugin". This is a **breaking change** that requires updating your project configuration.
+
+### Breaking Changes
+
+1. **Artifact ID Changed**
+   - Old: `bastion-maven-community-plugin`
+   - New: `sechive-maven-plugin`
+
+2. **Plugin Goal Prefix Changed**
+   - Old: `mvn bastion:scan`
+   - New: `mvn sechive:scan`
+
+3. **All Maven Properties Changed from `bastion.*` to `sechive.*`**
+   - Example: `-Dbastion.nvd.apiKey` → `-Dsechive.nvd.apiKey`
+   - Example: `-Dbastion.failOnError=true` → `-Dsechive.failOnError=true`
+   - Example: `-Dbastion.skip=true` → `-Dsechive.skip=true`
+
+4. **Cache Directory Changed**
+   - Old: `~/.bastion/`
+   - New: `~/.sechive/`
+
+5. **Output Directory Changed**
+   - Old: `target/bastion-reports/`
+   - New: `target/sechive-reports/`
+
+### Migration Checklist
+
+- [ ] Update `pom.xml` - Change artifact ID from `bastion-maven-community-plugin` to `sechive-maven-plugin`
+- [ ] Update `pom.xml` - Change version to `2.0.0`
+- [ ] Update CI/CD scripts - Replace all `mvn bastion:` commands with `mvn sechive:`
+- [ ] Update environment variables - Replace all `-Dbastion.` with `-Dsechive.`
+- [ ] Update Maven settings - Replace profile IDs and property names if applicable
+- [ ] Clean old cache - Run `rm -rf ~/.bastion/` (optional, but recommended)
+- [ ] Update documentation - Replace references to `bastion-reports` with `sechive-reports`
+- [ ] Test in non-production - Verify scans work correctly before rolling out to CI/CD
+
+### Example Migration
+
+**Before (v1.2.8)**:
+```bash
+mvn bastion:scan \
+  -Dbastion.nvd.apiKey=YOUR_API_KEY \
+  -Dbastion.failOnError=true \
+  -Dbastion.severityThreshold=CRITICAL
+```
+
+**After (v2.0.0)**:
+```bash
+mvn sechive:scan \
+  -Dsechive.nvd.apiKey=YOUR_API_KEY \
+  -Dsechive.failOnError=true \
+  -Dsechive.severityThreshold=CRITICAL
+```
+
+**Before (pom.xml v1.2.8)**:
+```xml
+<plugin>
+    <groupId>io.github.dodogeny</groupId>
+    <artifactId>bastion-maven-community-plugin</artifactId>
+    <version>1.2.8</version>
+</plugin>
+```
+
+**After (pom.xml v2.0.0)**:
+```xml
+<plugin>
+    <groupId>io.github.dodogeny</groupId>
+    <artifactId>sechive-maven-plugin</artifactId>
+    <version>2.0.0</version>
 </plugin>
 ```
 
@@ -112,14 +264,14 @@ mvn clean verify
 **Option 2: Direct Plugin Execution**
 ```bash
 # Basic scan
-mvn io.github.dodogeny:bastion-maven-community-plugin:1.2.8-rc9:scan
+mvn io.github.dodogeny:sechive-maven-plugin:2.0.0:scan
 
 # With NVD API key (recommended for faster downloads)
-mvn io.github.dodogeny:bastion-maven-community-plugin:1.2.8-rc9:scan \
-  -Dbastion.nvd.apiKey=YOUR_NVD_API_KEY
+mvn io.github.dodogeny:sechive-maven-plugin:2.0.0:scan \
+  -Dsechive.nvd.apiKey=YOUR_NVD_API_KEY
 
 # Short form (after first use)
-mvn bastion-maven-community-plugin:scan
+mvn sechive-maven-plugin:scan
 ```
 
 **Option 3: IDE Integration**
@@ -129,9 +281,9 @@ mvn bastion-maven-community-plugin:scan
 
 **⏱️ First Run**: Downloads NVD database (~318,000 CVEs, 5-10 min with API key)
 **🚀 Subsequent Runs**: Uses cached database (30-60 seconds)
-**📊 Reports**: Generated in `target/bastion-reports/`
+**📊 Reports**: Generated in `target/sechive-reports/`
 
-## What's New in v1.2.8-rc9
+## What's New in v2.0.0
 
 ### 🔄 Dynamic Version Management & Enhanced Release Workflow
 - **Single Source of Truth**: Version managed in parent POM `<revision>` property
@@ -168,7 +320,7 @@ mvn bastion-maven-community-plugin:scan
 
 **🐝 Bee Swarm Optimization - Major Performance Breakthrough** *(Enterprise Only)*
 
-**LATEST (v1.2.8-rc9)**: Bee Swarm completely rewritten with **advanced high-impact optimizations**:
+**LATEST (v2.0.0)**: Bee Swarm completely rewritten with **advanced high-impact optimizations**:
 
 **NEW Performance Optimizations:**
 - ✅ **Work-Stealing Queues**: Replaced single blocking queue with per-worker `ConcurrentLinkedDeque` + global `PriorityBlockingQueue`
@@ -207,7 +359,7 @@ Bee Swarm uses **exclusive transitive dependency analysis** for complexity deter
   - JARs with <10 transitive dependencies (e.g., Commons utilities) → **LOW complexity**
   - Unknown dependency count → **MEDIUM complexity** (safe default)
 - **🚀 Immediate Performance**: No warm-up period - full 20-30% performance benefit from first run
-- **💾 Zero Persistence Overhead**: No `.bastion/` directory or historical data files needed
+- **💾 Zero Persistence Overhead**: No `.sechive/` directory or historical data files needed
 - **🎯 Highly Accurate**: Complexity directly reflects actual scan workload (dependency graph traversal)
 - **🔄 Stateless Architecture**: Each scan is independent - easier to debug and understand
 - **📏 No Fallbacks**: Does not use file size or type heuristics - dependency count only
@@ -217,7 +369,7 @@ Bee Swarm uses **exclusive transitive dependency analysis** for complexity deter
 - **Self-Organizing Workers**: 4 bee roles (Scout, Worker, Forager, Optimizer) adapt to workload
 - **Pheromone Trail Communication**: Bees share knowledge about successful task patterns
 - **Zero Configuration**: Automatically adapts to your project characteristics
-- **Command Line Control**: Enable with `-Dbastion.swarm.enabled=true`
+- **Command Line Control**: Enable with `-Dsechive.swarm.enabled=true`
 
 **CI/CD Platform Deep Integration** *(Enterprise Only)*
 - **Native Platform Support**: Jenkins, GitHub Actions, Azure DevOps, CircleCI
@@ -316,7 +468,7 @@ Bee Swarm uses **exclusive transitive dependency analysis** for complexity deter
 ### Migration Notes
 - Upgrading from v1.0.x requires Java 21+ (breaking change)
 - First scan will automatically download NVD database (~317,000 CVEs, 20-30 minutes with API key)
-- H2 database files from v1.0.x are not compatible - delete `~/.bastion/nvd-cache` before upgrading
+- H2 database files from v1.0.x are not compatible - delete `~/.sechive/nvd-cache` before upgrading
 - No manual `mvn dependency-check:update-only` commands needed anymore!
 - **Memory configuration is now automatic** - no need to set MAVEN_OPTS manually
 
@@ -326,19 +478,19 @@ Bee Swarm uses **exclusive transitive dependency analysis** for complexity deter
 
 ```bash
 # Simple scan with default settings
-mvn bastion:scan
+mvn sechive:scan
 
 # With NVD API key for faster scans
-mvn bastion:scan -Dbastion.nvd.apiKey=YOUR_API_KEY
+mvn sechive:scan -Dsechive.nvd.apiKey=YOUR_API_KEY
 
 # JSON file storage for trend analysis
-mvn bastion:scan -Dbastion.community.storageMode=JSON_FILE
+mvn sechive:scan -Dsechive.community.storageMode=JSON_FILE
 
 # Multi-module projects
-mvn bastion:scan -Dbastion.multiModule.enabled=true
+mvn sechive:scan -Dsechive.multiModule.enabled=true
 
 # Fail build on critical vulnerabilities
-mvn bastion:scan -Dbastion.failOnError=true -Dbastion.severityThreshold=CRITICAL
+mvn sechive:scan -Dsechive.failOnError=true -Dsechive.severityThreshold=CRITICAL
 ```
 
 ### Configuration Examples
@@ -348,8 +500,8 @@ mvn bastion:scan -Dbastion.failOnError=true -Dbastion.severityThreshold=CRITICAL
 ```xml
 <plugin>
     <groupId>io.github.dodogeny</groupId>
-    <artifactId>bastion-maven-community-plugin</artifactId>
-    <version>1.2.8</version>
+    <artifactId>sechive-maven-plugin</artifactId>
+    <version>2.0.0</version>
     <configuration>
         <skip>false</skip>
         <failOnError>true</failOnError>
@@ -364,8 +516,8 @@ mvn bastion:scan -Dbastion.failOnError=true -Dbastion.severityThreshold=CRITICAL
 ```xml
 <plugin>
     <groupId>io.github.dodogeny</groupId>
-    <artifactId>bastion-maven-community-plugin</artifactId>
-    <version>1.2.8</version>
+    <artifactId>sechive-maven-plugin</artifactId>
+    <version>2.0.0</version>
     <configuration>
         <communityStorageMode>JSON_FILE</communityStorageMode>
         <jsonFilePath>${project.build.directory}/security/vulnerabilities.json</jsonFilePath>
@@ -380,8 +532,8 @@ mvn bastion:scan -Dbastion.failOnError=true -Dbastion.severityThreshold=CRITICAL
 ```xml
 <plugin>
     <groupId>io.github.dodogeny</groupId>
-    <artifactId>bastion-maven-community-plugin</artifactId>
-    <version>1.2.8</version>
+    <artifactId>sechive-maven-plugin</artifactId>
+    <version>2.0.0</version>
     <configuration>
         <enableMultiModule>true</enableMultiModule>
         <communityStorageMode>JSON_FILE</communityStorageMode>
@@ -396,8 +548,8 @@ mvn bastion:scan -Dbastion.failOnError=true -Dbastion.severityThreshold=CRITICAL
 ```xml
 <plugin>
     <groupId>io.github.dodogeny</groupId>
-    <artifactId>bastion-maven-community-plugin</artifactId>
-    <version>1.2.8</version>
+    <artifactId>sechive-maven-plugin</artifactId>
+    <version>2.0.0</version>
     <configuration>
         <!-- NVD API key for faster database downloads and updates -->
         <nvdApiKey>${env.NVD_API_KEY}</nvdApiKey>
@@ -420,7 +572,7 @@ Get a free NVD API key for better performance and reliability:
 **Environment Variable (Recommended)**
 ```bash
 export NVD_API_KEY="your-api-key"
-mvn bastion:scan -Dbastion.nvd.apiKey=${NVD_API_KEY}
+mvn sechive:scan -Dsechive.nvd.apiKey=${NVD_API_KEY}
 ```
 
 **Maven Settings (~/.m2/settings.xml)**
@@ -428,14 +580,14 @@ mvn bastion:scan -Dbastion.nvd.apiKey=${NVD_API_KEY}
 <settings>
     <profiles>
         <profile>
-            <id>bastion</id>
+            <id>sechive</id>
             <properties>
                 <nvd.api.key>your-api-key</nvd.api.key>
             </properties>
         </profile>
     </profiles>
     <activeProfiles>
-        <activeProfile>bastion</activeProfile>
+        <activeProfile>sechive</activeProfile>
     </activeProfiles>
 </settings>
 ```
@@ -452,7 +604,7 @@ mvn bastion:scan -Dbastion.nvd.apiKey=${NVD_API_KEY}
 Best for quick scans and CI/CD pipelines.
 
 ```bash
-mvn bastion:scan -Dbastion.community.storageMode=IN_MEMORY
+mvn sechive:scan -Dsechive.community.storageMode=IN_MEMORY
 ```
 
 **Pros:** Zero setup, fastest performance, auto cleanup
@@ -463,9 +615,9 @@ mvn bastion:scan -Dbastion.community.storageMode=IN_MEMORY
 Best for historical tracking and trend analysis.
 
 ```bash
-mvn bastion:scan \
-  -Dbastion.community.storageMode=JSON_FILE \
-  -Dbastion.storage.jsonFilePath=/path/to/vulnerabilities.json
+mvn sechive:scan \
+  -Dsechive.community.storageMode=JSON_FILE \
+  -Dsechive.storage.jsonFilePath=/path/to/vulnerabilities.json
 ```
 
 **Pros:** Persistent storage, trend analysis, version control friendly, human readable
@@ -473,7 +625,7 @@ mvn bastion:scan \
 
 ## Intelligent Auto-Update System
 
-Bastion automatically manages the NVD database with zero configuration required:
+SecHive automatically manages the NVD database with zero configuration required:
 
 ### How It Works
 
@@ -512,7 +664,7 @@ View/clear database cache:
 Force fresh download (if needed):
 ```bash
 rm -rf ~/.m2/repository/org/owasp/dependency-check-utils/
-mvn bastion:scan  # Will automatically re-download
+mvn sechive:scan  # Will automatically re-download
 ```
 
 ## CI/CD Integration
@@ -543,9 +695,9 @@ jobs:
       env:
         NVD_API_KEY: ${{ secrets.NVD_API_KEY }}
       run: |
-        mvn bastion:scan \
-          -Dbastion.nvd.apiKey=${NVD_API_KEY} \
-          -Dbastion.failOnCritical=true
+        mvn sechive:scan \
+          -Dsechive.nvd.apiKey=${NVD_API_KEY} \
+          -Dsechive.failOnCritical=true
         # v1.1.1+ automatically manages memory - no MAVEN_OPTS needed
 
     - name: Upload Reports
@@ -553,7 +705,7 @@ jobs:
       if: always()
       with:
         name: security-reports
-        path: target/security/
+        path: target/sechive-reports/
 ```
 
 ### Jenkins Pipeline
@@ -570,9 +722,9 @@ pipeline {
         stage('Security Scan') {
             steps {
                 sh '''
-                    mvn bastion:scan \
-                      -Dbastion.nvd.apiKey=${NVD_API_KEY} \
-                      -Dbastion.failOnCritical=true
+                    mvn sechive:scan \
+                      -Dsechive.nvd.apiKey=${NVD_API_KEY} \
+                      -Dsechive.failOnCritical=true
                 '''
             }
         }
@@ -581,8 +733,8 @@ pipeline {
     post {
         always {
             publishHTML([
-                reportDir: 'target/security',
-                reportFiles: 'bastion-report.html',
+                reportDir: 'target/sechive-reports',
+                reportFiles: 'sechive-report.html',
                 reportName: 'Security Scan Report'
             ])
         }
@@ -597,13 +749,13 @@ security_scan:
   stage: test
   image: maven:3.8-openjdk-11
   script:
-    - mvn bastion:scan
-        -Dbastion.nvd.apiKey=${NVD_API_KEY}
-        -Dbastion.failOnCritical=true
+    - mvn sechive:scan
+        -Dsechive.nvd.apiKey=${NVD_API_KEY}
+        -Dsechive.failOnCritical=true
   artifacts:
     when: always
     paths:
-      - target/security/
+      - target/sechive-reports/
     expire_in: 30 days
 ```
 
@@ -660,27 +812,27 @@ security_scan:
 
 ```bash
 # Preview what would be purged
-mvn bastion:scan \
-  -Dbastion.community.storageMode=JSON_FILE \
-  -Dbastion.purgeBeforeScan=true \
-  -Dbastion.purge.dryRun=true
+mvn sechive:scan \
+  -Dsechive.community.storageMode=JSON_FILE \
+  -Dsechive.purgeBeforeScan=true \
+  -Dsechive.purge.dryRun=true
 
 # Purge with confirmation
-mvn bastion:scan \
-  -Dbastion.community.storageMode=JSON_FILE \
-  -Dbastion.purgeBeforeScan=true
+mvn sechive:scan \
+  -Dsechive.community.storageMode=JSON_FILE \
+  -Dsechive.purgeBeforeScan=true
 
 # Force purge without confirmation
-mvn bastion:scan \
-  -Dbastion.community.storageMode=JSON_FILE \
-  -Dbastion.purgeBeforeScan=true \
-  -Dbastion.purge.force=true
+mvn sechive:scan \
+  -Dsechive.community.storageMode=JSON_FILE \
+  -Dsechive.purgeBeforeScan=true \
+  -Dsechive.purge.force=true
 
 # Purge data older than 30 days
-mvn bastion:scan \
-  -Dbastion.community.storageMode=JSON_FILE \
-  -Dbastion.purgeBeforeScan=true \
-  -Dbastion.purge.olderThanDays=30
+mvn sechive:scan \
+  -Dsechive.community.storageMode=JSON_FILE \
+  -Dsechive.purgeBeforeScan=true \
+  -Dsechive.purge.olderThanDays=30
 ```
 
 ## Troubleshooting
@@ -697,7 +849,7 @@ java -version
 
 # Set JAVA_HOME to Java 21+
 export JAVA_HOME=/path/to/java21
-mvn bastion:scan
+mvn sechive:scan
 ```
 
 **Database Connection Errors After Upgrade**
@@ -706,13 +858,13 @@ v1.1.x uses OWASP Dependency-Check 12.1.3 with a new H2 database format. Delete 
 
 ```bash
 # Remove old cache (if upgrading from v1.0.x)
-rm -rf ~/.bastion/nvd-cache
+rm -rf ~/.sechive/nvd-cache
 
 # Remove OWASP database (if experiencing connection issues)
 rm -rf ~/.m2/repository/org/owasp/dependency-check-utils/
 
 # Run scan - will automatically re-download
-mvn bastion:scan
+mvn sechive:scan
 ```
 
 **Out of Memory Errors (Fixed in v1.1.0+)**
@@ -720,11 +872,11 @@ mvn bastion:scan
 If you're using an older version and experiencing OOM errors (exit code 137) or scans hanging for hours:
 
 ```bash
-# Upgrade to v1.2.8-rc9 (or v1.1.0+) which includes automatic memory management
-# Update your pom.xml to version 1.2.8-rc9
+# Upgrade to v2.0.0 (or v1.1.0+) which includes automatic memory management
+# Update your pom.xml to version 2.0.0
 ```
 
-v1.1.0+ and v1.2.8-rc9 automatically configure memory allocation for OWASP subprocesses:
+v1.1.0+ and v2.0.0 automatically configure memory allocation for OWASP subprocesses:
 - **NVD Database Downloads**: 3GB heap automatically allocated
 - **Vulnerability Scanning**: 2GB heap automatically allocated
 - **No manual MAVEN_OPTS configuration needed**
@@ -748,7 +900,7 @@ The first scan automatically downloads the complete NVD database (~317,000 CVE r
 
 **To speed this up:**
 - Get a free NVD API key from https://nvd.nist.gov/developers/request-an-api-key
-- Add `-Dbastion.nvd.apiKey=YOUR_KEY` to reduce download time from hours to 20-30 minutes
+- Add `-Dsechive.nvd.apiKey=YOUR_KEY` to reduce download time from hours to 20-30 minutes
 
 **Subsequent scans** will only download new CVE data (typically seconds to minutes), not the entire database.
 
@@ -762,10 +914,10 @@ The first scan automatically downloads the complete NVD database (~317,000 CVE r
 
 ## Scan Statistics
 
-Bastion provides detailed performance metrics:
+SecHive provides detailed performance metrics:
 
 ```
-📊 Bastion Scan Statistics
+📊 SecHive Scan Statistics
 📦 JARs Scanned: 127
 🔍 CVEs Found: 23 (8 unique)
 🎯 CVEs with Exploits: 5
@@ -786,7 +938,7 @@ Bastion provides detailed performance metrics:
 
 ## Enterprise Edition
 
-Bastion Maven Plugin offers an **Enterprise Edition** designed for teams and organizations that need advanced security capabilities, predictive intelligence, and comprehensive license compliance management. Built for production environments where security, compliance, and governance are critical.
+SecHive Maven Plugin offers an **Enterprise Edition** designed for teams and organizations that need advanced security capabilities, predictive intelligence, and comprehensive license compliance management. Built for production environments where security, compliance, and governance are critical.
 
 ### Key Enterprise Features
 
@@ -822,10 +974,10 @@ Intelligent task distribution using swarm intelligence algorithms for unpreceden
 *Command Line:*
 ```bash
 # Enable with defaults
-mvn verify -Dbastion.swarm.enabled=true
+mvn verify -Dsechive.swarm.enabled=true
 
 # Enable with custom swarm size
-mvn verify -Dbastion.swarm.enabled=true -Dbastion.swarm.size=20
+mvn verify -Dsechive.swarm.enabled=true -Dsechive.swarm.size=20
 ```
 
 *Performance Impact:*
@@ -834,7 +986,7 @@ mvn verify -Dbastion.swarm.enabled=true -Dbastion.swarm.size=20
 - **Best For**: Heterogeneous workloads with varied file sizes and types
 - **Memory Overhead**: ~12KB for typical 12-bee swarm
 
-📖 **[Complete Bee Swarm Guide](../bastion-maven-plugin-enterprise/distribution/src/main/resources/docs/BEE_SWARM_OPTIMIZATION.md)**
+📖 **[Complete Bee Swarm Guide](../sechive-maven-plugin-enterprise/distribution/src/main/resources/docs/BEE_SWARM_OPTIMIZATION.md)**
 
 **⚡ Worker Pool Optimizations** *(Enterprise Exclusive)*
 Dramatically improve scanning speed with intelligent parallelization and resource management:
@@ -881,14 +1033,14 @@ Very Large   | 300 sec  | 50 sec    | 6.0x
 - **8+ cores, 16GB+ RAM**: AUTO selects MODERATE (3-5x speedup)
 - **4+ cores, 8GB+ RAM**: AUTO selects NORMAL (2-3x speedup)
 
-📖 **[Complete Worker Pool Guide](../bastion-maven-plugin-enterprise/WORKER_POOL_OPTIMIZATION.md)**
-📊 **[Performance Testing Suite](../bastion-maven-plugin-enterprise/PERFORMANCE_TESTING.md)**
+📖 **[Complete Worker Pool Guide](../sechive-maven-plugin-enterprise/WORKER_POOL_OPTIMIZATION.md)**
+📊 **[Performance Testing Suite](../sechive-maven-plugin-enterprise/PERFORMANCE_TESTING.md)**
 
 **💾 Persistent Scan Cache** *(Enterprise Exclusive)*
 
 Eliminate redundant scans across projects with intelligent filesystem-based caching:
 - **80-95% Cache Hit Rate**: Shared vulnerability scan results across all projects on the same machine
-- **Cross-Project Sharing**: Scan results stored in `~/.m2/repository/.bastion-cache/` and reused by all projects
+- **Cross-Project Sharing**: Scan results stored in `~/.m2/repository/.sechive-cache/` and reused by all projects
 - **SHA-256 Integrity**: Hash-based validation ensures cache accuracy
 - **Automatic Invalidation**: Cache entries invalidated when JARs change or after 30 days (configurable)
 - **Zero Configuration**: Works automatically - no setup required
@@ -925,7 +1077,7 @@ Speedup: 1.6x faster
 The scanner automatically logs cache performance:
 ```
 [INFO] 💾 Persistent Cache Statistics:
-[INFO]   Location: /home/user/.m2/repository/.bastion-cache/
+[INFO]   Location: /home/user/.m2/repository/.sechive-cache/
 [INFO]   Total Entries: 247
 [INFO]   Cache Size: 12.3 MB
 [INFO]   Cache Hits: 95/100 (95.0%)
@@ -949,13 +1101,13 @@ The scanner automatically logs cache performance:
 *Cache Management:*
 ```bash
 # View cache statistics
-mvn bastion:scan -Dbastion.cache.showStats=true
+mvn sechive:scan -Dsechive.cache.showStats=true
 
 # Clear cache
-rm -rf ~/.m2/repository/.bastion-cache/
+rm -rf ~/.m2/repository/.sechive-cache/
 
 # Cache cleanup (removes expired entries)
-mvn bastion:scan -Dbastion.cache.cleanup=true
+mvn sechive:scan -Dsechive.cache.cleanup=true
 ```
 
 *Benefits:*
@@ -965,7 +1117,7 @@ mvn bastion:scan -Dbastion.cache.cleanup=true
 - ✅ **Zero maintenance**: Automatic cleanup and integrity verification
 - ✅ **Backwards compatible**: Works seamlessly with existing configurations
 
-**📊 Resource Monitoring & Optimization** *(Enterprise Exclusive - NEW in v1.2.8!)*
+**📊 Resource Monitoring & Optimization** *(Enterprise Exclusive - NEW in v2.0.0!)*
 
 Real-time performance monitoring with beautiful dynamic console visualizations. Track CPU, memory, thread, and GC activity during vulnerability scans with professional ASCII art dashboards.
 
@@ -981,7 +1133,7 @@ Real-time performance monitoring with beautiful dynamic console visualizations. 
 *Example Dashboard:*
 ```
 ╔════════════════════════════════════════════════════════════════════════════╗
-║                    BASTION RESOURCE MONITOR - LIVE VIEW                   ║
+║                    SECHIVE RESOURCE MONITOR - LIVE VIEW                   ║
 ╚════════════════════════════════════════════════════════════════════════════╝
 
 CPU Usage
@@ -1036,10 +1188,10 @@ Insights & Recommendations:
 *Command Line:*
 ```bash
 # Enable live dashboard
-mvn bastion:scan -Dbastion.showLiveDashboard=true
+mvn sechive:scan -Dsechive.showLiveDashboard=true
 
 # Use CI/CD profile (summary only, no live updates)
-mvn bastion:scan -Dbastion.monitoringProfile=CICD
+mvn sechive:scan -Dsechive.monitoringProfile=CICD
 ```
 
 *Configuration Profiles:*
@@ -1055,7 +1207,7 @@ mvn bastion:scan -Dbastion.monitoringProfile=CICD
 - ✅ **Professional UX**: CLI-based but beautiful with color-coded indicators
 - ✅ **Zero overhead option**: Fully disableable with no performance impact when not needed
 
-📖 **[Complete Resource Monitoring Guide](https://github.com/dodogeny/bastion-maven-plugin-enterprise/blob/main/RESOURCE_MONITORING.md)**
+📖 **[Complete Resource Monitoring Guide](https://github.com/dodogeny/sechive-maven-plugin-enterprise/blob/main/RESOURCE_MONITORING.md)**
 
 **🔮 Predictive Update Analysis** *(Enterprise Exclusive)*
 Intelligent dependency update recommendations powered by real-time Maven Central analysis:
@@ -1159,10 +1311,10 @@ Native integration with major CI/CD platforms for streamlined security workflows
 *Maven Goals Available:*
 ```bash
 # Platform-specific reporting goals
-mvn bastion:jenkins-report
-mvn bastion:azure-devops-report
-mvn bastion:circleci-report
-mvn bastion:github-actions-report
+mvn sechive:jenkins-report
+mvn sechive:azure-devops-report
+mvn sechive:circleci-report
+mvn sechive:github-actions-report
 ```
 
 **🔔 Real-Time Webhook Notifications** *(Enterprise Exclusive)*
@@ -1183,7 +1335,7 @@ Get instant security alerts in your team's communication channels:
 
 *Example Slack Notification:*
 ```
-🔴 Bastion Security Scan Results
+🔴 SecHive Security Scan Results
 
 Project: my-application
 Version: 1.0.0
@@ -1348,13 +1500,13 @@ Monitor security trends across your entire infrastructure with real-time metrics
 ```groovy
 stage('Security Scan') {
   steps {
-    sh 'mvn bastion:jenkins-report'
+    sh 'mvn sechive:jenkins-report'
   }
   post {
     always {
-      junit 'target/bastion-reports/jenkins-junit-report.xml'
-      recordIssues(tools: [issues(pattern: 'target/bastion-reports/jenkins-warnings-ng.json')])
-      publishHTML(reportDir: 'target/bastion-reports', reportFiles: 'jenkins-summary.html')
+      junit 'target/sechive-reports/jenkins-junit-report.xml'
+      recordIssues(tools: [issues(pattern: 'target/sechive-reports/jenkins-warnings-ng.json')])
+      publishHTML(reportDir: 'target/sechive-reports', reportFiles: 'jenkins-summary.html')
     }
   }
 }
@@ -1458,7 +1610,7 @@ These messages are **non-intrusive** and designed to inform users about features
 - No credit card required
 - Full enterprise feature access
 - Cancel anytime
-- → **[Start Trial](https://bastion-plugin.lemonsqueezy.com/)**
+- → **[Start Trial](https://github.com/dodogeny/sechive-maven-plugin/)**
 
 ### How to Integrate Enterprise Edition
 
@@ -1469,8 +1621,8 @@ After subscribing, you'll receive a license key. Here's how to configure it:
 ```xml
 <plugin>
     <groupId>io.github.dodogeny</groupId>
-    <artifactId>bastion-maven-enterprise-plugin</artifactId>
-    <version>1.2.8</version>
+    <artifactId>sechive-maven-plugin</artifactId>
+    <version>2.0.0</version>
     <executions>
         <execution>
             <goals>
@@ -1481,7 +1633,7 @@ After subscribing, you'll receive a license key. Here's how to configure it:
     </executions>
     <configuration>
         <!-- License Configuration -->
-        <licenseKey>${env.BASTION_LICENSE_KEY}</licenseKey>
+        <licenseKey>${env.SECHIVE_LICENSE_KEY}</licenseKey>
 
         <!-- NVD API Key -->
         <nvdApiKey>${env.NVD_API_KEY}</nvdApiKey>
@@ -1495,19 +1647,19 @@ After subscribing, you'll receive a license key. Here's how to configure it:
         <enableWorkerPoolOptimization>true</enableWorkerPoolOptimization>
 
         <!-- Database Configuration (PostgreSQL/MySQL) -->
-        <databaseUrl>jdbc:postgresql://localhost:5432/bastion</databaseUrl>
+        <databaseUrl>jdbc:postgresql://localhost:5432/sechive</databaseUrl>
         <databaseUsername>${env.DB_USERNAME}</databaseUsername>
         <databasePassword>${env.DB_PASSWORD}</databasePassword>
 
         <!-- Report Configuration -->
         <reportFormats>HTML,JSON,PDF,SARIF</reportFormats>
-        <outputDirectory>${project.build.directory}/bastion-reports</outputDirectory>
+        <outputDirectory>${project.build.directory}/sechive-reports</outputDirectory>
 
         <!-- Email Notifications -->
         <emailEnabled>true</emailEnabled>
         <emailRecipients>security@yourcompany.com</emailRecipients>
         <emailOnlyForCritical>true</emailOnlyForCritical>
-        
+
     </configuration>
 </plugin>
 ```
@@ -1516,13 +1668,13 @@ After subscribing, you'll receive a license key. Here's how to configure it:
 
 ```bash
 # License Key (provided after subscription)
-export BASTION_LICENSE_KEY=your-license-key-here
+export SECHIVE_LICENSE_KEY=your-license-key-here
 
 # NVD API Key (optional but recommended)
 export NVD_API_KEY=your-nvd-api-key
 
 # Database Credentials
-export DB_USERNAME=bastion_user
+export DB_USERNAME=sechive_user
 export DB_PASSWORD=secure_password
 
 ```
@@ -1533,16 +1685,16 @@ Enterprise Edition requires a PostgreSQL or MySQL database:
 
 **PostgreSQL**:
 ```sql
-CREATE DATABASE bastion;
-CREATE USER bastion_user WITH PASSWORD 'secure_password';
-GRANT ALL PRIVILEGES ON DATABASE bastion TO bastion_user;
+CREATE DATABASE sechive;
+CREATE USER sechive_user WITH PASSWORD 'secure_password';
+GRANT ALL PRIVILEGES ON DATABASE sechive TO sechive_user;
 ```
 
 **MySQL**:
 ```sql
-CREATE DATABASE bastion;
-CREATE USER 'bastion_user'@'localhost' IDENTIFIED BY 'secure_password';
-GRANT ALL PRIVILEGES ON bastion.* TO 'bastion_user'@'localhost';
+CREATE DATABASE sechive;
+CREATE USER 'sechive_user'@'localhost' IDENTIFIED BY 'secure_password';
+GRANT ALL PRIVILEGES ON sechive.* TO 'sechive_user'@'localhost';
 FLUSH PRIVILEGES;
 ```
 
@@ -1553,13 +1705,13 @@ FLUSH PRIVILEGES;
 mvn clean verify
 
 # Or run directly
-mvn bastion-maven-enterprise-plugin:scan
+mvn sechive-maven-plugin:scan
 
 # Run predictive update analysis
-mvn bastion-maven-enterprise-plugin:predictive-analysis
+mvn sechive-maven-plugin:predictive-analysis
 
 # Run license compliance check
-mvn bastion-maven-enterprise-plugin:license-check
+mvn sechive-maven-plugin:license-check
 ```
 
 **Enterprise Goals Available:**
@@ -1572,9 +1724,9 @@ mvn bastion-maven-enterprise-plugin:license-check
 Check that enterprise features are working:
 
 1. **Database**: Verify scan results are persisted in your database
-2. **PDF Reports**: Check `target/bastion-reports/` for PDF exports
-3. **Predictive Analysis**: Run `mvn bastion-maven-enterprise-plugin:predictive-analysis` and review recommendations in `target/bastion-predictive-reports/`
-4. **License Compliance**: Run `mvn bastion-maven-enterprise-plugin:license-check` and review reports in `target/bastion-reports/`
+2. **PDF Reports**: Check `target/sechive-reports/` for PDF exports
+3. **Predictive Analysis**: Run `mvn sechive-maven-plugin:predictive-analysis` and review recommendations in `target/sechive-predictive-reports/`
+4. **License Compliance**: Run `mvn sechive-maven-plugin:license-check` and review reports in `target/sechive-reports/`
 5. **Email Notifications**: Verify emails are received for CRITICAL vulnerabilities
 
 #### Step 6: Configure Advanced Features (Optional)
@@ -1584,8 +1736,8 @@ Add predictive analysis and license checking to your build lifecycle:
 ```xml
 <plugin>
     <groupId>io.github.dodogeny</groupId>
-    <artifactId>bastion-maven-enterprise-plugin</artifactId>
-    <version>1.2.8</version>
+    <artifactId>sechive-maven-plugin</artifactId>
+    <version>2.0.0</version>
     <executions>
         <!-- Vulnerability Scanning -->
         <execution>
@@ -1629,8 +1781,8 @@ Add predictive analysis and license checking to your build lifecycle:
 ```
 
 **📖 Enterprise Documentation**:
-- Predictive Analysis: [Configuration Guide](../bastion-maven-plugin-enterprise/PREDICTIVE_ANALYSIS_GUIDE.md)
-- License Compliance: [Full Guide](../bastion-maven-plugin-enterprise/LICENSE_COMPLIANCE_GUIDE.md)
+- Predictive Analysis: [Configuration Guide](../sechive-maven-plugin-enterprise/PREDICTIVE_ANALYSIS_GUIDE.md)
+- License Compliance: [Full Guide](../sechive-maven-plugin-enterprise/LICENSE_COMPLIANCE_GUIDE.md)
 
 ### Enterprise Support
 
@@ -1642,9 +1794,9 @@ Need help with integration or have questions?
 
 ## Compatibility Matrix
 
-| Bastion Version | Java Requirement | OWASP Dependency-Check | Auto-Update | Memory Management | JAR Analysis | Status |
+| SecHive Version | Java Requirement | OWASP Dependency-Check | Auto-Update | Memory Management | JAR Analysis | Status |
 |-----------------|------------------|------------------------|-------------|-------------------|--------------|--------|
-| 1.2.8-rc9 | Java 21+ | 12.1.3 | ✅ Automatic | ✅ Automatic | ✅ Enhanced | **Recommended** |
+| 2.0.0 | Java 21+ | 12.1.3 | ✅ Automatic | ✅ Automatic | ✅ Enhanced | **Recommended** |
 | 1.1.0 | Java 21+ | 12.1.3 | ✅ Automatic | ✅ Automatic | ✅ Basic | Stable |
 | 1.0.x | Java 8+ | 10.0.4 | ❌ Manual | ⚠️ Manual MAVEN_OPTS | ❌ None | Legacy (security patches only) |
 
@@ -1652,7 +1804,7 @@ Need help with integration or have questions?
 
 ### Community Support
 - **Email**: it.dodogeny@gmail.com
-- **GitHub Issues**: https://github.com/dodogeny/bastion-maven-plugin-community/issues
+- **GitHub Issues**: https://github.com/dodogeny/sechive-maven-plugin/issues
 - **Documentation**: See this README and inline configuration comments
 
 ### Getting Help

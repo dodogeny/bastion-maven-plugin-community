@@ -1,4 +1,4 @@
-# Bastion Maven Plugin - Quick Start Guide
+# SecHive Maven Plugin - Quick Start Guide
 
 ## 🚀 Quick Integration (5 Minutes)
 
@@ -9,8 +9,8 @@
     <plugins>
         <plugin>
             <groupId>io.github.dodogeny</groupId>
-            <artifactId>bastion-maven-community-plugin</artifactId>
-            <version>1.2.8</version>
+            <artifactId>sechive-maven-plugin</artifactId>
+            <version>2.0.0</version>
             <executions>
                 <execution>
                     <id>security-scan</id>
@@ -28,7 +28,7 @@
 
                 <!-- Report Configuration -->
                 <reportFormats>HTML,JSON</reportFormats>
-                <outputDirectory>${project.build.directory}/bastion-reports</outputDirectory>
+                <outputDirectory>${project.build.directory}/sechive-reports</outputDirectory>
             </configuration>
         </plugin>
     </plugins>
@@ -51,15 +51,15 @@
 mvn clean verify
 
 # Or run scan directly
-mvn io.github.dodogeny:bastion-maven-community-plugin:1.2.8-rc9:scan \
-  -Dbastion.nvd.apiKey=YOUR_API_KEY
+mvn io.github.dodogeny:sechive-maven-plugin:2.0.0:scan \
+  -Dsechive.nvd.apiKey=YOUR_API_KEY
 ```
 
 ### Step 4: View Results
 
-Reports are generated in `target/bastion-reports/`:
-- **HTML Report**: `bastion-report-{project-name}.html`
-- **JSON Report**: `bastion-report-{project-name}.json`
+Reports are generated in `target/sechive-reports/`:
+- **HTML Report**: `sechive-report-{project-name}.html`
+- **JSON Report**: `sechive-report-{project-name}.json`
 
 ---
 
@@ -70,8 +70,8 @@ Reports are generated in `target/bastion-reports/`:
 ```xml
 <plugin>
     <groupId>io.github.dodogeny</groupId>
-    <artifactId>bastion-maven-community-plugin</artifactId>
-    <version>1.2.8</version>
+    <artifactId>sechive-maven-plugin</artifactId>
+    <version>2.0.0</version>
     <executions>
         <execution>
             <goals>
@@ -99,8 +99,8 @@ mvn clean verify
 ```xml
 <plugin>
     <groupId>io.github.dodogeny</groupId>
-    <artifactId>bastion-maven-community-plugin</artifactId>
-    <version>1.2.8</version>
+    <artifactId>sechive-maven-plugin</artifactId>
+    <version>2.0.0</version>
     <!-- No executions - only run when explicitly called -->
     <configuration>
         <nvdApiKey>${env.NVD_API_KEY}</nvdApiKey>
@@ -112,10 +112,10 @@ mvn clean verify
 **Usage:**
 ```bash
 # Run scan manually
-mvn bastion-maven-community-plugin:scan
+mvn sechive-maven-plugin:scan
 
 # Or with full coordinates
-mvn io.github.dodogeny:bastion-maven-community-plugin:1.2.8-rc9:scan
+mvn io.github.dodogeny:sechive-maven-plugin:2.0.0:scan
 ```
 
 ### Pattern 3: Multi-Module Projects
@@ -127,8 +127,8 @@ mvn io.github.dodogeny:bastion-maven-community-plugin:1.2.8-rc9:scan
         <plugins>
             <plugin>
                 <groupId>io.github.dodogeny</groupId>
-                <artifactId>bastion-maven-community-plugin</artifactId>
-                <version>1.2.8</version>
+                <artifactId>sechive-maven-plugin</artifactId>
+                <version>2.0.0</version>
                 <configuration>
                     <nvdApiKey>${env.NVD_API_KEY}</nvdApiKey>
                     <enableMultiModule>true</enableMultiModule>
@@ -141,7 +141,7 @@ mvn io.github.dodogeny:bastion-maven-community-plugin:1.2.8-rc9:scan
     <plugins>
         <plugin>
             <groupId>io.github.dodogeny</groupId>
-            <artifactId>bastion-maven-community-plugin</artifactId>
+            <artifactId>sechive-maven-plugin</artifactId>
             <executions>
                 <execution>
                     <goals>
@@ -179,7 +179,7 @@ mvn clean verify
 | Parameter | Default | Description |
 |-----------|---------|-------------|
 | `reportFormats` | `HTML,JSON` | Report formats (comma-separated) |
-| `outputDirectory` | `target/bastion-reports` | Report output directory |
+| `outputDirectory` | `target/sechive-reports` | Report output directory |
 
 ### Performance Options
 
@@ -205,9 +205,9 @@ mvn clean verify
 ### Example 2: Fast Offline Scanning (No Updates)
 
 ```bash
-mvn bastion-maven-community-plugin:scan \
-  -Dbastion.autoUpdate=false \
-  -Dbastion.nvd.apiKey=YOUR_API_KEY
+mvn sechive-maven-plugin:scan \
+  -Dsechive.autoUpdate=false \
+  -Dsechive.nvd.apiKey=YOUR_API_KEY
 ```
 
 ### Example 3: Custom Report Location
@@ -227,11 +227,11 @@ mvn bastion-maven-community-plugin:scan \
 
 **Option B: Direct Plugin Goal**
 1. Add plugin to `pom.xml` (no execution block needed)
-2. Run Maven goal: `io.github.dodogeny:bastion-maven-community-plugin:1.2.8-rc9:scan -Dbastion.nvd.apiKey=YOUR_API_KEY`
+2. Run Maven goal: `io.github.dodogeny:sechive-maven-plugin:2.0.0:scan -Dsechive.nvd.apiKey=YOUR_API_KEY`
 
 **Option C: Maven Run Configuration**
 1. Create new Maven run configuration
-2. Command: `verify` (uses POM config) or `bastion-maven-community-plugin:scan` (direct)
+2. Command: `verify` (uses POM config) or `sechive-maven-plugin:scan` (direct)
 3. Add environment variable: `NVD_API_KEY=your-api-key`
 
 ---
@@ -242,13 +242,13 @@ mvn bastion-maven-community-plugin:scan \
 
 ```bash
 # Run scan with API key
-mvn bastion-maven-community-plugin:scan -Dbastion.nvd.apiKey=YOUR_KEY
+mvn sechive-maven-plugin:scan -Dsechive.nvd.apiKey=YOUR_KEY
 
 # Run scan without updates (faster, uses cache)
-mvn bastion-maven-community-plugin:scan -Dbastion.autoUpdate=false
+mvn sechive-maven-plugin:scan -Dsechive.autoUpdate=false
 
 # Run scan with specific severity threshold
-mvn bastion-maven-community-plugin:scan -Dbastion.severityThreshold=HIGH
+mvn sechive-maven-plugin:scan -Dsechive.severityThreshold=HIGH
 
 # Run as part of build lifecycle
 mvn clean verify
@@ -258,17 +258,17 @@ mvn clean verify
 
 ```bash
 # Scan with custom timeout (30 minutes)
-mvn bastion-maven-community-plugin:scan \
-  -Dbastion.scannerTimeout=1800000 \
-  -Dbastion.nvd.apiKey=YOUR_KEY
+mvn sechive-maven-plugin:scan \
+  -Dsechive.scannerTimeout=1800000 \
+  -Dsechive.nvd.apiKey=YOUR_KEY
 
 # Generate only HTML report
-mvn bastion-maven-community-plugin:scan \
-  -Dbastion.reportFormats=HTML
+mvn sechive-maven-plugin:scan \
+  -Dsechive.reportFormats=HTML
 
 # Scan without failing build
-mvn bastion-maven-community-plugin:scan \
-  -Dbastion.failOnError=false
+mvn sechive-maven-plugin:scan \
+  -Dsechive.failOnError=false
 ```
 
 ---
@@ -280,7 +280,7 @@ mvn bastion-maven-community-plugin:scan \
 **Solution:** Ensure you're using the correct version:
 ```bash
 # Check installed version
-mvn io.github.dodogeny:bastion-maven-community-plugin:1.2.8-rc9:help
+mvn io.github.dodogeny:sechive-maven-plugin:2.0.0:help
 
 # Force update
 mvn clean install -U
@@ -309,7 +309,7 @@ mvn clean install -U
 
 **Solution:** Disable fail-on-error temporarily:
 ```bash
-mvn verify -Dbastion.failOnError=false
+mvn verify -Dsechive.failOnError=false
 ```
 
 ---
@@ -345,7 +345,7 @@ mvn verify -Dbastion.failOnError=false
 
 ## 🚀 Next Steps
 
-- Review generated reports in `target/bastion-reports/`
+- Review generated reports in `target/sechive-reports/`
 - Fix critical and high severity vulnerabilities
 - Integrate into CI/CD pipeline
 - Schedule regular security scans
@@ -357,7 +357,7 @@ mvn verify -Dbastion.failOnError=false
 
 - **Support Email**: it.dodogeny@gmail.com
 - **Full Documentation**: See `README.md`
-- **GitHub Issues**: https://github.com/dodogeny/bastion-maven-plugin-community/issues
+- **GitHub Issues**: https://github.com/dodogeny/sechive-maven-plugin/issues
 - **NVD API Key**: https://nvd.nist.gov/developers/request-an-api-key
 - **OWASP Dependency-Check**: https://jeremylong.github.io/DependencyCheck/
 
@@ -365,7 +365,7 @@ mvn verify -Dbastion.failOnError=false
 
 ## Version Information
 
-- **Plugin Version**: 1.2.8-rc9
+- **Plugin Version**: 2.0.0
 - **OWASP Dependency-Check**: 12.1.3
 - **Java Version**: 11+ (21 recommended)
 - **Maven Version**: 3.6.0+

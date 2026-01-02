@@ -7,21 +7,21 @@
 
     <parent>
         <groupId>io.github.dodogeny</groupId>
-        <artifactId>bastion-maven-plugin-parent</artifactId>
+        <artifactId>sechive-maven-plugin-parent</artifactId>
         <version>${revision}</version>
     </parent>
 
-    <artifactId>bastion-reporting-community</artifactId>
+    <artifactId>sechive-reporting</artifactId>
     <packaging>jar</packaging>
 
-    <name>Bastion Reporting - Community Edition</name>
-    <description>Multi-format report generation (HTML, PDF, JSON, CSV, SARIF) with professional templates for Bastion Maven Plugin</description>
+    <name>SecHive Reporting</name>
+    <description>Multi-format report generation (HTML, PDF, JSON, CSV, SARIF) with professional templates for SecHive Maven Plugin</description>
 
     <dependencies>
         <!-- Internal dependencies -->
         <dependency>
             <groupId>io.github.dodogeny</groupId>
-            <artifactId>bastion-vulnerability-community-db</artifactId>
+            <artifactId>sechive-vulnerability-db</artifactId>
         </dependency>
 
         <!-- Template Engine -->

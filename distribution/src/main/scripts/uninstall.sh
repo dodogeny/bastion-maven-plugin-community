@@ -1,6 +1,6 @@
 #!/bin/bash
 
-# Bastion Maven Plugin Uninstallation Script
+# SecHive Maven Plugin Uninstallation Script
 # Version: ${project.version}
 
 set -e
@@ -15,7 +15,7 @@ NC='\033[0m' # No Color
 # Functions
 print_header() {
     echo -e "${BLUE}"
-    echo "🗑️  Bastion Maven Plugin Uninstaller v${project.version}"
+    echo "🗑️  SecHive Maven Plugin Uninstaller v${project.version}"
     echo "========================================================"
     echo -e "${NC}"
 }
@@ -38,7 +38,7 @@ print_info() {
 
 confirm_uninstall() {
     echo
-    print_warning "This will remove Bastion Maven Plugin from your local Maven repository."
+    print_warning "This will remove SecHive Maven Plugin from your local Maven repository."
     print_info "Your project configurations (pom.xml) will not be modified."
     echo
     
@@ -56,32 +56,32 @@ confirm_uninstall() {
 }
 
 remove_from_local_repository() {
-    print_info "Removing Bastion Maven Plugin from local repository..."
+    print_info "Removing SecHive Maven Plugin from local repository..."
     
     # Get Maven local repository path
     LOCAL_REPO=$(mvn help:evaluate -Dexpression=settings.localRepository -q -DforceStdout 2>/dev/null || echo "$HOME/.m2/repository")
     
-    # Remove Bastion artifacts
-    BASTION_REPO_DIR="$LOCAL_REPO/mu/dodogeny"
+    # Remove SecHive artifacts
+    SECHIVE_REPO_DIR="$LOCAL_REPO/io/github/dodogeny"
     
-    if [ -d "$BASTION_REPO_DIR" ]; then
+    if [ -d "$SECHIVE_REPO_DIR" ]; then
         # List what will be removed
         print_info "The following artifacts will be removed:"
-        find "$BASTION_REPO_DIR" -name "bastion-*" -type d | sed 's/^/  - /'
+        find "$SECHIVE_REPO_DIR" -name "sechive-*" -type d | sed 's/^/  - /'
         echo
-        
-        # Remove all Bastion-related artifacts
-        find "$BASTION_REPO_DIR" -name "bastion-*" -type d -exec rm -rf {} + 2>/dev/null || true
-        
+
+        # Remove all SecHive-related artifacts
+        find "$SECHIVE_REPO_DIR" -name "sechive-*" -type d -exec rm -rf {} + 2>/dev/null || true
+
         # Remove parent directory if empty
-        if [ -d "$BASTION_REPO_DIR" ] && [ -z "$(ls -A "$BASTION_REPO_DIR" 2>/dev/null)" ]; then
-            rmdir "$BASTION_REPO_DIR"
+        if [ -d "$SECHIVE_REPO_DIR" ] && [ -z "$(ls -A "$SECHIVE_REPO_DIR" 2>/dev/null)" ]; then
+            rmdir "$SECHIVE_REPO_DIR"
             print_success "Removed empty parent directory"
         fi
         
         print_success "Removed from local repository: $LOCAL_REPO"
     else
-        print_warning "Bastion artifacts not found in local repository"
+        print_warning "SecHive artifacts not found in local repository"
     fi
 }
 
@@ -91,22 +91,22 @@ clean_maven_cache() {
     # Remove plugin registry cache
     PLUGIN_REGISTRY="$HOME/.m2/repository/.meta/maven-metadata-central.xml"
     if [ -f "$PLUGIN_REGISTRY" ]; then
-        # Remove Bastion entries from plugin registry
-        sed -i.bak '/mu\.dodogeny.*bastion/d' "$PLUGIN_REGISTRY" 2>/dev/null || true
+        # Remove SecHive entries from plugin registry
+        sed -i.bak '/io\.github\.dodogeny.*sechive/d' "$PLUGIN_REGISTRY" 2>/dev/null || true
         print_success "Cleaned plugin registry"
     fi
     
     # Clear Maven plugin cache
-    mvn dependency:purge-local-repository -DmanualInclude=mu.dodogeny:bastion-maven-plugin >/dev/null 2>&1 || true
+    mvn dependency:purge-local-repository -DmanualInclude=io.github.dodogeny:sechive-maven-plugin >/dev/null 2>&1 || true
 }
 
 remove_configuration_examples() {
     SCRIPT_DIR="$( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd )"
-    BASTION_HOME="$(dirname "$SCRIPT_DIR")"
+    SECHIVE_HOME="$(dirname "$SCRIPT_DIR")"
     
-    if [ -d "$BASTION_HOME/examples" ]; then
+    if [ -d "$SECHIVE_HOME/examples" ]; then
         print_info "Removing configuration examples..."
-        rm -rf "$BASTION_HOME/examples"
+        rm -rf "$SECHIVE_HOME/examples"
         print_success "Removed example configurations"
     fi
 }
@@ -114,7 +114,7 @@ remove_configuration_examples() {
 verify_removal() {
     print_info "Verifying removal..."
     
-    if mvn help:describe -Dplugin=mu.dodogeny:bastion-maven-plugin >/dev/null 2>&1; then
+    if mvn help:describe -Dplugin=io.github.dodogeny:sechive-maven-plugin >/dev/null 2>&1; then
         print_warning "Plugin may still be available (possibly from remote repository)"
         print_info "This is normal if the plugin was downloaded from Maven Central"
     else
@@ -127,13 +127,13 @@ show_cleanup_instructions() {
     print_info "Manual cleanup steps (if needed):"
     echo
     echo "1. Remove plugin from your project's pom.xml:"
-    echo "   - Delete the <plugin> block with groupId 'mu.dodogeny' and artifactId 'bastion-maven-plugin'"
+    echo "   - Delete the <plugin> block with groupId 'io.github.dodogeny' and artifactId 'sechive-maven-plugin'"
     echo
     echo "2. Clean your project:"
     echo "   mvn clean"
     echo
     echo "3. Remove generated reports (optional):"
-    echo "   rm -rf target/bastion-reports/"
+    echo "   rm -rf target/sechive-reports/"
     echo
     print_info "License files (if any) are not automatically removed for security."
     print_info "Please manually remove them from secure locations."
@@ -158,8 +158,8 @@ main() {
     echo
     echo -e "${GREEN}🎉 Uninstallation completed!${NC}"
     echo
-    print_info "Thank you for using Bastion Maven Plugin."
-    print_info "If you encounter any issues, please visit: https://github.com/dodogeny/bastion-maven-plugin/issues"
+    print_info "Thank you for using SecHive Maven Plugin."
+    print_info "If you encounter any issues, please visit: https://github.com/dodogeny/sechive-maven-plugin/issues"
 }
 
 # Run main function

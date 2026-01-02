@@ -35,12 +35,12 @@ class InMemoryTrendAnalysisTest {
     @Mock
     private Log mockLog;
 
-    private BastionScanMojo scanMojo;
+    private SecHiveScanMojo scanMojo;
     private InMemoryVulnerabilityDatabase inMemoryDatabase;
 
     @BeforeEach
     void setUp() throws Exception {
-        scanMojo = new BastionScanMojo();
+        scanMojo = new SecHiveScanMojo();
         scanMojo.setLog(mockLog);
         
         // Mock project details with lenient to avoid unnecessary stubbing errors
@@ -98,7 +98,7 @@ class InMemoryTrendAnalysisTest {
         ScanResult currentScan = createScanResult(10, 4, 3, 2, 1);
         
         // Call the trend analysis method
-        Method addTrendDataMethod = BastionScanMojo.class.getDeclaredMethod("addTrendDataFromInMemory", ScanResult.class);
+        Method addTrendDataMethod = SecHiveScanMojo.class.getDeclaredMethod("addTrendDataFromInMemory", ScanResult.class);
         addTrendDataMethod.setAccessible(true);
         addTrendDataMethod.invoke(scanMojo, currentScan);
         
@@ -128,7 +128,7 @@ class InMemoryTrendAnalysisTest {
         ScanResult currentScan = createScanResult(8, 3, 3, 2, 0);
         
         // Call trend analysis
-        Method addTrendDataMethod = BastionScanMojo.class.getDeclaredMethod("addTrendDataFromInMemory", ScanResult.class);
+        Method addTrendDataMethod = SecHiveScanMojo.class.getDeclaredMethod("addTrendDataFromInMemory", ScanResult.class);
         addTrendDataMethod.setAccessible(true);
         addTrendDataMethod.invoke(scanMojo, currentScan);
         
@@ -149,7 +149,7 @@ class InMemoryTrendAnalysisTest {
         ScanResult currentScan = createScanResult(10, 4, 3, 2, 1);
         
         // Call trend analysis method
-        Method addTrendDataMethod = BastionScanMojo.class.getDeclaredMethod("addTrendDataFromInMemory", ScanResult.class);
+        Method addTrendDataMethod = SecHiveScanMojo.class.getDeclaredMethod("addTrendDataFromInMemory", ScanResult.class);
         addTrendDataMethod.setAccessible(true);
         addTrendDataMethod.invoke(scanMojo, currentScan);
         
@@ -170,7 +170,7 @@ class InMemoryTrendAnalysisTest {
         ScanResult currentScan = createScanResult(5, 2, 2, 1, 0);
         
         // Call trend analysis - should not throw exception
-        Method addTrendDataMethod = BastionScanMojo.class.getDeclaredMethod("addTrendDataFromInMemory", ScanResult.class);
+        Method addTrendDataMethod = SecHiveScanMojo.class.getDeclaredMethod("addTrendDataFromInMemory", ScanResult.class);
         addTrendDataMethod.setAccessible(true);
         
         assertDoesNotThrow(() -> {
@@ -192,7 +192,7 @@ class InMemoryTrendAnalysisTest {
         ScanResult scanResult = createScanResult(5, 2, 2, 1, 0);
         
         // Call the store results method
-        Method storeResultsMethod = BastionScanMojo.class.getDeclaredMethod("storeResults", ScanResult.class);
+        Method storeResultsMethod = SecHiveScanMojo.class.getDeclaredMethod("storeResults", ScanResult.class);
         storeResultsMethod.setAccessible(true);
         storeResultsMethod.invoke(scanMojo, scanResult);
         
@@ -266,7 +266,7 @@ class InMemoryTrendAnalysisTest {
     // Helper methods
     
     private void setPrivateField(String fieldName, Object value) throws Exception {
-        Field field = BastionScanMojo.class.getDeclaredField(fieldName);
+        Field field = SecHiveScanMojo.class.getDeclaredField(fieldName);
         field.setAccessible(true);
         field.set(scanMojo, value);
     }

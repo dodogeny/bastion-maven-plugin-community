@@ -69,8 +69,8 @@ public class ResilientNvdUpdater {
         settings.setInt(Settings.KEYS.CONNECTION_READ_TIMEOUT, 120000);  // 2 minutes
 
         // Enable resilient parsing mode (custom property)
-        settings.setBoolean("bastion.resilient.parsing", true);
-        settings.setBoolean("bastion.skip.problematic.records", true);
+        settings.setBoolean("sechive.resilient.parsing", true);
+        settings.setBoolean("sechive.skip.problematic.records", true);
 
         // Set optimal batch size for NVD 2.0 API (balance between speed and reliability)
         // Note: With API key, NVD allows up to 2000 results per page
@@ -78,7 +78,7 @@ public class ResilientNvdUpdater {
 
         // Set aggressive caching to avoid re-downloading
         settings.setBoolean(Settings.KEYS.AUTO_UPDATE, true);
-        settings.setBoolean("bastion.aggressive.caching", true);
+        settings.setBoolean("sechive.aggressive.caching", true);
 
         logger.info("✅ Resilient settings configured");
     }
@@ -110,7 +110,7 @@ public class ResilientNvdUpdater {
         logger.info("🔄 Starting analysis with record-level error recovery...");
 
         // Set JVM properties to enable resilient mode
-        System.setProperty("bastion.resilient.mode", "true");
+        System.setProperty("sechive.resilient.mode", "true");
         System.setProperty("jackson.parser.allow-unresolved-object-ids", "true");
         System.setProperty("jackson.parser.ignore-unknown-properties", "true");
 

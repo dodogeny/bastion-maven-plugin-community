@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8"/>
     <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-    <title>Bastion Security Report - ${scanResult.projectName}</title>
+    <title>SecHive Security Report - ${scanResult.projectName}</title>
     <style>
         * { margin: 0; padding: 0; box-sizing: border-box; }
         
@@ -1264,7 +1264,7 @@
 <body>
     <div class="container">
         <header class="header">
-            <h1>🛡️ Bastion Security Report</h1>
+            <h1>🛡️ SecHive Security Report</h1>
             <div class="subtitle">Comprehensive Vulnerability Assessment for ${scanResult.projectName}</div>
         </header>
 
@@ -1945,7 +1945,7 @@
                         💰 <strong>$89/month</strong> • Save 12+ hours/month on security workflows
                     </p>
                 </div>
-                <a href="https://bastion-plugin.lemonsqueezy.com/"
+                <a href="https://sechive-plugin.lemonsqueezy.com/"
                    target="_blank"
                    rel="noopener noreferrer"
                    style="display: inline-block; background: #ffd700; color: #1a202c; padding: 15px 40px; text-decoration: none; font-weight: 700; font-size: 18px; border-radius: 8px; box-shadow: 0 4px 15px rgba(255, 215, 0, 0.4); transition: transform 0.2s, box-shadow 0.2s;"
@@ -1961,7 +1961,7 @@
 
         <footer class="footer">
             <div class="powered-by">
-                <strong>Powered by Bastion Maven Plugin v${bastionVersion!"1.1.0"}</strong><br/>
+                <strong>Powered by SecHive Maven Plugin v${sechiveVersion!"1.1.0"}</strong><br/>
                 Enterprise-grade vulnerability scanning for Maven projects
             </div>
             <div class="timestamp">

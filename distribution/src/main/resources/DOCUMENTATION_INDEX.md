@@ -1,6 +1,6 @@
-# Bastion Maven Plugin - Documentation Index
+# SecHive Maven Plugin - Documentation Index
 
-This documentation package contains comprehensive information about Bastion Maven Plugin v${project.version}.
+This documentation package contains comprehensive information about SecHive Maven Plugin v${project.version}.
 
 ## 📚 Documentation Structure
 
@@ -72,10 +72,10 @@ This documentation package contains comprehensive information about Bastion Mave
 
 ## 🏗️ Architecture Overview
 
-Bastion is designed as a multi-module Maven project:
+SecHive is designed as a multi-module Maven project:
 
 ```
-bastion-maven-plugin/
+sechive-maven-plugin/
 ├── vulnerability-db/     # Database layer (H2/PostgreSQL/MySQL)
 ├── scanner-core/         # Multi-source vulnerability scanning
 ├── reporting/           # Multi-format report generation
@@ -107,11 +107,11 @@ bastion-maven-plugin/
 
 ### 2. Run Your First Scan
 ```bash
-mvn mu.dodogeny:bastion-maven-plugin:${project.version}:scan
+mvn mu.dodogeny:sechive-maven-plugin:${project.version}:scan
 ```
 
 ### 3. Review Results
-Check `target/bastion-reports/` for generated security reports.
+Check `target/sechive-reports/` for generated security reports.
 
 ### 4. Configure for Your Needs
 - **Basic Setup**: [examples/basic-setup/](examples/basic-setup/)
@@ -122,9 +122,9 @@ Check `target/bastion-reports/` for generated security reports.
 
 ### Community Support (Open Source)
 - **Email**: it.dodogeny@gmail.com
-- **GitHub Issues**: [https://github.com/dodogeny/bastion-maven-plugin/issues](https://github.com/dodogeny/bastion-maven-plugin/issues)
-- **Stack Overflow**: Use tag `bastion-maven-plugin`
-- **Documentation**: [https://docs.dodogeny.mu/bastion](https://docs.dodogeny.mu/bastion)
+- **GitHub Issues**: [https://github.com/dodogeny/sechive-maven-plugin/issues](https://github.com/dodogeny/sechive-maven-plugin/issues)
+- **Stack Overflow**: Use tag `sechive-maven-plugin`
+- **Documentation**: [https://dodogeny.github.io/sechive-maven-plugin](https://dodogeny.github.io/sechive-maven-plugin)
 
 ### Enterprise Support (Commercial)
 - **Email**: it.dodogeny@gmail.com
@@ -133,9 +133,9 @@ Check `target/bastion-reports/` for generated security reports.
 - **Phone Support**: Available with Premium plans
 
 ### Additional Resources
-- **Official Website**: [https://bastion.dodogeny.mu](https://bastion.dodogeny.mu)
-- **Blog & Tutorials**: [https://blog.dodogeny.mu/bastion](https://blog.dodogeny.mu/bastion)
-- **Commercial Licensing**: [https://bastion.dodogeny.mu/pricing](https://bastion.dodogeny.mu/pricing)
+- **Official Website**: [https://github.com/dodogeny/sechive-maven-plugin](https://github.com/dodogeny/sechive-maven-plugin)
+- **Blog & Tutorials**: [https://dodogeny.github.io/sechive-maven-plugin](https://dodogeny.github.io/sechive-maven-plugin)
+- **Commercial Licensing**: [https://github.com/dodogeny/sechive-maven-plugin/pricing](https://github.com/dodogeny/sechive-maven-plugin/pricing)
 
 ## 🔄 Version Information
 
@@ -155,11 +155,11 @@ Check `target/bastion-reports/` for generated security reports.
 - **License**: Proprietary License
 - **Pricing**: One-time fee per organization
 - **Features**: Premium scanning, reporting, and support
-- **Purchase**: [https://bastion-plugin.lemonsqueezy.com/](https://bastion.dodogeny.mu/pricing)
+- **Purchase**: [https://github.com/dodogeny/sechive-maven-plugin/](https://github.com/dodogeny/sechive-maven-plugin/pricing)
 
 ---
 
-**Thank you for choosing Bastion Maven Plugin!**
+**Thank you for choosing SecHive Maven Plugin!**
 
 *Your enterprise fortress against security vulnerabilities*  
 *Developed with ❤️ by [Dodogeny](https://dodogeny.mu) in Mauritius 🇲🇺*

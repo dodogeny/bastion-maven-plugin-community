@@ -3,8 +3,8 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <meta name="description" content="Bastion Maven Plugin - Detect vulnerabilities in your Maven projects before they reach production. Free, open-source security scanning.">
-    <title>Bastion Maven Plugin - Your Security Fortress</title>
+    <meta name="description" content="SecHive Maven Plugin - Detect vulnerabilities in your Maven projects before they reach production. Free, open-source security scanning.">
+    <title>SecHive Maven Plugin - Your Security Fortress</title>
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
@@ -612,13 +612,13 @@
                 <svg viewBox="0 0 24 24" fill="currentColor">
                     <path d="M12 1L3 5v6c0 5.55 3.84 10.74 9 12 5.16-1.26 9-6.45 9-12V5l-9-4z"/>
                 </svg>
-                Bastion Maven Plugin
+                SecHive Maven Plugin
             </div>
             <ul class="nav-links">
                 <li><a href="#features">Features</a></li>
                 <li><a href="#pricing">Pricing</a></li>
-                <li><a href="https://github.com/dodogeny/bastion-maven-plugin-community">GitHub</a></li>
-                <li><a href="https://github.com/dodogeny/bastion-maven-plugin-community#quick-start">Docs</a></li>
+                <li><a href="https://github.com/dodogeny/sechive-maven-plugin" target="_blank" rel="noopener noreferrer">GitHub</a></li>
+                <li><a href="https://github.com/dodogeny/sechive-maven-plugin#quick-start" target="_blank" rel="noopener noreferrer">Docs</a></li>
             </ul>
         </div>
     </nav>
@@ -627,7 +627,7 @@
     <section class="hero">
         <div class="container">
             <h1 class="fade-in-up">Stop shipping vulnerabilities.<br>Start shipping confidence.</h1>
-            <p class="subtitle fade-in-up">Bastion automatically scans your Maven projects against 318,000+ known vulnerabilities from the National Vulnerability Database. Free, open-source, and zero-configuration.</p>
+            <p class="subtitle fade-in-up">SecHive automatically scans your Maven projects against 318,000+ known vulnerabilities from the National Vulnerability Database. Free, open-source, and zero-configuration.</p>
 
             <div class="cta-group">
                 <a href="#get-started" class="btn btn-primary">
@@ -636,7 +636,7 @@
                         <path fill-rule="evenodd" d="M10.293 3.293a1 1 0 011.414 0l6 6a1 1 0 010 1.414l-6 6a1 1 0 01-1.414-1.414L14.586 11H3a1 1 0 110-2h11.586l-4.293-4.293a1 1 0 010-1.414z" clip-rule="evenodd"/>
                     </svg>
                 </a>
-                <a href="https://github.com/dodogeny/bastion-maven-plugin-community" class="btn btn-secondary">
+                <a href="https://github.com/dodogeny/sechive-maven-plugin" target="_blank" rel="noopener noreferrer" class="btn btn-secondary">
                     View on GitHub
                 </a>
             </div>
@@ -701,11 +701,11 @@
     <section class="solution-section">
         <div class="container">
             <h2 class="section-title">Security Scanning That Actually Works</h2>
-            <p class="section-subtitle">Bastion turns security from a quarterly audit into a seamless part of your build process.</p>
+            <p class="section-subtitle">SecHive turns security from a quarterly audit into a seamless part of your build process.</p>
 
             <div class="before-after">
                 <div class="comparison-box before">
-                    <h3>❌ Before Bastion</h3>
+                    <h3>❌ Before SecHive</h3>
                     <div class="terminal">
                         <div style="color: #22c55e;">✓ BUILD SUCCESS</div>
                         <div style="color: #9ca3af;">Total time: 45 seconds</div>
@@ -714,7 +714,7 @@
                 </div>
 
                 <div class="comparison-box after">
-                    <h3>✅ After Bastion</h3>
+                    <h3>✅ After SecHive</h3>
                     <div class="terminal">
                         <div class="error">🔴 CRITICAL VULNERABILITIES DETECTED</div>
                         <br>
@@ -781,7 +781,7 @@
     <section class="case-study-section">
         <div class="container">
             <h2 class="section-title" style="color: white;">Real Results from Real Projects</h2>
-            <p class="section-subtitle" style="color: rgba(255,255,255,0.9);">How Bastion transformed security for a legacy enterprise application</p>
+            <p class="section-subtitle" style="color: rgba(255,255,255,0.9);">How SecHive transformed security for a legacy enterprise application</p>
 
             <div class="case-study-box">
                 <h3 style="font-size: 1.5rem; margin-bottom: 2rem;">150-module Maven monolith, 8 years old, 800+ dependencies</h3>
@@ -828,8 +828,8 @@
 <span style="color: #6b7280;">&lt;!-- Add to your pom.xml --&gt;</span>
 <span style="color: #c084fc;">&lt;plugin&gt;</span>
     <span style="color: #c084fc;">&lt;groupId&gt;</span>io.github.dodogeny<span style="color: #c084fc;">&lt;/groupId&gt;</span>
-    <span style="color: #c084fc;">&lt;artifactId&gt;</span>bastion-maven-community-plugin<span style="color: #c084fc;">&lt;/artifactId&gt;</span>
-    <span style="color: #c084fc;">&lt;version&gt;</span>1.2.8<span style="color: #c084fc;">&lt;/version&gt;</span>
+    <span style="color: #c084fc;">&lt;artifactId&gt;</span>sechive-maven-plugin<span style="color: #c084fc;">&lt;/artifactId&gt;</span>
+    <span style="color: #c084fc;">&lt;version&gt;</span>2.0.0<span style="color: #c084fc;">&lt;/version&gt;</span>
 <span style="color: #c084fc;">&lt;/plugin&gt;</span>
                     </div>
                 </div>
@@ -849,12 +849,12 @@ $ mvn clean verify
                         <span style="background: var(--primary); color: white; width: 40px; height: 40px; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-weight: 800;">3</span>
                         Review Your Report
                     </h3>
-                    <p style="color: var(--gray-600);">Open <code style="background: var(--gray-100); padding: 0.25rem 0.5rem; border-radius: 0.25rem;">target/bastion-reports/bastion-report.html</code> in your browser.</p>
+                    <p style="color: var(--gray-600);">Open <code style="background: var(--gray-100); padding: 0.25rem 0.5rem; border-radius: 0.25rem;">target/sechive-reports/sechive-report.html</code> in your browser.</p>
                     <p style="margin-top: 1rem; color: var(--success); font-weight: 600;">That's it! You're now scanning for vulnerabilities.</p>
                 </div>
 
                 <div style="text-align: center; margin-top: 3rem;">
-                    <a href="https://github.com/dodogeny/bastion-maven-plugin-community#quick-start" class="btn btn-primary" style="font-size: 1rem;">
+                    <a href="https://github.com/dodogeny/sechive-maven-plugin#quick-start" target="_blank" rel="noopener noreferrer" class="btn btn-primary" style="font-size: 1rem;">
                         View Full Documentation
                     </a>
                 </div>
@@ -943,7 +943,7 @@ $ mvn clean verify
 
                     <div style="background: white; padding: 2rem; border-radius: 0.75rem; box-shadow: 0 4px 20px -5px rgba(0,0,0,0.1); border-left: 4px solid #3b82f6;">
                         <h4 style="font-size: 1.25rem; margin-bottom: 0.75rem; display: flex; align-items: center; gap: 0.5rem;">
-                            📊 You Want to Optimize Performance (NEW in v1.2.8!)
+                            📊 You Want to Optimize Performance (NEW in v2.0.0!)
                         </h4>
                         <p style="color: var(--gray-700);">See exactly how your builds use resources with <strong>beautiful real-time dashboards</strong> showing CPU, memory, threads, and GC activity. Get <strong>AI-powered recommendations</strong> for JVM tuning and thread pool optimization. Identify bottlenecks instantly with color-coded sparkline graphs and intelligent alerting. <strong>NEW: Historical trend analysis</strong> automatically detects regressions by comparing each build to the last 10 builds, with actionable insights like "⚠ Memory usage increased by 15% - consider increasing heap size".</p>
                     </div>
@@ -1096,12 +1096,12 @@ $ mvn clean verify
             <div style="max-width: 900px; margin: 4rem auto; background: white; padding: 3rem; border-radius: 1rem; box-shadow: 0 10px 30px -10px rgba(0,0,0,0.1); border-left: 4px solid var(--success);">
                 <h3 style="font-size: 1.75rem; margin-bottom: 1.5rem; color: var(--primary);">✅ Zero-Downtime Subscription Model</h3>
                 <p style="color: var(--gray-700); font-size: 1.1rem; line-height: 1.8; margin-bottom: 1.5rem;">
-                    <strong>Your builds never fail.</strong> If your monthly subscription expires, Bastion automatically falls back to Community Edition - no interruptions, no broken builds.
+                    <strong>Your builds never fail.</strong> If your monthly subscription expires, SecHive automatically falls back to Community Edition - no interruptions, no broken builds.
                 </p>
                 <div style="background: var(--gray-50); padding: 2rem; border-radius: 0.75rem; font-family: 'JetBrains Mono', monospace; font-size: 0.9rem; line-height: 1.8;">
-⏰ Your Bastion Commercial Edition license has expired!<br>
+⏰ Your SecHive Commercial Edition license has expired!<br>
 🔄 Please renew your monthly subscription to continue using commercial features<br>
-💳 Visit https://bastion.dodogeny.mu/billing to renew your subscription<br>
+💳 Visit https://sechive.lemonsqueezy.com/billing to renew your subscription<br>
 🆓 Falling back to Open Source Edition for this scan<br>
 <br>
 📋 Community Edition features still available:<br>
@@ -1179,7 +1179,7 @@ $ mvn clean verify
             <div style="text-align: center; margin-top: 4rem;">
                 <h3 style="font-size: 2rem; margin-bottom: 1rem;">Try Commercial Edition Risk-Free for 14 Days</h3>
                 <p style="color: var(--gray-600); font-size: 1.1rem; margin-bottom: 2rem;">Monthly subscription with automatic renewal. Cancel anytime. See the difference yourself.</p>
-                <a href="https://bastion-plugin.lemonsqueezy.com/" class="btn btn-primary" style="font-size: 1.1rem; padding: 1.25rem 2.5rem;">
+                <a href="https://sechive.lemonsqueezy.com/" target="_blank" rel="noopener noreferrer" class="btn btn-primary" style="font-size: 1.1rem; padding: 1.25rem 2.5rem;">
                     Start Free Trial →
                 </a>
                 <p style="margin-top: 1rem; color: var(--gray-500); font-size: 0.95rem;">14-day free trial • Cancel anytime before billing • See the difference in your first week</p>
@@ -1212,7 +1212,7 @@ $ mvn clean verify
                         <li>✅ CI/CD Integration</li>
                         <li>✅ Community Support</li>
                     </ul>
-                    <a href="https://github.com/dodogeny/bastion-maven-plugin-community#quick-start" class="btn btn-secondary" style="width: 100%; justify-content: center; background: var(--gray-100); color: var(--gray-800);">
+                    <a href="https://github.com/dodogeny/sechive-maven-plugin#quick-start" target="_blank" rel="noopener noreferrer" class="btn btn-secondary" style="width: 100%; justify-content: center; background: var(--gray-100); color: var(--gray-800);">
                         Get Started
                     </a>
                 </div>
@@ -1246,7 +1246,7 @@ $ mvn clean verify
                         <li>🔌 REST API Access (programmatic queries)</li>
                         <li>🎯 24-hour SLA Priority Support</li>
                     </ul>
-                    <a href="https://bastion-plugin.lemonsqueezy.com/" class="btn btn-primary" style="width: 100%; justify-content: center;">
+                    <a href="https://sechive.lemonsqueezy.com/" target="_blank" rel="noopener noreferrer" class="btn btn-primary" style="width: 100%; justify-content: center;">
                         Start Free Trial
                     </a>
                     <p style="text-align: center; margin-top: 1rem; font-size: 0.9rem; color: var(--gray-600);">
@@ -1264,10 +1264,10 @@ $ mvn clean verify
             <h2>Ready to Secure Your Maven Projects?</h2>
             <p>Join developers who are shipping secure software with confidence.</p>
             <div class="cta-group" style="justify-content: center;">
-                <a href="https://github.com/dodogeny/bastion-maven-plugin-community#quick-start" class="btn btn-primary">
+                <a href="https://github.com/dodogeny/sechive-maven-plugin#quick-start" target="_blank" rel="noopener noreferrer" class="btn btn-primary">
                     Get Started Free
                 </a>
-                <a href="https://github.com/dodogeny/bastion-maven-plugin-community" class="btn btn-secondary">
+                <a href="https://github.com/dodogeny/sechive-maven-plugin" target="_blank" rel="noopener noreferrer" class="btn btn-secondary">
                     View on GitHub
                 </a>
             </div>
@@ -1279,7 +1279,7 @@ $ mvn clean verify
         <div class="container">
             <div class="footer-grid">
                 <div class="footer-section">
-                    <h4>Bastion Maven Plugin</h4>
+                    <h4>SecHive Maven Plugin</h4>
                     <p style="color: var(--gray-400); margin-top: 0.5rem;">
                         Open-source security scanning for Maven projects. Detect vulnerabilities before they reach production.
                     </p>
@@ -1290,34 +1290,34 @@ $ mvn clean verify
                     <ul class="footer-links">
                         <li><a href="#features">Features</a></li>
                         <li><a href="#pricing">Pricing</a></li>
-                        <li><a href="https://github.com/dodogeny/bastion-maven-plugin-community#quick-start">Documentation</a></li>
-                        <li><a href="https://github.com/dodogeny/bastion-maven-plugin-community/blob/main/distribution/src/main/resources/docs/CHANGELOG.md">Changelog</a></li>
+                        <li><a href="https://github.com/dodogeny/sechive-maven-plugin#quick-start" target="_blank" rel="noopener noreferrer">Documentation</a></li>
+                        <li><a href="https://github.com/dodogeny/sechive-maven-plugin/blob/main/distribution/src/main/resources/docs/CHANGELOG.md" target="_blank" rel="noopener noreferrer">Changelog</a></li>
                     </ul>
                 </div>
 
                 <div class="footer-section">
                     <h4>Community</h4>
                     <ul class="footer-links">
-                        <li><a href="https://github.com/dodogeny/bastion-maven-plugin-community">GitHub</a></li>
-                        <li><a href="https://github.com/dodogeny/bastion-maven-plugin-community/issues">Report Issues</a></li>
-                        <li><a href="https://github.com/dodogeny/bastion-maven-plugin-community/discussions">Discussions</a></li>
-                        <li><a href="https://github.com/dodogeny/bastion-maven-plugin-community#contributing">Contributing</a></li>
+                        <li><a href="https://github.com/dodogeny/sechive-maven-plugin" target="_blank" rel="noopener noreferrer">GitHub</a></li>
+                        <li><a href="https://github.com/dodogeny/sechive-maven-plugin/issues" target="_blank" rel="noopener noreferrer">Report Issues</a></li>
+                        <li><a href="https://github.com/dodogeny/sechive-maven-plugin/discussions" target="_blank" rel="noopener noreferrer">Discussions</a></li>
+                        <li><a href="https://github.com/dodogeny/sechive-maven-plugin#contributing" target="_blank" rel="noopener noreferrer">Contributing</a></li>
                     </ul>
                 </div>
 
                 <div class="footer-section">
                     <h4>Support</h4>
                     <ul class="footer-links">
-                        <li><a href="mailto:it.dodogeny@gmail.com">Email Support</a></li>
-                        <li><a href="https://github.com/dodogeny/bastion-maven-plugin-community#troubleshooting">Troubleshooting</a></li>
-                        <li><a href="https://bastion-plugin.lemonsqueezy.com/">Enterprise Trial</a></li>
+                        <li><a href="mailto:it.dodogeny@gmail.com" target="_blank" rel="noopener noreferrer">Email Support</a></li>
+                        <li><a href="https://github.com/dodogeny/sechive-maven-plugin#troubleshooting" target="_blank" rel="noopener noreferrer">Troubleshooting</a></li>
+                        <li><a href="https://sechive.lemonsqueezy.com/" target="_blank" rel="noopener noreferrer">Enterprise Trial</a></li>
                     </ul>
                 </div>
             </div>
 
             <div class="footer-bottom">
-                <p>&copy; 2024 Bastion Maven Plugin. Licensed under Apache License 2.0.</p>
-                <p style="margin-top: 0.5rem;">Built on <a href="https://owasp.org/www-project-dependency-check/" style="color: var(--primary);">OWASP Dependency-Check</a></p>
+                <p>&copy; 2024 SecHive Maven Plugin. Licensed under Apache License 2.0.</p>
+                <p style="margin-top: 0.5rem;">Built on <a href="https://owasp.org/www-project-dependency-check/" target="_blank" rel="noopener noreferrer" style="color: var(--primary);">OWASP Dependency-Check</a></p>
             </div>
         </div>
     </footer>

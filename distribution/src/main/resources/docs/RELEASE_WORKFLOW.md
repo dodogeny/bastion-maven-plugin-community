@@ -72,16 +72,16 @@ Previous version: v1.2.4
 **Example Output**:
 ```
 === Verifying Distribution Artifacts ===
-✓ bastion-maven-plugin-1.2.5-bin.zip (25M)
-✓ bastion-maven-plugin-1.2.5-bin-unix.tar.gz (24M)
-✓ bastion-maven-plugin-1.2.5-docs.zip (12M)
-✓ bastion-maven-plugin-1.2.5-src.zip (2.1M)
-✓ bastion-maven-plugin-1.2.5-src.tar.gz (1.9M)
+✓ sechive-maven-plugin-1.2.5-bin.zip (25M)
+✓ sechive-maven-plugin-1.2.5-bin-unix.tar.gz (24M)
+✓ sechive-maven-plugin-1.2.5-docs.zip (12M)
+✓ sechive-maven-plugin-1.2.5-src.zip (2.1M)
+✓ sechive-maven-plugin-1.2.5-src.tar.gz (1.9M)
 ✓ All artifacts present
 
 === Generating SHA-256 Checksums ===
-✓ Generated checksum for bastion-maven-plugin-1.2.5-bin.zip
-✓ Generated checksum for bastion-maven-plugin-1.2.5-bin-unix.tar.gz
+✓ Generated checksum for sechive-maven-plugin-1.2.5-bin.zip
+✓ Generated checksum for sechive-maven-plugin-1.2.5-bin-unix.tar.gz
 ...
 ```
 
@@ -279,13 +279,13 @@ The workflow continues when:
 
 Every artifact gets a checksum file:
 ```bash
-bastion-maven-plugin-1.2.5-bin.zip
-bastion-maven-plugin-1.2.5-bin.zip.sha256  # NEW
+sechive-maven-plugin-1.2.5-bin.zip
+sechive-maven-plugin-1.2.5-bin.zip.sha256  # NEW
 ```
 
 Users can verify:
 ```bash
-sha256sum -c bastion-maven-plugin-1.2.5-bin.zip.sha256
+sha256sum -c sechive-maven-plugin-1.2.5-bin.zip.sha256
 ```
 
 ### 2. GPG Key Validation
@@ -547,4 +547,4 @@ For issues with the workflow:
 
 **Last Updated**: 2025-12-18
 **Workflow Version**: 2.0 (Improved)
-**Maintained By**: Bastion Maven Plugin Team
+**Maintained By**: SecHive Maven Plugin Team

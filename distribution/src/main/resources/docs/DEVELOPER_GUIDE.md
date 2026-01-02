@@ -1,13 +1,13 @@
-# Bastion Maven Plugin - Developer Guide
+# SecHive Maven Plugin - Developer Guide
 
-This guide provides comprehensive information for developers working on the Bastion Maven Plugin codebase.
+This guide provides comprehensive information for developers working on the SecHive Maven Plugin codebase.
 
 ## 🏗️ Project Architecture
 
 ### Multi-Module Structure
 
 ```
-bastion-maven-plugin/
+sechive-maven-plugin/
 ├── vulnerability-db/         # Database layer and data models
 │   ├── src/main/java/mu/dodogeny/security/
 │   │   ├── database/        # VulnerabilityDatabase implementation
@@ -24,7 +24,7 @@ bastion-maven-plugin/
 │   └── src/main/resources/templates/       # Report templates
 ├── plugin/                  # Maven plugin implementation
 │   └── src/main/java/mu/dodogeny/security/plugin/
-│       └── BastionScanMojo.java             # Main plugin logic
+│       └── SecHiveScanMojo.java             # Main plugin logic
 ├── enterprise/              # Commercial features
 │   └── src/main/java/mu/dodogeny/security/
 │       ├── licensing/       # License validation
@@ -48,8 +48,8 @@ bastion-maven-plugin/
 
 ```bash
 # Clone the repository
-git clone https://github.com/dodogeny/bastion-maven-plugin.git
-cd bastion-maven-plugin
+git clone https://github.com/dodogeny/sechive-maven-plugin.git
+cd sechive-maven-plugin
 
 # Install dependencies and build all modules
 mvn clean install
@@ -85,17 +85,17 @@ mvn site
 
 ### Maven Plugin Development
 
-The main plugin implementation is in `BastionScanMojo.java`:
+The main plugin implementation is in `SecHiveScanMojo.java`:
 
 ```java
 @Mojo(name = "scan", 
       defaultPhase = LifecyclePhase.VERIFY,
       requiresDependencyResolution = ResolutionScope.COMPILE_PLUS_RUNTIME,
       threadSafe = true)
-public class BastionScanMojo extends AbstractMojo {
+public class SecHiveScanMojo extends AbstractMojo {
     
     // Plugin parameters with @Parameter annotations
-    @Parameter(property = "bastion.storage.useJsonFile", defaultValue = "false")
+    @Parameter(property = "sechive.storage.useJsonFile", defaultValue = "false")
     private boolean useJsonFileStorage;
     
     // Main execution method
@@ -234,7 +234,7 @@ mvn test jacoco:report
 mvn integration-test
 
 # Run specific integration test
-mvn test -Dtest=BastionScanMojoIntegrationTest
+mvn test -Dtest=SecHiveScanMojoIntegrationTest
 ```
 
 ### Test Data
@@ -249,7 +249,7 @@ Test projects are located in `src/test/resources/projects/`:
 ```java
 @Test
 public void testJsonStorageIntegration() throws Exception {
-    BastionScanMojo mojo = new BastionScanMojo();
+    SecHiveScanMojo mojo = new SecHiveScanMojo();
     mojo.setUseJsonFileStorage(true);
     mojo.setJsonFilePath("/tmp/test-vulnerabilities.json");
     mojo.execute();
@@ -309,7 +309,7 @@ VulnerabilityScanner.ScannerConfiguration config =
 config.setAutoUpdate(true);
 config.setSmartCachingEnabled(true);
 config.setCacheValidityHours(6);  // Check every 6 hours
-config.setCacheDirectory(System.getProperty("user.home") + "/.bastion/nvd-cache");
+config.setCacheDirectory(System.getProperty("user.home") + "/.sechive/nvd-cache");
 ```
 
 **Architecture:**
@@ -402,8 +402,8 @@ mvn deploy -P release
 mvn clean package -P distribution
 
 # Generated files:
-# target/bastion-maven-plugin-${version}-bin.zip
-# target/bastion-maven-plugin-${version}-bin-unix.tar.gz
+# target/sechive-maven-plugin-${version}-bin.zip
+# target/sechive-maven-plugin-${version}-bin-unix.tar.gz
 ```
 
 ## 📚 Adding New Features
@@ -426,8 +426,8 @@ public class MongoVulnerabilityStorage implements VulnerabilityStorage {
     }
 }
 
-// 2. Update BastionScanMojo configuration
-@Parameter(property = "bastion.storage.type", defaultValue = "h2")
+// 2. Update SecHiveScanMojo configuration
+@Parameter(property = "sechive.storage.type", defaultValue = "h2")
 private String storageType; // h2, postgresql, mysql, mongodb, json
 
 // 3. Add factory method for storage creation
@@ -484,7 +484,7 @@ public class SnykScanner implements VulnerabilityScanner {
 }
 
 // 2. Register scanner in plugin configuration
-@Parameter(property = "bastion.scanners", defaultValue = "owasp")
+@Parameter(property = "sechive.scanners", defaultValue = "owasp")
 private List<String> enabledScanners;
 
 // 3. Initialize and configure scanners
@@ -505,10 +505,10 @@ private VulnerabilityScanner initializeScanner() {
 
 ```bash
 # Maven debug mode
-mvn bastion:scan -X
+mvn sechive:scan -X
 
 # Specific logger configuration
-mvn bastion:scan -Dorg.slf4j.simpleLogger.log.io.github.dodogeny.security=DEBUG
+mvn sechive:scan -Dorg.slf4j.simpleLogger.log.io.github.dodogeny.security=DEBUG
 ```
 
 ### Common Development Issues

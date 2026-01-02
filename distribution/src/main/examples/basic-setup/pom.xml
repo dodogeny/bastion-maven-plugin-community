@@ -1,9 +1,9 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!--
-  Example: Basic Bastion Maven Plugin Setup
-  
+  Example: Basic SecHive Maven Plugin Setup
+
   This example shows the minimal configuration needed to get started
-  with Bastion Maven Plugin in Open Source Edition.
+  with SecHive Maven Plugin.
 -->
 <project xmlns="http://maven.apache.org/POM/4.0.0"
          xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
@@ -17,15 +17,15 @@
     <packaging>jar</packaging>
 
     <name>My Secure Application</name>
-    <description>Example application with Bastion security scanning</description>
+    <description>Example application with SecHive security scanning</description>
 
     <properties>
         <maven.compiler.source>11</maven.compiler.source>
         <maven.compiler.target>11</maven.compiler.target>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
-        
-        <!-- Bastion Plugin Version - Always use latest from Maven Central -->
-        <bastion.version>[1.2.0,)</bastion.version>
+
+        <!-- SecHive Plugin Version - Always use latest from Maven Central -->
+        <sechive.version>[2.0.0,)</sechive.version>
     </properties>
 
     <dependencies>
@@ -64,11 +64,11 @@
                 </configuration>
             </plugin>
 
-            <!-- Bastion Maven Plugin - Basic Configuration -->
+            <!-- SecHive Maven Plugin - Basic Configuration -->
             <plugin>
                 <groupId>io.github.dodogeny</groupId>
-                <artifactId>bastion-maven-community-plugin</artifactId>
-                <version>${bastion.version}</version>
+                <artifactId>sechive-maven-plugin</artifactId>
+                <version>${sechive.version}</version>
                 <executions>
                     <execution>
                         <id>security-scan</id>
@@ -91,8 +91,6 @@
                     <!-- Performance Configuration -->
                     <enableMultiModule>false</enableMultiModule>
                     <scannerTimeout>180000</scannerTimeout> <!-- 3 minutes -->
-                    
-                    <!-- Open Source Edition (default) -->
                 </configuration>
             </plugin>
         </plugins>
@@ -106,7 +104,7 @@
                 <plugins>
                     <plugin>
                         <groupId>io.github.dodogeny</groupId>
-                        <artifactId>bastion-maven-community-plugin</artifactId>
+                        <artifactId>sechive-maven-plugin</artifactId>
                         <executions>
                             <execution>
                                 <id>detailed-security-scan</id>

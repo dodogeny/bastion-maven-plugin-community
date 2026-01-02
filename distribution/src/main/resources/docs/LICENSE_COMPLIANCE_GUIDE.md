@@ -2,7 +2,7 @@
 
 ## Overview
 
-The Bastion Enterprise Edition includes comprehensive license compliance analysis to help you:
+The SecHive Enterprise Edition includes comprehensive license compliance analysis to help you:
 
 - **Detect licenses** automatically from your dependencies
 - **Enforce policies** with customizable license approval/blocklists
@@ -20,7 +20,7 @@ Add the license check goal to your Maven build:
 ```xml
 <plugin>
     <groupId>io.github.dodogeny</groupId>
-    <artifactId>bastion-maven-enterprise-plugin</artifactId>
+    <artifactId>sechive-maven-plugin-enterprise</artifactId>
     <version>@project.version@</version>
     <executions>
         <execution>
@@ -35,7 +35,7 @@ Add the license check goal to your Maven build:
 Run the license check:
 
 ```bash
-mvn bastion:license-check
+mvn sechive:license-check
 ```
 
 ## Configuration
@@ -158,7 +158,7 @@ Customize report generation:
 ```xml
 <plugin>
     <groupId>io.github.dodogeny</groupId>
-    <artifactId>bastion-maven-enterprise-plugin</artifactId>
+    <artifactId>sechive-maven-plugin-enterprise</artifactId>
     <version>@project.version@</version>
     <executions>
         <execution>
@@ -189,7 +189,7 @@ Customize report generation:
 
                 <!-- Report Settings -->
                 <generateReport>true</generateReport>
-                <reportDirectory>${project.build.directory}/bastion-reports</reportDirectory>
+                <reportDirectory>${project.build.directory}/sechive-reports</reportDirectory>
                 <reportFormat>TEXT,HTML,JSON</reportFormat>
             </configuration>
         </execution>
@@ -203,19 +203,19 @@ Override configuration from command line:
 
 ```bash
 # Use strict policy
-mvn bastion:license-check -Dbastion.license.policyPreset=STRICT
+mvn sechive:license-check -Dsechive.license.policyPreset=STRICT
 
 # Don't fail on violations (just report)
-mvn bastion:license-check -Dbastion.license.failOnViolation=false
+mvn sechive:license-check -Dsechive.license.failOnViolation=false
 
 # Generate only HTML report
-mvn bastion:license-check -Dbastion.license.reportFormat=HTML
+mvn sechive:license-check -Dsechive.license.reportFormat=HTML
 
 # Skip license check
-mvn bastion:license-check -Dbastion.license.skip=true
+mvn sechive:license-check -Dsechive.license.skip=true
 
 # Require OSI-approved licenses
-mvn bastion:license-check -Dbastion.license.requireOsiApproved=true
+mvn sechive:license-check -Dsechive.license.requireOsiApproved=true
 ```
 
 ## Understanding Reports
@@ -256,7 +256,7 @@ Professional web-based report with:
 - Drill-down capabilities
 - Print-friendly layout
 
-Open `target/bastion-reports/license-report.html` in your browser.
+Open `target/sechive-reports/license-report.html` in your browser.
 
 ### JSON Report
 
@@ -334,7 +334,7 @@ Component,License ID,License Name,Category,OSI Approved,Has Violation
 **Solution:** Override license detection:
 - Create custom license mapping configuration
 - Document exceptions in your policy
-- Report issue to Bastion support
+- Report issue to SecHive support
 
 ### Build Failures
 
@@ -344,7 +344,7 @@ Component,License ID,License Name,Category,OSI Approved,Has Violation
 1. Review the violation report
 2. Replace violating dependencies with approved alternatives
 3. Request exception approval (if justified)
-4. Temporarily use `-Dbastion.license.failOnViolation=false`
+4. Temporarily use `-Dsechive.license.failOnViolation=false`
 
 ## Integration with CI/CD
 
@@ -353,11 +353,11 @@ Component,License ID,License Name,Category,OSI Approved,Has Violation
 ```groovy
 stage('License Compliance') {
     steps {
-        sh 'mvn bastion:license-check'
+        sh 'mvn sechive:license-check'
 
         // Publish HTML report
         publishHTML([
-            reportDir: 'target/bastion-reports',
+            reportDir: 'target/sechive-reports',
             reportFiles: 'license-report.html',
             reportName: 'License Compliance Report'
         ])
@@ -369,14 +369,14 @@ stage('License Compliance') {
 
 ```yaml
 - name: License Compliance Check
-  run: mvn bastion:license-check
+  run: mvn sechive:license-check
 
 - name: Upload Report
   uses: actions/upload-artifact@v3
   if: always()
   with:
     name: license-report
-    path: target/bastion-reports/
+    path: target/sechive-reports/
 ```
 
 ### GitLab CI
@@ -384,12 +384,12 @@ stage('License Compliance') {
 ```yaml
 license-check:
   script:
-    - mvn bastion:license-check
+    - mvn sechive:license-check
   artifacts:
     reports:
-      license_scanning: target/bastion-reports/license-report.json
+      license_scanning: target/sechive-reports/license-report.json
     paths:
-      - target/bastion-reports/
+      - target/sechive-reports/
 ```
 
 ## Best Practices
@@ -405,11 +405,11 @@ license-check:
 ## Support
 
 For issues or questions:
-- GitHub Issues: https://github.com/dodogeny/bastion-maven-plugin-enterprise/issues
-- Email: support@bastion-security.com
-- Documentation: https://bastion-security.com/docs
+- GitHub Issues: https://github.com/dodogeny/sechive-maven-plugin-enterprise/issues
+- Email: support@sechive.io
+- Documentation: https://sechive.io/docs
 
 ## License
 
-Bastion Maven Plugin Enterprise is licensed under Apache-2.0.
-This documentation is © 2025 Bastion Security.
+SecHive Maven Plugin Enterprise is licensed under Apache-2.0.
+This documentation is © 2025 SecHive Security.

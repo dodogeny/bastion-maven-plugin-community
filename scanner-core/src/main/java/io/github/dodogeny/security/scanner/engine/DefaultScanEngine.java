@@ -29,7 +29,7 @@ import java.util.concurrent.TimeUnit;
 public class DefaultScanEngine implements ScanEngine {
 
     private static final Logger logger = LoggerFactory.getLogger(DefaultScanEngine.class);
-    private static final String ENGINE_NAME = "Bastion Scan Engine";
+    private static final String ENGINE_NAME = "SecHive Scan Engine";
     private static final String ENGINE_VERSION = "1.0.0";
 
     private final VulnerabilityScanner scanner;

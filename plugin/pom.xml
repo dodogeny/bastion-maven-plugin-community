@@ -7,16 +7,16 @@
 
     <parent>
         <groupId>io.github.dodogeny</groupId>
-        <artifactId>bastion-maven-plugin-parent</artifactId>
+        <artifactId>sechive-maven-plugin-parent</artifactId>
         <version>${revision}</version>
     </parent>
 
-    <artifactId>bastion-maven-community-plugin</artifactId>
+    <artifactId>sechive-maven-plugin</artifactId>
     <packaging>maven-plugin</packaging>
 
-    <name>Bastion Maven Plugin - Community Edition</name>
-    <description>Community edition Maven plugin implementation for Bastion vulnerability scanning with basic reporting</description>
-    <url>https://github.com/dodogeny/bastion-maven-plugin-community</url>
+    <name>SecHive Maven Plugin</name>
+    <description>SecHive Maven Plugin - Open source vulnerability scanner for Maven projects with comprehensive reporting</description>
+    <url>https://github.com/dodogeny/sechive-maven-plugin</url>
 
     <licenses>
         <license>
@@ -35,26 +35,26 @@
     </developers>
 
     <scm>
-        <url>https://github.com/dodogeny/bastion-maven-plugin-community</url>
-        <connection>scm:git:git://github.com/dodogeny/bastion-maven-plugin-community.git</connection>
-        <developerConnection>scm:git:ssh://git@github.com:dodogeny/bastion-maven-plugin-community.git</developerConnection>
+        <url>https://github.com/dodogeny/sechive-maven-plugin</url>
+        <connection>scm:git:git://github.com/dodogeny/sechive-maven-plugin.git</connection>
+        <developerConnection>scm:git:ssh://git@github.com:dodogeny/sechive-maven-plugin.git</developerConnection>
     </scm>
 
     <dependencies>
         <!-- Internal dependencies -->
         <dependency>
             <groupId>io.github.dodogeny</groupId>
-            <artifactId>bastion-vulnerability-community-db</artifactId>
+            <artifactId>sechive-vulnerability-db</artifactId>
             <version>${project.version}</version>
         </dependency>
         <dependency>
             <groupId>io.github.dodogeny</groupId>
-            <artifactId>bastion-scanner-community-core</artifactId>
+            <artifactId>sechive-scanner-core</artifactId>
             <version>${project.version}</version>
         </dependency>
         <dependency>
             <groupId>io.github.dodogeny</groupId>
-            <artifactId>bastion-reporting-community</artifactId>
+            <artifactId>sechive-reporting</artifactId>
             <version>${project.version}</version>
         </dependency>
 

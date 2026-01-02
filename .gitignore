@@ -42,6 +42,7 @@ flattened-pom.xml
 .project
 .classpath
 .factorypath
+.run/
 
 # Eclipse specific
 .metadata
@@ -84,9 +85,9 @@ Thumbs.db
 *.csr
 
 # Application specific
-# Bastion vulnerability database files
-.m2/bastion-security-cache/
-bastion-security-cache/
+# SecHive vulnerability database files
+.m2/sechive-security-cache/
+sechive-security-cache/
 vulnerability-*.db
 *.db
 *.mv.db

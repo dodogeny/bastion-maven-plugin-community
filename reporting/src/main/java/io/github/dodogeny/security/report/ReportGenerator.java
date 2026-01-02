@@ -149,7 +149,7 @@ public class ReportGenerator {
     
     private void generateJsonReport(ScanResult scanResult, String outputPath) throws IOException {
         Map<String, Object> report = new LinkedHashMap<>();
-        report.put("bastion", createBastionMetadata());
+        report.put("sechive", createSecHiveMetadata());
         report.put("scan", createScanMetadata(scanResult));
         report.put("summary", createSummary(scanResult));
         report.put("dependencies", scanResult.getDependencies());
@@ -317,7 +317,7 @@ public class ReportGenerator {
     private Map<String, Object> createTemplateModel(ScanResult scanResult) {
         Map<String, Object> model = new HashMap<>();
         model.put("scanResult", scanResult);
-        model.put("bastionVersion", "1.0.0");
+        model.put("sechiveVersion", "2.0.0");
         model.put("generatedTime", java.time.LocalDateTime.now());
         model.put("summary", createSummary(scanResult));
         model.put("dependencyBreakdown", createDependencyBreakdown(scanResult));
@@ -328,13 +328,13 @@ public class ReportGenerator {
         return model;
     }
     
-    private Map<String, Object> createBastionMetadata() {
+    private Map<String, Object> createSecHiveMetadata() {
         Map<String, Object> metadata = new LinkedHashMap<>();
-        metadata.put("version", "1.0.0");
-        metadata.put("name", "Bastion Maven Plugin");
-        metadata.put("description", "Enterprise-grade vulnerability scanner");
-        metadata.put("website", "https://dodogeny.mu/bastion-maven-plugin");
-        
+        metadata.put("version", "2.0.0");
+        metadata.put("name", "SecHive Maven Plugin");
+        metadata.put("description", "Open source vulnerability scanner for Maven projects");
+        metadata.put("website", "https://github.com/dodogeny/sechive-maven-plugin");
+
         return metadata;
     }
     
@@ -499,7 +499,7 @@ public class ReportGenerator {
         
         Map<String, Object> tool = new LinkedHashMap<>();
         Map<String, Object> driver = new LinkedHashMap<>();
-        driver.put("name", "Bastion Maven Plugin");
+        driver.put("name", "SecHive Maven Plugin");
         driver.put("version", "1.0.0");
         tool.put("driver", driver);
         run.put("tool", tool);

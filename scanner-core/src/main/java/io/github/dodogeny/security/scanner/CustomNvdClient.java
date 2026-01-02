@@ -199,7 +199,7 @@ public class CustomNvdClient {
         }
 
         // Add fallback paths
-        possiblePaths.add(userHome + "/.bastion/nvd-cache/odc");
+        possiblePaths.add(userHome + "/.sechive/nvd-cache/odc");
 
         for (String path : possiblePaths) {
             File dbFile = new File(path + ".mv.db");

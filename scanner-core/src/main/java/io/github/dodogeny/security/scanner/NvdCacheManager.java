@@ -82,7 +82,7 @@ public class NvdCacheManager {
                 return false;
             }
             
-            // Enhanced validation: Check both Bastion cache and OWASP database integrity
+            // Enhanced validation: Check both SecHive cache and OWASP database integrity
             if (!validateBothCacheSystems()) {
                 return false;
             }
@@ -124,51 +124,51 @@ public class NvdCacheManager {
     }
     
     /**
-     * Validates both Bastion cache files and OWASP database integrity.
+     * Validates both SecHive cache files and OWASP database integrity.
      * This comprehensive check prevents false positive cache validation.
      * In test environments, we're more lenient about database file requirements.
      */
     private boolean validateBothCacheSystems() {
-        boolean bastionCacheValid = validateBastionCache();
+        boolean sechiveCacheValid = validateSecHiveCache();
         boolean owaspDbValid = hasActualDatabaseFiles();
         boolean isTestEnvironment = isTestEnvironment();
         
         // In test environments, we don't require actual OWASP database files
         // since tests may not have downloaded the full NVD database
         if (isTestEnvironment) {
-            if (bastionCacheValid) {
-                logger.debug("✅ Test environment - Bastion cache validated (skipping OWASP database check)");
+            if (sechiveCacheValid) {
+                logger.debug("✅ Test environment - SecHive cache validated (skipping OWASP database check)");
                 return true;
             } else {
-                logger.debug("❌ Test environment - Bastion cache invalid");
+                logger.debug("❌ Test environment - SecHive cache invalid");
                 return false;
             }
         }
         
         // Production environment - require both systems to be valid
-        if (!bastionCacheValid && !owaspDbValid) {
+        if (!sechiveCacheValid && !owaspDbValid) {
             logger.info("❌ Both cache systems invalid - cache update required");
             return false;
-        } else if (!bastionCacheValid) {
-            logger.info("❌ Bastion cache invalid but OWASP database exists - cache update required");
+        } else if (!sechiveCacheValid) {
+            logger.info("❌ SecHive cache invalid but OWASP database exists - cache update required");
             return false;
         } else if (!owaspDbValid) {
             logger.info("❌ OWASP database validation failed - cache update required");
             return false;
         } else {
-            logger.debug("✅ Both Bastion cache and OWASP database validated successfully");
+            logger.debug("✅ Both SecHive cache and OWASP database validated successfully");
             return true;
         }
     }
     
     /**
-     * Validates the Bastion-specific cache files in ~/.bastion/nvd-cache
+     * Validates the SecHive-specific cache files in ~/.sechive/nvd-cache
      */
-    private boolean validateBastionCache() {
+    private boolean validateSecHiveCache() {
         try {
             File cacheDir = new File(cacheDirectory);
             if (!cacheDir.exists() || !cacheDir.isDirectory()) {
-                logger.debug("Bastion cache directory does not exist: {}", cacheDirectory);
+                logger.debug("SecHive cache directory does not exist: {}", cacheDirectory);
                 return false;
             }
             
@@ -177,7 +177,7 @@ public class NvdCacheManager {
             for (String fileName : requiredFiles) {
                 File file = new File(cacheDir, fileName);
                 if (!file.exists() || file.length() == 0) {
-                    logger.debug("Required Bastion cache file missing or empty: {}", fileName);
+                    logger.debug("Required SecHive cache file missing or empty: {}", fileName);
                     return false;
                 }
             }
@@ -185,14 +185,14 @@ public class NvdCacheManager {
             // For test environments, just having the metadata file is sufficient
             boolean isTestEnv = isTestEnvironment();
             if (isTestEnv) {
-                logger.debug("Test environment - Bastion cache validation passed (metadata file exists)");
+                logger.debug("Test environment - SecHive cache validation passed (metadata file exists)");
                 return true;
             }
             
             // For production environments, check for substantial content
             File[] cacheFiles = cacheDir.listFiles();
             if (cacheFiles == null || cacheFiles.length == 0) {
-                logger.debug("Bastion cache directory is empty");
+                logger.debug("SecHive cache directory is empty");
                 return false;
             }
             
@@ -205,16 +205,16 @@ public class NvdCacheManager {
             
             // Cache should have some substantial content (at least 1KB for metadata)
             if (totalCacheSize < 1024) {
-                logger.debug("Bastion cache content too small: {} bytes", totalCacheSize);
+                logger.debug("SecHive cache content too small: {} bytes", totalCacheSize);
                 return false;
             }
             
-            logger.debug("Bastion cache validation passed: {} files, {} KB total", 
+            logger.debug("SecHive cache validation passed: {} files, {} KB total", 
                         cacheFiles.length, totalCacheSize / 1024);
             return true;
             
         } catch (Exception e) {
-            logger.debug("Error validating Bastion cache: {}", e.getMessage());
+            logger.debug("Error validating SecHive cache: {}", e.getMessage());
             return false;
         }
     }
@@ -544,7 +544,7 @@ public class NvdCacheManager {
             connection.setRequestMethod("GET");
             connection.setConnectTimeout(connectionTimeoutMs);
             connection.setReadTimeout(connectionTimeoutMs);
-            connection.setRequestProperty("User-Agent", "Bastion-Security-Scanner/2.0");
+            connection.setRequestProperty("User-Agent", "SecHive-Security-Scanner/2.0");
             
             if (apiKey != null && !apiKey.trim().isEmpty()) {
                 connection.setRequestProperty("apiKey", apiKey.trim());
@@ -604,7 +604,7 @@ public class NvdCacheManager {
             connection.setRequestMethod("HEAD");
             connection.setConnectTimeout(connectionTimeoutMs);
             connection.setReadTimeout(connectionTimeoutMs);
-            connection.setRequestProperty("User-Agent", "Bastion-Security-Scanner/1.0");
+            connection.setRequestProperty("User-Agent", "SecHive-Security-Scanner/1.0");
             
             int responseCode = connection.getResponseCode();
             if (responseCode == HttpURLConnection.HTTP_OK) {
@@ -645,7 +645,7 @@ public class NvdCacheManager {
     private void saveCacheMetadata(Properties properties) throws IOException {
         File metadataFile = new File(cacheDirectory, CACHE_METADATA_FILE);
         try (FileOutputStream fos = new FileOutputStream(metadataFile)) {
-            properties.store(fos, "NVD Cache Metadata - Generated by Bastion Security Scanner");
+            properties.store(fos, "NVD Cache Metadata - Generated by SecHive Security Scanner");
         }
     }
     
@@ -663,7 +663,7 @@ public class NvdCacheManager {
     
     private String getDefaultCacheDirectory() {
         String userHome = System.getProperty("user.home");
-        return Paths.get(userHome, ".bastion", "nvd-cache").toString();
+        return Paths.get(userHome, ".sechive", "nvd-cache").toString();
     }
     
     private String formatTimestamp(long timestamp) {

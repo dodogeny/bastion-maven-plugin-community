@@ -50,7 +50,7 @@ class ReportGeneratorTest {
         // Verify HTML content
         String content = new String(Files.readAllBytes(reportFile.toPath()), StandardCharsets.UTF_8);
         assertTrue(content.contains("<!DOCTYPE html>"), "Should contain valid HTML structure");
-        assertTrue(content.contains("Bastion Security Report"), "Should contain report title");
+        assertTrue(content.contains("SecHive Security Report"), "Should contain report title");
         assertTrue(content.contains(testScanResult.getProjectName()), "Should contain project name");
         assertTrue(content.contains("CVE-2021-1234"), "Should contain vulnerability ID");
     }

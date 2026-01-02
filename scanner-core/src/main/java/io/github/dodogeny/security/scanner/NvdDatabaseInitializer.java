@@ -424,7 +424,7 @@ public class NvdDatabaseInitializer {
             props.setProperty("validated.time", String.valueOf(System.currentTimeMillis()));
 
             try (FileOutputStream fos = new FileOutputStream(checksumFile)) {
-                props.store(fos, "NVD Database Checksum - Bastion Security Scanner");
+                props.store(fos, "NVD Database Checksum - SecHive Security Scanner");
             }
         } catch (Exception e) {
             logger.warn("Could not store database checksum: {}", e.getMessage());
@@ -469,7 +469,7 @@ public class NvdDatabaseInitializer {
             conn.setRequestMethod("GET");
             conn.setConnectTimeout(CONNECTION_TIMEOUT_MS);
             conn.setReadTimeout(READ_TIMEOUT_MS);
-            conn.setRequestProperty("User-Agent", "Bastion-Security-Scanner/2.0");
+            conn.setRequestProperty("User-Agent", "SecHive-Security-Scanner/2.0");
 
             if (apiKey != null && !apiKey.trim().isEmpty()) {
                 conn.setRequestProperty("apiKey", apiKey.trim());
@@ -588,7 +588,7 @@ public class NvdDatabaseInitializer {
             props.setProperty("api.key.used", String.valueOf(result.isApiKeyConfigured()));
 
             try (FileOutputStream fos = new FileOutputStream(markerFile)) {
-                props.store(fos, "NVD Database Initialization Marker - Bastion");
+                props.store(fos, "NVD Database Initialization Marker - SecHive");
             }
 
             // Update download status
@@ -643,7 +643,7 @@ public class NvdDatabaseInitializer {
             props.setProperty("validation.passed", String.valueOf(result.isValid()));
 
             try (FileOutputStream fos = new FileOutputStream(metadataFile)) {
-                props.store(fos, "NVD Cache Metadata - Bastion Security Scanner");
+                props.store(fos, "NVD Cache Metadata - SecHive Security Scanner");
             }
 
         } catch (Exception e) {

@@ -26,7 +26,7 @@ import static org.mockito.Mockito.*;
 
 /**
  * Integration test that creates a vulnerable Maven project with known CVEs
- * and verifies that the Bastion scanner can detect and report them properly.
+ * and verifies that the SecHive scanner can detect and report them properly.
  *
  * This test simulates scanning a real project with vulnerable dependencies:
  * - Log4j 2.14.1 (CVE-2021-44228 - Log4Shell)
@@ -49,7 +49,7 @@ class VulnerableProjectScanTest {
     @Mock
     private Log mockLog;
 
-    private BastionScanMojo scanMojo;
+    private SecHiveScanMojo scanMojo;
 
     @TempDir
     private Path tempDir;
@@ -74,8 +74,8 @@ class VulnerableProjectScanTest {
      * Creates a scan mojo with default test configuration using the builder pattern.
      * This eliminates brittle reflection-based field setting.
      */
-    private BastionScanMojo createDefaultScanMojo() {
-        BastionScanMojo mojo = new BastionScanMojo();
+    private SecHiveScanMojo createDefaultScanMojo() {
+        SecHiveScanMojo mojo = new SecHiveScanMojo();
         mojo.testConfig()
             .withProject(mockProject)
             .withSession(mockSession)
@@ -350,7 +350,7 @@ class VulnerableProjectScanTest {
 
         // Should not throw and should log skip message
         assertDoesNotThrow(() -> scanMojo.execute());
-        verify(mockLog).info("Bastion scan skipped by configuration");
+        verify(mockLog).info("SecHive scan skipped by configuration");
     }
 
     @Test
@@ -550,7 +550,7 @@ class VulnerableProjectScanTest {
                 "    <packaging>jar</packaging>\n" +
                 "\n" +
                 "    <name>Vulnerable Test Project</name>\n" +
-                "    <description>Sample Maven project with vulnerable dependencies for testing Bastion Maven Plugin</description>\n" +
+                "    <description>Sample Maven project with vulnerable dependencies for testing SecHive Maven Plugin</description>\n" +
                 "\n" +
                 "    <properties>\n" +
                 "        <maven.compiler.source>1.8</maven.compiler.source>\n" +

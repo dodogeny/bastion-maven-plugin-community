@@ -36,11 +36,11 @@ class EnhancedJarAnalysisTest {
     @Mock
     private Log mockLog;
 
-    private BastionScanMojo scanMojo;
+    private SecHiveScanMojo scanMojo;
 
     @BeforeEach
     void setUp() {
-        scanMojo = new BastionScanMojo();
+        scanMojo = new SecHiveScanMojo();
         scanMojo.setLog(mockLog);
 
         lenient().when(mockProject.getGroupId()).thenReturn("com.test");
@@ -66,7 +66,7 @@ class EnhancedJarAnalysisTest {
         ScanResult currentResult = createScanResultWithoutVulnerability();
 
         // Call the jar analysis method
-        Method jarAnalysisMethod = BastionScanMojo.class.getDeclaredMethod(
+        Method jarAnalysisMethod = SecHiveScanMojo.class.getDeclaredMethod(
             "generateJarAnalysis", ScanResult.class, ScanResult.class);
         jarAnalysisMethod.setAccessible(true);
         jarAnalysisMethod.invoke(scanMojo, currentResult, previousResult);
@@ -115,7 +115,7 @@ class EnhancedJarAnalysisTest {
         );
 
         // Call the jar analysis method
-        Method jarAnalysisMethod = BastionScanMojo.class.getDeclaredMethod(
+        Method jarAnalysisMethod = SecHiveScanMojo.class.getDeclaredMethod(
             "generateJarAnalysis", ScanResult.class, ScanResult.class);
         jarAnalysisMethod.setAccessible(true);
         jarAnalysisMethod.invoke(scanMojo, currentResult, previousResult);
@@ -167,7 +167,7 @@ class EnhancedJarAnalysisTest {
         );
 
         // Call the jar analysis method
-        Method jarAnalysisMethod = BastionScanMojo.class.getDeclaredMethod(
+        Method jarAnalysisMethod = SecHiveScanMojo.class.getDeclaredMethod(
             "generateJarAnalysis", ScanResult.class, ScanResult.class);
         jarAnalysisMethod.setAccessible(true);
         jarAnalysisMethod.invoke(scanMojo, currentResult, previousResult);
@@ -212,7 +212,7 @@ class EnhancedJarAnalysisTest {
         ScanResult currentResult = createComplexCurrentScan();
 
         // Call the jar analysis method
-        Method jarAnalysisMethod = BastionScanMojo.class.getDeclaredMethod(
+        Method jarAnalysisMethod = SecHiveScanMojo.class.getDeclaredMethod(
             "generateJarAnalysis", ScanResult.class, ScanResult.class);
         jarAnalysisMethod.setAccessible(true);
         jarAnalysisMethod.invoke(scanMojo, currentResult, previousResult);
@@ -245,7 +245,7 @@ class EnhancedJarAnalysisTest {
         );
         currentResult.setTotalDependencies(25);
 
-        Method jarAnalysisMethod = BastionScanMojo.class.getDeclaredMethod(
+        Method jarAnalysisMethod = SecHiveScanMojo.class.getDeclaredMethod(
             "generateJarAnalysis", ScanResult.class, ScanResult.class);
         jarAnalysisMethod.setAccessible(true);
         jarAnalysisMethod.invoke(scanMojo, currentResult, previousResult);
@@ -265,7 +265,7 @@ class EnhancedJarAnalysisTest {
         currentResult.setVulnerabilities(new ArrayList<>());
         currentResult.setTotalDependencies(0);
 
-        Method jarAnalysisMethod = BastionScanMojo.class.getDeclaredMethod(
+        Method jarAnalysisMethod = SecHiveScanMojo.class.getDeclaredMethod(
             "generateJarAnalysis", ScanResult.class, ScanResult.class);
         jarAnalysisMethod.setAccessible(true);
         jarAnalysisMethod.invoke(scanMojo, currentResult, previousResult);

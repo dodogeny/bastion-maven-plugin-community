@@ -9,7 +9,7 @@
     </formats>
     
     <includeBaseDirectory>true</includeBaseDirectory>
-    <baseDirectory>bastion-maven-plugin-${project.version}</baseDirectory>
+    <baseDirectory>sechive-maven-plugin-${project.version}</baseDirectory>
 
     <fileSets>
         <!-- Root documentation files -->
@@ -77,10 +77,10 @@
         <moduleSet>
             <useAllReactorProjects>true</useAllReactorProjects>
             <includes>
-                <include>io.github.dodogeny:bastion-vulnerability-community-db</include>
-                <include>io.github.dodogeny:bastion-scanner-community-core</include>
-                <include>io.github.dodogeny:bastion-reporting-community</include>
-                <include>io.github.dodogeny:bastion-maven-community-plugin</include>
+                <include>io.github.dodogeny:sechive-vulnerability-db</include>
+                <include>io.github.dodogeny:sechive-scanner-core</include>
+                <include>io.github.dodogeny:sechive-reporting</include>
+                <include>io.github.dodogeny:sechive-maven-plugin</include>
             </includes>
             <binaries>
                 <outputDirectory>lib/</outputDirectory>

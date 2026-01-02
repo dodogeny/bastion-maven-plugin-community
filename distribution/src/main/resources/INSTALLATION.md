@@ -1,4 +1,4 @@
-# Bastion Maven Plugin - Installation Guide
+# SecHive Maven Plugin - Installation Guide
 
 This guide covers installation methods for both Community and Commercial editions.
 
@@ -6,14 +6,14 @@ This guide covers installation methods for both Community and Commercial edition
 
 **Always use the latest stable version from Maven Central:**
 
-[![Maven Central](https://maven-badges.herokuapp.com/maven-central/io.github.dodogeny/bastion-maven-community-plugin/badge.svg)](https://maven-badges.herokuapp.com/maven-central/io.github.dodogeny/bastion-maven-community-plugin)
+[![Maven Central](https://maven-badges.herokuapp.com/maven-central/io.github.dodogeny/sechive-maven-plugin/badge.svg)](https://maven-badges.herokuapp.com/maven-central/io.github.dodogeny/sechive-maven-plugin)
 
 ```bash
 # Quick version lookup
-mvn help:evaluate -Dexpression=latest.version -DgroupId=io.github.dodogeny -DartifactId=bastion-maven-community-plugin
+mvn help:evaluate -Dexpression=latest.version -DgroupId=io.github.dodogeny -DartifactId=sechive-maven-plugin
 
 # Or visit Maven Central directly:
-# https://search.maven.org/artifact/io.github.dodogeny/bastion-maven-community-plugin
+# https://search.maven.org/artifact/io.github.dodogeny/sechive-maven-plugin
 ```
 
 ## Prerequisites
@@ -31,7 +31,7 @@ Add the plugin to your `pom.xml`:
 ```xml
 <plugin>
     <groupId>io.github.dodogeny</groupId>
-    <artifactId>bastion-maven-community-plugin</artifactId>
+    <artifactId>sechive-maven-plugin</artifactId>
     <version>LATEST</version> <!-- Check Maven Central for latest stable version -->
     <configuration>
         <!-- Community Edition settings (default) -->
@@ -68,24 +68,24 @@ Add the plugin to your `pom.xml`:
 
 ```bash
 # Community Edition (default)
-mvn io.github.dodogeny:bastion-maven-community-plugin:scan
+mvn io.github.dodogeny:sechive-maven-plugin:scan
 
 # With detailed output
-mvn io.github.dodogeny:bastion-maven-community-plugin:scan -X
+mvn io.github.dodogeny:sechive-maven-plugin:scan -X
 ```
 
 ### Verify Installation
 
 Check that reports are generated in `target/security-reports/`:
-- `bastion-report-{project-name}.html` - Interactive HTML report with dependency tree
-- `bastion-report-{project-name}.json` - Machine-readable JSON with CVE descriptions
-- `bastion-report-{project-name}.csv` - Enhanced CSV with documentation links
+- `sechive-report-{project-name}.html` - Interactive HTML report with dependency tree
+- `sechive-report-{project-name}.json` - Machine-readable JSON with CVE descriptions
+- `sechive-report-{project-name}.csv` - Enhanced CSV with documentation links
 
 ## Commercial Edition Installation
 
 ### Step 1: Get Commercial License
 
-1. **Purchase License** at https://bastion.dodogeny.mu
+1. **Purchase License** at [https://sechive.lemonsqueezy.com/](https://sechive.lemonsqueezy.com/)
 2. **Receive API Key** via email after purchase
 3. **Verify License** is active in your LemonSqueezy dashboard
 
@@ -94,17 +94,17 @@ Check that reports are generated in `target/security-reports/`:
 ```xml
 <plugin>
     <groupId>io.github.dodogeny</groupId>
-    <artifactId>bastion-maven-community-plugin</artifactId>
+    <artifactId>sechive-maven-plugin</artifactId>
     <version>LATEST</version> <!-- Check Maven Central for latest stable version -->
     <configuration>
         <!-- Commercial Edition configuration -->
-        <apiKey>${env.BASTION_API_KEY}</apiKey>
+        <apiKey>${env.SECHIVE_API_KEY}</apiKey>
         
         <!-- Enhanced database options -->
         <database>
             <type>h2</type> <!-- or postgresql, mysql -->
-            <path>${user.home}/.m2/bastion-security-cache/vulnerability-db</path>
-            <username>bastion</username>
+            <path>${user.home}/.m2/sechive-security-cache/vulnerability-db</path>
+            <username>sechive</username>
             <password>${env.DB_PASSWORD}</password>
         </database>
         
@@ -147,7 +147,7 @@ Check that reports are generated in `target/security-reports/`:
 
 ```bash
 # Required for Commercial Edition
-export BASTION_API_KEY="your_lemonsqueezy_api_key"
+export SECHIVE_API_KEY="your_lemonsqueezy_api_key"
 export DB_PASSWORD="your_secure_database_password"
 
 # Optional for email notifications
@@ -164,7 +164,7 @@ export SMTP_PASS="secure_app_password"
 Look for the commercial activation message:
 ```
 ✅ LemonSqueezy license validated successfully
-💼 Bastion Commercial Edition activated
+💼 SecHive Commercial Edition activated
 🚀 All premium features unlocked
 ```
 
@@ -173,23 +173,23 @@ Look for the commercial activation message:
 ### Download Distribution
 
 1. Download the appropriate distribution:
-   - **Windows**: `bastion-maven-plugin-${project.version}-bin.zip`
-   - **Unix/Linux/macOS**: `bastion-maven-plugin-${project.version}-bin-unix.tar.gz`
+   - **Windows**: `sechive-maven-plugin-${project.version}-bin.zip`
+   - **Unix/Linux/macOS**: `sechive-maven-plugin-${project.version}-bin-unix.tar.gz`
 
 2. **Extract Archive**
 
    ```bash
    # For Unix/Linux/macOS
-   tar -xzf bastion-maven-plugin-${project.version}-bin-unix.tar.gz
+   tar -xzf sechive-maven-plugin-${project.version}-bin-unix.tar.gz
    
    # For Windows (using PowerShell)
-   Expand-Archive bastion-maven-plugin-${project.version}-bin.zip
+   Expand-Archive sechive-maven-plugin-${project.version}-bin.zip
    ```
 
 3. **Run Installation Script**
 
    ```bash
-   cd bastion-maven-plugin-${project.version}
+   cd sechive-maven-plugin-${project.version}
    ./bin/install.sh
    ```
 
@@ -200,7 +200,7 @@ If you prefer manual installation:
 1. **Copy JARs to Local Repository**
 
    ```bash
-   cp lib/*.jar ~/.m2/repository/io/github/dodogeny/bastion-maven-community-plugin/${project.version}/
+   cp lib/*.jar ~/.m2/repository/io/github/dodogeny/sechive-maven-plugin/${project.version}/
    ```
 
 2. **Update Your Project POM**
@@ -220,8 +220,8 @@ If you prefer manual installation:
 1. **Clone Repository**
 
    ```bash
-   git clone https://github.com/dodogeny/bastion-maven-plugin.git
-   cd bastion-maven-plugin
+   git clone https://github.com/dodogeny/sechive-maven-plugin.git
+   cd sechive-maven-plugin
    ```
 
 2. **Build Project**
@@ -234,9 +234,9 @@ If you prefer manual installation:
 
    ```bash
    mvn install:install-file \
-     -Dfile=plugin/target/bastion-maven-community-plugin-${project.version}.jar \
+     -Dfile=plugin/target/sechive-maven-plugin-${project.version}.jar \
      -DgroupId=io.github.dodogeny \
-     -DartifactId=bastion-maven-community-plugin \
+     -DartifactId=sechive-maven-plugin \
      -Dversion=${project.version} \
      -Dpackaging=maven-plugin
    ```
@@ -249,7 +249,7 @@ If you prefer manual installation:
 
 1. **Purchase License**
 
-   Visit [https://bastion.lemonsqueezy.com](https://bastion.lemonsqueezy.com) to purchase a commercial license.
+   Visit [https://sechive.lemonsqueezy.com/](https://sechive.lemonsqueezy.com/) to purchase a commercial license.
 
 2. **Receive API Key**
 
@@ -259,13 +259,13 @@ If you prefer manual installation:
 
    **Method 1: Environment Variable (Recommended)**
    ```bash
-   export BASTION_API_KEY="bsk_live_abc123..."
+   export SECHIVE_API_KEY="bsk_live_abc123..."
    ```
 
    **Method 2: Maven Configuration**
    ```xml
    <configuration>
-       <apiKey>${env.BASTION_API_KEY}</apiKey>
+       <apiKey>${env.SECHIVE_API_KEY}</apiKey>
        <licenseProvider>lemonsqueezy</licenseProvider>
    </configuration>
    ```
@@ -273,13 +273,13 @@ If you prefer manual installation:
 4. **Verify Commercial Features**
 
    ```bash
-   mvn io.github.dodogeny:bastion-maven-community-plugin:scan -Dbastion.apiKey=bsk_live_abc123...
+   mvn io.github.dodogeny:sechive-maven-plugin:scan -Dsechive.apiKey=bsk_live_abc123...
    ```
 
    Look for confirmation message:
    ```
    ✅ LemonSqueezy license validated successfully
-   💼 Bastion Commercial Edition activated
+   💼 SecHive Commercial Edition activated
    🚀 All premium features unlocked
    ```
 
@@ -297,9 +297,9 @@ If you prefer manual installation:
 
 ```bash
 # LemonSqueezy API key for commercial edition
-export BASTION_API_KEY="bsk_live_abc123..."
+export SECHIVE_API_KEY="bsk_live_abc123..."
 
-# Optional: Increase memory for large projects  
+# Optional: Increase memory for large projects
 export MAVEN_OPTS="-Xmx4g -XX:MaxMetaspaceSize=512m"
 ```
 
@@ -307,21 +307,21 @@ export MAVEN_OPTS="-Xmx4g -XX:MaxMetaspaceSize=512m"
 
 ```bash
 # Common system properties
-mvn io.github.dodogeny:bastion-maven-community-plugin:scan \
-  -Dbastion.outputDirectory=./security-reports \
-  -Dbastion.reportFormats=HTML,JSON,PDF \
-  -Dbastion.severityThreshold=HIGH
+mvn io.github.dodogeny:sechive-maven-plugin:scan \
+  -Dsechive.outputDirectory=./security-reports \
+  -Dsechive.reportFormats=HTML,JSON,PDF \
+  -Dsechive.severityThreshold=HIGH
 
 # JSON file storage (alternative to database)
-mvn io.github.dodogeny:bastion-maven-community-plugin:scan \
-  -Dbastion.storage.useJsonFile=true \
-  -Dbastion.storage.jsonFilePath=./vulnerability-data.json
+mvn io.github.dodogeny:sechive-maven-plugin:scan \
+  -Dsechive.storage.useJsonFile=true \
+  -Dsechive.storage.jsonFilePath=./vulnerability-data.json
 
 # Data purge operations
-mvn io.github.dodogeny:bastion-maven-community-plugin:scan \
-  -Dbastion.purgeBeforeScan=true \
-  -Dbastion.purge.projectOnly=true \
-  -Dbastion.purge.dryRun=true
+mvn io.github.dodogeny:sechive-maven-plugin:scan \
+  -Dsechive.purgeBeforeScan=true \
+  -Dsechive.purge.projectOnly=true \
+  -Dsechive.purge.dryRun=true
 ```
 
 ## Verification
@@ -331,32 +331,32 @@ mvn io.github.dodogeny:bastion-maven-community-plugin:scan \
 1. **Check Plugin Recognition**
 
    ```bash
-   mvn help:describe -Dplugin=io.github.dodogeny:bastion-maven-community-plugin
+   mvn help:describe -Dplugin=io.github.dodogeny:sechive-maven-plugin
    ```
 
 2. **Run Help Goal**
 
    ```bash
-   mvn io.github.dodogeny:bastion-maven-community-plugin:help
+   mvn io.github.dodogeny:sechive-maven-plugin:help
    ```
 
 3. **Run Test Scan**
 
    ```bash
-   mvn io.github.dodogeny:bastion-maven-community-plugin:scan -Dbastion.skip=false
+   mvn io.github.dodogeny:sechive-maven-plugin:scan -Dsechive.skip=false
    ```
 
 ### Expected Output
 
 ```
-[INFO] --- bastion-maven-community-plugin:${project.version}:scan (default-cli) ---
-[INFO] 🛡️  Starting Bastion vulnerability scan (Open Source Edition)...
+[INFO] --- sechive-maven-plugin:${project.version}:scan (default-cli) ---
+[INFO] 🛡️  Starting SecHive vulnerability scan...
 [INFO] Project: test-project
 [INFO] Multi-module enabled: false
 [INFO] Scanning project dependencies...
 [INFO] Scan completed successfully!
 [INFO] Total vulnerabilities found: 0
-[INFO] Generated HTML report: target/bastion-reports/bastion-report-test-project.html
+[INFO] Generated HTML report: target/sechive-reports/sechive-report-test-project.html
 ```
 
 ## Troubleshooting
@@ -365,7 +365,7 @@ mvn io.github.dodogeny:bastion-maven-community-plugin:scan \
 
 **Plugin not found:**
 ```
-[ERROR] Plugin io.github.dodogeny:bastion-maven-community-plugin:${project.version} not found
+[ERROR] Plugin io.github.dodogeny:sechive-maven-plugin:${project.version} not found
 ```
 **Solution:** Ensure the plugin is available in Maven Central or your local repository.
 
@@ -421,8 +421,8 @@ After purchase, you can manage your subscription through the LemonSqueezy custom
 ### Getting Help
 
 - **Email Support**: it.dodogeny@gmail.com
-- **Documentation**: [https://docs.dodogeny.mu/bastion](https://docs.dodogeny.mu/bastion)
-- **Community Support**: [GitHub Issues](https://github.com/dodogeny/bastion-maven-plugin/issues)
+- **Documentation**: [https://dodogeny.github.io/sechive-maven-plugin](https://dodogeny.github.io/sechive-maven-plugin)
+- **Community Support**: [GitHub Issues](https://github.com/dodogeny/sechive-maven-plugin/issues)
 - **LemonSqueezy Support**: [https://help.lemonsqueezy.com](https://help.lemonsqueezy.com)
 
 ## Uninstallation
@@ -435,7 +435,7 @@ After purchase, you can manage your subscription through the LemonSqueezy custom
 ### Remove from Local Repository
 
 ```bash
-rm -rf ~/.m2/repository/io/github/dodogeny/bastion-maven-community-plugin
+rm -rf ~/.m2/repository/io/github/dodogeny/sechive-maven-plugin
 ```
 
 ### Using Uninstall Script
@@ -446,4 +446,4 @@ rm -rf ~/.m2/repository/io/github/dodogeny/bastion-maven-community-plugin
 
 ---
 
-**Installation complete!** You're now ready to scan for vulnerabilities with Bastion Maven Plugin.
+**Installation complete!** You're now ready to scan for vulnerabilities with SecHive Maven Plugin.
