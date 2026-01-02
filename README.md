@@ -113,7 +113,7 @@ mvn sechive:scan -Dsechive.failOnError=true
 - 📧 **Email Alerts** - Automatic notifications for critical vulnerabilities
 - 💾 **Unlimited Storage** - PostgreSQL/MySQL support with unlimited scan history
 
-[👉 Compare Community vs Professional](#community-vs-professional) | [📖 Learn more about Professional Edition](https://github.com/dodogeny/sechive-maven-plugin/blob/main/docs/index.html)
+[👉 Compare Community vs Professional](#community-vs-professional) | [📖 Learn more about Professional Edition](https://dodogeny.github.io/sechive-maven-plugin/)
 
 ---
 
@@ -1598,7 +1598,7 @@ These messages are **non-intrusive** and designed to inform users about features
 
 Interested in advanced features like 3-6x faster scans, unlimited projects, AI-powered updates, and professional reporting?
 
-**[📖 Learn more about Professional Edition →](https://github.com/dodogeny/sechive-maven-plugin/blob/main/docs/index.html)**
+**[📖 Learn more about Professional Edition →](https://dodogeny.github.io/sechive-maven-plugin/)**
 
 ### How to Integrate Professional Edition
 
