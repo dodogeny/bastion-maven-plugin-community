@@ -4,10 +4,22 @@
 [![Build Status](https://github.com/dodogeny/sechive-maven-plugin/workflows/CI/badge.svg)](https://github.com/dodogeny/sechive-maven-plugin/actions)
 [![License](https://img.shields.io/badge/License-Apache%202.0-blue.svg)](https://opensource.org/licenses/Apache-2.0)
 
-A comprehensive Maven security plugin for automated vulnerability scanning, CVE detection, and software supply chain security. The **Community Edition** provides powerful open-source vulnerability scanning built on OWASP Dependency-Check 12.1.3 with intelligent auto-update and trend analysis. The **Commercial Edition** extends this with advanced features including predictive update analysis, license compliance checks, risk scoring, and enterprise-grade reporting.
+A comprehensive Maven security plugin for automated vulnerability scanning, CVE detection, and software supply chain security. The **Community Edition** provides powerful open-source vulnerability scanning built on OWASP Dependency-Check 12.1.3 with intelligent auto-update and trend analysis. The **Commercial Edition** extends this with advanced features including predictive update analysis, license compliance checks, risk scoring, and professional-grade reporting.
 
 📖 **[Quick Start Guide](distribution/src/main/resources/docs/QUICKSTART.md)** - Get up and running in 5 minutes!
 📚 **[Full Documentation](https://dodogeny.github.io/sechive-maven-plugin/)** - Complete guide and API reference
+
+---
+
+<div align="center">
+
+### 🎁 **Limited Time Offer: Try Professional Edition FREE for 14 Days!**
+
+Get **3-6x faster scans**, unlimited projects, AI-powered updates, and professional reporting
+
+**[🚀 Start Your Free Trial Now](https://sechive.lemonsqueezy.com/)** • 14 Days Free • Cancel Anytime
+
+</div>
 
 ---
 
@@ -89,31 +101,41 @@ mvn sechive:scan -Dsechive.failOnError=true
 
 ---
 
-### 🌟 Enterprise Highlights
+### 🌟 Professional Highlights
 
-**New in Enterprise Edition:**
-- 🐝 **[Bee Swarm Optimization](#-bee-swarm-optimization-enterprise-exclusive)** - 20-30% faster scans with intelligent swarm algorithms (NEWLY OPTIMIZED!)
+**New in Professional Edition:**
+- 🐝 **[Bee Swarm Optimization](#-bee-swarm-optimization-professional-exclusive)** - 20-30% faster scans with intelligent swarm algorithms (NEWLY OPTIMIZED!)
   - **NEW**: Work-stealing queues eliminate 30-40% queue contention
   - **NEW**: Wait/notify replaces polling - 50-70% less idle CPU usage
   - **NEW**: Priority-based task selection for critical tasks
   - **NEW**: Adaptive coordination interval - 40-60% less overhead
   - **NEW**: LongAdder metrics - 3-5x faster on multi-core systems
-- ⚡ **[Worker Pool Optimizations](#-worker-pool-optimizations-enterprise-exclusive)** - 3-6x faster scanning with intelligent parallelization
-- 💾 **[Cross-Project Cache](#-persistent-scan-cache-enterprise-exclusive)** - 80-95% cache hit rate with filesystem-based result sharing (NEW!)
-- 📊 **[Resource Monitoring](#-resource-monitoring--optimization-enterprise-exclusive)** - Real-time performance monitoring with beautiful console visualizations (NEW in v2.0.0!)
+- ⚡ **[Worker Pool Optimizations](#-worker-pool-optimizations-professional-exclusive)** - 3-6x faster scanning with intelligent parallelization
+- 💾 **[Cross-Project Cache](#-persistent-scan-cache-professional-exclusive)** - 80-95% cache hit rate with filesystem-based result sharing (NEW!)
+- 📊 **[Resource Monitoring](#-resource-monitoring--optimization-professional-exclusive)** - Real-time performance monitoring with beautiful console visualizations (NEW in v2.0.0!)
   - Live CPU, Memory, Thread, and GC tracking
   - Dynamic ASCII art dashboards with color-coded sparklines
   - Intelligent alerting and AI-powered optimization recommendations
   - **NEW**: Historical trend analysis across builds with automatic regression detection
-- 🚀 **[CI/CD Platform Integration](#-cicd-platform-deep-integration-enterprise-exclusive)** - Native support for Jenkins, GitHub Actions, Azure DevOps, CircleCI
-- 🔔 **[Webhook Notifications](#-real-time-webhook-notifications-enterprise-exclusive)** - Real-time alerts to Slack, Teams, Discord
-- 📊 **[Enhanced Metrics](#-enhanced-metrics-integration-enterprise-exclusive)** - Export to Prometheus, Grafana, Datadog, New Relic with pre-built dashboards
-- 🔮 **[Predictive Updates](#-predictive-update-analysis-enterprise-exclusive)** - AI-powered dependency upgrade recommendations
-- ⚖️ **[License Compliance](#️-license-compliance--risk-analysis-enterprise-exclusive)** - Automated license scanning and policy enforcement
+- 🚀 **[CI/CD Platform Integration](#-cicd-platform-deep-integration-professional-exclusive)** - Native support for Jenkins, GitHub Actions, Azure DevOps, CircleCI
+- 🔔 **[Webhook Notifications](#-real-time-webhook-notifications-professional-exclusive)** - Real-time alerts to Slack, Teams, Discord
+- 📊 **[Enhanced Metrics](#-enhanced-metrics-integration-professional-exclusive)** - Export to Prometheus, Grafana, Datadog, New Relic with pre-built dashboards
+- 🔮 **[Predictive Updates](#-predictive-update-analysis-professional-exclusive)** - AI-powered dependency upgrade recommendations
+- ⚖️ **[License Compliance](#️-license-compliance--risk-analysis-professional-exclusive)** - Automated license scanning and policy enforcement
 - 📧 **Email Alerts** - Automatic notifications for critical vulnerabilities
 - 💾 **Unlimited Storage** - PostgreSQL/MySQL support with unlimited scan history
 
-[👉 Compare Community vs Enterprise](#community-vs-enterprise) | [🚀 Try Enterprise Free for 14 Days](#getting-started-with-enterprise)
+---
+
+<div align="center">
+
+### 🎯 **Ready to Supercharge Your Security Scans?**
+
+**[🚀 Start Free 14-Day Trial](https://sechive.lemonsqueezy.com/)** • Cancel Anytime
+
+*[Compare Community vs Professional →](#community-vs-professional)*
+
+</div>
 
 ---
 
@@ -124,17 +146,17 @@ mvn sechive:scan -Dsechive.failOnError=true
 - [What's New](#whats-new-in-v128-rc2)
 - [Configuration](#configuration-examples)
 - [CI/CD Integration](#cicd-integration)
-- [Enterprise Features](#enterprise-features)
-  - [Bee Swarm Optimization](#-bee-swarm-optimization-enterprise-exclusive)
-  - [Worker Pool Optimizations](#-worker-pool-optimizations-enterprise-exclusive)
-  - [Resource Monitoring & Optimization](#-resource-monitoring--optimization-enterprise-exclusive)
-  - [Predictive Update Analysis](#-predictive-update-analysis-enterprise-exclusive)
-  - [License Compliance](#️-license-compliance--risk-analysis-enterprise-exclusive)
+- [Professional Features](#professional-features)
+  - [Bee Swarm Optimization](#-bee-swarm-optimization-professional-exclusive)
+  - [Worker Pool Optimizations](#-worker-pool-optimizations-professional-exclusive)
+  - [Resource Monitoring & Optimization](#-resource-monitoring--optimization-professional-exclusive)
+  - [Predictive Update Analysis](#-predictive-update-analysis-professional-exclusive)
+  - [License Compliance](#️-license-compliance--risk-analysis-professional-exclusive)
   - [Advanced Reporting](#-advanced-reporting--export-formats)
-  - [CI/CD Platform Integration](#-cicd-platform-deep-integration-enterprise-exclusive)
-  - [Webhook Notifications](#-real-time-webhook-notifications-enterprise-exclusive)
-  - [Enhanced Metrics](#-enhanced-metrics-integration-enterprise-exclusive)
-- [Community vs Enterprise](#community-vs-enterprise)
+  - [CI/CD Platform Integration](#-cicd-platform-deep-integration-professional-exclusive)
+  - [Webhook Notifications](#-real-time-webhook-notifications-professional-exclusive)
+  - [Enhanced Metrics](#-enhanced-metrics-integration-professional-exclusive)
+- [Community vs Professional](#community-vs-professional)
 - [Troubleshooting](#troubleshooting)
 - [Support](#support)
 
@@ -316,9 +338,9 @@ mvn sechive-maven-plugin:scan
 - **✅ 100% Coverage**: All new JAR analysis features thoroughly tested
 - **🔍 Complex Scenarios**: Tests for partial resolutions and multi-JAR states
 
-### 🚀 Enterprise Edition Enhancements
+### 🚀 Professional Edition Enhancements
 
-**🐝 Bee Swarm Optimization - Major Performance Breakthrough** *(Enterprise Only)*
+**🐝 Bee Swarm Optimization - Major Performance Breakthrough** *(Professional Only)*
 
 **LATEST (v2.0.0)**: Bee Swarm completely rewritten with **advanced high-impact optimizations**:
 
@@ -371,7 +393,7 @@ Bee Swarm uses **exclusive transitive dependency analysis** for complexity deter
 - **Zero Configuration**: Automatically adapts to your project characteristics
 - **Command Line Control**: Enable with `-Dsechive.swarm.enabled=true`
 
-**CI/CD Platform Deep Integration** *(Enterprise Only)*
+**CI/CD Platform Deep Integration** *(Professional Only)*
 - **Native Platform Support**: Jenkins, GitHub Actions, Azure DevOps, CircleCI
 - **Platform-Specific Reports**: JUnit XML, SARIF 2.1.0, Warnings-NG JSON, Insights JSON
 - **Build Status Integration**: Pass/Fail/Unstable based on vulnerability thresholds
@@ -379,7 +401,7 @@ Bee Swarm uses **exclusive transitive dependency analysis** for complexity deter
 - **Pipeline Metrics**: Scan duration, vulnerability trends, historical comparisons
 - **Progressive Enforcement**: Fail on new vulnerabilities only, baseline comparisons
 
-**Real-Time Webhook Notifications** *(Enterprise Only)*
+**Real-Time Webhook Notifications** *(Professional Only)*
 - **Multi-Platform Support**: Slack, Microsoft Teams, Discord, Generic webhooks
 - **Rich Formatting**: Platform-native messages with colors, emojis, structured data
 - **Smart Filtering**: Severity thresholds, branch-specific configurations, multiple channels
@@ -387,7 +409,7 @@ Bee Swarm uses **exclusive transitive dependency analysis** for complexity deter
 - **Parallel Sending**: Fast concurrent webhook delivery
 - **Environment Variable Support**: Secure credential management
 
-**Enhanced Metrics Integration** *(Enterprise Only)*
+**Enhanced Metrics Integration** *(Professional Only)*
 - **6 Platform Support**: Prometheus, Grafana Cloud, Datadog, New Relic, InfluxDB, StatsD
 - **15+ Security Metrics**: Vulnerabilities, dependencies, risk scores, performance metrics
 - **Pre-built Dashboards**: 3 Grafana dashboards with 39 visualization panels
@@ -395,7 +417,7 @@ Bee Swarm uses **exclusive transitive dependency analysis** for complexity deter
 - **Parallel Export**: Concurrent push to multiple platforms with retry logic
 - **Custom Tags**: Organization, team, and environment tagging support
 
-**35+ New Enterprise Files Added:**
+**35+ New Professional Files Added:**
 - 11 metrics implementation files (models, exporters, service layer)
 - 6 comprehensive unit test suites (50+ test cases)
 - 4 Grafana dashboard templates (Security, Performance, Trends)
@@ -432,18 +454,18 @@ Bee Swarm uses **exclusive transitive dependency analysis** for complexity deter
 - Smart incremental updates - downloads only new CVE data, not the entire database
 - Smart NVD caching with sub-second validation for test environments
 - Improved concurrent processing for faster dependency analysis
-- Memory optimization for large enterprise projects
+- Memory optimization for large projects
 - Enhanced NVD API 2.0 integration with better rate limiting
 - **Prevents OOM Kills**: No more exit code 137 errors during long scans
 
-**🚀 Enterprise Performance**: Up to **6x faster** with Worker Pool optimizations - parallel file hashing, multi-threaded dependency scanning, and intelligent resource management. [Learn more →](#-worker-pool-optimizations-enterprise-exclusive)
+**🚀 Professional Performance**: Up to **6x faster** with Worker Pool optimizations - parallel file hashing, multi-threaded dependency scanning, and intelligent resource management. [Learn more →](#-worker-pool-optimizations-professional-exclusive)
 
 ### User Experience Improvements
-- **🎯 Contextual Enterprise Suggestions**: Intelligent upgrade prompts at key moments
+- **🎯 Contextual Professional Suggestions**: Intelligent upgrade prompts at key moments
     - Appears when approaching storage limits or at usage milestones
     - Shows relevant features based on your project scale and findings
     - Non-intrusive with built-in frequency control
-- **📊 Enhanced HTML Reports**: Visual comparison banner showcasing Enterprise features
+- **📊 Enhanced HTML Reports**: Visual comparison banner showcasing Professional features
 - **💡 Smart Feature Discovery**: Learn about advanced capabilities when you need them
 - **📈 Usage Tracking**: Milestone messages at 5th, 10th, and 20th scans
 
@@ -460,7 +482,7 @@ Bee Swarm uses **exclusive transitive dependency analysis** for complexity deter
     - `ScanEngine` interface for unified scanning API
     - `DefaultScanEngine` implementation with processor chains
     - `ScanEngineFactory` with preset configurations (default, lightweight, CI/CD, development)
-- **🔧 Design Patterns**: Improved code quality with enterprise patterns
+- **🔧 Design Patterns**: Improved code quality with professional patterns
     - `ProcessorChain` for vulnerability processing pipeline
     - `ScanEventPublisher` for event-driven notifications
     - Builder pattern for flexible engine configuration
@@ -936,13 +958,13 @@ SecHive provides detailed performance metrics:
 └─ Cache Hit Rate: 78%
 ```
 
-## Enterprise Edition
+## Professional Edition
 
-SecHive Maven Plugin offers an **Enterprise Edition** designed for teams and organizations that need advanced security capabilities, predictive intelligence, and comprehensive license compliance management. Built for production environments where security, compliance, and governance are critical.
+SecHive Maven Plugin offers a **Professional Edition** designed for teams and organizations that need advanced security capabilities, predictive intelligence, and comprehensive license compliance management. Built for production environments where security, compliance, and governance are critical.
 
-### Key Enterprise Features
+### Key Professional Features
 
-**🐝 Bee Swarm Optimization** *(Enterprise Exclusive)*
+**🐝 Bee Swarm Optimization** *(Professional Exclusive)*
 Intelligent task distribution using swarm intelligence algorithms for unprecedented scan performance:
 - **20-30% Faster Scans**: Swarm algorithms optimize task selection and execution
 - **Self-Organizing Workers**: Bees autonomously select optimal tasks based on capabilities
@@ -986,9 +1008,9 @@ mvn verify -Dsechive.swarm.enabled=true -Dsechive.swarm.size=20
 - **Best For**: Heterogeneous workloads with varied file sizes and types
 - **Memory Overhead**: ~12KB for typical 12-bee swarm
 
-📖 **[Complete Bee Swarm Guide](../sechive-maven-plugin-enterprise/distribution/src/main/resources/docs/BEE_SWARM_OPTIMIZATION.md)**
+📖 **[Complete Bee Swarm Guide](../sechive-maven-plugin-professional/distribution/src/main/resources/docs/BEE_SWARM_OPTIMIZATION.md)**
 
-**⚡ Worker Pool Optimizations** *(Enterprise Exclusive)*
+**⚡ Worker Pool Optimizations** *(Professional Exclusive)*
 Dramatically improve scanning speed with intelligent parallelization and resource management:
 - **3-6x Faster Scans**: Advanced multi-threaded architecture for maximum throughput
 - **4-Tier Strategy System**:
@@ -1033,10 +1055,10 @@ Very Large   | 300 sec  | 50 sec    | 6.0x
 - **8+ cores, 16GB+ RAM**: AUTO selects MODERATE (3-5x speedup)
 - **4+ cores, 8GB+ RAM**: AUTO selects NORMAL (2-3x speedup)
 
-📖 **[Complete Worker Pool Guide](../sechive-maven-plugin-enterprise/WORKER_POOL_OPTIMIZATION.md)**
-📊 **[Performance Testing Suite](../sechive-maven-plugin-enterprise/PERFORMANCE_TESTING.md)**
+📖 **[Complete Worker Pool Guide](../sechive-maven-plugin-professional/WORKER_POOL_OPTIMIZATION.md)**
+📊 **[Performance Testing Suite](../sechive-maven-plugin-professional/PERFORMANCE_TESTING.md)**
 
-**💾 Persistent Scan Cache** *(Enterprise Exclusive)*
+**💾 Persistent Scan Cache** *(Professional Exclusive)*
 
 Eliminate redundant scans across projects with intelligent filesystem-based caching:
 - **80-95% Cache Hit Rate**: Shared vulnerability scan results across all projects on the same machine
@@ -1117,7 +1139,7 @@ mvn sechive:scan -Dsechive.cache.cleanup=true
 - ✅ **Zero maintenance**: Automatic cleanup and integrity verification
 - ✅ **Backwards compatible**: Works seamlessly with existing configurations
 
-**📊 Resource Monitoring & Optimization** *(Enterprise Exclusive - NEW in v2.0.0!)*
+**📊 Resource Monitoring & Optimization** *(Professional Exclusive - NEW in v2.0.0!)*
 
 Real-time performance monitoring with beautiful dynamic console visualizations. Track CPU, memory, thread, and GC activity during vulnerability scans with professional ASCII art dashboards.
 
@@ -1207,9 +1229,9 @@ mvn sechive:scan -Dsechive.monitoringProfile=CICD
 - ✅ **Professional UX**: CLI-based but beautiful with color-coded indicators
 - ✅ **Zero overhead option**: Fully disableable with no performance impact when not needed
 
-📖 **[Complete Resource Monitoring Guide](https://github.com/dodogeny/sechive-maven-plugin-enterprise/blob/main/RESOURCE_MONITORING.md)**
+📖 **[Complete Resource Monitoring Guide](https://github.com/dodogeny/sechive-maven-plugin-professional/blob/main/RESOURCE_MONITORING.md)**
 
-**🔮 Predictive Update Analysis** *(Enterprise Exclusive)*
+**🔮 Predictive Update Analysis** *(Professional Exclusive)*
 Intelligent dependency update recommendations powered by real-time Maven Central analysis:
 - **Smart Version Analysis**: Automatically analyzes 5+ newer versions of vulnerable dependencies
 - **CVE Impact Forecasting**: Predicts which CVEs would be resolved vs. introduced by each update
@@ -1236,7 +1258,7 @@ Intelligent dependency update recommendations powered by real-time Maven Central
   • commons-fileupload: 1.4 → 1.5 (resolves 2 CVEs)
 ```
 
-**⚖️ License Compliance & Risk Analysis** *(Enterprise Exclusive)*
+**⚖️ License Compliance & Risk Analysis** *(Professional Exclusive)*
 Comprehensive license management to prevent legal issues and ensure regulatory compliance:
 - **Automatic License Detection**: Scans all project dependencies and detects licenses from manifests, POMs, and metadata
 - **Policy Enforcement Engine**:
@@ -1273,7 +1295,7 @@ Comprehensive license management to prevent legal issues and ensure regulatory c
 - **Trend Graphs**: Visual charts showing vulnerability trends over time
 - **Comparison Reports**: Side-by-side current vs. predictive analysis
 
-**💾 Enterprise Storage & Scalability**
+**💾 Professional Storage & Scalability**
 - **Persistent Databases**: PostgreSQL, MySQL, H2 support with automatic schema management
 - **Unlimited Scan History**: Store years of scan data for trend analysis and compliance audits
 - **Unlimited Projects**: No 50-project limit (Community restriction removed)
@@ -1291,7 +1313,7 @@ Comprehensive license management to prevent legal issues and ensure regulatory c
 - **Dependency Tree Visualization**: Interactive graphs showing vulnerability propagation paths
 - **Transitive Dependency Analysis**: Identify which top-level dependencies introduce vulnerabilities
 
-**🚀 CI/CD Platform Deep Integration** *(Enterprise Exclusive)*
+**🚀 CI/CD Platform Deep Integration** *(Professional Exclusive)*
 Native integration with major CI/CD platforms for streamlined security workflows:
 - **Supported Platforms**: GitHub Actions, Jenkins, Azure DevOps, CircleCI
 - **Platform-Native Reports**:
@@ -1317,7 +1339,7 @@ mvn sechive:circleci-report
 mvn sechive:github-actions-report
 ```
 
-**🔔 Real-Time Webhook Notifications** *(Enterprise Exclusive)*
+**🔔 Real-Time Webhook Notifications** *(Professional Exclusive)*
 Get instant security alerts in your team's communication channels:
 - **Supported Platforms**: Slack, Microsoft Teams, Discord, Generic/Custom webhooks
 - **Rich Formatting**: Platform-native message formats with colors, emojis, and structured data
@@ -1396,7 +1418,7 @@ Vulnerable Dependencies: 8
 
 📖 **[Complete Webhook Integration Guide](distribution/src/main/resources/docs/WEBHOOK_INTEGRATION.md)**
 
-**📊 Enhanced Metrics Integration** *(Enterprise Exclusive)*
+**📊 Enhanced Metrics Integration** *(Professional Exclusive)*
 Monitor security trends across your entire infrastructure with real-time metrics export:
 - **6 Platform Support**: Prometheus, Grafana Cloud, Datadog, New Relic, InfluxDB, StatsD
 - **15+ Security Metrics**: Vulnerabilities by severity, risk scores, dependency counts, scan performance
@@ -1512,15 +1534,15 @@ stage('Security Scan') {
 }
 ```
 
-**⚡ Enterprise Support & SLA**
+**⚡ Professional Support & SLA**
 - **24-Hour Response SLA**: Priority email support with guaranteed response times
 - **Direct Access to Security Experts**: Consult with security professionals on vulnerability remediation
 - **Custom Integration Support**: Help with CI/CD pipelines, custom workflows, and automation
 - **Security Advisory Updates**: Early notification of critical vulnerabilities
 
-### Community vs Enterprise
+### Community vs Professional
 
-| Feature                      | Community Edition     | Enterprise Edition       |
+| Feature                      | Community Edition     | Professional Edition       |
 |------------------------------|-----------------------|--------------------------|
 | **Core Scanning**            |                       |                          |
 | Vulnerability Detection      | ✅ Full (OWASP 12.1.3) | ✅ Full (OWASP 12.1.3)    |
@@ -1589,34 +1611,55 @@ stage('Security Scan') {
 The Community Edition may display contextual upgrade suggestions at key moments:
 - When approaching storage limits (45+ projects, 8+ scans per project)
 - After detecting significant vulnerabilities (50+ findings)
-- When requesting enterprise features (PDF/SARIF reports)
+- When requesting professional features (PDF/SARIF reports)
 - At usage milestones (5th, 10th, 20th scan)
 
 These messages are **non-intrusive** and designed to inform users about features that could benefit their workflow. You can safely ignore them and continue using the full vulnerability detection capabilities of the Community Edition.
 
-### Enterprise Pricing & Trial
+### Professional Pricing & Trial
+
+---
+
+<div align="center">
+
+## 🚀 **Start Your Free 14-Day Trial Today!**
+
+### **14 Days Free Trial • Full Professional Access • Cancel Anytime**
+
+**[🎯 Start Free Trial Now →](https://sechive.lemonsqueezy.com/)**
+
+*Experience the full power of SecHive Professional Edition risk-free*
+
+</div>
+
+---
 
 **Monthly Subscription**: $149/month
-- ✅ Full feature access
+
+#### What's Included:
+- ✅ **Full Professional Feature Access**
 - ✅ **Bee Swarm Optimization** - 20-30% faster with intelligent task distribution
 - ✅ **Worker Pool Optimizations** - 3-6x faster scanning with parallelization
-- ✅ Unlimited projects and scan history
-- ✅ PostgreSQL/MySQL database support
-- ✅ PDF/SARIF/SBOM exports
-- ✅ License compliance & risk analysis
-- ✅ Priority support (24-hour SLA)
+- ✅ **Unlimited Projects** and scan history
+- ✅ **PostgreSQL/MySQL** database support
+- ✅ **PDF/SARIF/SBOM** exports
+- ✅ **License Compliance** & risk analysis
+- ✅ **Priority Support** (24-hour SLA)
 
-**14-Day Free Trial**:
-- No credit card required
-- Full enterprise feature access
-- Cancel anytime
-- → **[Start Trial](https://github.com/dodogeny/sechive-maven-plugin/)**
+#### 14-Day Free Trial Benefits:
+- 🔓 **Full professional feature access** - Try everything
+- ⏱️ **14 full days** to evaluate all features
+- ❌ **Cancel anytime** - No questions asked, full refund if cancelled within trial
+- 💬 **Free support** during trial period
+- 🎯 **Risk-free** - Easy cancellation process
 
-### How to Integrate Enterprise Edition
+**Ready to get started?** [Start Your Free Trial →](https://sechive.lemonsqueezy.com/)
+
+### How to Integrate Professional Edition
 
 After subscribing, you'll receive a license key. Here's how to configure it:
 
-#### Step 1: Add Enterprise Plugin to pom.xml
+#### Step 1: Add Professional Plugin to pom.xml
 
 ```xml
 <plugin>
@@ -1681,7 +1724,7 @@ export DB_PASSWORD=secure_password
 
 #### Step 3: Initialize Database
 
-Enterprise Edition requires a PostgreSQL or MySQL database:
+Professional Edition requires a PostgreSQL or MySQL database:
 
 **PostgreSQL**:
 ```sql
@@ -1698,10 +1741,10 @@ GRANT ALL PRIVILEGES ON sechive.* TO 'sechive_user'@'localhost';
 FLUSH PRIVILEGES;
 ```
 
-#### Step 4: Run Your First Enterprise Scan
+#### Step 4: Run Your First Professional Scan
 
 ```bash
-# Run security scan with enterprise features
+# Run security scan with professional features
 mvn clean verify
 
 # Or run directly
@@ -1714,14 +1757,14 @@ mvn sechive-maven-plugin:predictive-analysis
 mvn sechive-maven-plugin:license-check
 ```
 
-**Enterprise Goals Available:**
+**Professional Goals Available:**
 - `scan` - Full vulnerability scanning with PDF/SARIF/SBOM exports
 - `predictive-analysis` - Analyze dependency updates and CVE impact
 - `license-check` - License compliance and risk analysis
 
-#### Step 5: Verify Enterprise Features
+#### Step 5: Verify Professional Features
 
-Check that enterprise features are working:
+Check that professional features are working:
 
 1. **Database**: Verify scan results are persisted in your database
 2. **PDF Reports**: Check `target/sechive-reports/` for PDF exports
@@ -1780,17 +1823,17 @@ Add predictive analysis and license checking to your build lifecycle:
 </plugin>
 ```
 
-**📖 Enterprise Documentation**:
-- Predictive Analysis: [Configuration Guide](../sechive-maven-plugin-enterprise/PREDICTIVE_ANALYSIS_GUIDE.md)
-- License Compliance: [Full Guide](../sechive-maven-plugin-enterprise/LICENSE_COMPLIANCE_GUIDE.md)
+**📖 Professional Documentation**:
+- Predictive Analysis: [Configuration Guide](../sechive-maven-plugin-professional/PREDICTIVE_ANALYSIS_GUIDE.md)
+- License Compliance: [Full Guide](../sechive-maven-plugin-professional/LICENSE_COMPLIANCE_GUIDE.md)
 
-### Enterprise Support
+### Professional Support
 
 Need help with integration or have questions?
 - **Email**: it.dodogeny@gmail.com
-- **Response Time**: 4-hour SLA
-- **Documentation**: Enterprise-specific guides included with subscription
-- **Custom Integration**: Available for enterprise customers
+- **Response Time**: 24-hour SLA
+- **Documentation**: Professional-specific guides included with subscription
+- **Custom Integration**: Available for professional customers
 
 ## Compatibility Matrix
 
