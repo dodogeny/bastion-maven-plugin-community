@@ -11,18 +11,6 @@ A comprehensive Maven security plugin for automated vulnerability scanning, CVE 
 
 ---
 
-<div align="center">
-
-### 🎁 **Limited Time Offer: Try Professional Edition FREE for 14 Days!**
-
-Get **3-6x faster scans**, unlimited projects, AI-powered updates, and professional reporting
-
-**[🚀 Start Your Free Trial Now](https://sechive.lemonsqueezy.com/)** • 14 Days Free • Cancel Anytime
-
-</div>
-
----
-
 <details open>
 <summary><h2>🎉 Important: Bastion → SecHive Rebrand (v2.0.0)</h2></summary>
 
@@ -125,17 +113,7 @@ mvn sechive:scan -Dsechive.failOnError=true
 - 📧 **Email Alerts** - Automatic notifications for critical vulnerabilities
 - 💾 **Unlimited Storage** - PostgreSQL/MySQL support with unlimited scan history
 
----
-
-<div align="center">
-
-### 🎯 **Ready to Supercharge Your Security Scans?**
-
-**[🚀 Start Free 14-Day Trial](https://sechive.lemonsqueezy.com/)** • Cancel Anytime
-
-*[Compare Community vs Professional →](#community-vs-professional)*
-
-</div>
+[👉 Compare Community vs Professional](#community-vs-professional) | [📖 Learn more about Professional Edition](https://github.com/dodogeny/sechive-maven-plugin/blob/main/docs/index.html)
 
 ---
 
@@ -1616,44 +1594,11 @@ The Community Edition may display contextual upgrade suggestions at key moments:
 
 These messages are **non-intrusive** and designed to inform users about features that could benefit their workflow. You can safely ignore them and continue using the full vulnerability detection capabilities of the Community Edition.
 
-### Professional Pricing & Trial
+### Professional Edition
 
----
+Interested in advanced features like 3-6x faster scans, unlimited projects, AI-powered updates, and professional reporting?
 
-<div align="center">
-
-## 🚀 **Start Your Free 14-Day Trial Today!**
-
-### **14 Days Free Trial • Full Professional Access • Cancel Anytime**
-
-**[🎯 Start Free Trial Now →](https://sechive.lemonsqueezy.com/)**
-
-*Experience the full power of SecHive Professional Edition risk-free*
-
-</div>
-
----
-
-**Monthly Subscription**: $149/month
-
-#### What's Included:
-- ✅ **Full Professional Feature Access**
-- ✅ **Bee Swarm Optimization** - 20-30% faster with intelligent task distribution
-- ✅ **Worker Pool Optimizations** - 3-6x faster scanning with parallelization
-- ✅ **Unlimited Projects** and scan history
-- ✅ **PostgreSQL/MySQL** database support
-- ✅ **PDF/SARIF/SBOM** exports
-- ✅ **License Compliance** & risk analysis
-- ✅ **Priority Support** (24-hour SLA)
-
-#### 14-Day Free Trial Benefits:
-- 🔓 **Full professional feature access** - Try everything
-- ⏱️ **14 full days** to evaluate all features
-- ❌ **Cancel anytime** - No questions asked, full refund if cancelled within trial
-- 💬 **Free support** during trial period
-- 🎯 **Risk-free** - Easy cancellation process
-
-**Ready to get started?** [Start Your Free Trial →](https://sechive.lemonsqueezy.com/)
+**[📖 Learn more about Professional Edition →](https://github.com/dodogeny/sechive-maven-plugin/blob/main/docs/index.html)**
 
 ### How to Integrate Professional Edition
 
