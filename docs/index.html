@@ -30,6 +30,9 @@
             --gray-700: #374151;
             --gray-800: #1f2937;
             --gray-900: #111827;
+            --gray-400: #9ca3af;
+            --gray-500: #6b7280;
+            --text-muted: #6b7280;
         }
 
         body {
@@ -64,17 +67,59 @@
         }
 
         .logo {
-            font-size: 1.5rem;
-            font-weight: 800;
-            color: var(--primary);
             display: flex;
             align-items: center;
-            gap: 0.5rem;
+            gap: 0.75rem;
+            padding: 0.5rem 1.25rem 0.5rem 0.5rem;
+            background: rgba(255, 255, 255, 0.7);
+            backdrop-filter: blur(20px);
+            -webkit-backdrop-filter: blur(20px);
+            border-radius: 16px;
+            border: 1px solid rgba(255, 255, 255, 0.8);
+            box-shadow:
+                0 2px 8px rgba(0, 0, 0, 0.04),
+                0 4px 16px rgba(0, 0, 0, 0.06),
+                inset 0 1px 0 rgba(255, 255, 255, 0.9);
+            transition: all 0.3s ease;
         }
 
-        .logo svg {
-            width: 32px;
-            height: 32px;
+        .logo:hover {
+            box-shadow:
+                0 4px 12px rgba(0, 0, 0, 0.08),
+                0 8px 24px rgba(0, 0, 0, 0.1),
+                inset 0 1px 0 rgba(255, 255, 255, 0.9);
+            transform: translateY(-1px);
+        }
+
+        .logo img {
+            width: 52px;
+            height: 52px;
+            object-fit: contain;
+            filter: drop-shadow(0 2px 4px rgba(0, 0, 0, 0.1));
+        }
+
+        .logo-text {
+            display: flex;
+            flex-direction: row;
+            align-items: baseline;
+            gap: 0.4rem;
+        }
+
+        .logo-text .brand {
+            font-size: 1.35rem;
+            font-weight: 700;
+            background: linear-gradient(135deg, #1d4ed8, #7c3aed);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+            letter-spacing: -0.3px;
+        }
+
+        .logo-text .tagline {
+            font-size: 1.35rem;
+            font-weight: 500;
+            color: var(--gray-600);
+            letter-spacing: -0.2px;
         }
 
         .nav-links {
@@ -609,10 +654,11 @@
     <nav>
         <div class="container">
             <div class="logo">
-                <svg viewBox="0 0 24 24" fill="currentColor">
-                    <path d="M12 1L3 5v6c0 5.55 3.84 10.74 9 12 5.16-1.26 9-6.45 9-12V5l-9-4z"/>
-                </svg>
-                SecHive Maven Plugin
+                <img src="honeycomb-smalllogo.png" alt="SecHive Logo">
+                <div class="logo-text">
+                    <span class="brand">SecHive</span>
+                    <span class="tagline">Maven Plugin</span>
+                </div>
             </div>
             <ul class="nav-links">
                 <li><a href="#features">Features</a></li>
