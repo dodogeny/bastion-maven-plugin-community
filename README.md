@@ -111,7 +111,7 @@ mvn sechive:scan -Dsechive.failOnError=true
 - 🔮 **[Predictive Updates](#-predictive-update-analysis-professional-exclusive)** - AI-powered dependency upgrade recommendations
 - ⚖️ **[License Compliance](#️-license-compliance--risk-analysis-professional-exclusive)** - Automated license scanning and policy enforcement
 - 📧 **Email Alerts** - Automatic notifications for critical vulnerabilities
-- 💾 **Unlimited Storage** - PostgreSQL/MySQL support with unlimited scan history
+- 💾 **Unlimited Storage** - TimescaleDB/PostgreSQL/MySQL support with unlimited scan history and CVE trend tracking
 
 [👉 Compare Community vs Professional](#community-vs-professional) | [📖 Learn more about Professional Edition](https://dodogeny.github.io/sechive-maven-plugin/)
 
@@ -1274,7 +1274,8 @@ Comprehensive license management to prevent legal issues and ensure regulatory c
 - **Comparison Reports**: Side-by-side current vs. predictive analysis
 
 **💾 Professional Storage & Scalability**
-- **Persistent Databases**: PostgreSQL, MySQL, H2 support with automatic schema management
+- **Persistent Databases**: TimescaleDB, PostgreSQL, MySQL, H2 support with automatic schema management (Flyway migrations)
+- **TimescaleDB CVE Trends**: Time-series optimized storage for vulnerability trend analysis with continuous aggregates
 - **Unlimited Scan History**: Store years of scan data for trend analysis and compliance audits
 - **Unlimited Projects**: No 50-project limit (Community restriction removed)
 - **Cross-Project Analytics**: Organization-wide security dashboards
@@ -1422,6 +1423,7 @@ Monitor security trends across your entire infrastructure with real-time metrics
 | **Datadog** | HTTP API | APM and infrastructure monitoring |
 | **New Relic** | HTTP API | Full-stack observability |
 | **InfluxDB** | HTTP API | Time-series database, custom analytics |
+| **TimescaleDB** | JDBC | CVE trend tracking, historical analysis, continuous aggregates |
 | **StatsD** | UDP | Low-overhead metrics collection |
 
 *Example Grafana Dashboard Visualization:*
@@ -1559,7 +1561,7 @@ stage('Security Scan') {
 | Email Notifications          | ❌ No                  | ✅ CRITICAL/HIGH Alerts   |
 | Webhook Notifications        | ❌ No                  | ✅ Slack/Teams/Discord    |
 | **Enhanced Metrics**         |                       |                          |
-| Metrics Export               | ❌ No                  | ✅ 6 Platforms            |
+| Metrics Export               | ❌ No                  | ✅ 7 Platforms            |
 | Pre-built Dashboards         | ❌ No                  | ✅ 3 Grafana Dashboards   |
 | Risk Scoring                 | ❌ No                  | ✅ 0-100 Weighted Score   |
 | Real-time Monitoring         | ❌ No                  | ✅ Prometheus/Datadog/etc |
@@ -1571,7 +1573,7 @@ stage('Security Scan') {
 | Pipeline Metrics             | ❌ No                  | ✅ Duration/Trends        |
 | Progressive Enforcement      | ❌ No                  | ✅ Baseline/Degradation   |
 | **Storage & Scale**          |                       |                          |
-| Storage Mode                 | 💾 In-Memory/JSON     | ✅ PostgreSQL/MySQL/H2    |
+| Storage Mode                 | 💾 In-Memory/JSON     | ✅ TimescaleDB/PostgreSQL/MySQL/H2 |
 | Scan History                 | ✅ 10 per project      | ✅ Unlimited              |
 | Maximum Projects             | ✅ 50 projects         | ✅ Unlimited              |
 | Data Retention               | ⏰ Temporary           | ✅ Permanent              |
@@ -1634,7 +1636,7 @@ After subscribing, you'll receive a license key. Here's how to configure it:
         <workerPoolStrategy>AUTO</workerPoolStrategy> <!-- AUTO, AGGRESSIVE, MODERATE, NORMAL -->
         <enableWorkerPoolOptimization>true</enableWorkerPoolOptimization>
 
-        <!-- Database Configuration (PostgreSQL/MySQL) -->
+        <!-- Database Configuration (TimescaleDB/PostgreSQL/MySQL) -->
         <databaseUrl>jdbc:postgresql://localhost:5432/sechive</databaseUrl>
         <databaseUsername>${env.DB_USERNAME}</databaseUsername>
         <databasePassword>${env.DB_PASSWORD}</databasePassword>
@@ -1669,7 +1671,19 @@ export DB_PASSWORD=secure_password
 
 #### Step 3: Initialize Database
 
-Professional Edition requires a PostgreSQL or MySQL database:
+Professional Edition supports TimescaleDB, PostgreSQL, or MySQL:
+
+**TimescaleDB (Recommended for CVE Trend Analysis)**:
+```bash
+# Start TimescaleDB with Docker
+docker run -d --name timescaledb -p 5432:5432 \
+  -e POSTGRES_PASSWORD=secure_password \
+  -e POSTGRES_USER=sechive_user \
+  -e POSTGRES_DB=sechive \
+  timescale/timescaledb:latest-pg15
+
+# Schema is auto-created via Flyway migrations on first run
+```
 
 **PostgreSQL**:
 ```sql
@@ -1685,6 +1699,8 @@ CREATE USER 'sechive_user'@'localhost' IDENTIFIED BY 'secure_password';
 GRANT ALL PRIVILEGES ON sechive.* TO 'sechive_user'@'localhost';
 FLUSH PRIVILEGES;
 ```
+
+> **Note**: When using TimescaleDB, the plugin automatically creates hypertables with continuous aggregates for optimized CVE trend queries. Schema migrations are handled by Flyway.
 
 #### Step 4: Run Your First Professional Scan
 
