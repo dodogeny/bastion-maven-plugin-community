@@ -10,7 +10,7 @@
         <plugin>
             <groupId>io.github.dodogeny</groupId>
             <artifactId>sechive-maven-plugin</artifactId>
-            <version>2.1.0</version>
+            <version>2.2.0</version>
             <executions>
                 <execution>
                     <id>security-scan</id>
@@ -71,7 +71,7 @@ Reports are generated in `target/sechive-reports/`:
 <plugin>
     <groupId>io.github.dodogeny</groupId>
     <artifactId>sechive-maven-plugin</artifactId>
-    <version>2.1.0</version>
+    <version>2.2.0</version>
     <executions>
         <execution>
             <goals>
@@ -100,7 +100,7 @@ mvn clean verify
 <plugin>
     <groupId>io.github.dodogeny</groupId>
     <artifactId>sechive-maven-plugin</artifactId>
-    <version>2.1.0</version>
+    <version>2.2.0</version>
     <!-- No executions - only run when explicitly called -->
     <configuration>
         <nvdApiKey>${env.NVD_API_KEY}</nvdApiKey>
@@ -128,7 +128,7 @@ mvn io.github.dodogeny:sechive-maven-plugin:2.0.0:scan
             <plugin>
                 <groupId>io.github.dodogeny</groupId>
                 <artifactId>sechive-maven-plugin</artifactId>
-                <version>2.1.0</version>
+                <version>2.2.0</version>
                 <configuration>
                     <nvdApiKey>${env.NVD_API_KEY}</nvdApiKey>
                     <enableMultiModule>true</enableMultiModule>
