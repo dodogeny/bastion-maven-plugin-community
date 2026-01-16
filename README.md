@@ -37,14 +37,14 @@ A comprehensive Maven security plugin for automated vulnerability scanning, CVE 
 <plugin>
     <groupId>io.github.dodogeny</groupId>
     <artifactId>bastion-maven-community-plugin</artifactId>
-    <version>2.1.0</version>
+    <version>2.2.0</version>
 </plugin>
 
 <!-- ✅ New (SecHive v2.0.0) -->
 <plugin>
     <groupId>io.github.dodogeny</groupId>
     <artifactId>sechive-maven-plugin</artifactId>
-    <version>2.1.0</version>
+    <version>2.2.0</version>
 </plugin>
 ```
 
@@ -168,7 +168,7 @@ Add the plugin to your `pom.xml`:
 <plugin>
     <groupId>io.github.dodogeny</groupId>
     <artifactId>sechive-maven-plugin</artifactId>
-    <version>2.1.0</version>
+    <version>2.2.0</version>
     <executions>
         <execution>
             <goals>
@@ -240,7 +240,7 @@ mvn sechive:scan \
 <plugin>
     <groupId>io.github.dodogeny</groupId>
     <artifactId>bastion-maven-community-plugin</artifactId>
-    <version>2.1.0</version>
+    <version>2.2.0</version>
 </plugin>
 ```
 
@@ -249,7 +249,7 @@ mvn sechive:scan \
 <plugin>
     <groupId>io.github.dodogeny</groupId>
     <artifactId>sechive-maven-plugin</artifactId>
-    <version>2.1.0</version>
+    <version>2.2.0</version>
 </plugin>
 ```
 
@@ -501,7 +501,7 @@ mvn sechive:scan -Dsechive.failOnError=true -Dsechive.severityThreshold=CRITICAL
 <plugin>
     <groupId>io.github.dodogeny</groupId>
     <artifactId>sechive-maven-plugin</artifactId>
-    <version>2.1.0</version>
+    <version>2.2.0</version>
     <configuration>
         <skip>false</skip>
         <failOnError>true</failOnError>
@@ -517,7 +517,7 @@ mvn sechive:scan -Dsechive.failOnError=true -Dsechive.severityThreshold=CRITICAL
 <plugin>
     <groupId>io.github.dodogeny</groupId>
     <artifactId>sechive-maven-plugin</artifactId>
-    <version>2.1.0</version>
+    <version>2.2.0</version>
     <configuration>
         <communityStorageMode>JSON_FILE</communityStorageMode>
         <jsonFilePath>${project.build.directory}/security/vulnerabilities.json</jsonFilePath>
@@ -533,7 +533,7 @@ mvn sechive:scan -Dsechive.failOnError=true -Dsechive.severityThreshold=CRITICAL
 <plugin>
     <groupId>io.github.dodogeny</groupId>
     <artifactId>sechive-maven-plugin</artifactId>
-    <version>2.1.0</version>
+    <version>2.2.0</version>
     <configuration>
         <enableMultiModule>true</enableMultiModule>
         <communityStorageMode>JSON_FILE</communityStorageMode>
@@ -549,7 +549,7 @@ mvn sechive:scan -Dsechive.failOnError=true -Dsechive.severityThreshold=CRITICAL
 <plugin>
     <groupId>io.github.dodogeny</groupId>
     <artifactId>sechive-maven-plugin</artifactId>
-    <version>2.1.0</version>
+    <version>2.2.0</version>
     <configuration>
         <!-- NVD API key for faster database downloads and updates -->
         <nvdApiKey>${env.NVD_API_KEY}</nvdApiKey>
@@ -1715,7 +1715,7 @@ After subscribing, you'll receive a license key. Here's how to configure it:
 <plugin>
     <groupId>io.github.dodogeny</groupId>
     <artifactId>sechive-maven-plugin</artifactId>
-    <version>2.1.0</version>
+    <version>2.2.0</version>
     <executions>
         <execution>
             <goals>
@@ -1844,7 +1844,7 @@ Add predictive analysis and license checking to your build lifecycle:
 <plugin>
     <groupId>io.github.dodogeny</groupId>
     <artifactId>sechive-maven-plugin</artifactId>
-    <version>2.1.0</version>
+    <version>2.2.0</version>
     <executions>
         <!-- Vulnerability Scanning -->
         <execution>
