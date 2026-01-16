@@ -1209,6 +1209,109 @@ mvn sechive:scan -Dsechive.monitoringProfile=CICD
 
 📖 **[Complete Resource Monitoring Guide](https://github.com/dodogeny/sechive-maven-plugin-professional/blob/main/RESOURCE_MONITORING.md)**
 
+**🐳 Docker Mode - Continuous Security Scanning** *(Professional Exclusive)*
+
+Run SecHive as a standalone Docker container that continuously monitors your Git repositories for changes and automatically scans for vulnerabilities. Perfect for DevSecOps pipelines and automated security monitoring.
+
+*Supported Git Providers:*
+- **GitHub** - `https://github.com/org/repo.git`
+- **GitLab** - `https://gitlab.com/org/repo.git`
+- **Bitbucket** - `https://bitbucket.org/org/repo.git`
+- **Azure DevOps** - `https://dev.azure.com/org/project/_git/repo`
+- **Self-hosted Git servers** - `https://git.company.com/repo.git`
+- **SSH URLs** - `git@github.com:org/repo.git`
+
+*Key Features:*
+- **Continuous Polling**: Automatically detects changes and triggers scans
+- **Configurable Intervals**: Set poll frequency (default: 5 minutes)
+- **Dual Scanner Support**: Both OWASP Dependency-Check and Grype included
+- **Multi-Platform Notifications**: Webhooks (Slack, Teams, Discord) + Email alerts
+- **Persistent Storage**: PostgreSQL database for scan history and baselines
+- **Health Monitoring**: Built-in health check endpoints for container orchestration
+
+*Quick Start with Docker Compose:*
+```bash
+# 1. Clone and navigate to docker directory
+cd cli/docker
+
+# 2. Create environment file
+cp .env.example .env
+
+# 3. Configure your repository (edit .env)
+GIT_REPO_URL=https://github.com/your-org/your-repo.git
+GIT_TOKEN=your_personal_access_token
+DB_PASSWORD=secure_password_here
+
+# 4. Start the scanner
+docker-compose up -d
+
+# 5. View logs
+docker-compose logs -f sechive
+
+# 6. Check health
+curl http://localhost:8080/health
+```
+
+*Environment Variables:*
+
+| Variable | Description | Default |
+|----------|-------------|---------|
+| `GIT_REPO_URL` | Repository URL (any Git provider) | required |
+| `GIT_BRANCH` | Branch to monitor | `main` |
+| `GIT_AUTH_TYPE` | `HTTPS_TOKEN` or `SSH_KEY` | `HTTPS_TOKEN` |
+| `GIT_TOKEN` | Personal access token | - |
+| `POLL_INTERVAL` | Poll interval in seconds | `300` |
+| `SCANNER_ENGINE` | `owasp`, `grype`, or `auto` | `auto` |
+| `NVD_API_KEY` | NVD API key for faster updates | - |
+| `SEVERITY_THRESHOLD` | Min severity: CRITICAL, HIGH, MEDIUM, LOW | `MEDIUM` |
+| `DB_PASSWORD` | PostgreSQL password | required |
+| `WEBHOOK_ENABLED` | Enable webhook notifications | `false` |
+| `SLACK_WEBHOOK_URL` | Slack webhook URL | - |
+| `TEAMS_WEBHOOK_URL` | Microsoft Teams webhook URL | - |
+| `DISCORD_WEBHOOK_URL` | Discord webhook URL | - |
+| `EMAIL_ENABLED` | Enable email notifications | `false` |
+| `SMTP_HOST` | SMTP server hostname | - |
+
+*Authentication Options:*
+
+**HTTPS + Token (GitHub, GitLab, Bitbucket, Azure DevOps):**
+```bash
+GIT_AUTH_TYPE=HTTPS_TOKEN
+GIT_TOKEN=ghp_xxxx  # or glpat-xxx for GitLab, etc.
+```
+
+**SSH Key Authentication:**
+```bash
+GIT_AUTH_TYPE=SSH_KEY
+# Mount your SSH key to /secrets/id_rsa
+docker run -v ~/.ssh/id_rsa:/secrets/id_rsa:ro sechive-scanner:2.1.0
+```
+
+*Docker Compose Services:*
+- `sechive` - Main scanner service with health endpoints
+- `postgres` - PostgreSQL database for scan history
+- `adminer` - Optional database admin UI (debug profile)
+
+*Health Endpoints:*
+- `/health` - Liveness check
+- `/ready` - Readiness check
+- `/status` - Detailed scanner status (JSON)
+- `/metrics` - Prometheus-compatible metrics
+
+*Build from Source:*
+```bash
+# Build the Docker image
+docker build -t sechive-scanner:2.1.0 -f cli/docker/Dockerfile .
+
+# Run with custom configuration
+docker run -d \
+  -e SECHIVE_GIT_REPO_URL=https://github.com/org/repo.git \
+  -e SECHIVE_GIT_TOKEN=your_token \
+  -e SECHIVE_SCANNER_ENGINE=auto \
+  -p 8080:8080 \
+  sechive-scanner:2.1.0
+```
+
 **🔮 Predictive Update Analysis** *(Professional Exclusive)*
 Intelligent dependency update recommendations powered by real-time Maven Central analysis:
 - **Smart Version Analysis**: Automatically analyzes 5+ newer versions of vulnerable dependencies
