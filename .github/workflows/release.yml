@@ -149,7 +149,9 @@ jobs:
 
           # Show files before update
           echo "Checking for existing hardcoded versions and placeholders:"
-          grep -n "@project.version@\|<version>[0-9]" README.md distribution/src/main/resources/docs/QUICKSTART.md distribution/src/main/resources/docs/CHANGELOG.md docs/index.html || echo "No versions found"
+          grep -n "@project.version@\|<version>[0-9]" README.md distribution/src/main/resources/docs/QUICKSTART.md distribution/src/main/resources/docs/CHANGELOG.md || echo "No versions found in markdown docs"
+          # Check index.html separately (uses HTML-encoded tags)
+          grep -n "@project.version@\|&lt;version&gt;[0-9]\|</span>[0-9]" docs/index.html || echo "No versions found in index.html"
 
           # Step 1: Restore placeholders by replacing any existing hardcoded version
           # This handles the previous release's version and makes the workflow self-healing
@@ -158,7 +160,10 @@ jobs:
           sed -i 's/<version>[0-9]\+\.[0-9]\+\.[0-9]\+\(-rc[0-9]\+\)\?<\/version>/<version>@project.version@<\/version>/g' README.md
           sed -i 's/<version>[0-9]\+\.[0-9]\+\.[0-9]\+\(-rc[0-9]\+\)\?<\/version>/<version>@project.version@<\/version>/g' distribution/src/main/resources/docs/QUICKSTART.md
           sed -i 's/<version>[0-9]\+\.[0-9]\+\.[0-9]\+\(-rc[0-9]\+\)\?<\/version>/<version>@project.version@<\/version>/g' distribution/src/main/resources/docs/CHANGELOG.md
-          sed -i 's/>\([0-9]\+\.[0-9]\+\.[0-9]\+\(-rc[0-9]\+\)\?\)</>\@project.version\@</g' docs/index.html
+          # docs/index.html has HTML-encoded version tags: &lt;version&gt;X.X.X&lt;/version&gt;
+          sed -i 's/&lt;version&gt;[0-9]\+\.[0-9]\+\.[0-9]\+\(-rc[0-9]\+\)\?&lt;\/version&gt;/\&lt;version\&gt;@project.version@\&lt;\/version\&gt;/g' docs/index.html
+          # Also handle the styled version in Get Started section: </span>X.X.X<span
+          sed -i 's/<\/span>[0-9]\+\.[0-9]\+\.[0-9]\+\(-rc[0-9]\+\)\?<span/<\/span>@project.version@<span/g' docs/index.html
 
           # Step 2: Replace placeholders with current version
           echo "Step 2: Replacing placeholders with new version ${VERSION}..."
