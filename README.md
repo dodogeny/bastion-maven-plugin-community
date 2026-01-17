@@ -110,6 +110,10 @@ mvn sechive:scan -Dsechive.failOnError=true
 - 📊 **[Enhanced Metrics](#-enhanced-metrics-integration-professional-exclusive)** - Export to Prometheus, Grafana, Datadog, New Relic with pre-built dashboards
 - 🔮 **[Predictive Updates](#-predictive-update-analysis-professional-exclusive)** - AI-powered dependency upgrade recommendations
 - ⚖️ **[License Compliance](#️-license-compliance--risk-analysis-professional-exclusive)** - Automated license scanning and policy enforcement
+- 🐳 **[Docker Mode](#-docker-mode---continuous-security-scanning-professional-exclusive)** - Continuous Git repository monitoring with automated scans
+  - **NEW**: Multi-platform support (linux/amd64, linux/arm64)
+  - **NEW**: Pre-built images on GitHub Container Registry (GHCR)
+  - **NEW**: Automatic SBOM generation for container images
 - 📧 **Email Alerts** - Automatic notifications for critical vulnerabilities
 - 💾 **Unlimited Storage** - TimescaleDB/PostgreSQL/MySQL support with unlimited scan history and CVE trend tracking
 
@@ -134,6 +138,7 @@ mvn sechive:scan -Dsechive.failOnError=true
   - [CI/CD Platform Integration](#-cicd-platform-deep-integration-professional-exclusive)
   - [Webhook Notifications](#-real-time-webhook-notifications-professional-exclusive)
   - [Enhanced Metrics](#-enhanced-metrics-integration-professional-exclusive)
+- [Docker Mode](#-docker-mode---continuous-security-scanning-professional-exclusive)
 - [Community vs Professional](#community-vs-professional)
 - [Troubleshooting](#troubleshooting)
 - [Support](#support)
@@ -1213,6 +1218,11 @@ mvn sechive:scan -Dsechive.monitoringProfile=CICD
 
 Run SecHive as a standalone Docker container that continuously monitors your Git repositories for changes and automatically scans for vulnerabilities. Perfect for DevSecOps pipelines and automated security monitoring.
 
+*Container Registry:*
+- **GHCR**: `ghcr.io/dodogeny/sechive-scanner:2.2.1`
+- **Platforms**: linux/amd64, linux/arm64
+- **SBOM**: Automatic SPDX SBOM generation for each release
+
 *Supported Git Providers:*
 - **GitHub** - `https://github.com/org/repo.git`
 - **GitLab** - `https://gitlab.com/org/repo.git`
@@ -1228,6 +1238,19 @@ Run SecHive as a standalone Docker container that continuously monitors your Git
 - **Multi-Platform Notifications**: Webhooks (Slack, Teams, Discord) + Email alerts
 - **Persistent Storage**: PostgreSQL database for scan history and baselines
 - **Health Monitoring**: Built-in health check endpoints for container orchestration
+
+*Quick Start with Docker:*
+```bash
+# Pull the image from GitHub Container Registry
+docker pull ghcr.io/dodogeny/sechive-scanner:2.2.1
+
+# Run with Git polling
+docker run -d \
+  -e SECHIVE_GIT_REPO_URL=https://github.com/your-org/your-repo.git \
+  -e SECHIVE_GIT_TOKEN=your_token \
+  -v $(pwd)/reports:/reports \
+  ghcr.io/dodogeny/sechive-scanner:2.2.1
+```
 
 *Quick Start with Docker Compose:*
 ```bash
@@ -1284,7 +1307,7 @@ GIT_TOKEN=ghp_xxxx  # or glpat-xxx for GitLab, etc.
 ```bash
 GIT_AUTH_TYPE=SSH_KEY
 # Mount your SSH key to /secrets/id_rsa
-docker run -v ~/.ssh/id_rsa:/secrets/id_rsa:ro sechive-scanner:2.1.0
+docker run -v ~/.ssh/id_rsa:/secrets/id_rsa:ro sechive-scanner:2.2.1
 ```
 
 *Docker Compose Services:*
@@ -1301,7 +1324,7 @@ docker run -v ~/.ssh/id_rsa:/secrets/id_rsa:ro sechive-scanner:2.1.0
 *Build from Source:*
 ```bash
 # Build the Docker image
-docker build -t sechive-scanner:2.1.0 -f cli/docker/Dockerfile .
+docker build -t sechive-scanner:2.2.1 -f cli/docker/Dockerfile .
 
 # Run with custom configuration
 docker run -d \
@@ -1309,7 +1332,7 @@ docker run -d \
   -e SECHIVE_GIT_TOKEN=your_token \
   -e SECHIVE_SCANNER_ENGINE=auto \
   -p 8080:8080 \
-  sechive-scanner:2.1.0
+  sechive-scanner:2.2.1
 ```
 
 **🔮 Predictive Update Analysis** *(Professional Exclusive)*
