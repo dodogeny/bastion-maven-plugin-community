@@ -1,173 +1,22 @@
 # SecHive Maven Plugin
 
 [![Maven Central](https://maven-badges.herokuapp.com/maven-central/io.github.dodogeny/sechive-maven-plugin/badge.svg)](https://maven-badges.herokuapp.com/maven-central/io.github.dodogeny/sechive-maven-plugin)
-[![Build Status](https://github.com/dodogeny/sechive-maven-plugin/workflows/CI/badge.svg)](https://github.com/dodogeny/sechive-maven-plugin/actions)
 [![License](https://img.shields.io/badge/License-Apache%202.0-blue.svg)](https://opensource.org/licenses/Apache-2.0)
 
-A comprehensive Maven security plugin for automated vulnerability scanning, CVE detection, and software supply chain security. The **Community Edition** provides powerful open-source vulnerability scanning built on OWASP Dependency-Check 12.1.3 with intelligent auto-update and trend analysis. The **Commercial Edition** extends this with advanced features including predictive update analysis, license compliance checks, risk scoring, and professional-grade reporting.
+**Find security vulnerabilities in your Maven dependencies before they become a problem.**
 
-📖 **[Quick Start Guide](distribution/src/main/resources/docs/QUICKSTART.md)** - Get up and running in 5 minutes!
-📚 **[Full Documentation](https://dodogeny.github.io/sechive-maven-plugin/)** - Complete guide and API reference
+SecHive automatically scans your project's dependencies against the National Vulnerability Database (NVD) and tells you which ones have known security issues.
 
----
+## What You Get
 
-<details open>
-<summary><h2>🎉 Important: Bastion → SecHive Rebrand (v2.0.0)</h2></summary>
+- **Drop it in and go** - No database setup, no manual configuration. Just add the plugin and run.
+- **Always up-to-date** - Automatically downloads the latest CVE data so you're protected against new threats.
+- **Clear answers** - HTML reports that show exactly what's vulnerable and how severe it is.
+- **CI/CD friendly** - Works with GitHub Actions, Jenkins, GitLab, and more.
 
-> **Breaking Changes Alert!** We've rebranded **Bastion Maven Plugin** to **SecHive Maven Plugin** starting with version 2.0.0.
+## Get Started in 2 Minutes
 
-### 🐝 Why SecHive?
-**SecHive** (Security Hive) better represents our mission: protecting your code hive from security threats through collective intelligence. The name reflects the collaborative nature of open-source security scanning and the community working together to keep codebases secure.
-
-### ⚠️ What Changed in v2.0.0
-
-| Change | Old (v1.2.8) | New (v2.0.0) |
-|--------|--------------|--------------|
-| **Artifact ID** | `bastion-maven-community-plugin` | `sechive-maven-plugin` |
-| **Plugin Prefix** | `mvn bastion:scan` | `mvn sechive:scan` |
-| **Properties** | `bastion.*` | `sechive.*` |
-| **Cache Dir** | `~/.bastion/` | `~/.sechive/` |
-| **Reports** | `target/bastion-reports/` | `target/sechive-reports/` |
-
-### 🚀 Quick Migration (30 seconds)
-
-**Step 1:** Update your `pom.xml`
-```xml
-<!-- ❌ Old (Bastion v1.2.8) -->
-<plugin>
-    <groupId>io.github.dodogeny</groupId>
-    <artifactId>bastion-maven-community-plugin</artifactId>
-    <version>2.2.1</version>
-</plugin>
-
-<!-- ✅ New (SecHive v2.0.0) -->
-<plugin>
-    <groupId>io.github.dodogeny</groupId>
-    <artifactId>sechive-maven-plugin</artifactId>
-    <version>2.2.1</version>
-</plugin>
-```
-
-**Step 2:** Update Maven commands
-```bash
-# ❌ Old
-mvn bastion:scan -Dbastion.failOnError=true
-
-# ✅ New
-mvn sechive:scan -Dsechive.failOnError=true
-```
-
-**Step 3:** Update properties (if using)
-- `bastion.skip` → `sechive.skip`
-- `bastion.nvd.apiKey` → `sechive.nvd.apiKey`
-- All other `bastion.*` → `sechive.*`
-
-### ✅ Migration Checklist
-
-- [ ] Update `pom.xml` artifact coordinates
-- [ ] Update CI/CD pipeline commands (GitHub Actions, Jenkins, etc.)
-- [ ] Update Maven properties from `bastion.*` to `sechive.*`
-- [ ] Update environment variables (if using Commercial Edition)
-- [ ] Clear old cache: `rm -rf ~/.bastion/`
-- [ ] Test: `mvn clean verify`
-
-### 📅 Timeline & Support
-
-- **v1.2.8**: Last Bastion release (December 2025)
-- **v2.0.0**: First SecHive release (January 2026) ← **You are here!**
-- **Bastion Support**: v1.2.8 will not receive further updates
-
-### 🆘 Need Help?
-
-- 📚 [Full Documentation](https://dodogeny.github.io/sechive-maven-plugin/)
-- 💬 [GitHub Discussions](https://github.com/dodogeny/sechive-maven-plugin/discussions)
-- 🐛 [Report Issues](https://github.com/dodogeny/sechive-maven-plugin/issues)
-
-**Thank you for your continued support!** 🐝🛡️
-
-</details>
-
----
-
-### 🌟 Professional Highlights
-
-**New in Professional Edition:**
-- 🐝 **[Bee Swarm Optimization](#-bee-swarm-optimization-professional-exclusive)** - 20-30% faster scans with intelligent swarm algorithms (NEWLY OPTIMIZED!)
-  - **NEW**: Work-stealing queues eliminate 30-40% queue contention
-  - **NEW**: Wait/notify replaces polling - 50-70% less idle CPU usage
-  - **NEW**: Priority-based task selection for critical tasks
-  - **NEW**: Adaptive coordination interval - 40-60% less overhead
-  - **NEW**: LongAdder metrics - 3-5x faster on multi-core systems
-- ⚡ **[Worker Pool Optimizations](#-worker-pool-optimizations-professional-exclusive)** - 3-6x faster scanning with intelligent parallelization
-- 💾 **[Cross-Project Cache](#-persistent-scan-cache-professional-exclusive)** - 80-95% cache hit rate with filesystem-based result sharing (NEW!)
-- 📊 **[Resource Monitoring](#-resource-monitoring--optimization-professional-exclusive)** - Real-time performance monitoring with beautiful console visualizations (NEW in v2.0.0!)
-  - Live CPU, Memory, Thread, and GC tracking
-  - Dynamic ASCII art dashboards with color-coded sparklines
-  - Intelligent alerting and AI-powered optimization recommendations
-  - **NEW**: Historical trend analysis across builds with automatic regression detection
-- 🚀 **[CI/CD Platform Integration](#-cicd-platform-deep-integration-professional-exclusive)** - Native support for Jenkins, GitHub Actions, Azure DevOps, CircleCI
-- 🔔 **[Webhook Notifications](#-real-time-webhook-notifications-professional-exclusive)** - Real-time alerts to Slack, Teams, Discord
-- 📊 **[Enhanced Metrics](#-enhanced-metrics-integration-professional-exclusive)** - Export to Prometheus, Grafana, Datadog, New Relic with pre-built dashboards
-- 🔮 **[Predictive Updates](#-predictive-update-analysis-professional-exclusive)** - AI-powered dependency upgrade recommendations
-- ⚖️ **[License Compliance](#️-license-compliance--risk-analysis-professional-exclusive)** - Automated license scanning and policy enforcement
-- 🐳 **[Docker Mode](#-docker-mode---continuous-security-scanning-professional-exclusive)** - Continuous Git repository monitoring with automated scans
-  - **NEW**: Multi-platform support (linux/amd64, linux/arm64)
-  - **NEW**: Pre-built images on GitHub Container Registry (GHCR)
-  - **NEW**: Automatic SBOM generation for container images
-- 📧 **Email Alerts** - Automatic notifications for critical vulnerabilities
-- 💾 **Unlimited Storage** - TimescaleDB/PostgreSQL/MySQL support with unlimited scan history and CVE trend tracking
-
-[👉 Compare Community vs Professional](#community-vs-professional) | [📖 Learn more about Professional Edition](https://dodogeny.github.io/sechive-maven-plugin/)
-
----
-
-## Table of Contents
-
-- [Features](#features)
-- [Quick Start](#quick-start)
-- [What's New](#whats-new-in-v128-rc2)
-- [Configuration](#configuration-examples)
-- [CI/CD Integration](#cicd-integration)
-- [Professional Features](#professional-features)
-  - [Bee Swarm Optimization](#-bee-swarm-optimization-professional-exclusive)
-  - [Worker Pool Optimizations](#-worker-pool-optimizations-professional-exclusive)
-  - [Resource Monitoring & Optimization](#-resource-monitoring--optimization-professional-exclusive)
-  - [Predictive Update Analysis](#-predictive-update-analysis-professional-exclusive)
-  - [License Compliance](#️-license-compliance--risk-analysis-professional-exclusive)
-  - [Advanced Reporting](#-advanced-reporting--export-formats)
-  - [CI/CD Platform Integration](#-cicd-platform-deep-integration-professional-exclusive)
-  - [Webhook Notifications](#-real-time-webhook-notifications-professional-exclusive)
-  - [Enhanced Metrics](#-enhanced-metrics-integration-professional-exclusive)
-- [Docker Mode](#-docker-mode---continuous-security-scanning-professional-exclusive)
-- [Community vs Professional](#community-vs-professional)
-- [Troubleshooting](#troubleshooting)
-- [Support](#support)
-
-## Features
-
-- **Zero-Configuration Setup**: Automatically downloads and updates the NVD database - no manual setup required
-- **Intelligent Auto-Update**: Always uses the latest CVE data with smart incremental updates
-- **Automated CVE Detection**: Scans project dependencies against the National Vulnerability Database (NVD)
-- **Smart NVD Caching**: Reduces scan times from 8-13 minutes to 2-3 minutes with intelligent cache management
-- **Historical Trend Analysis**: Track vulnerability trends over time with JSON file storage
-- **Detailed CVE Tracking**: See exactly which CVEs were resolved, introduced, or remain pending between scans
-- **Multi-Module Support**: Scan complex Maven projects with multiple modules
-- **Multiple Report Formats**: HTML and JSON reports with graphical dependency trees
-- **CI/CD Integration**: Compatible with GitHub Actions, Jenkins, GitLab CI, and Azure DevOps
-- **Performance Metrics**: Detailed scan statistics with bottleneck identification
-
-## Quick Start
-
-### Prerequisites
-
-- **Java**: JDK 21 or higher (required for v1.1.0+, v2.0.0 recommended)
-- **Maven**: 3.6.0 or higher
-- **Memory**: 1GB+ RAM for large projects
-- **Internet**: First-time NVD database download (~317,000 CVEs)
-
-### Installation
-
-Add the plugin to your `pom.xml`:
+**Step 1:** Add this to your `pom.xml`:
 
 ```xml
 <plugin>
@@ -184,495 +33,86 @@ Add the plugin to your `pom.xml`:
 </plugin>
 ```
 
-## Migration Guide (v1.2.8 → v2.0.0)
+**Step 2:** Run your build:
 
-SecHive Maven Plugin v2.0.0 introduces a major rebranding from "Bastion Maven Plugin" to "SecHive Maven Plugin". This is a **breaking change** that requires updating your project configuration.
-
-### Breaking Changes
-
-1. **Artifact ID Changed**
-   - Old: `bastion-maven-community-plugin`
-   - New: `sechive-maven-plugin`
-
-2. **Plugin Goal Prefix Changed**
-   - Old: `mvn bastion:scan`
-   - New: `mvn sechive:scan`
-
-3. **All Maven Properties Changed from `bastion.*` to `sechive.*`**
-   - Example: `-Dbastion.nvd.apiKey` → `-Dsechive.nvd.apiKey`
-   - Example: `-Dbastion.failOnError=true` → `-Dsechive.failOnError=true`
-   - Example: `-Dbastion.skip=true` → `-Dsechive.skip=true`
-
-4. **Cache Directory Changed**
-   - Old: `~/.bastion/`
-   - New: `~/.sechive/`
-
-5. **Output Directory Changed**
-   - Old: `target/bastion-reports/`
-   - New: `target/sechive-reports/`
-
-### Migration Checklist
-
-- [ ] Update `pom.xml` - Change artifact ID from `bastion-maven-community-plugin` to `sechive-maven-plugin`
-- [ ] Update `pom.xml` - Change version to `2.0.0`
-- [ ] Update CI/CD scripts - Replace all `mvn bastion:` commands with `mvn sechive:`
-- [ ] Update environment variables - Replace all `-Dbastion.` with `-Dsechive.`
-- [ ] Update Maven settings - Replace profile IDs and property names if applicable
-- [ ] Clean old cache - Run `rm -rf ~/.bastion/` (optional, but recommended)
-- [ ] Update documentation - Replace references to `bastion-reports` with `sechive-reports`
-- [ ] Test in non-production - Verify scans work correctly before rolling out to CI/CD
-
-### Example Migration
-
-**Before (v1.2.8)**:
 ```bash
-mvn bastion:scan \
-  -Dbastion.nvd.apiKey=YOUR_API_KEY \
-  -Dbastion.failOnError=true \
-  -Dbastion.severityThreshold=CRITICAL
-```
-
-**After (v2.0.0)**:
-```bash
-mvn sechive:scan \
-  -Dsechive.nvd.apiKey=YOUR_API_KEY \
-  -Dsechive.failOnError=true \
-  -Dsechive.severityThreshold=CRITICAL
-```
-
-**Before (pom.xml v1.2.8)**:
-```xml
-<plugin>
-    <groupId>io.github.dodogeny</groupId>
-    <artifactId>bastion-maven-community-plugin</artifactId>
-    <version>2.2.1</version>
-</plugin>
-```
-
-**After (pom.xml v2.0.0)**:
-```xml
-<plugin>
-    <groupId>io.github.dodogeny</groupId>
-    <artifactId>sechive-maven-plugin</artifactId>
-    <version>2.2.1</version>
-</plugin>
-```
-
-### Run Your First Scan
-
-**Option 1: Via Build Lifecycle (Recommended)**
-```bash
-# Run as part of Maven verify phase
 mvn clean verify
 ```
 
-**Option 2: Direct Plugin Execution**
-```bash
-# Basic scan
-mvn io.github.dodogeny:sechive-maven-plugin:2.0.0:scan
+**Step 3:** Check your reports in `target/sechive-reports/`
 
-# With NVD API key (recommended for faster downloads)
-mvn io.github.dodogeny:sechive-maven-plugin:2.0.0:scan \
-  -Dsechive.nvd.apiKey=YOUR_NVD_API_KEY
+That's it! Your first scan will take 20-30 minutes to download the vulnerability database. After that, scans take just a few minutes.
 
-# Short form (after first use)
-mvn sechive-maven-plugin:scan
-```
+### Want faster scans?
 
-**Option 3: IDE Integration**
-- **IntelliJ IDEA**: Right-click on `pom.xml` → Run Maven → `clean verify`
-- **Eclipse**: Right-click project → Run As → Maven build → Goals: `clean verify`
-- **VS Code**: Maven sidebar → Lifecycle → verify
-
-**⏱️ First Run**: Downloads NVD database (~318,000 CVEs, 5-10 min with API key)
-**🚀 Subsequent Runs**: Uses cached database (30-60 seconds)
-**📊 Reports**: Generated in `target/sechive-reports/`
-
-## What's New in v2.0.0
-
-### 🔄 Dynamic Version Management & Enhanced Release Workflow
-- **Single Source of Truth**: Version managed in parent POM `<revision>` property
-- **Automated Documentation**: All version references update automatically via Maven resource filtering
-- **Enhanced Release Process**: Comprehensive GitHub Actions workflow with:
-    - Pre-flight validation (version format, tag checking, CHANGELOG validation)
-    - Automated testing and artifact verification with SHA-256 checksums
-    - Professional release notes with commit categorization (Features, Bug Fixes, Docs)
-    - Email notifications to distribution list after successful deployment
-    - Maven Central deployment with GPG signing
-    - Detailed release summaries with job status tracking
-
-### Enhanced JAR-Level Vulnerability Analysis
-- **📦 Detailed Dependency Tracking**: Comprehensive tracking of vulnerable JAR dependencies across scans
-    - **✅ Resolved JARs**: See exactly which JARs are no longer vulnerable with all fixed CVEs
-    - **🆕 New Vulnerable JARs**: Identify newly introduced dependencies with complete CVE details
-    - **⏳ Pending Vulnerable JARs**: Track ongoing vulnerabilities with partial resolution detection
-        - Know which CVEs were fixed within still-vulnerable JARs
-        - Identify new CVEs discovered in previously vulnerable dependencies
-        - Severity breakdown (Critical, High, Medium, Low) for each JAR
-
-### Improved Console Output
-- **📊 Enhanced Logging**: Beautiful formatted output boxes with detailed JAR analysis
-- **🎯 Prioritized Display**: Top vulnerable JARs sorted by severity (Critical → High → Medium → Low)
-- **📈 Trend Insights**: Actionable insights about dependency and vulnerability changes
-- **💡 Smart Analysis**: Detailed trend interpretation for in-memory database mode
-
-### Comprehensive Test Coverage
-- **🧪 New Test Suites**: 14 new test cases ensuring reliability
-- **✅ 100% Coverage**: All new JAR analysis features thoroughly tested
-- **🔍 Complex Scenarios**: Tests for partial resolutions and multi-JAR states
-
-### 🚀 Professional Edition Enhancements
-
-**🐝 Bee Swarm Optimization - Major Performance Breakthrough** *(Professional Only)*
-
-**LATEST (v2.0.0)**: Bee Swarm completely rewritten with **advanced high-impact optimizations**:
-
-**NEW Performance Optimizations:**
-- ✅ **Work-Stealing Queues**: Replaced single blocking queue with per-worker `ConcurrentLinkedDeque` + global `PriorityBlockingQueue`
-  - **30-40% reduction** in queue contention
-  - Better cache locality with LIFO consumption
-  - Automatic load balancing via work stealing
-- ✅ **Wait/Notify Mechanism**: Eliminated busy-waiting with synchronized notifications
-  - **50-70% reduction** in idle CPU usage
-  - Instant task pickup (vs 50-100ms polling delay)
-  - Better multi-core scalability
-- ✅ **Priority-Based Selection**: Tasks sorted by fitness score (priority + complexity + retry count)
-  - **Critical tasks finish 2-3x faster**
-  - Natural task prioritization
-- ✅ **Adaptive Coordination**: Dynamic interval adjustment based on workload
-  - **40-60% reduction** in coordination overhead during light loads
-  - Faster response during heavy loads (100ms) vs light loads (2000ms)
-  - Automatic work rebalancing
-- ✅ **LongAdder Metrics**: Replaced `AtomicInteger`/`AtomicLong` with `LongAdder` for high-contention counters
-  - **3-5x faster** counter updates on multi-core systems
-  - Better performance beyond 8 cores
-
-**Combined Performance Impact:**
-- **Queue contention**: -30-40%
-- **CPU waste**: -50-70%
-- **Coordination overhead**: -40-60%
-- **Metrics contention**: -70-80%
-- **Overall throughput**: +40-60% on top of existing 20-30% base speedup
-
-**Dependency-Based Complexity Analysis:**
-
-Bee Swarm uses **exclusive transitive dependency analysis** for complexity determination:
-
-- **✅ Pure Dependency-Based Complexity**: Task complexity determined solely from dependency graph depth
-  - JARs with 50+ transitive dependencies (e.g., Spring Boot) → **HIGH complexity**
-  - JARs with 20-49 transitive dependencies (e.g., Jackson) → **MEDIUM complexity**
-  - JARs with <10 transitive dependencies (e.g., Commons utilities) → **LOW complexity**
-  - Unknown dependency count → **MEDIUM complexity** (safe default)
-- **🚀 Immediate Performance**: No warm-up period - full 20-30% performance benefit from first run
-- **💾 Zero Persistence Overhead**: No `.sechive/` directory or historical data files needed
-- **🎯 Highly Accurate**: Complexity directly reflects actual scan workload (dependency graph traversal)
-- **🔄 Stateless Architecture**: Each scan is independent - easier to debug and understand
-- **📏 No Fallbacks**: Does not use file size or type heuristics - dependency count only
-
-**Other Bee Swarm Features**:
-- **Intelligent Task Distribution**: Swarm intelligence algorithms for optimal task selection
-- **Self-Organizing Workers**: 4 bee roles (Scout, Worker, Forager, Optimizer) adapt to workload
-- **Pheromone Trail Communication**: Bees share knowledge about successful task patterns
-- **Zero Configuration**: Automatically adapts to your project characteristics
-- **Command Line Control**: Enable with `-Dsechive.swarm.enabled=true`
-
-**CI/CD Platform Deep Integration** *(Professional Only)*
-- **Native Platform Support**: Jenkins, GitHub Actions, Azure DevOps, CircleCI
-- **Platform-Specific Reports**: JUnit XML, SARIF 2.1.0, Warnings-NG JSON, Insights JSON
-- **Build Status Integration**: Pass/Fail/Unstable based on vulnerability thresholds
-- **Pull Request Comments**: Automated security summaries on PRs/MRs
-- **Pipeline Metrics**: Scan duration, vulnerability trends, historical comparisons
-- **Progressive Enforcement**: Fail on new vulnerabilities only, baseline comparisons
-
-**Real-Time Webhook Notifications** *(Professional Only)*
-- **Multi-Platform Support**: Slack, Microsoft Teams, Discord, Generic webhooks
-- **Rich Formatting**: Platform-native messages with colors, emojis, structured data
-- **Smart Filtering**: Severity thresholds, branch-specific configurations, multiple channels
-- **Automatic Retry**: Built-in retry logic with exponential backoff
-- **Parallel Sending**: Fast concurrent webhook delivery
-- **Environment Variable Support**: Secure credential management
-
-**Enhanced Metrics Integration** *(Professional Only)*
-- **6 Platform Support**: Prometheus, Grafana Cloud, Datadog, New Relic, InfluxDB, StatsD
-- **15+ Security Metrics**: Vulnerabilities, dependencies, risk scores, performance metrics
-- **Pre-built Dashboards**: 3 Grafana dashboards with 39 visualization panels
-- **Risk Scoring**: Automated calculation (0-100) with weighted severity algorithm
-- **Parallel Export**: Concurrent push to multiple platforms with retry logic
-- **Custom Tags**: Organization, team, and environment tagging support
-
-**35+ New Professional Files Added:**
-- 11 metrics implementation files (models, exporters, service layer)
-- 6 comprehensive unit test suites (50+ test cases)
-- 4 Grafana dashboard templates (Security, Performance, Trends)
-- 9 webhook implementation files (adapters for Slack/Teams/Discord/Generic)
-- 3 webhook test suites (35+ test cases)
-- 3 integration files with CI/CD reporters
-- 1 comprehensive metrics export documentation guide
-
-### Version History
-- **📚 CHANGELOG.md**: Comprehensive version history with detailed change tracking
-- **🔗 Clickable Navigation**: Easy access to specific version details
-- **📖 Upgrade Guides**: Clear instructions for migrating between versions
-
-[See the complete CHANGELOG](distribution/src/main/resources/docs/CHANGELOG.md)
-
-
-### General Core Improvements
-- **💾 Automatic Memory Management**: Intelligent MAVEN_OPTS configuration for OWASP subprocesses
-    - Automatically allocates 3GB heap for NVD database downloads
-    - Automatically allocates 2GB heap for vulnerability scanning
-    - Eliminates Out of Memory errors during long-running scans
-    - No manual memory configuration required
-- **🎉 Zero-Configuration Setup**: Automatic NVD database initialization - no manual commands required!
-- **🔄 Intelligent Auto-Update**: Always uses the latest CVE data with automatic incremental updates
-- **OWASP Dependency-Check 12.1.3**: Latest vulnerability detection engine with improved accuracy
-- **Java 21 Required**: Modern runtime for improved performance (breaking change from v1.0.x)
-- **Database Corruption Fix**: Resolved H2 database issues affecting earlier versions
-- **CVSS v4.0 Support**: Enhanced parsing of newer vulnerability data
-- **Dynamic Path Detection**: Eliminates hardcoded version paths
-
-### Performance Enhancements
-- **Automatic Memory Allocation**: Plugin intelligently configures heap size for OWASP processes
-- Automatic database initialization on first run (no manual setup needed)
-- Smart incremental updates - downloads only new CVE data, not the entire database
-- Smart NVD caching with sub-second validation for test environments
-- Improved concurrent processing for faster dependency analysis
-- Memory optimization for large projects
-- Enhanced NVD API 2.0 integration with better rate limiting
-- **Prevents OOM Kills**: No more exit code 137 errors during long scans
-
-**🚀 Professional Performance**: Up to **6x faster** with Worker Pool optimizations - parallel file hashing, multi-threaded dependency scanning, and intelligent resource management. [Learn more →](#-worker-pool-optimizations-professional-exclusive)
-
-### User Experience Improvements
-- **🎯 Contextual Professional Suggestions**: Intelligent upgrade prompts at key moments
-    - Appears when approaching storage limits or at usage milestones
-    - Shows relevant features based on your project scale and findings
-    - Non-intrusive with built-in frequency control
-- **📊 Enhanced HTML Reports**: Visual comparison banner showcasing Professional features
-- **💡 Smart Feature Discovery**: Learn about advanced capabilities when you need them
-- **📈 Usage Tracking**: Milestone messages at 5th, 10th, and 20th scans
-
-### Trend Analysis Enhancements
-- **📈 Detailed CVE Changes**: Track exactly which vulnerabilities changed between scans
-    - ✅ **Resolved CVEs**: Shows CVEs that were fixed since the last scan
-    - 🆕 **New CVEs Introduced**: Highlights newly detected vulnerabilities
-    - ⏳ **Pending CVEs**: Count of unresolved vulnerabilities
-- **📊 Overall Vulnerability Trends**: Visual trend indicators showing changes in total, critical, high, medium, and low severity counts
-- **🔗 NVD Links**: Direct links to NIST NVD for each CVE with severity badges
-
-### Architecture Improvements
-- **🏗️ ScanEngine Architecture**: New orchestration layer for scanning workflow
-    - `ScanEngine` interface for unified scanning API
-    - `DefaultScanEngine` implementation with processor chains
-    - `ScanEngineFactory` with preset configurations (default, lightweight, CI/CD, development)
-- **🔧 Design Patterns**: Improved code quality with professional patterns
-    - `ProcessorChain` for vulnerability processing pipeline
-    - `ScanEventPublisher` for event-driven notifications
-    - Builder pattern for flexible engine configuration
-
-### Migration Notes
-- Upgrading from v1.0.x requires Java 21+ (breaking change)
-- First scan will automatically download NVD database (~317,000 CVEs, 20-30 minutes with API key)
-- H2 database files from v1.0.x are not compatible - delete `~/.sechive/nvd-cache` before upgrading
-- No manual `mvn dependency-check:update-only` commands needed anymore!
-- **Memory configuration is now automatic** - no need to set MAVEN_OPTS manually
-
-## Usage
-
-### Basic Commands
+Get a free API key from [NVD](https://nvd.nist.gov/developers/request-an-api-key) - it makes database downloads 5x faster:
 
 ```bash
-# Simple scan with default settings
-mvn sechive:scan
-
-# With NVD API key for faster scans
 mvn sechive:scan -Dsechive.nvd.apiKey=YOUR_API_KEY
-
-# JSON file storage for trend analysis
-mvn sechive:scan -Dsechive.community.storageMode=JSON_FILE
-
-# Multi-module projects
-mvn sechive:scan -Dsechive.multiModule.enabled=true
-
-# Fail build on critical vulnerabilities
-mvn sechive:scan -Dsechive.failOnError=true -Dsechive.severityThreshold=CRITICAL
 ```
 
-### Configuration Examples
+---
 
-#### Basic Configuration
+## Common Configurations
+
+### Fail the build on vulnerabilities
 
 ```xml
-<plugin>
-    <groupId>io.github.dodogeny</groupId>
-    <artifactId>sechive-maven-plugin</artifactId>
-    <version>2.2.1</version>
-    <configuration>
-        <skip>false</skip>
-        <failOnError>true</failOnError>
-        <severityThreshold>MEDIUM</severityThreshold>
-        <reportFormats>HTML,JSON</reportFormats>
-    </configuration>
-</plugin>
+<configuration>
+    <failOnError>true</failOnError>
+    <severityThreshold>HIGH</severityThreshold>
+</configuration>
 ```
 
-#### JSON Storage with Trend Analysis
+### Track vulnerabilities over time
 
 ```xml
-<plugin>
-    <groupId>io.github.dodogeny</groupId>
-    <artifactId>sechive-maven-plugin</artifactId>
-    <version>2.2.1</version>
-    <configuration>
-        <communityStorageMode>JSON_FILE</communityStorageMode>
-        <jsonFilePath>${project.build.directory}/security/vulnerabilities.json</jsonFilePath>
-        <outputDirectory>${project.build.directory}/security</outputDirectory>
-        <reportFormats>HTML,JSON</reportFormats>
-    </configuration>
-</plugin>
+<configuration>
+    <communityStorageMode>JSON_FILE</communityStorageMode>
+    <reportFormats>HTML,JSON</reportFormats>
+</configuration>
 ```
 
-#### Multi-Module Configuration
+### Multi-module projects
 
 ```xml
-<plugin>
-    <groupId>io.github.dodogeny</groupId>
-    <artifactId>sechive-maven-plugin</artifactId>
-    <version>2.2.1</version>
-    <configuration>
-        <enableMultiModule>true</enableMultiModule>
-        <communityStorageMode>JSON_FILE</communityStorageMode>
-        <scannerTimeout>600000</scannerTimeout>
-        <severityThreshold>HIGH</severityThreshold>
-    </configuration>
-</plugin>
+<configuration>
+    <enableMultiModule>true</enableMultiModule>
+</configuration>
 ```
 
-#### NVD API Key Configuration (Recommended)
+---
 
-```xml
-<plugin>
-    <groupId>io.github.dodogeny</groupId>
-    <artifactId>sechive-maven-plugin</artifactId>
-    <version>2.2.1</version>
-    <configuration>
-        <!-- NVD API key for faster database downloads and updates -->
-        <nvdApiKey>${env.NVD_API_KEY}</nvdApiKey>
+## All Configuration Options
 
-        <!-- Auto-update is always enabled for latest CVE data -->
-        <!-- Smart caching and incremental updates are automatic -->
-        <!-- Memory allocation is automatic - no MAVEN_OPTS needed -->
-    </configuration>
-</plugin>
-```
+### Basic Settings
 
-## NVD API Key Setup
+| Option | Default | What it does |
+|--------|---------|--------------|
+| `skip` | `false` | Skip the scan entirely |
+| `failOnError` | `false` | Fail the build if vulnerabilities are found |
+| `severityThreshold` | `MEDIUM` | Minimum severity to trigger failure (CRITICAL, HIGH, MEDIUM, LOW) |
+| `reportFormats` | `HTML,JSON` | Which report formats to generate |
+| `outputDirectory` | `target/sechive-reports` | Where to put reports |
 
-Get a free NVD API key for better performance and reliability:
+### Storage
 
-1. Visit https://nvd.nist.gov/developers/request-an-api-key
-2. Complete registration and verify email
-3. Configure the API key:
+| Option | Default | What it does |
+|--------|---------|--------------|
+| `communityStorageMode` | `IN_MEMORY` | `IN_MEMORY` for quick scans, `JSON_FILE` to track history |
+| `jsonFilePath` | `target/.../vulnerabilities.json` | Where to store vulnerability history |
 
-**Environment Variable (Recommended)**
-```bash
-export NVD_API_KEY="your-api-key"
-mvn sechive:scan -Dsechive.nvd.apiKey=${NVD_API_KEY}
-```
+### Scanning
 
-**Maven Settings (~/.m2/settings.xml)**
-```xml
-<settings>
-    <profiles>
-        <profile>
-            <id>sechive</id>
-            <properties>
-                <nvd.api.key>your-api-key</nvd.api.key>
-            </properties>
-        </profile>
-    </profiles>
-    <activeProfiles>
-        <activeProfile>sechive</activeProfile>
-    </activeProfiles>
-</settings>
-```
+| Option | Default | What it does |
+|--------|---------|--------------|
+| `nvdApiKey` | - | Your NVD API key for faster scans |
+| `enableMultiModule` | `false` | Scan all modules in a multi-module project |
+| `scannerTimeout` | `300000` | How long to wait (in milliseconds) before timing out |
 
-**Benefits:**
-- 5x faster scans (2000 requests/30s vs 50/30s rate limit)
-- More reliable with reduced rate limiting
-- Access to latest vulnerability data
+---
 
-## Storage Options
-
-### In-Memory Database (Default)
-
-Best for quick scans and CI/CD pipelines.
-
-```bash
-mvn sechive:scan -Dsechive.community.storageMode=IN_MEMORY
-```
-
-**Pros:** Zero setup, fastest performance, auto cleanup
-**Cons:** No persistence, no trend analysis
-
-### JSON File Storage
-
-Best for historical tracking and trend analysis.
-
-```bash
-mvn sechive:scan \
-  -Dsechive.community.storageMode=JSON_FILE \
-  -Dsechive.storage.jsonFilePath=/path/to/vulnerabilities.json
-```
-
-**Pros:** Persistent storage, trend analysis, version control friendly, human readable
-**Cons:** Slightly slower than in-memory
-
-## Intelligent Auto-Update System
-
-SecHive automatically manages the NVD database with zero configuration required:
-
-### How It Works
-
-1. **First-Time Setup**: Automatically downloads the complete NVD database (~317,000 CVEs) on first scan
-2. **Smart Updates**: OWASP Dependency-Check intelligently checks for new CVE data on every scan
-3. **Incremental Downloads**: Only downloads new/updated CVEs, not the entire database
-4. **Always Current**: Ensures you're always scanning against the latest vulnerability data
-
-### What You See
-
-**First Run (no database exists):**
-```
-[INFO] 🔧 First-time setup: Initializing NVD database...
-[INFO] ⏱️  This will take 20-30 minutes (one-time only)
-[INFO] 🔄 Future scans will automatically check for incremental updates
-[INFO] Downloading 317,332 CVE records...
-[INFO] ✅ NVD database initialized successfully!
-```
-
-**Subsequent Runs (database exists):**
-```
-[INFO] ✅ NVD database found (age: 2 days) - OWASP will check for updates automatically
-[INFO] 🔄 Auto-update enabled: OWASP will check for latest NVD data
-[INFO] 🔑 Using NVD API key for faster updates
-[INFO] Checking for new CVE data...
-[INFO] Downloaded 47 new CVE records
-[INFO] Analyzing dependencies... (2-3 minutes)
-```
-
-### NVD Database Location
-
-View/clear database cache:
-- Linux/Mac: `~/.m2/repository/org/owasp/dependency-check-utils/12.1.3/data/`
-- Windows: `%USERPROFILE%\.m2\repository\org\owasp\dependency-check-utils\12.1.3\data\`
-
-Force fresh download (if needed):
-```bash
-rm -rf ~/.m2/repository/org/owasp/dependency-check-utils/
-mvn sechive:scan  # Will automatically re-download
-```
-
-## CI/CD Integration
+## Using with CI/CD
 
 ### GitHub Actions
 
@@ -681,7 +121,7 @@ name: Security Scan
 on: [push, pull_request]
 
 jobs:
-  security-scan:
+  scan:
     runs-on: ubuntu-latest
     steps:
     - uses: actions/checkout@v4
@@ -690,20 +130,8 @@ jobs:
         java-version: '21'
         distribution: 'temurin'
 
-    - name: Cache Maven dependencies
-      uses: actions/cache@v3
-      with:
-        path: ~/.m2
-        key: ${{ runner.os }}-m2-${{ hashFiles('**/pom.xml') }}
-
     - name: Run Security Scan
-      env:
-        NVD_API_KEY: ${{ secrets.NVD_API_KEY }}
-      run: |
-        mvn sechive:scan \
-          -Dsechive.nvd.apiKey=${NVD_API_KEY} \
-          -Dsechive.failOnCritical=true
-        # v1.1.1+ automatically manages memory - no MAVEN_OPTS needed
+      run: mvn sechive:scan -Dsechive.nvd.apiKey=${{ secrets.NVD_API_KEY }}
 
     - name: Upload Reports
       uses: actions/upload-artifact@v4
@@ -713,34 +141,24 @@ jobs:
         path: target/sechive-reports/
 ```
 
-### Jenkins Pipeline
+### Jenkins
 
 ```groovy
 pipeline {
     agent any
-
-    environment {
-        NVD_API_KEY = credentials('nvd-api-key')
-    }
-
     stages {
         stage('Security Scan') {
             steps {
-                sh '''
-                    mvn sechive:scan \
-                      -Dsechive.nvd.apiKey=${NVD_API_KEY} \
-                      -Dsechive.failOnCritical=true
-                '''
+                sh 'mvn sechive:scan -Dsechive.nvd.apiKey=${NVD_API_KEY}'
             }
         }
     }
-
     post {
         always {
             publishHTML([
                 reportDir: 'target/sechive-reports',
                 reportFiles: 'sechive-report.html',
-                reportName: 'Security Scan Report'
+                reportName: 'Security Report'
             ])
         }
     }
@@ -752,1201 +170,76 @@ pipeline {
 ```yaml
 security_scan:
   stage: test
-  image: maven:3.8-openjdk-11
+  image: maven:3.9-eclipse-temurin-21
   script:
-    - mvn sechive:scan
-        -Dsechive.nvd.apiKey=${NVD_API_KEY}
-        -Dsechive.failOnCritical=true
+    - mvn sechive:scan -Dsechive.nvd.apiKey=${NVD_API_KEY}
   artifacts:
-    when: always
     paths:
       - target/sechive-reports/
-    expire_in: 30 days
 ```
 
-## Configuration Reference
+---
 
-### Core Parameters
+## Free vs Professional
 
-| Parameter | Type | Default | Description |
-|-----------|------|---------|-------------|
-| `skip` | boolean | `false` | Skip scan execution |
-| `failOnError` | boolean | `false` | Fail build on vulnerabilities |
-| `severityThreshold` | string | `MEDIUM` | Minimum severity to fail build (CRITICAL, HIGH, MEDIUM, LOW) |
-| `reportFormats` | string | `HTML,JSON` | Report formats to generate |
-| `outputDirectory` | string | `${project.build.directory}/security` | Report output directory |
+| | Free | Professional ($149/mo) |
+|---|---|---|
+| **Scanning** | Full vulnerability detection | Same + 3-6x faster |
+| **Reports** | HTML, JSON | + PDF, SARIF, SBOM |
+| **Alerts** | - | Slack, Teams, Discord, Email |
+| **Extras** | - | License compliance, predictive updates, Docker mode |
+| **Storage** | In-memory, JSON | + PostgreSQL, MySQL |
+| **Support** | Community | 24-hour response |
 
-### Storage Configuration
+[Learn more about Professional](https://dodogeny.github.io/sechive-maven-plugin/)
 
-| Parameter | Type | Default | Description |
-|-----------|------|---------|-------------|
-| `communityStorageMode` | string | `IN_MEMORY` | Storage mode (IN_MEMORY, JSON_FILE) |
-| `jsonFilePath` | string | `${project.build.directory}/security/vulnerabilities.json` | JSON file location |
-| `purgeBeforeScan` | boolean | `false` | Purge data before scanning |
-
-### NVD Configuration
-
-| Parameter | Type | Default | Description |
-|-----------|------|---------|-------------|
-| `nvdApiKey` | string | - | NVD API key (highly recommended for faster downloads/updates) |
-
-**Note**: Auto-update is always enabled to ensure you're scanning against the latest CVE data. The plugin automatically:
-- Downloads the complete NVD database on first run
-- Checks for and downloads only new CVE data on subsequent runs
-- Uses OWASP Dependency-Check's built-in intelligence for update decisions
-
-### Multi-Module Configuration
-
-| Parameter | Type | Default | Description |
-|-----------|------|---------|-------------|
-| `enableMultiModule` | boolean | `false` | Enable multi-module scanning |
-| `scannerTimeout` | int | `300000` | Scanner timeout in milliseconds |
-
-### Purge Configuration
-
-| Parameter | Type | Default | Description |
-|-----------|------|---------|-------------|
-| `purge.force` | boolean | `false` | Force purge without confirmation |
-| `purge.projectOnly` | boolean | `false` | Purge only current project data |
-| `purge.olderThanDays` | int | `0` | Purge data older than N days |
-| `purge.dryRun` | boolean | `false` | Preview purge without executing |
-
-## Data Management
-
-### Purge Operations
-
-```bash
-# Preview what would be purged
-mvn sechive:scan \
-  -Dsechive.community.storageMode=JSON_FILE \
-  -Dsechive.purgeBeforeScan=true \
-  -Dsechive.purge.dryRun=true
-
-# Purge with confirmation
-mvn sechive:scan \
-  -Dsechive.community.storageMode=JSON_FILE \
-  -Dsechive.purgeBeforeScan=true
-
-# Force purge without confirmation
-mvn sechive:scan \
-  -Dsechive.community.storageMode=JSON_FILE \
-  -Dsechive.purgeBeforeScan=true \
-  -Dsechive.purge.force=true
-
-# Purge data older than 30 days
-mvn sechive:scan \
-  -Dsechive.community.storageMode=JSON_FILE \
-  -Dsechive.purgeBeforeScan=true \
-  -Dsechive.purge.olderThanDays=30
-```
+---
 
 ## Troubleshooting
 
-### Upgrade Issues (v1.0.x to v1.1.x)
+**"First scan is taking forever"**
+That's normal - it's downloading 300,000+ CVE records. Get a free [NVD API key](https://nvd.nist.gov/developers/request-an-api-key) to speed it up. This only happens once.
 
-**"Unsupported major.minor version" Error**
+**"Unsupported class version" error**
+SecHive 2.x needs Java 21+. Check with `java -version`.
 
-This indicates Java 8 is being used. v1.1.x requires Java 21+:
-
+**"Database connection error" after upgrading**
+Clear the old database and try again:
 ```bash
-# Check Java version
-java -version
-
-# Set JAVA_HOME to Java 21+
-export JAVA_HOME=/path/to/java21
-mvn sechive:scan
-```
-
-**Database Connection Errors After Upgrade**
-
-v1.1.x uses OWASP Dependency-Check 12.1.3 with a new H2 database format. Delete old database:
-
-```bash
-# Remove old cache (if upgrading from v1.0.x)
-rm -rf ~/.sechive/nvd-cache
-
-# Remove OWASP database (if experiencing connection issues)
 rm -rf ~/.m2/repository/org/owasp/dependency-check-utils/
-
-# Run scan - will automatically re-download
 mvn sechive:scan
 ```
 
-**Out of Memory Errors (Fixed in v1.1.0+)**
+---
 
-If you're using an older version and experiencing OOM errors (exit code 137) or scans hanging for hours:
+## Migrating from Bastion (v1.x)?
 
-```bash
-# Upgrade to v2.0.0 (or v1.1.0+) which includes automatic memory management
-# Update your pom.xml to version 2.0.0
-```
+<details>
+<summary>Click to expand migration guide</summary>
 
-v1.1.0+ and v2.0.0 automatically configure memory allocation for OWASP subprocesses:
-- **NVD Database Downloads**: 3GB heap automatically allocated
-- **Vulnerability Scanning**: 2GB heap automatically allocated
-- **No manual MAVEN_OPTS configuration needed**
+We renamed from "Bastion" to "SecHive" in v2.0:
 
-The plugin logs will show:
-```
-[INFO] 💾 Setting MAVEN_OPTS=-Xmx3g for database initialization
-[INFO] 💾 Setting MAVEN_OPTS=-Xmx2g for OWASP subprocess
-```
+| Changed | From | To |
+|---------|------|-----|
+| Artifact | `bastion-maven-community-plugin` | `sechive-maven-plugin` |
+| Commands | `mvn bastion:scan` | `mvn sechive:scan` |
+| Properties | `bastion.*` | `sechive.*` |
+| Reports | `target/bastion-reports/` | `target/sechive-reports/` |
 
-**First Scan Takes 20-30 Minutes**
+</details>
 
-The first scan automatically downloads the complete NVD database (~317,000 CVE records). This is normal and expected behavior. The plugin will display:
+---
 
-```
-[INFO] 🔧 First-time setup: Initializing NVD database...
-[INFO] ⏱️  This will take 20-30 minutes (one-time only)
-[INFO] 🔄 Future scans will automatically check for incremental updates
-[INFO] 💾 Setting MAVEN_OPTS=-Xmx3g for database initialization
-```
+## Get Help
 
-**To speed this up:**
-- Get a free NVD API key from https://nvd.nist.gov/developers/request-an-api-key
-- Add `-Dsechive.nvd.apiKey=YOUR_KEY` to reduce download time from hours to 20-30 minutes
+- **Found a bug?** [Open an issue](https://github.com/dodogeny/sechive-maven-plugin/issues)
+- **Questions?** Email us at it.dodogeny@gmail.com
+- **Documentation:** [Full docs](https://dodogeny.github.io/sechive-maven-plugin/)
 
-**Subsequent scans** will only download new CVE data (typically seconds to minutes), not the entire database.
+---
 
-### Performance Optimization
+**Requirements:** Java 21+, Maven 3.6+
 
-1. **Use NVD API key**: Get free key from https://nvd.nist.gov/developers/request-an-api-key (reduces initial download from hours to 20-30 minutes)
-2. **Automatic updates**: Already enabled by default - no configuration needed
-3. **Use JSON storage**: Enables trend analysis without sacrificing performance
-4. **Let it run once**: The first scan downloads the full database, subsequent scans only download new CVEs
-5. **Monitor logs**: Watch for "NVD database found (age: X days)" to see automatic update behavior
+**License:** Apache 2.0
 
-## Scan Statistics
-
-SecHive provides detailed performance metrics:
-
-```
-📊 SecHive Scan Statistics
-📦 JARs Scanned: 127
-🔍 CVEs Found: 23 (8 unique)
-🎯 CVEs with Exploits: 5
-📈 Average CVSS Score: 6.7
-
-⏱️ Performance:
-├─ Initialization: 1.2s
-├─ Dependency Resolution: 3.4s
-├─ Vulnerability Analysis: 12.8s
-├─ Report Generation: 2.1s
-└─ Total: 19.5s
-
-💾 Resources:
-├─ Peak Memory: 384 MB
-├─ Processing Speed: 6.5 JARs/second
-└─ Cache Hit Rate: 78%
-```
-
-## Professional Edition
-
-SecHive Maven Plugin offers a **Professional Edition** designed for teams and organizations that need advanced security capabilities, predictive intelligence, and comprehensive license compliance management. Built for production environments where security, compliance, and governance are critical.
-
-### Key Professional Features
-
-**🐝 Bee Swarm Optimization** *(Professional Exclusive)*
-Intelligent task distribution using swarm intelligence algorithms for unprecedented scan performance:
-- **20-30% Faster Scans**: Swarm algorithms optimize task selection and execution
-- **Self-Organizing Workers**: Bees autonomously select optimal tasks based on capabilities
-- **Smart Complexity Analysis**: Determines task complexity using transitive dependency counts
-- **Pheromone Trail Communication**: Bees share knowledge about successful strategies
-- **Dynamic Specialization**: Workers develop expertise in I/O, CPU, or scanner-intensive tasks
-- **Automatic Load Balancing**: Natural distribution based on task characteristics
-- **Real-Time Adaptation**: Adapts dynamically to task characteristics without persistent storage
-- **Zero Configuration**: Works out-of-the-box, automatically adapts to your project
-
-*How It Works:*
-- 🐝 **12 Worker Bees** (configurable): Scouts, Workers, Foragers, Optimizers
-- 📊 **Intelligent Task Selection**: Evaluates task compatibility, pheromone strength, and pool load
-- 🧠 **Reinforcement Learning**: +10% capability on success, -5% on failure
-- 🎯 **Transitive Dependency Analysis**: Determines complexity from actual dependency graph depth
-- 📦 **Smart Complexity Levels**: HIGH (50+ deps), MEDIUM (20-49 deps), LOW (<10 deps)
-
-*Configuration:*
-```xml
-<configuration>
-    <!-- Enable Bee Swarm Optimization (disabled by default) -->
-    <enableBeeSwarm>true</enableBeeSwarm>
-
-    <!-- Optional: Configure swarm size (default: 12) -->
-    <swarmSize>16</swarmSize>
-</configuration>
-```
-
-*Command Line:*
-```bash
-# Enable with defaults
-mvn verify -Dsechive.swarm.enabled=true
-
-# Enable with custom swarm size
-mvn verify -Dsechive.swarm.enabled=true -Dsechive.swarm.size=20
-```
-
-*Performance Impact:*
-- **Consistent Performance**: 20-30% faster than traditional scheduling on every run
-- **Immediate Benefit**: No warm-up period needed - analyzes complexity in real-time
-- **Best For**: Heterogeneous workloads with varied file sizes and types
-- **Memory Overhead**: ~12KB for typical 12-bee swarm
-
-📖 **[Complete Bee Swarm Guide](../sechive-maven-plugin-professional/distribution/src/main/resources/docs/BEE_SWARM_OPTIMIZATION.md)**
-
-**⚡ Worker Pool Optimizations** *(Professional Exclusive)*
-Dramatically improve scanning speed with intelligent parallelization and resource management:
-- **3-6x Faster Scans**: Advanced multi-threaded architecture for maximum throughput
-- **4-Tier Strategy System**:
-  - **AUTO** - Automatically detects optimal settings based on your hardware (recommended)
-  - **AGGRESSIVE** - Maximum performance for powerful servers (16+ cores, 32GB+ RAM)
-  - **MODERATE** - Balanced approach for development machines (8+ cores, 16GB+ RAM)
-  - **NORMAL** - Conservative for CI/CD and shared environments (4+ cores, 8GB+ RAM)
-- **Specialized Thread Pools**:
-  - **I/O Pool**: Parallel file hashing with streaming (3-5x faster)
-  - **CPU Pool**: Parallel dependency scanning (8-16x faster on multi-core)
-  - **Scanner Pool**: Parallel OWASP/Grype invocation (2-4x faster)
-  - **Database Pool**: Concurrent vulnerability lookups
-- **Intelligent Caching**: Extended TTLs and cache hit rates of 80-95%
-- **Streaming I/O**: Constant memory usage regardless of file size
-- **Real-time Metrics**: Track pool utilization, throughput, and performance
-
-*Performance Benchmarks (16-core workstation):*
-```
-Project Size | Standard | Optimized | Speedup
-Small (50)   | 15 sec   | 12 sec    | 1.25x
-Medium (300) | 45 sec   | 15 sec    | 3.0x
-Large (800)  | 120 sec  | 30 sec    | 4.0x
-Very Large   | 300 sec  | 50 sec    | 6.0x
-```
-
-*Simple Configuration:*
-```xml
-<configuration>
-  <!-- AUTO mode: Automatically detects optimal settings -->
-  <workerPoolStrategy>AUTO</workerPoolStrategy>
-
-  <!-- Or choose specific strategy -->
-  <workerPoolStrategy>AGGRESSIVE</workerPoolStrategy>
-
-  <!-- Optimizations enabled by default -->
-  <enableWorkerPoolOptimization>true</enableWorkerPoolOptimization>
-</configuration>
-```
-
-*Hardware-Specific Optimization:*
-- **16+ cores, 32GB+ RAM**: AUTO selects AGGRESSIVE (5-8x speedup)
-- **8+ cores, 16GB+ RAM**: AUTO selects MODERATE (3-5x speedup)
-- **4+ cores, 8GB+ RAM**: AUTO selects NORMAL (2-3x speedup)
-
-📖 **[Complete Worker Pool Guide](../sechive-maven-plugin-professional/WORKER_POOL_OPTIMIZATION.md)**
-📊 **[Performance Testing Suite](../sechive-maven-plugin-professional/PERFORMANCE_TESTING.md)**
-
-**💾 Persistent Scan Cache** *(Professional Exclusive)*
-
-Eliminate redundant scans across projects with intelligent filesystem-based caching:
-- **80-95% Cache Hit Rate**: Shared vulnerability scan results across all projects on the same machine
-- **Cross-Project Sharing**: Scan results stored in `~/.m2/repository/.sechive-cache/` and reused by all projects
-- **SHA-256 Integrity**: Hash-based validation ensures cache accuracy
-- **Automatic Invalidation**: Cache entries invalidated when JARs change or after 30 days (configurable)
-- **Zero Configuration**: Works automatically - no setup required
-- **Massive Time Savings**: Projects sharing dependencies benefit immediately
-
-*Performance Impact Examples:*
-```
-Scenario 1 - Incremental Build:
-Project A (100 deps): 30s initial scan
-Project A (next build, no changes): 2s (cache hits: 95/100 deps)
-Speedup: 15x faster
-
-Scenario 2 - Microservices (10 projects sharing Spring Boot):
-Without cache: 300s total (30s × 10 projects)
-With cache: 50s total (30s first + 2s × 9 projects)
-Speedup: 6x faster
-
-Scenario 3 - Monorepo with Modules:
-Module 1 (80 deps): 25s
-Module 2 (60 deps, 50 shared): 8s (cache hits: 50/60 deps)
-Module 3 (40 deps, 30 shared): 5s (cache hits: 30/40 deps)
-Traditional: 25s + 20s + 15s = 60s
-With cache: 25s + 8s + 5s = 38s
-Speedup: 1.6x faster
-```
-
-*How It Works:*
-1. **First Scan**: JAR scanned, results cached by SHA-256 hash
-2. **Subsequent Scans**: Same JAR detected → cache checked → instant result retrieval
-3. **File Changes**: Hash mismatch detected → cache invalidated → fresh scan performed
-4. **Expiration**: Entries older than 30 days automatically removed on next scan
-
-*Cache Statistics:*
-The scanner automatically logs cache performance:
-```
-[INFO] 💾 Persistent Cache Statistics:
-[INFO]   Location: /home/user/.m2/repository/.sechive-cache/
-[INFO]   Total Entries: 247
-[INFO]   Cache Size: 12.3 MB
-[INFO]   Cache Hits: 95/100 (95.0%)
-[INFO]   Time Saved: 28.5s
-```
-
-*Configuration (optional):*
-```xml
-<configuration>
-  <!-- Custom cache location (optional) -->
-  <cacheLocation>${user.home}/.custom-cache</cacheLocation>
-
-  <!-- Custom TTL in days (default: 30) -->
-  <cacheTtlDays>60</cacheTtlDays>
-
-  <!-- Disable cache (not recommended) -->
-  <enablePersistentCache>false</enablePersistentCache>
-</configuration>
-```
-
-*Cache Management:*
-```bash
-# View cache statistics
-mvn sechive:scan -Dsechive.cache.showStats=true
-
-# Clear cache
-rm -rf ~/.m2/repository/.sechive-cache/
-
-# Cache cleanup (removes expired entries)
-mvn sechive:scan -Dsechive.cache.cleanup=true
-```
-
-*Benefits:*
-- ✅ **Team-wide savings**: All developers benefit from shared cache
-- ✅ **CI/CD optimization**: Dramatically faster pipeline runs with artifact caching
-- ✅ **Monorepo friendly**: Massive speedups for multi-module projects
-- ✅ **Zero maintenance**: Automatic cleanup and integrity verification
-- ✅ **Backwards compatible**: Works seamlessly with existing configurations
-
-**📊 Resource Monitoring & Optimization** *(Professional Exclusive - NEW in v2.0.0!)*
-
-Real-time performance monitoring with beautiful dynamic console visualizations. Track CPU, memory, thread, and GC activity during vulnerability scans with professional ASCII art dashboards.
-
-*Key Features:*
-- **Live Resource Tracking**: Real-time monitoring of CPU (process & system), memory (heap & non-heap), thread activity, and garbage collection metrics
-- **Beautiful Console Visualizations**: Dynamic ASCII art dashboards with Unicode box-drawing, color-coded sparklines (`▁▂▃▄▅▆▇█`), and progress bars
-- **Intelligent Alerting**: Configurable thresholds for CPU, memory, and threads with three alert levels (INFO, WARNING, CRITICAL)
-- **AI-Powered Recommendations**: Automatic JVM tuning suggestions, thread pool optimization advice, and memory allocation guidance
-- **Historical Trend Analysis** *(NEW)*: Automatic regression detection comparing each build to last 10 builds with actionable insights
-- **Multiple Profiles**: Pre-configured settings for DEVELOPMENT, CICD, AGGRESSIVE, and CONSERVATIVE environments
-- **< 0.5% CPU Overhead**: Non-blocking, asynchronous sampling with minimal performance impact
-
-*Example Dashboard:*
-```
-╔════════════════════════════════════════════════════════════════════════════╗
-║                    SECHIVE RESOURCE MONITOR - LIVE VIEW                   ║
-╚════════════════════════════════════════════════════════════════════════════╝
-
-CPU Usage
-╭────────────────────────────────────────────────────────────────────────────╮
-│ Process CPU:  45.2% ████████████████████████░░░░░░░░░░░░░░░░░░░░░░░░░░░░ │
-│ System CPU:   62.8% █████████████████████████████████░░░░░░░░░░░░░░░░░░░ │
-│ History:     ▁▂▃▄▅▆▇█▇▆▅▄▃▂▁▂▃▄▅▆▇█▇▆▅▄▃▂▁▂▃▄▅▆▇█▇▆▅▄▃▂▁▂▃▄▅▆▇█▇▆▅▄▃▂ │
-╰────────────────────────────────────────────────────────────────────────────╯
-
-Memory Usage
-╭────────────────────────────────────────────────────────────────────────────╮
-│ Heap Memory:  72.3% ████████████████████████████████████░░░░░░░░░░░░░░░░ │
-│ ├─ Used:       1,856 MB /  2,048 MB                                       │
-│ History:     ▁▂▃▃▄▄▅▅▆▆▇▇████▇▇▆▆▅▅▄▄▃▃▂▂▁▁▂▂▃▃▄▄▅▅▆▆▇▇████▇▇▆▆▅▅▄▄ │
-╰────────────────────────────────────────────────────────────────────────────╯
-
-╔════════════════════════════════════════════════════════════════════════════╗
-║                      RESOURCE TREND ANALYSIS                               ║
-╚════════════════════════════════════════════════════════════════════════════╝
-
-Overall Status: ✓ STABLE
-
-Metric Trends (vs last 10 builds):
-╭────────────────────────────────────────────────────────────────────────────╮
-│ CPU Usage         :   45.2% ↓ (-5.3%) [baseline: 47.8%]                   │
-│ Memory Usage      :   72.3% → (stable) [baseline: 71.5%]                  │
-│ Thread Count      :    142 → (stable) [baseline: 138]                     │
-│ GC Time           :  1234ms ↑ (+12.1%) [baseline: 1100ms]                 │
-│ Scan Throughput   :   6.5 deps/sec → (stable) [baseline: 6.2 deps/sec]    │
-╰────────────────────────────────────────────────────────────────────────────╯
-
-Insights & Recommendations:
-  ✓ CPU usage decreased by 5.3% (47.8% → 45.2%)
-  ⚠ GC time increased by 12.1% (1100ms → 1234ms)
-  💡 Consider GC tuning or increasing heap size
-```
-
-*Quick Start:*
-```xml
-<configuration>
-  <!-- Enable resource monitoring -->
-  <enableResourceMonitoring>true</enableResourceMonitoring>
-
-  <!-- Show live dashboard (updates every 10 seconds) -->
-  <showLiveDashboard>true</showLiveDashboard>
-
-  <!-- Choose monitoring profile -->
-  <monitoringProfile>DEVELOPMENT</monitoringProfile>
-</configuration>
-```
-
-*Command Line:*
-```bash
-# Enable live dashboard
-mvn sechive:scan -Dsechive.showLiveDashboard=true
-
-# Use CI/CD profile (summary only, no live updates)
-mvn sechive:scan -Dsechive.monitoringProfile=CICD
-```
-
-*Configuration Profiles:*
-- **DEVELOPMENT**: Frequent updates (5s), detailed graphs, all metrics enabled
-- **CICD**: No live dashboard, compact status updates, minimal overhead (2s sampling)
-- **AGGRESSIVE**: High thresholds (CPU 90%, Memory 90%) for powerful systems
-- **CONSERVATIVE**: Low thresholds (CPU 60%, Memory 70%) for constrained environments
-
-*Benefits:*
-- ✅ **Real-time visibility**: See exactly how resources are used during scans
-- ✅ **Performance optimization**: Instant bottleneck identification with actionable recommendations
-- ✅ **Intelligent alerting**: Prevents resource exhaustion with early warnings
-- ✅ **Professional UX**: CLI-based but beautiful with color-coded indicators
-- ✅ **Zero overhead option**: Fully disableable with no performance impact when not needed
-
-📖 **[Complete Resource Monitoring Guide](https://github.com/dodogeny/sechive-maven-plugin-professional/blob/main/RESOURCE_MONITORING.md)**
-
-**🐳 Docker Mode - Continuous Security Scanning** *(Professional Exclusive)*
-
-Run SecHive as a standalone Docker container that continuously monitors your Git repositories for changes and automatically scans for vulnerabilities. Perfect for DevSecOps pipelines and automated security monitoring.
-
-*Container Registry:*
-- **GHCR**: `ghcr.io/dodogeny/sechive-scanner:2.2.1`
-- **Platforms**: linux/amd64, linux/arm64
-- **SBOM**: Automatic SPDX SBOM generation for each release
-
-*Supported Git Providers:*
-- **GitHub** - `https://github.com/org/repo.git`
-- **GitLab** - `https://gitlab.com/org/repo.git`
-- **Bitbucket** - `https://bitbucket.org/org/repo.git`
-- **Azure DevOps** - `https://dev.azure.com/org/project/_git/repo`
-- **Self-hosted Git servers** - `https://git.company.com/repo.git`
-- **SSH URLs** - `git@github.com:org/repo.git`
-
-*Key Features:*
-- **Continuous Polling**: Automatically detects changes and triggers scans
-- **Configurable Intervals**: Set poll frequency (default: 5 minutes)
-- **Dual Scanner Support**: Both OWASP Dependency-Check and Grype included
-- **Multi-Platform Notifications**: Webhooks (Slack, Teams, Discord) + Email alerts
-- **Persistent Storage**: PostgreSQL database for scan history and baselines
-- **Health Monitoring**: Built-in health check endpoints for container orchestration
-
-*Quick Start with Docker:*
-```bash
-# Pull the image from GitHub Container Registry
-docker pull ghcr.io/dodogeny/sechive-scanner:2.2.1
-
-# Run with Git polling
-docker run -d \
-  -e SECHIVE_GIT_REPO_URL=https://github.com/your-org/your-repo.git \
-  -e SECHIVE_GIT_TOKEN=your_token \
-  -v $(pwd)/reports:/reports \
-  ghcr.io/dodogeny/sechive-scanner:2.2.1
-```
-
-*Quick Start with Docker Compose:*
-```bash
-# 1. Clone and navigate to docker directory
-cd cli/docker
-
-# 2. Create environment file
-cp .env.example .env
-
-# 3. Configure your repository (edit .env)
-GIT_REPO_URL=https://github.com/your-org/your-repo.git
-GIT_TOKEN=your_personal_access_token
-DB_PASSWORD=secure_password_here
-
-# 4. Start the scanner
-docker-compose up -d
-
-# 5. View logs
-docker-compose logs -f sechive
-
-# 6. Check health
-curl http://localhost:8080/health
-```
-
-*Environment Variables:*
-
-| Variable | Description | Default |
-|----------|-------------|---------|
-| `GIT_REPO_URL` | Repository URL (any Git provider) | required |
-| `GIT_BRANCH` | Branch to monitor | `main` |
-| `GIT_AUTH_TYPE` | `HTTPS_TOKEN` or `SSH_KEY` | `HTTPS_TOKEN` |
-| `GIT_TOKEN` | Personal access token | - |
-| `POLL_INTERVAL` | Poll interval in seconds | `300` |
-| `SCANNER_ENGINE` | `owasp`, `grype`, or `auto` | `auto` |
-| `NVD_API_KEY` | NVD API key for faster updates | - |
-| `SEVERITY_THRESHOLD` | Min severity: CRITICAL, HIGH, MEDIUM, LOW | `MEDIUM` |
-| `DB_PASSWORD` | PostgreSQL password | required |
-| `WEBHOOK_ENABLED` | Enable webhook notifications | `false` |
-| `SLACK_WEBHOOK_URL` | Slack webhook URL | - |
-| `TEAMS_WEBHOOK_URL` | Microsoft Teams webhook URL | - |
-| `DISCORD_WEBHOOK_URL` | Discord webhook URL | - |
-| `EMAIL_ENABLED` | Enable email notifications | `false` |
-| `SMTP_HOST` | SMTP server hostname | - |
-
-*Authentication Options:*
-
-**HTTPS + Token (GitHub, GitLab, Bitbucket, Azure DevOps):**
-```bash
-GIT_AUTH_TYPE=HTTPS_TOKEN
-GIT_TOKEN=ghp_xxxx  # or glpat-xxx for GitLab, etc.
-```
-
-**SSH Key Authentication:**
-```bash
-GIT_AUTH_TYPE=SSH_KEY
-# Mount your SSH key to /secrets/id_rsa
-docker run -v ~/.ssh/id_rsa:/secrets/id_rsa:ro sechive-scanner:2.2.1
-```
-
-*Docker Compose Services:*
-- `sechive` - Main scanner service with health endpoints
-- `postgres` - PostgreSQL database for scan history
-- `adminer` - Optional database admin UI (debug profile)
-
-*Health Endpoints:*
-- `/health` - Liveness check
-- `/ready` - Readiness check
-- `/status` - Detailed scanner status (JSON)
-- `/metrics` - Prometheus-compatible metrics
-
-*Build from Source:*
-```bash
-# Build the Docker image
-docker build -t sechive-scanner:2.2.1 -f cli/docker/Dockerfile .
-
-# Run with custom configuration
-docker run -d \
-  -e SECHIVE_GIT_REPO_URL=https://github.com/org/repo.git \
-  -e SECHIVE_GIT_TOKEN=your_token \
-  -e SECHIVE_SCANNER_ENGINE=auto \
-  -p 8080:8080 \
-  sechive-scanner:2.2.1
-```
-
-**🔮 Predictive Update Analysis** *(Professional Exclusive)*
-Intelligent dependency update recommendations powered by real-time Maven Central analysis:
-- **Smart Version Analysis**: Automatically analyzes 5+ newer versions of vulnerable dependencies
-- **CVE Impact Forecasting**: Predicts which CVEs would be resolved vs. introduced by each update
-- **Risk-Based Recommendations**: Categorizes updates as "Safe" (reduces CVEs, no new issues) vs "Risky" (may introduce new vulnerabilities)
-- **Comprehensive Reporting**: HTML, PDF, and JSON reports with detailed upgrade paths
-- **Interactive Tree Visualization**: D3.js-powered dependency tree showing vulnerability propagation paths
-- **Version Conflict Detection**: Automatic detection and reporting of "Jar Hell" scenarios
-- **Zero Configuration**: Works out-of-the-box with your existing dependencies
-- **Maven Central Integration**: Real-time version availability and metadata lookup
-- **Configurable Analysis Depth**: COMPREHENSIVE, STANDARD, or QUICK scanning modes
-- **Pre-release Handling**: Option to include/exclude beta versions in analysis
-
-*Example Output:*
-```
-🔮 Predictive Update Analysis Summary
-├─ Dependencies Analyzed: 127
-├─ Safe Updates Available: 23 (will resolve 47 CVEs)
-├─ Updates with Risks: 8 (require manual review)
-└─ No Safe Updates: 12 (wait for patches)
-
-🏆 Top Recommendations:
-  • spring-security-core: 5.7.1 → 6.2.1 (resolves 8 CVEs)
-  • jackson-databind: 2.13.3 → 2.16.1 (resolves 12 CVEs)
-  • commons-fileupload: 1.4 → 1.5 (resolves 2 CVEs)
-```
-
-**⚖️ License Compliance & Risk Analysis** *(Professional Exclusive)*
-Comprehensive license management to prevent legal issues and ensure regulatory compliance:
-- **Automatic License Detection**: Scans all project dependencies and detects licenses from manifests, POMs, and metadata
-- **Policy Enforcement Engine**:
-    - Define approved licenses (allowlist)
-    - Block prohibited licenses (blocklist)
-    - Require OSI-approved licenses only
-    - Custom policy presets (DEFAULT, PERMISSIVE, STRICT)
-- **License Compatibility Matrix**: Validates compatibility between 150+ license pairs (e.g., GPL + Apache, MIT + BSD)
-- **Risk Scoring System**: Automated risk assessment (0-100 scale) with compliance percentage
-- **Comprehensive Reporting**: TEXT, HTML, JSON, CSV, and PDF formats for audits and stakeholders
-- **20+ License Support**: Apache-2.0, MIT, GPL-2.0/3.0, LGPL-2.1/3.0, BSD-2/3-Clause, MPL-2.0, ISC, EPL-1.0/2.0, CDDL-1.0, AGPL-3.0, and more
-- **Violation Management**: CRITICAL and HIGH severity violations with configurable build failure policies
-- **Unknown License Handling**: Flag or block dependencies with unclear licensing
-
-*Policy Examples:*
-```xml
-<!-- Strict GPL-incompatible policy -->
-<configuration>
-    <policyPreset>STRICT</policyPreset>
-    <blockedLicenses>
-        <license>GPL-3.0</license>
-        <license>AGPL-3.0</license>
-    </blockedLicenses>
-    <requireOsiApproved>true</requireOsiApproved>
-    <failOnViolation>true</failOnViolation>
-</configuration>
-```
-
-**📊 Advanced Reporting & Export Formats**
-- **PDF Reports**: Executive-ready documents for stakeholders, auditors, and compliance teams
-- **SARIF Format**: GitHub Security tab integration for automated security alerts
-- **CycloneDX SBOM**: Software Bill of Materials for supply chain compliance (NTIA, EO 14028)
-- **Custom Templates**: Branded reports with company logos and styling
-- **Trend Graphs**: Visual charts showing vulnerability trends over time
-- **Comparison Reports**: Side-by-side current vs. predictive analysis
-
-**💾 Professional Storage & Scalability**
-- **Persistent Databases**: TimescaleDB, PostgreSQL, MySQL, H2 support with automatic schema management (Flyway migrations)
-- **TimescaleDB CVE Trends**: Time-series optimized storage for vulnerability trend analysis with continuous aggregates
-- **Unlimited Scan History**: Store years of scan data for trend analysis and compliance audits
-- **Unlimited Projects**: No 50-project limit (Community restriction removed)
-- **Cross-Project Analytics**: Organization-wide security dashboards
-- **Data Retention Policies**: Configurable retention with automatic archival
-
-**📧 Team Collaboration & Notifications**
-- **Email Notifications**: Automatic alerts on CRITICAL/HIGH findings with detailed CVE information
-- **Configurable Triggers**: Set thresholds for when to notify (e.g., only CRITICAL vulnerabilities)
-
-**🔍 Advanced Analysis Features**
-- **False Positive Suppression**: Mark and track false positives with justifications (audit trail)
-- **Custom Severity Thresholds**: Override default CVSS scores based on your environment
-- **Exploitability Analysis**: Identify CVEs with known exploits in the wild
-- **Dependency Tree Visualization**: Interactive graphs showing vulnerability propagation paths
-- **Transitive Dependency Analysis**: Identify which top-level dependencies introduce vulnerabilities
-
-**🚀 CI/CD Platform Deep Integration** *(Professional Exclusive)*
-Native integration with major CI/CD platforms for streamlined security workflows:
-- **Supported Platforms**: GitHub Actions, Jenkins, Azure DevOps, CircleCI
-- **Platform-Native Reports**:
-  - **Jenkins**: JUnit XML, Warnings-NG JSON, HTML summaries
-  - **Azure DevOps**: SARIF 2.1.0, Build Summary Markdown, Pipeline Commands
-  - **CircleCI**: JUnit XML, Insights JSON, Trend Analysis
-  - **GitHub Actions**: SARIF for Code Scanning, Workflow Annotations, PR Comments
-- **Build Status Integration**: Pass/Fail/Unstable based on vulnerability thresholds
-- **Pull Request Comments**: Automatic security scan summaries on PRs/MRs
-- **Pipeline Metrics**: Scan duration, vulnerability trends, historical comparisons
-- **Policy Enforcement**:
-  - Branch-based severity thresholds (stricter for main branch)
-  - Progressive enforcement (fail on new vulnerabilities only)
-  - Vulnerability suppressions with expiration dates
-  - Custom threshold configurations per environment
-
-*Maven Goals Available:*
-```bash
-# Platform-specific reporting goals
-mvn sechive:jenkins-report
-mvn sechive:azure-devops-report
-mvn sechive:circleci-report
-mvn sechive:github-actions-report
-```
-
-**🔔 Real-Time Webhook Notifications** *(Professional Exclusive)*
-Get instant security alerts in your team's communication channels:
-- **Supported Platforms**: Slack, Microsoft Teams, Discord, Generic/Custom webhooks
-- **Rich Formatting**: Platform-native message formats with colors, emojis, and structured data
-- **Smart Filtering**: Severity-based thresholds, branch-specific configurations
-- **Multiple Channels**: Send different severity levels to different channels
-- **Automatic Retry**: Built-in retry logic with exponential backoff
-- **CI/CD Integration**: Works seamlessly with all CI/CD platform reporters
-
-*What You Get:*
-- 🔴 **Critical/High Alerts** - Immediate notifications with CVE details and CVSS scores
-- 📊 **Severity Breakdown** - Visual indicators (🔴 Critical, 🟠 High, 🟡 Medium, ⚪ Low)
-- 🔗 **Direct Links** - Clickable links to full scan reports and build logs
-- 📈 **Dependency Stats** - Total dependencies analyzed and vulnerable count
-- ⚡ **Real-time Updates** - Notifications sent as soon as scan completes
-
-*Example Slack Notification:*
-```
-🔴 SecHive Security Scan Results
-
-Project: my-application
-Version: 1.0.0
-Branch: main
-Platform: github-actions
-
-Total Vulnerabilities: 15
-🔴 Critical: 2
-🟠 High: 5
-🟡 Medium: 6
-⚪ Low: 2
-
-Total Dependencies: 150
-Vulnerable Dependencies: 8
-
-[View Full Report →]
-```
-
-*Configuration Example:*
-```xml
-<webhookConfig>
-  <enabled>true</enabled>
-  <severityThreshold>MEDIUM</severityThreshold>
-  <notifyOnSuccess>false</notifyOnSuccess>
-  <notifyOnFailure>true</notifyOnFailure>
-
-  <endpoints>
-    <!-- Critical alerts to security team -->
-    <endpoint>
-      <name>Security Team</name>
-      <type>SLACK</type>
-      <url>${env.SLACK_SECURITY_WEBHOOK}</url>
-      <severityFilter>HIGH</severityFilter>
-    </endpoint>
-
-    <!-- All vulnerabilities to dev team -->
-    <endpoint>
-      <name>Dev Team</name>
-      <type>SLACK</type>
-      <url>${env.SLACK_DEV_WEBHOOK}</url>
-    </endpoint>
-
-    <!-- Microsoft Teams integration -->
-    <endpoint>
-      <name>Teams Dashboard</name>
-      <type>TEAMS</type>
-      <url>${env.TEAMS_WEBHOOK}</url>
-    </endpoint>
-  </endpoints>
-</webhookConfig>
-```
-
-*Setup Instructions:*
-1. Get webhook URL from Slack/Teams/Discord
-2. Store URL in environment variable or CI/CD secrets
-3. Configure webhook in POM as shown above
-4. Run scan - notifications sent automatically!
-
-📖 **[Complete Webhook Integration Guide](distribution/src/main/resources/docs/WEBHOOK_INTEGRATION.md)**
-
-**📊 Enhanced Metrics Integration** *(Professional Exclusive)*
-Monitor security trends across your entire infrastructure with real-time metrics export:
-- **6 Platform Support**: Prometheus, Grafana Cloud, Datadog, New Relic, InfluxDB, StatsD
-- **15+ Security Metrics**: Vulnerabilities by severity, risk scores, dependency counts, scan performance
-- **Pre-built Dashboards**: 3 Grafana dashboards with 39 visualization panels
-- **Parallel Export**: Concurrent export to multiple platforms with automatic retry
-- **Custom Tags**: Add organization, team, and environment tags to all metrics
-- **Risk Calculation**: Weighted risk scoring (0-100) based on severity distribution
-
-*What You Get:*
-- 📈 **Real-time Monitoring** - Track vulnerability trends across all projects
-- 🎯 **Risk Scoring** - Automated risk calculation with severity-weighted algorithm
-- 📊 **Pre-built Dashboards** - Import-ready Grafana dashboards for instant visualization
-- 🔔 **Alerting** - Set up alerts on critical thresholds (risk score, CVE counts)
-- 📉 **Trend Analysis** - Visualize new vs. fixed vulnerabilities over time
-- ⚡ **Performance Tracking** - Monitor scan duration and throughput
-
-*Supported Metrics Platforms:*
-
-| Platform | Protocol | Use Case |
-|----------|----------|----------|
-| **Prometheus** | HTTP Push | Self-hosted, Kubernetes environments |
-| **Grafana Cloud** | HTTP API | Managed Grafana with Prometheus backend |
-| **Datadog** | HTTP API | APM and infrastructure monitoring |
-| **New Relic** | HTTP API | Full-stack observability |
-| **InfluxDB** | HTTP API | Time-series database, custom analytics |
-| **TimescaleDB** | JDBC | CVE trend tracking, historical analysis, continuous aggregates |
-| **StatsD** | UDP | Low-overhead metrics collection |
-
-*Example Grafana Dashboard Visualization:*
-```
-┌─────────────────────────────────────────────────────────────┐
-│ 🔴 Critical: 2    🟠 High: 5    🟡 Medium: 6    ⚪ Low: 2  │
-│                                                             │
-│ Risk Score: 45.5/100    Total Vulnerabilities: 15          │
-│                                                             │
-│ Vulnerabilities Over Time                                  │
-│ 20│  ╭─╮                                                   │
-│ 15│  │ │    ╭─╮                                            │
-│ 10│╭─╯ ╰────╯ ╰──╮                                         │
-│  5│               ╰────────────────                        │
-│  0└─────────────────────────────────────────────           │
-│    Jan  Feb  Mar  Apr  May  Jun  Jul  Aug                  │
-└─────────────────────────────────────────────────────────────┘
-```
-
-*Configuration Example:*
-```xml
-<metricsExport>
-  <enabled>true</enabled>
-  <endpoints>
-    <!-- Prometheus for long-term storage -->
-    <endpoint>
-      <name>Prometheus Pushgateway</name>
-      <platform>PROMETHEUS</platform>
-      <url>http://pushgateway:9091/metrics/job/bastion-security</url>
-      <prefix>bastion</prefix>
-      <enabled>true</enabled>
-    </endpoint>
-
-    <!-- Datadog for real-time monitoring -->
-    <endpoint>
-      <name>Datadog</name>
-      <platform>DATADOG</platform>
-      <url>https://api.datadoghq.com/api/v1/series</url>
-      <apiKey>${env.DATADOG_API_KEY}</apiKey>
-      <prefix>bastion</prefix>
-      <enabled>true</enabled>
-    </endpoint>
-  </endpoints>
-
-  <!-- Global tags for all metrics -->
-  <globalTags>
-    <tag>
-      <key>organization</key>
-      <value>my-company</value>
-    </tag>
-    <tag>
-      <key>team</key>
-      <value>platform-security</value>
-    </tag>
-  </globalTags>
-</metricsExport>
-```
-
-*Key Metrics Exported:*
-- `bastion_vulnerabilities_total` - Total vulnerabilities detected
-- `bastion_vulnerabilities_critical/high/medium/low` - By severity
-- `bastion_vulnerabilities_new/fixed` - Trend tracking
-- `bastion_risk_score` - Calculated risk (0-100)
-- `bastion_dependencies_total/vulnerable` - Dependency counts
-- `bastion_scan_duration_ms` - Performance monitoring
-- `bastion_policy_passed` - Build compliance status
-
-*Pre-built Grafana Dashboards:*
-1. **Security Overview** (13 panels) - Real-time vulnerability monitoring, risk gauges, trend graphs
-2. **Performance Metrics** (12 panels) - Scan duration, throughput, success rates
-3. **Vulnerability Trends** (14 panels) - Long-term analysis, compliance tracking, remediation velocity
-
-📖 **[Complete Metrics Export Guide](distribution/src/main/resources/docs/METRICS_EXPORT.md)**
-
-*Example Jenkins Integration:*
-```groovy
-stage('Security Scan') {
-  steps {
-    sh 'mvn sechive:jenkins-report'
-  }
-  post {
-    always {
-      junit 'target/sechive-reports/jenkins-junit-report.xml'
-      recordIssues(tools: [issues(pattern: 'target/sechive-reports/jenkins-warnings-ng.json')])
-      publishHTML(reportDir: 'target/sechive-reports', reportFiles: 'jenkins-summary.html')
-    }
-  }
-}
-```
-
-**⚡ Professional Support & SLA**
-- **24-Hour Response SLA**: Priority email support with guaranteed response times
-- **Direct Access to Security Experts**: Consult with security professionals on vulnerability remediation
-- **Custom Integration Support**: Help with CI/CD pipelines, custom workflows, and automation
-- **Security Advisory Updates**: Early notification of critical vulnerabilities
-
-### Community vs Professional
-
-| Feature                      | Community Edition     | Professional Edition       |
-|------------------------------|-----------------------|--------------------------|
-| **Core Scanning**            |                       |                          |
-| Vulnerability Detection      | ✅ Full (OWASP 12.1.3) | ✅ Full (OWASP 12.1.3)    |
-| CVE Database Auto-Update     | ✅ Automatic           | ✅ Automatic              |
-| Multi-Module Support         | ✅ Yes                 | ✅ Yes                    |
-| HTML/JSON Reports            | ✅ Yes                 | ✅ Yes                    |
-| Trend Analysis (CVE Changes) | ✅ Basic               | ✅ Advanced               |
-| **Performance**              |                       |                          |
-| Bee Swarm Optimization       | ❌ No                  | ✅ 20-30% Faster Scans    |
-| Worker Pool Optimizations    | ❌ No                  | ✅ 3-6x Faster Scans      |
-| Parallel File Hashing        | ❌ No                  | ✅ 3-5x Faster            |
-| Parallel Dependency Scanning | ❌ No                  | ✅ 8-16x Faster           |
-| Auto Hardware Detection      | ❌ No                  | ✅ AUTO Strategy          |
-| Strategy Modes               | ❌ No                  | ✅ 4 Modes (AUTO/AGG/MOD/NORM) |
-| Streaming I/O                | ❌ No                  | ✅ Constant Memory        |
-| Extended Caching             | ❌ No                  | ✅ 80-95% Hit Rate        |
-| **Predictive Intelligence**  |                       |                          |
-| Predictive Update Analysis   | ❌ No                  | ✅ Yes                    |
-| Safe Update Recommendations  | ❌ No                  | ✅ Yes                    |
-| CVE Impact Forecasting       | ❌ No                  | ✅ Yes                    |
-| Maven Central Integration    | ❌ No                  | ✅ Real-time              |
-| Dependency Tree Visualization| ❌ No                  | ✅ Interactive D3.js      |
-| Version Conflict Detection   | ❌ No                  | ✅ "Jar Hell" Detection   |
-| **License Compliance**       |                       |                          |
-| License Detection            | ❌ No                  | ✅ Automatic              |
-| Policy Enforcement           | ❌ No                  | ✅ Approve/Block Lists    |
-| License Compatibility Matrix | ❌ No                  | ✅ 150+ Pairs             |
-| Risk Scoring                 | ❌ No                  | ✅ 0-100 Scale            |
-| Compliance Reporting         | ❌ No                  | ✅ TEXT/HTML/JSON/CSV/PDF |
-| **Advanced Reporting**       |                       |                          |
-| PDF Reports                  | ❌ No                  | ✅ Yes                    |
-| SARIF (GitHub Security)      | ❌ No                  | ✅ Yes                    |
-| CycloneDX SBOM               | ❌ No                  | ✅ Yes                    |
-| Custom Templates             | ❌ No                  | ✅ Yes                    |
-| **Collaboration & Notifications** |                  |                          |
-| Email Notifications          | ❌ No                  | ✅ CRITICAL/HIGH Alerts   |
-| Webhook Notifications        | ❌ No                  | ✅ Slack/Teams/Discord    |
-| **Enhanced Metrics**         |                       |                          |
-| Metrics Export               | ❌ No                  | ✅ 7 Platforms            |
-| Pre-built Dashboards         | ❌ No                  | ✅ 3 Grafana Dashboards   |
-| Risk Scoring                 | ❌ No                  | ✅ 0-100 Weighted Score   |
-| Real-time Monitoring         | ❌ No                  | ✅ Prometheus/Datadog/etc |
-| **CI/CD Integration**        |                       |                          |
-| Basic CI/CD Compatible       | ✅ Yes                 | ✅ Yes                    |
-| Platform-Native Reports      | ❌ No                  | ✅ Jenkins/GitLab/Azure/CircleCI/GitHub |
-| Pull Request Comments        | ❌ No                  | ✅ Automated              |
-| Build Status Integration     | ❌ No                  | ✅ Pass/Fail/Unstable     |
-| Pipeline Metrics             | ❌ No                  | ✅ Duration/Trends        |
-| Progressive Enforcement      | ❌ No                  | ✅ Baseline/Degradation   |
-| **Storage & Scale**          |                       |                          |
-| Storage Mode                 | 💾 In-Memory/JSON     | ✅ TimescaleDB/PostgreSQL/MySQL/H2 |
-| Scan History                 | ✅ 10 per project      | ✅ Unlimited              |
-| Maximum Projects             | ✅ 50 projects         | ✅ Unlimited              |
-| Data Retention               | ⏰ Temporary           | ✅ Permanent              |
-| Cross-Project Analytics      | ❌ No                  | ✅ Yes                    |
-| **Support & SLA**            |                       |                          |
-| Support Channel              | 📖 Community/GitHub   | ⚡ Priority Email         |
-| Response Time                | ⏰ Best Effort         | ✅ 24-Hour SLA            |
-| Custom Integrations          | ❌ No                  | ✅ Yes                    |
-| **Pricing**                  |                       |                          |
-| Cost                         | 🆓 **Free Forever**   | 💰 **$149/month**        |
-| 14-Day Trial                 | N/A                   | ✅ Available               |
-
-### Upgrade Messaging
-
-The Community Edition may display contextual upgrade suggestions at key moments:
-- When approaching storage limits (45+ projects, 8+ scans per project)
-- After detecting significant vulnerabilities (50+ findings)
-- When requesting professional features (PDF/SARIF reports)
-- At usage milestones (5th, 10th, 20th scan)
-
-These messages are **non-intrusive** and designed to inform users about features that could benefit their workflow. You can safely ignore them and continue using the full vulnerability detection capabilities of the Community Edition.
-
-### Professional Edition
-
-Interested in advanced features like 3-6x faster scans, unlimited projects, AI-powered updates, and professional reporting?
-
-**[📖 Learn more about Professional Edition →](https://dodogeny.github.io/sechive-maven-plugin/)**
-
-### How to Integrate Professional Edition
-
-After subscribing, you'll receive a license key. Here's how to configure it:
-
-#### Step 1: Add Professional Plugin to pom.xml
-
-```xml
-<plugin>
-    <groupId>io.github.dodogeny</groupId>
-    <artifactId>sechive-maven-plugin</artifactId>
-    <version>2.2.1</version>
-    <executions>
-        <execution>
-            <goals>
-                <goal>scan</goal>
-            </goals>
-            <phase>verify</phase>
-        </execution>
-    </executions>
-    <configuration>
-        <!-- License Configuration -->
-        <licenseKey>${env.SECHIVE_LICENSE_KEY}</licenseKey>
-
-        <!-- NVD API Key -->
-        <nvdApiKey>${env.NVD_API_KEY}</nvdApiKey>
-
-        <!-- Bee Swarm Optimization (NEW - 20-30% faster with intelligent task distribution) -->
-        <enableBeeSwarm>true</enableBeeSwarm>
-        <swarmSize>12</swarmSize>
-
-        <!-- Worker Pool Optimizations (3-6x faster scanning) -->
-        <workerPoolStrategy>AUTO</workerPoolStrategy> <!-- AUTO, AGGRESSIVE, MODERATE, NORMAL -->
-        <enableWorkerPoolOptimization>true</enableWorkerPoolOptimization>
-
-        <!-- Database Configuration (TimescaleDB/PostgreSQL/MySQL) -->
-        <databaseUrl>jdbc:postgresql://localhost:5432/sechive</databaseUrl>
-        <databaseUsername>${env.DB_USERNAME}</databaseUsername>
-        <databasePassword>${env.DB_PASSWORD}</databasePassword>
-
-        <!-- Report Configuration -->
-        <reportFormats>HTML,JSON,PDF,SARIF</reportFormats>
-        <outputDirectory>${project.build.directory}/sechive-reports</outputDirectory>
-
-        <!-- Email Notifications -->
-        <emailEnabled>true</emailEnabled>
-        <emailRecipients>security@yourcompany.com</emailRecipients>
-        <emailOnlyForCritical>true</emailOnlyForCritical>
-
-    </configuration>
-</plugin>
-```
-
-#### Step 2: Set Environment Variables
-
-```bash
-# License Key (provided after subscription)
-export SECHIVE_LICENSE_KEY=your-license-key-here
-
-# NVD API Key (optional but recommended)
-export NVD_API_KEY=your-nvd-api-key
-
-# Database Credentials
-export DB_USERNAME=sechive_user
-export DB_PASSWORD=secure_password
-
-```
-
-#### Step 3: Initialize Database
-
-Professional Edition supports TimescaleDB, PostgreSQL, or MySQL:
-
-**TimescaleDB (Recommended for CVE Trend Analysis)**:
-```bash
-# Start TimescaleDB with Docker
-docker run -d --name timescaledb -p 5432:5432 \
-  -e POSTGRES_PASSWORD=secure_password \
-  -e POSTGRES_USER=sechive_user \
-  -e POSTGRES_DB=sechive \
-  timescale/timescaledb:latest-pg15
-
-# Schema is auto-created via Flyway migrations on first run
-```
-
-**PostgreSQL**:
-```sql
-CREATE DATABASE sechive;
-CREATE USER sechive_user WITH PASSWORD 'secure_password';
-GRANT ALL PRIVILEGES ON DATABASE sechive TO sechive_user;
-```
-
-**MySQL**:
-```sql
-CREATE DATABASE sechive;
-CREATE USER 'sechive_user'@'localhost' IDENTIFIED BY 'secure_password';
-GRANT ALL PRIVILEGES ON sechive.* TO 'sechive_user'@'localhost';
-FLUSH PRIVILEGES;
-```
-
-> **Note**: When using TimescaleDB, the plugin automatically creates hypertables with continuous aggregates for optimized CVE trend queries. Schema migrations are handled by Flyway.
-
-#### Step 4: Run Your First Professional Scan
-
-```bash
-# Run security scan with professional features
-mvn clean verify
-
-# Or run directly
-mvn sechive-maven-plugin:scan
-
-# Run predictive update analysis
-mvn sechive-maven-plugin:predictive-analysis
-
-# Run license compliance check
-mvn sechive-maven-plugin:license-check
-```
-
-**Professional Goals Available:**
-- `scan` - Full vulnerability scanning with PDF/SARIF/SBOM exports
-- `predictive-analysis` - Analyze dependency updates and CVE impact
-- `license-check` - License compliance and risk analysis
-
-#### Step 5: Verify Professional Features
-
-Check that professional features are working:
-
-1. **Database**: Verify scan results are persisted in your database
-2. **PDF Reports**: Check `target/sechive-reports/` for PDF exports
-3. **Predictive Analysis**: Run `mvn sechive-maven-plugin:predictive-analysis` and review recommendations in `target/sechive-predictive-reports/`
-4. **License Compliance**: Run `mvn sechive-maven-plugin:license-check` and review reports in `target/sechive-reports/`
-5. **Email Notifications**: Verify emails are received for CRITICAL vulnerabilities
-
-#### Step 6: Configure Advanced Features (Optional)
-
-Add predictive analysis and license checking to your build lifecycle:
-
-```xml
-<plugin>
-    <groupId>io.github.dodogeny</groupId>
-    <artifactId>sechive-maven-plugin</artifactId>
-    <version>2.2.1</version>
-    <executions>
-        <!-- Vulnerability Scanning -->
-        <execution>
-            <id>vulnerability-scan</id>
-            <goals>
-                <goal>scan</goal>
-            </goals>
-            <phase>verify</phase>
-        </execution>
-
-        <!-- Predictive Update Analysis -->
-        <execution>
-            <id>predictive-analysis</id>
-            <goals>
-                <goal>predictive-analysis</goal>
-            </goals>
-            <phase>verify</phase>
-            <configuration>
-                <analysisDepth>COMPREHENSIVE</analysisDepth>
-                <maxVersionsToAnalyze>5</maxVersionsToAnalyze>
-                <onlyVulnerableDependencies>true</onlyVulnerableDependencies>
-                <reportFormats>HTML,PDF,JSON</reportFormats>
-            </configuration>
-        </execution>
-
-        <!-- License Compliance Check -->
-        <execution>
-            <id>license-check</id>
-            <goals>
-                <goal>license-check</goal>
-            </goals>
-            <phase>verify</phase>
-            <configuration>
-                <policyPreset>DEFAULT</policyPreset>
-                <failOnViolation>true</failOnViolation>
-                <reportFormat>TEXT,HTML,JSON,PDF</reportFormat>
-            </configuration>
-        </execution>
-    </executions>
-</plugin>
-```
-
-**📖 Professional Documentation**:
-- Predictive Analysis: [Configuration Guide](../sechive-maven-plugin-professional/PREDICTIVE_ANALYSIS_GUIDE.md)
-- License Compliance: [Full Guide](../sechive-maven-plugin-professional/LICENSE_COMPLIANCE_GUIDE.md)
-
-### Professional Support
-
-Need help with integration or have questions?
-- **Email**: it.dodogeny@gmail.com
-- **Response Time**: 24-hour SLA
-- **Documentation**: Professional-specific guides included with subscription
-- **Custom Integration**: Available for professional customers
-
-## Compatibility Matrix
-
-| SecHive Version | Java Requirement | OWASP Dependency-Check | Auto-Update | Memory Management | JAR Analysis | Status |
-|-----------------|------------------|------------------------|-------------|-------------------|--------------|--------|
-| 2.0.0 | Java 21+ | 12.1.3 | ✅ Automatic | ✅ Automatic | ✅ Enhanced | **Recommended** |
-| 1.1.0 | Java 21+ | 12.1.3 | ✅ Automatic | ✅ Automatic | ✅ Basic | Stable |
-| 1.0.x | Java 8+ | 10.0.4 | ❌ Manual | ⚠️ Manual MAVEN_OPTS | ❌ None | Legacy (security patches only) |
-
-## Support
-
-### Community Support
-- **Email**: it.dodogeny@gmail.com
-- **GitHub Issues**: https://github.com/dodogeny/sechive-maven-plugin/issues
-- **Documentation**: See this README and inline configuration comments
-
-### Getting Help
-- Check the troubleshooting section above
-- Search existing GitHub issues
-- Email us at it.dodogeny@gmail.com with questions
-- Create a new issue with scan logs and configuration
-
-## License
-
-This project is licensed under the Apache License 2.0 - see the LICENSE file for details.
-
-## Acknowledgments
-
-Built on [OWASP Dependency-Check](https://owasp.org/www-project-dependency-check/), the industry-standard open source vulnerability scanner.
+Built on [OWASP Dependency-Check](https://owasp.org/www-project-dependency-check/)

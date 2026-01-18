@@ -18,6 +18,7 @@ import org.apache.maven.plugin.MojoExecutionException;
 import org.apache.maven.plugin.MojoFailureException;
 import org.apache.maven.plugins.annotations.*;
 import org.apache.maven.project.MavenProject;
+import javax.inject.Inject;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -48,10 +49,7 @@ public class SecHiveScanMojo extends AbstractMojo {
     
     private static final Logger logger = LoggerFactory.getLogger(SecHiveScanMojo.class);
 
-    @Parameter(defaultValue = "${project}", readonly = true, required = true)
     private MavenProject project;
-
-    @Parameter(defaultValue = "${session}", readonly = true, required = true)
     private MavenSession session;
 
     @Parameter(property = "sechive.skip", defaultValue = "false")
@@ -130,6 +128,19 @@ public class SecHiveScanMojo extends AbstractMojo {
     private VulnerabilityScanner scanner;
     private ReportGenerator reportGenerator;
     private ObjectMapper jsonMapper;
+
+    @Inject
+    public SecHiveScanMojo(MavenProject project, MavenSession session) {
+        this.project = project;
+        this.session = session;
+    }
+
+    /**
+     * Default constructor for testing and Maven plugin instantiation.
+     */
+    public SecHiveScanMojo() {
+        // Default constructor - fields will be injected by Maven
+    }
 
     @Override
     public void execute() throws MojoExecutionException, MojoFailureException {
